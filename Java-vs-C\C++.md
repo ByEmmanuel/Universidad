@@ -15,8 +15,9 @@ public class HolaMundo {
         System.out.println("Hola Mundo");
     }
 }
-
-## Sintaxis Basica c++
+![!Hola]
+## Sintaxis Basica 
+### C++
 ```Cpp
 int main(int argc, char const *argv[]){
     leerArray(array);
