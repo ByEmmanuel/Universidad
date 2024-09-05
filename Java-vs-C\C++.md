@@ -16,6 +16,7 @@ public class HolaMundo {
     }
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 ![!Hola]
 ## Sintaxis Basica 
 ### C++
@@ -23,6 +24,11 @@ public class HolaMundo {
 
 ## Sintaxis Basica c++
 >>>>>>> 07615e0 (Segundo dia aprendiendo c++)
+=======
+![!Hola]
+## Sintaxis Basica 
+### C++
+>>>>>>> de086b3 (Corrigiendo Archivos (Root))
 ```Cpp
 int main(int argc, char const *argv[]){
     leerArray(array);
