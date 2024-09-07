@@ -5,3 +5,5 @@ cmake-build-debug/
 # Carpeta para las que se generan los archivos de compilación y tendre que usar el sig comando para generarlos
 # g++ ../C++_Doc/PrimerTest.cpp
 build
+.idea/
+cmake-build-release/

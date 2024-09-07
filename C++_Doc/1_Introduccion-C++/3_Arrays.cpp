@@ -17,12 +17,12 @@
 
 // Declaracion de un array. El 5 es el tamaño del array (Es decir, cuantos elementos tiene) y epieza desdee el 0
 const int tamanoDelArray = 5;
-int array[tamanoDelArray];
+int arrayPrueba[tamanoDelArray];
 int leerArray(int tamanoDelArray[]); // Declaracion de la funcion;
 
-// Funcion principal
-int main(int argc, char const *argv[]){
-    leerArray(array);
+// Funcion principal del programa
+int funcionPrincipal(int argc, char const *argv[]){
+    leerArray(arrayPrueba);
     return 0;
 }
 

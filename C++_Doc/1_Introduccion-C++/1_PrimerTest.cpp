@@ -12,6 +12,9 @@
 #include <iostream>
 #include <string>
 
+// Con esto puedo incluir el archivo necesario
+// #include <C++_Doc/1_Introduccion-C++/5_Operadores.cpp>
+
 /* Primero Se DECLARAN Las Funciones De Nuestro Programa ._.
  * La Declaracion De Una Funcion Se Hace De La Siguiente Manera:
  */
@@ -21,6 +24,9 @@ int multiplicacion(int a, int b);
 int division(int a, int b);
 
 void estructurasDeControl();
+void mainOperadores();
+
+
 
 int main(){
     printf("Hello World\n");
@@ -40,8 +46,10 @@ int main(){
     std::cout << "La cadena es: " << cadena << std::endl;
     // return 0; Indica Que El Programa Finalizo Correctamente
 
-    //Llamada a la funcion de Estructuras de control
+    //Llamada a la funcion de Estructuras de control (POO)
     estructurasDeControl();
+    //Llamada a la funcion de Operadores (POO)
+    mainOperadores();
     return 0;
 }
 
