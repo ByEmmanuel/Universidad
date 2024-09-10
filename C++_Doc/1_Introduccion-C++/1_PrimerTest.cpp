@@ -25,6 +25,7 @@ int division(int a, int b);
 
 void estructurasDeControl();
 void mainOperadores();
+void mainPalabrasReservadas();
 
 
 
@@ -50,6 +51,8 @@ int main(){
     estructurasDeControl();
     //Llamada a la funcion de Operadores (POO)
     mainOperadores();
+    //Llamada a la funcion de Palabras Reservadas (POO)
+    mainPalabrasReservadas();
     return 0;
 }
 
