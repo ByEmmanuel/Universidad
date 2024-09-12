@@ -3,32 +3,19 @@
 //
 #include <iostream>
 #include <string>
-#include <array>
 #include <list>
 #include "Usuarios.h"
+#include "RegistroDAO.h"
 
 using namespace std;
 
 bool bandera = true;
 int opcion;
 pmr::list<Usuarios> listaUsuarios;
-Usuarios* usuario = new Usuarios;
+//Usuarios* usuario = new Usuarios;
+RegistroDao* dao = new RegistroDao;
 
 
-// Función para buscar un usuario por nombre
-Usuarios* buscarUsuarioPorNombre(const string& nombreBuscado) {
-
-    // Iteramos sobre la lista de usuarios
-    for (auto& usuario : listaUsuarios) {
-
-        // Si el nombre coincide, retornamos un puntero al usuario
-        if (usuario.getNombre() == nombreBuscado) {
-
-            return &usuario;  // Retornamos la dirección del objeto encontrado
-        }
-    }
-    return nullptr;  // Si no se encuentra el usuario, retornamos nullptr
-}
 
 inline int reservar(){
     cout << "Pulse 1 para cerrar la app, \nPulse 2 para continuar" << endl;
@@ -47,8 +34,11 @@ inline int reservar(){
         usuario->setEdad(30);
 
         listaUsuarios.push_front(*usuario);
-        Usuarios* usuarioEncontrado = buscarUsuarioPorNombre(nombre);
-        cout << "La lista esta conformada por ; " << usuarioEncontrado->getNombre() << endl;
+
+
+        Usuarios usuarioEncontrado =  dao->buscarUsuarioPorNombre(nombre,listaUsuarios);
+        //cout << usuarioEncontrado;
+        cout << "La lista esta conformada por ; " << usuarioEncontrado.getNombre();
 
         bandera = false;
     }
@@ -62,7 +52,6 @@ inline void sistema(){
     while (bandera){
 
         array<string, 6> tramite = {"Reserva", "Alquilar", "Vender", "Comprar", "Cancelar una reserva", "Terminar de pagar una reserva"};
-
 
         cout << "Seleccione una opción (1-6):" << endl;
         for (int i = 0; i < tramite.size(); ++i) {
