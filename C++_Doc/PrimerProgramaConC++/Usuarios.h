@@ -6,6 +6,11 @@
 #define USUARIOS_H
 #include <set>
 #include <string>
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 8bc55eb (Añadiendo JAVA)
 
 using namespace std;
 

@@ -19,7 +19,41 @@ int opcion;
 pmr::list<Usuarios> listaUsuarios;
 //Usuarios* usuario = new Usuarios;
 RegistroDao* dao = new RegistroDao;
+<<<<<<< HEAD
 Controladores* controlador = new Controladores;
+=======
+
+
+
+inline int reservar(){
+    cout << "Pulse 1 para cerrar la app, \nPulse 2 para continuar" << endl;
+    cin >> opcion;
+    cout << "opcion escogida : " << opcion << endl;
+
+    if (opcion == 1){
+        bandera = false;
+    }else if (opcion == 2){
+
+        cout << "Ingrese Nombre" << endl;
+        string nombre ;
+        cin >> nombre;;
+
+        usuario->setNombre(nombre);
+        usuario->setEdad(30);
+
+        listaUsuarios.push_front(*usuario);
+
+
+        Usuarios usuarioEncontrado =  RegistroDao::buscarUsuarioPorNombre(nombre,listaUsuarios);
+        //cout << usuarioEncontrado;
+        cout << "La lista esta conformada por ; " << usuarioEncontrado.getNombre();
+
+        bandera = false;
+    }
+    return 0;
+}
+
+>>>>>>> 8bc55eb (Añadiendo JAVA)
 
 
 
