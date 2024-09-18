@@ -7,3 +7,4 @@ cmake-build-debug/
 build
 .idea/
 cmake-build-release/
+out

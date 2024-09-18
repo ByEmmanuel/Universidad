@@ -36,7 +36,7 @@ inline int reservar(){
         listaUsuarios.push_front(*usuario);
 
 
-        Usuarios usuarioEncontrado =  dao->buscarUsuarioPorNombre(nombre,listaUsuarios);
+        Usuarios usuarioEncontrado =  RegistroDao::buscarUsuarioPorNombre(nombre,listaUsuarios);
         //cout << usuarioEncontrado;
         cout << "La lista esta conformada por ; " << usuarioEncontrado.getNombre();
 

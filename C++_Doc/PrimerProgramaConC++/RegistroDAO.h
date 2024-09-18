@@ -10,7 +10,7 @@
 #include "Usuarios.h"
 
 using namespace std;
-Usuarios* usuario = new Usuarios;
+inline Usuarios* usuario = new Usuarios;
 
 //Linea generada por IA que no se que hace, segun es para el operador ' == '
 bool operator==(const string& lhs, const pmr::string& rhs);
