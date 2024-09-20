@@ -30,6 +30,7 @@ add_executable(ProblemasC__
         C++_Doc/PrimerProgramaConC++/RegistroHotel.cpp
         C++_Doc/PrimerProgramaConC++/Usuarios.h
         C++_Doc/1_Introduccion-C++/6_PalabrasReservadasC++.cpp
+        C++_Doc/PrimerProgramaConC++/RegistroDAO.h
 
 )
 
