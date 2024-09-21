@@ -6,8 +6,11 @@
 #include <string>
 #include <list>
 #include <array>
+<<<<<<< HEAD
 
 #include "CalcularTiempo.h"
+=======
+>>>>>>> 3b87006 (Añadiendo estructuras de control y Contador de tiempo JAVA)
 #include "Usuarios.h"
 #include "RegistroDAO.h"
 #include "Controladores.h"
@@ -22,7 +25,6 @@ RegistroDao* dao = new RegistroDao;
 <<<<<<< HEAD
 Controladores* controlador = new Controladores;
 =======
-
 
 
 inline int reservar(){
@@ -56,12 +58,12 @@ inline int reservar(){
 >>>>>>> 8bc55eb (Añadiendo JAVA)
 
 
-
 inline void sistema(){
 
     int banderaAuxiliar;
     while (bandera){
 
+<<<<<<< HEAD
 
         /*
          * reservar = Create
@@ -70,6 +72,9 @@ inline void sistema(){
          * modificar = Update
          */
         array<string, 5> tramite = {"Reservar", "Consultar una Reserva", "Cancelar Una Reserva", "Modificar Una Reserva", "Eliminar una reserva"};
+=======
+        array<string, 7> tramite = {"Reserva", "Alquilar", "Vender", "Comprar", "Cancelar una reserva", "Terminar de pagar una reserva"};
+>>>>>>> 3b87006 (Añadiendo estructuras de control y Contador de tiempo JAVA)
 
         cout << "Seleccione una opción (1-6):" << endl;
         for (int i = 0; i < tramite.size(); ++i) {
