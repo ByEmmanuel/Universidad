@@ -13,12 +13,19 @@ package ONE_Introduccion_A_Java;
 
 public class _1_PrimerTest {
     public static void main(String[] args) {
+
+        CalcularTiempo calcularTiempo = new CalcularTiempo();
+        calcularTiempo.init();
+
         System.out.println("Hello world!");
 
         System.out.println("Suma " + suma(2, 6));
         System.out.println("Resta " + resta(2, 6));
         System.out.println("Multiplicación " + multiplicacion(2, 6));
         System.out.println("División " + division(6, 2));
+
+        calcularTiempo.end();
+        calcularTiempo.retornarTiempo();
         
     }
 

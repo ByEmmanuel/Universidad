@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <list>
+#include <array>
 #include "Usuarios.h"
 #include "RegistroDAO.h"
 
@@ -14,7 +15,6 @@ int opcion;
 pmr::list<Usuarios> listaUsuarios;
 //Usuarios* usuario = new Usuarios;
 RegistroDao* dao = new RegistroDao;
-
 
 
 inline int reservar(){
@@ -47,11 +47,10 @@ inline int reservar(){
 
 
 
-
 inline void sistema(){
     while (bandera){
 
-        array<string, 6> tramite = {"Reserva", "Alquilar", "Vender", "Comprar", "Cancelar una reserva", "Terminar de pagar una reserva"};
+        array<string, 7> tramite = {"Reserva", "Alquilar", "Vender", "Comprar", "Cancelar una reserva", "Terminar de pagar una reserva"};
 
         cout << "Seleccione una opción (1-6):" << endl;
         for (int i = 0; i < tramite.size(); ++i) {

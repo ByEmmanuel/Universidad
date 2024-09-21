@@ -7,13 +7,16 @@
 #include <set>
 #include <string>
 
-
-
+using namespace std;
 
 class Usuarios {
 
-    std::string nombre;
+int id_usuario;
+    string nombre;
     int edad;
+    string habitacion;
+    string llave_acceso;
+    long numero_de_tarjeta;
 
 
 public:
