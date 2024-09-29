@@ -4,8 +4,11 @@
 *
 *   Autor @ByEmmanuelYT
 *   Fecha 28/09/24
+<<<<<<< HEAD
 *   Complejidad del algoritmo (Segun yo O(N) o O(log n))
 *   Complejidad del algoritmo segun chatGPT O(1)
+=======
+>>>>>>> 6b37e4e (Añadiendo algoritmo De Lunh y Calculadores de tiempo (Solo Afecta a local))
 * */
 
 package Algoritmos;
@@ -21,6 +24,10 @@ public class _1_ValidacionDeTarjetas {
     static Scanner teclado = new Scanner(System.in);
     private static int desglozeArray;
     private static ArrayList<Integer> mainArray = new ArrayList<>();
+<<<<<<< HEAD
+=======
+    private static ArrayList<Integer> subArray = new ArrayList<>();
+>>>>>>> 6b37e4e (Añadiendo algoritmo De Lunh y Calculadores de tiempo (Solo Afecta a local))
     static int sumaDeDigitos = 0;
 
     public static void main(String[] args) {
@@ -28,12 +35,18 @@ public class _1_ValidacionDeTarjetas {
         System.out.println("Ingrese Numero De Tarjeta ( 16 Digitos )");
 
         //Desactivado para fines de testeo
+<<<<<<< HEAD
         Long numeroDeTarjeta = Long.valueOf(teclado.nextLong());
         //long numeroDeTarjeta = 4208319964063131L;
+=======
+        //Long numeroDeTarjeta = Long.valueOf(teclado.nextLong());
+        long numeroDeTarjeta = 401085137324153L;
+>>>>>>> 6b37e4e (Añadiendo algoritmo De Lunh y Calculadores de tiempo (Solo Afecta a local))
 
         String numeroDeTarjetaString = Long.toString(numeroDeTarjeta);
 
         tiempo.init();
+<<<<<<< HEAD
         /*if (numeroDeTarjetaString.contains("\\")) {
             numeroDeTarjetaString = numeroDeTarjetaString.replace(" ", "");
             System.out.println(numeroDeTarjetaString);
@@ -54,22 +67,44 @@ public class _1_ValidacionDeTarjetas {
         *  El " - '0' " Se utiliza para convertir los caracteres de ascii a enteros
         *   y se añaden los elementos ya desglozados a un array como 16 subarrays
         * */
+=======
+
+        if (numeroDeTarjetaString.matches("^\\d{16}$")){
+            System.out.println("La tarjeta es valida");
+            System.out.println(numeroDeTarjetaString.length() + "\nLa longitud del primer Numero es : " + numeroDeTarjetaString.length());
+        }else{
+            System.out.println("La tarjeta es invalida");
+        }
+
+        //Funcion para desglozar mi Long (Numero de tarjeta)
+>>>>>>> 6b37e4e (Añadiendo algoritmo De Lunh y Calculadores de tiempo (Solo Afecta a local))
 
         for (int i = 0; i < numeroDeTarjetaString.length(); i++) {
             desglozeArray = numeroDeTarjetaString.charAt(i) - '0';
 
+<<<<<<< HEAD
             //System.out.println("Numero la tarjeta " + desglozeArray);
+=======
+            System.out.println("Numero la tarjeta " + desglozeArray);
+>>>>>>> 6b37e4e (Añadiendo algoritmo De Lunh y Calculadores de tiempo (Solo Afecta a local))
             System.out.println("Numero la tarjeta " + numeroDeTarjetaString.charAt(i));
 
             //Aqui hace 16 sub arrays y los inserta en el array principal
             mainArray.add(desglozeArray);
+<<<<<<< HEAD
 
             //System.out.println("Esto deberia ser 16 : " + mainArray.size());
+=======
+            subArray.add(desglozeArray);
+
+            System.out.println("Esto deberia ser 16 : " + mainArray.size());
+>>>>>>> 6b37e4e (Añadiendo algoritmo De Lunh y Calculadores de tiempo (Solo Afecta a local))
         }
 
         MultiplicarDigitos();
         sumarElementos();
 
+<<<<<<< HEAD
         //Metodo utilizado solo para testeo
         //leerMainArray();
 
@@ -84,6 +119,15 @@ public class _1_ValidacionDeTarjetas {
     * si el numero es de 2 digitos se suman
     * */
     private static void MultiplicarDigitos() {
+=======
+        //Funcion para Multiplicar Los digitos (array[i] + 1 (Osea cada 2 digitos))
+
+        tiempo.end();
+        tiempo.retornarTiempo();
+    }
+
+    private static ArrayList<Integer> MultiplicarDigitos() {
+>>>>>>> 6b37e4e (Añadiendo algoritmo De Lunh y Calculadores de tiempo (Solo Afecta a local))
 
         for (int i = 0; i < mainArray.size(); i+=2) {
 
@@ -115,11 +159,17 @@ public class _1_ValidacionDeTarjetas {
             //System.out.println("Segundo digito es : " + array.get(i));
         }
 
+<<<<<<< HEAD
     }
 
     /*
     * Esta funcion se utiliza para sumar los elementos de todos los subarrays
     * */
+=======
+        return new ArrayList<>();
+    }
+
+>>>>>>> 6b37e4e (Añadiendo algoritmo De Lunh y Calculadores de tiempo (Solo Afecta a local))
     private static void sumarElementos(){
         int suma = 0;
         /*for (Integer integer : mainArray) {
@@ -137,6 +187,7 @@ public class _1_ValidacionDeTarjetas {
             System.out.println("El mainArray Es : " + mainArray.get(j));
         }
     }
+<<<<<<< HEAD
     /* segundo array 3312672360047267L
     *  3312 6723 6004 7267
     *  salida esperada
@@ -164,6 +215,11 @@ public class _1_ValidacionDeTarjetas {
     *  6 * 3 = 3        6 * 2 = 3
     *  7 * 1 = 7        7 * 1 = 7
     *                   suma segunda leida 6+3+2+2+3+7+4+3+3+0+0+4+5+2+3+7 =
+=======
+    /* segundo array
+    *  salida esperada
+    *
+>>>>>>> 6b37e4e (Añadiendo algoritmo De Lunh y Calculadores de tiempo (Solo Afecta a local))
     * */
 
 

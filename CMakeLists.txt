@@ -34,9 +34,15 @@ add_executable(ProblemasC__
         C++_Doc/PrimerProgramaConC++/Controladores.h
         C++_Doc/CalcularTiempo.h
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         #C++_Doc/1_Introduccion-C++/1_PrimerTest.cpp
 >>>>>>> 00b8e58 (Reemplazando Archivos corruptos)
+=======
+        #C++_Doc/1_Introduccion-C++/1_PrimerTest.cpp
+=======
+>>>>>>> 0485a80 (Añadiendo algoritmo De Lunh y Calculadores de tiempo (Solo Afecta a local))
+>>>>>>> 6b37e4e (Añadiendo algoritmo De Lunh y Calculadores de tiempo (Solo Afecta a local))
         #Archivo para calcular el tiempo de ejecucion de un programa
         #C++_Doc/CalcularTiempoTest.cpp
 
