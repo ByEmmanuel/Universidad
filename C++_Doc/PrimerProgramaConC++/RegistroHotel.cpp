@@ -5,8 +5,11 @@
 #include <string>
 #include <list>
 #include <array>
+
+#include "CalcularTiempo.h"
 #include "Usuarios.h"
 #include "RegistroDAO.h"
+#include "Controladores.h"
 
 using namespace std;
 
@@ -15,42 +18,23 @@ int opcion;
 pmr::list<Usuarios> listaUsuarios;
 //Usuarios* usuario = new Usuarios;
 RegistroDao* dao = new RegistroDao;
-
-
-inline int reservar(){
-    cout << "Pulse 1 para cerrar la app, \nPulse 2 para continuar" << endl;
-    cin >> opcion;
-    cout << "opcion escogida : " << opcion << endl;
-
-    if (opcion == 1){
-        bandera = false;
-    }else if (opcion == 2){
-
-        cout << "Ingrese Nombre" << endl;
-        string nombre ;
-        cin >> nombre;;
-
-        usuario->setNombre(nombre);
-        usuario->setEdad(30);
-
-        listaUsuarios.push_front(*usuario);
-
-
-        Usuarios usuarioEncontrado =  RegistroDao::buscarUsuarioPorNombre(nombre,listaUsuarios);
-        //cout << usuarioEncontrado;
-        cout << "La lista esta conformada por ; " << usuarioEncontrado.getNombre();
-
-        bandera = false;
-    }
-    return 0;
-}
+Controladores* controlador = new Controladores;
 
 
 
 inline void sistema(){
+
+    int banderaAuxiliar;
     while (bandera){
 
-        array<string, 7> tramite = {"Reserva", "Alquilar", "Vender", "Comprar", "Cancelar una reserva", "Terminar de pagar una reserva"};
+
+        /*
+         * reservar = Create
+         * consultar = Read
+         * cancelar = Delete
+         * modificar = Update
+         */
+        array<string, 5> tramite = {"Reservar", "Consultar una Reserva", "Cancelar Una Reserva", "Modificar Una Reserva", "Eliminar una reserva"};
 
         cout << "Seleccione una opción (1-6):" << endl;
         for (int i = 0; i < tramite.size(); ++i) {
@@ -63,24 +47,25 @@ inline void sistema(){
         {
         case 1:
             cout << "Eligió Reserva" << std::endl;
-            reservar();
+            banderaAuxiliar = Controladores::reservar(opcion, listaUsuarios);
+            if (banderaAuxiliar == 0){
+                bandera = false;
+            }
             break;
         case 2:
-            cout << "Eligió Alquilar" << endl;
+            cout << "Eligio Consultar una Reserva" << endl;
             break;
         case 3:
-            cout << "Eligió Vender" << endl;
+            cout << "Eligio Cancelar Una Reserva" << endl;
             break;
         case 4:
-            cout << "Eligió Comprar" << endl;
+            cout << "Eligio Modificar Una Reserva" << endl;
             break;
         case 5:
-            cout << "Eligió Cancelar una reserva" << endl;
+            cout << "Eligio Eliminar una reserva" << endl;
             break;
-        case 6:
-            cout << "Eligió Terminar de pagar una reserva" << endl;
         default:
-            break;
+
             cout << "Opción no válida" << endl;
             bandera = false;
             break;
@@ -90,8 +75,12 @@ inline void sistema(){
 
 
 int main() {
+    tiempo->init();
 
     sistema();
+
+    tiempo->end();
+    tiempo->retornarTiempo("Tiempo en clase principal");
 
     return 0;
 }

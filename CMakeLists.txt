@@ -31,6 +31,10 @@ add_executable(ProblemasC__
         C++_Doc/PrimerProgramaConC++/Usuarios.h
         C++_Doc/1_Introduccion-C++/6_PalabrasReservadasC++.cpp
         C++_Doc/PrimerProgramaConC++/RegistroDAO.h
+        C++_Doc/PrimerProgramaConC++/Controladores.h
+        C++_Doc/CalcularTiempo.h
+        #Archivo para calcular el tiempo de ejecucion de un programa
+        #C++_Doc/CalcularTiempoTest.cpp
 
 )
 

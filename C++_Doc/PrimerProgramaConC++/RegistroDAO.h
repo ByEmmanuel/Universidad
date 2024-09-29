@@ -46,6 +46,7 @@ public:
          catch (const runtime_error& e) {
              cerr << "Usuario NO Encontrado: " << e.what() << endl;
          }
+         return {};  // Retornamos un objeto vacío si no se encuentra el usuario
     }
 };
 

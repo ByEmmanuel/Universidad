@@ -10,7 +10,9 @@ public class CalcularTiempo {
         long tiempoTranscurrido = tiempoFin - tiempoInicio;
         // Convertir el tiempo transcurrido a milisegundos
         double tiempoMilisegundos = tiempoTranscurrido / 1_000_000.0;
+        double tiempoSegundos = (double) tiempoTranscurrido / 1_000_000_000;
         System.out.println("Tiempo transcurrido: " + tiempoMilisegundos + " ms");
+        System.out.println("Tiempo transcurrido: " + tiempoSegundos + " s");
 
     }
 
