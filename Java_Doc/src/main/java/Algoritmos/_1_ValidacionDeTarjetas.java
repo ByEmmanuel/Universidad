@@ -28,7 +28,7 @@ public class _1_ValidacionDeTarjetas {
 
         //Desactivado para fines de testeo
         //Long numeroDeTarjeta = Long.valueOf(teclado.nextLong());
-        long numeroDeTarjeta = 401085137324153L;
+        long numeroDeTarjeta = 3312672360047267L;
 
         String numeroDeTarjetaString = Long.toString(numeroDeTarjeta);
 
@@ -37,7 +37,7 @@ public class _1_ValidacionDeTarjetas {
         if (numeroDeTarjetaString.matches("^\\d{16}$")){
             System.out.println("La tarjeta es valida");
             System.out.println(numeroDeTarjetaString.length() + "\nLa longitud del primer Numero es : " + numeroDeTarjetaString.length());
-        }else{
+        }else {
             System.out.println("La tarjeta es invalida");
         }
 
@@ -58,6 +58,9 @@ public class _1_ValidacionDeTarjetas {
 
         MultiplicarDigitos();
         sumarElementos();
+
+        //Metodo utilizado solo para testeo
+        //leerMainArray();
 
         //Funcion para Multiplicar Los digitos (array[i] + 1 (Osea cada 2 digitos))
 
@@ -117,9 +120,33 @@ public class _1_ValidacionDeTarjetas {
             System.out.println("El mainArray Es : " + mainArray.get(j));
         }
     }
-    /* segundo array
+    /* segundo array 3312672360047267L
+    *  3312 6723 6004 7267
     *  salida esperada
+    *  array modificado
+    *  3 1 6 2 6 0 7 6
+    *  primera leida        Segunda Salida
     *
+    *  3 * 2 = 6        3 * 2 = 6
+    *  3 * 1 = 3        3 * 1 = 3
+    *  1 * 2 = 2        1 * 2 = 2
+    *  2 * 1 = 2        2 * 1 = 2
+    *
+    *  6 * 2 = 12       6 * 2 = 3
+    *  7 * 1 = 7        7 * 1 = 7
+    *  2 * 2 = 4        2 * 2 = 4
+    *  3 * 1 = 3        3 * 1 = 3
+    *
+    *  6 * 2 = 12       6 * 2 = 3
+    *  0 * 1 = 0        0 * 1 = 0
+    *  0 * 2 = 0        0 * 2 = 0
+    *  4 * 1 = 4        4 * 1 = 4
+    *
+    *  7 * 2 = 14       7 * 2 = 5
+    *  2 * 1 = 2        2 * 1 = 2
+    *  6 * 3 = 3        6 * 2 = 3
+    *  7 * 1 = 7        7 * 1 = 7
+    *                   suma segunda leida 6+3+2+2+3+7+4+3+3+0+0+4+5+2+3+7 =
     * */
 
 
