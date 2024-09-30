@@ -3,18 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
+    <parent>
         <groupId>Introduccion_A_JAVA</groupId>
         <artifactId>ONE_Introduccion_A_Java</artifactId>
         <version>1.0-SNAPSHOT</version>
-<<<<<<< HEAD
-=======
-    <packaging>pom</packaging>
-    <modules>
-        <module>ONE_Introduccion_A_Java</module>
-    </modules>
->>>>>>> 00b8e58 (Reemplazando Archivos corruptos)
+    </parent>
 
+    <groupId>org.example</groupId>
+    <artifactId>ONE_</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

@@ -33,6 +33,10 @@ add_executable(ProblemasC__
         C++_Doc/PrimerProgramaConC++/RegistroDAO.h
         C++_Doc/PrimerProgramaConC++/Controladores.h
         C++_Doc/CalcularTiempo.h
+<<<<<<< HEAD
+=======
+        #C++_Doc/1_Introduccion-C++/1_PrimerTest.cpp
+>>>>>>> 00b8e58 (Reemplazando Archivos corruptos)
         #Archivo para calcular el tiempo de ejecucion de un programa
         #C++_Doc/CalcularTiempoTest.cpp
 
