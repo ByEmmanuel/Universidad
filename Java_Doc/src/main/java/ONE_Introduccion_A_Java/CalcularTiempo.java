@@ -24,6 +24,6 @@ public class CalcularTiempo {
     public void end(){
         // Tiempo de finalización en nanosegundos
         this.tiempoFin = System.nanoTime();
-
+        retornarTiempo();
     }
 }

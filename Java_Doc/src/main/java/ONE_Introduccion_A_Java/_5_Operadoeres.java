@@ -104,7 +104,6 @@ public class _5_Operadoeres {
         System.out.println("~a = " + c );
 
         tiempo.end();
-        tiempo.retornarTiempo();
 
     }
     

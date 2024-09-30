@@ -4,6 +4,8 @@
 *
 *   Autor @ByEmmanuelYT
 *   Fecha 28/09/24
+*   Complejidad del algoritmo (Segun yo O(N) o O(log n))
+*   Complejidad del algoritmo segun chatGPT O(1)
 * */
 
 package Algoritmos;
@@ -19,7 +21,6 @@ public class _1_ValidacionDeTarjetas {
     static Scanner teclado = new Scanner(System.in);
     private static int desglozeArray;
     private static ArrayList<Integer> mainArray = new ArrayList<>();
-    private static ArrayList<Integer> subArray = new ArrayList<>();
     static int sumaDeDigitos = 0;
 
     public static void main(String[] args) {
@@ -27,13 +28,20 @@ public class _1_ValidacionDeTarjetas {
         System.out.println("Ingrese Numero De Tarjeta ( 16 Digitos )");
 
         //Desactivado para fines de testeo
-        //Long numeroDeTarjeta = Long.valueOf(teclado.nextLong());
-        long numeroDeTarjeta = 3312672360047267L;
+        Long numeroDeTarjeta = Long.valueOf(teclado.nextLong());
+        //long numeroDeTarjeta = 4208319964063131L;
 
         String numeroDeTarjetaString = Long.toString(numeroDeTarjeta);
 
         tiempo.init();
-
+        /*if (numeroDeTarjetaString.contains("\\")) {
+            numeroDeTarjetaString = numeroDeTarjetaString.replace(" ", "");
+            System.out.println(numeroDeTarjetaString);
+        }*/
+        /*
+        *  Valida Si La Tarjeta es de 16 digitos
+        *  en un principio si la tarjeta no es de 16 digitos esto deberia cerrarse o no continuar
+        * */
         if (numeroDeTarjetaString.matches("^\\d{16}$")){
             System.out.println("La tarjeta es valida");
             System.out.println(numeroDeTarjetaString.length() + "\nLa longitud del primer Numero es : " + numeroDeTarjetaString.length());
@@ -41,19 +49,22 @@ public class _1_ValidacionDeTarjetas {
             System.out.println("La tarjeta es invalida");
         }
 
-        //Funcion para desglozar mi Long (Numero de tarjeta)
+        /* Funcion para desglozar mi Long (Numero de tarjeta)
+        *  al buscar un caracter en x posicion, devuelve un caracter ascii
+        *  El " - '0' " Se utiliza para convertir los caracteres de ascii a enteros
+        *   y se añaden los elementos ya desglozados a un array como 16 subarrays
+        * */
 
         for (int i = 0; i < numeroDeTarjetaString.length(); i++) {
             desglozeArray = numeroDeTarjetaString.charAt(i) - '0';
 
-            System.out.println("Numero la tarjeta " + desglozeArray);
+            //System.out.println("Numero la tarjeta " + desglozeArray);
             System.out.println("Numero la tarjeta " + numeroDeTarjetaString.charAt(i));
 
             //Aqui hace 16 sub arrays y los inserta en el array principal
             mainArray.add(desglozeArray);
-            subArray.add(desglozeArray);
 
-            System.out.println("Esto deberia ser 16 : " + mainArray.size());
+            //System.out.println("Esto deberia ser 16 : " + mainArray.size());
         }
 
         MultiplicarDigitos();
@@ -65,10 +76,14 @@ public class _1_ValidacionDeTarjetas {
         //Funcion para Multiplicar Los digitos (array[i] + 1 (Osea cada 2 digitos))
 
         tiempo.end();
-        tiempo.retornarTiempo();
     }
 
-    private static ArrayList<Integer> MultiplicarDigitos() {
+
+    /*
+    * Esta funcion se utiliza para multiplicar los digitos x 2 cada 2 elementos
+    * si el numero es de 2 digitos se suman
+    * */
+    private static void MultiplicarDigitos() {
 
         for (int i = 0; i < mainArray.size(); i+=2) {
 
@@ -100,9 +115,11 @@ public class _1_ValidacionDeTarjetas {
             //System.out.println("Segundo digito es : " + array.get(i));
         }
 
-        return new ArrayList<>();
     }
 
+    /*
+    * Esta funcion se utiliza para sumar los elementos de todos los subarrays
+    * */
     private static void sumarElementos(){
         int suma = 0;
         /*for (Integer integer : mainArray) {

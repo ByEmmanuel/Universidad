@@ -67,7 +67,6 @@ public class _3_Arrays {
 
 
         calcularTiempo.end();
-        calcularTiempo.retornarTiempo();
     }
 
 

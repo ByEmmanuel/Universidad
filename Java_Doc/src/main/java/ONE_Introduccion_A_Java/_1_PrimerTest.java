@@ -25,7 +25,6 @@ public class _1_PrimerTest {
         System.out.println("División " + division(6, 2));
 
         calcularTiempo.end();
-        calcularTiempo.retornarTiempo();
         
     }
 
