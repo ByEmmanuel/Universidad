@@ -1,4 +1,4 @@
-package src.main.java.ONE_Introduccion_A_Java;
+package ONE_Introduccion_A_Java;
 
 public class CalcularTiempo {
 

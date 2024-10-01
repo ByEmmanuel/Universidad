@@ -1,4 +1,4 @@
-package src.main.java.Algoritmos;
+package Algoritmos;
 
 public class _2_NUEVOALGORITMO {
     public static void main(String[] args) {

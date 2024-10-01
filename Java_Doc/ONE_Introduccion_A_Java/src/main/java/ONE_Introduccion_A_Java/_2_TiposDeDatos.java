@@ -5,7 +5,7 @@
  * Descripcion: Tipos de datos en Java
  */
 
-package src.main.java.ONE_Introduccion_A_Java;
+package ONE_Introduccion_A_Java;
 
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
