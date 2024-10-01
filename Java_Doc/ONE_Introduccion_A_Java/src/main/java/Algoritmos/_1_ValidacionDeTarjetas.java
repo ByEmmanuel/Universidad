@@ -8,9 +8,9 @@
  *   Complejidad del algoritmo segun chatGPT O(1)
  * */
 
-package Algoritmos;
+package src.main.java.Algoritmos;
 
-import ONE_Introduccion_A_Java.CalcularTiempo;
+import src.main.java.ONE_Introduccion_A_Java.CalcularTiempo;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -19,7 +19,6 @@ public class _1_ValidacionDeTarjetas {
 
     private static final CalcularTiempo tiempo = new CalcularTiempo();
     static Scanner teclado = new Scanner(System.in);
-    private static int desglozeArray;
     private static ArrayList<Integer> mainArray = new ArrayList<>();
     static int sumaDeDigitos = 0;
 
@@ -56,7 +55,7 @@ public class _1_ValidacionDeTarjetas {
          * */
 
         for (int i = 0; i < numeroDeTarjetaString.length(); i++) {
-            desglozeArray = numeroDeTarjetaString.charAt(i) - '0';
+            int desglozeArray = numeroDeTarjetaString.charAt(i) - '0';
 
             //System.out.println("Numero la tarjeta " + desglozeArray);
             System.out.println("Numero la tarjeta " + numeroDeTarjetaString.charAt(i));
