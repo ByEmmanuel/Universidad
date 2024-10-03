@@ -8,3 +8,8 @@ build
 .idea/
 cmake-build-release/
 out
+bin
+lib
+include
+pyvenv.cfg
+requirements.txt
