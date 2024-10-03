@@ -1,9 +1,14 @@
+   Mi Proyecto
 <p align="center">
-  <img src=https://user-images.githubusercontent.com/40824677/149224059-8a1fc9f2-31bc-4335-93b3-6017bf794668.png />
-</p>
+    <img src="https://user-images.githubusercontent.com/40824677/149224059-8a1fc9f2-31bc-4335-93b3-6017bf794668.png" alt="Imagen 1" width="100" height="100">
+    <img src="https://cdn-icons-png.flaticon.com/512/226/226777.png" alt="Imagen 2" width="100" height="100">
+    <img src="https://images.vexels.com/media/users/3/166477/isolated/preview/9bb722f0e85ddbc1ce0f064534fd2311-python-programming-language-icon.png?width=380" alt="Imagen 3" width="100" height="100">
+  
+  
+  </p>
 
 <h1 align="center">
-	Jesus Emmanuel Garcia, Introduccion a C++ 
+	Jesus Emmanuel Garcia, Introduccion a C++
 </h1>
 
 <p align="center">
@@ -11,22 +16,22 @@
     <br>
 	<b>Este es un Repositorio Hecho por mi y mi experiencia con el desarrollo de este lenguaje</b><br><br>
     <b>Los modulos y links se iran actualizando con el paso del tiempo</b><br><br>
-    <b> </b>
+    <b> La finalidad de este repositorio es poder diferenciar y no confundir conceptos entre Java, C++ y Python</b>
     
 </p>
 
 |  Nº | Proyecto                         | Descripcion                                       | Topicos                                                                     | Estado                                                                                                          |
 |-----|----------------------------------|---------------------------------------------------|-----------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
-|  1  | [Modulo_1](https://github.com/)  | Familiarizandome a grandes razgos con C++         | Classes, member fucntions, and some basic stuff..                           | ![ael-khni's 42 CPP Module 00 Score](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2670510) |
-|  2  | [{$Nombre}](https://github.com/)          | BraiiiiiiinnnzzzZ                                 | New, pointers to members, references, switch statement	                     | ![ael-khni's 42 CPP Module 01 Score](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2674581) |
-|  3  | [{$Nombre}](https://github.com/)          | My First Orthodox Class                           | ad-hoc polymorphism, operator overloading and Orthodox Cononical class form | ![ael-khni's 42 CPP Module 02 Score](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2684257) |
-|  4  | [{$Nombre}](https://github.com/)          | Aaaaand... OPEN!                                  | Inheritance                                                                 | ![ael-khni's 42 CPP Module 03 Score](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2686408) |
-|  5  | [{$Nombre}](https://github.com/)          | I don't want to set the world on fire             | Subtype polymorphism, abstract classes, interfaces                          | ![ael-khni's 42 CPP Module 04 Score](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2687440) |
-|  6  | [{$Nombre}](https://github.com/)          | Mommy, when I grow up, I want to be a bureaucrat! | Repetition and Exceptions                                                   | ![ael-khni's 42 CPP Module 05 Score](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2689271) |
-|  7  | [{$Nombre}](https://github.com/)          | Scalar conversion                                 | C++ casts                                                                   | ![ael-khni's 42 CPP Module 06 Score](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2705729) |
-|  8  | [{$Nombre}](https://github.com/)          | A few functions and class template                | C++ templates                                                               | ![ael-khni's 42 CPP Module 07 Score](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2720446) |
-|  9  | [{$Nombre}](https://github.com/)          | Playing with templates and containers             | Templated containers, iterators, algorithms                                 | ![ael-khni's 42 CPP Module 08 Score](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2723075) |
-|  10  | [{$Nombre}](https://github.com/) | Playing with templates and containers  2          | Templated containers, iterators, algorithms                                 | ![ael-khni's 42 CPP Module 08 Score](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2723075) |
+|  1  | [Modulo_1](https://github.com/)  | Familiarizandome a grandes razgos con C++         | Classes, member fucntions, and some basic stuff..                           | ![Concluido](https://img.shields.io/badge/Estado-Finalizado-green) |
+|  2  | [Modulo_2](https://github.com/)          | Programacion Orientada A Objetos                                | New, punteros a miembros, referencias, diferentes statements	                     | ![inactivo](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2674581) |
+|  3  | [{$Nombre}](https://github.com/)          |Breve Descripcion      | ad-hoc polymorphism, operator overloading and Orthodox Cononical class form | ![inactivo](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2684257) |
+|  4  | [{$Nombre}](https://github.com/)          | Breve Descripcion     | Inheritance                                                                 | ![inactivo](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2686408) |
+|  5  | [{$Nombre}](https://github.com/)          |Breve Descripcion  | Subtype polymorphism, abstract classes, interfaces                          | ![inactivo](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2687440) |
+|  6  | [{$Nombre}](https://github.com/)          |Breve Descripcion | Repetition and Exceptions                                                   | ![inactivo](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2689271) |
+|  7  | [{$Nombre}](https://github.com/)          |Breve Descripcion       | C++ casts                                                                   | ![inactivo](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2705729) |
+|  8  | [{$Nombre}](https://github.com/)          |Breve Descripcion        | C++ templates                                                               | ![inactivo](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2720446) |
+|  9  | [{$Nombre}](https://github.com/)          |Breve Descripcion   | Templated containers, iterators, algorithms                                 | ![inactivo](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2723075) |
+|  10  | [{$Nombre}](https://github.com/) | Breve Descripcion  | Templated containers, iterators, algorithms                                 | ![inactivo](https://badge42.coday.fr/api/v2/cltllonqe049401p4tk49dbye/project/2723075) |
 
 ## Author
 

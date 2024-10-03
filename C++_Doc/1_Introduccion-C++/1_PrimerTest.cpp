@@ -72,3 +72,15 @@ int multiplicacion(int a, int b){
 int division(int a, int b){
     return a / b;
 }
+
+int modulo(int a, int b){
+    return a % b;
+}
+
+int potencia(int a, int b){
+    return a ^ b;
+}
+
+int raizCuadrada(int a){
+    return sqrt(a);
+}
