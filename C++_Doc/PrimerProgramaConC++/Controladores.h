@@ -24,13 +24,13 @@ static int reservar(int opcion, pmr::list<Usuarios> listaUsuarios){
     cout << "Pulse 1 para cerrar la app, \nPulse 2 para continuar" << endl;
     cin >> opcion;
     cout << "opcion escogida : " << opcion << endl;
-    string primerNombre, segundoNombre, primerApellido, segundoApellido;
+    string primerNombre, segundoNombre, primerApellido, segundoApellido, codigoALumno, correoAlumno;
 
     switch (opcion){
         case 1:
             return 0;
         case 2:
-        for (int i = 0; i <= 4; i++){
+        for (int i = 0; i <= 5; i++){
             switch (i){
                 case 0:
                     cout << "Ingrese Primer Nombre\n" << endl;
@@ -47,6 +47,14 @@ static int reservar(int opcion, pmr::list<Usuarios> listaUsuarios){
                 case 3:
                     cout << "Ingrese Segundo Apellido\n" << endl;
                     cin >> segundoApellido;
+                    break;
+                case 4:
+                    cout << "Ingrese Codigo Alumno\n" << endl;
+                    cin >> codigoALumno;
+                    break;
+                case 5:
+                    cout << "Ingrese Codigo Alumno\n" << endl;
+                    cin >> correoAlumno;
                     break;
                 default:
                     cout << "Error" << endl;
@@ -67,13 +75,14 @@ static int reservar(int opcion, pmr::list<Usuarios> listaUsuarios){
 
 
         string nombreCompletoUsuario = primerNombre + " " + segundoNombre + " " + primerApellido + " " +  segundoApellido + "\n";
+        //Validar si el nombre contiene numeros
         for (int i = 0; i < nombreCompletoUsuario.length(); i++){
             if (isdigit(nombreCompletoUsuario[i])){
                 cout << "Nombre no puede contener numeros" << endl;
             }
         }
         usuario->setNombre(nombreCompletoUsuario);
-        usuario->setEdad(30);
+        usuario->setEdad();
 
         listaUsuarios.push_front(*usuario);
 
