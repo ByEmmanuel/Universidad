@@ -30,23 +30,27 @@ inline void sistema() {
         switch (opcion) {
             case 1:
                 cout << "Eligió Crear Cita" << std::endl;
-                banderaAuxiliar = controlador->reservar(opcion);  // Usar instancia de controlador
+                banderaAuxiliar = controlador->reservar(opcion);  
                 if (!banderaAuxiliar) {
                     bandera = false;
                 }
                 break;
             case 2:
                 cout << "Eligió Consultar una Cita" << endl;
-                banderaAuxiliar = controlador->consultar();  // Llamada comentada
+                banderaAuxiliar = controlador->consultar();  
                 if (!banderaAuxiliar) {
                     bandera = false;
                 }
                 break;
             case 3:
                 cout << "Eligió Modificar Una Cita" << endl;
+                //Logica para modificar una cita
+                //Bandera auxiliar = controlador -> modificarCita();
                 break;
             case 4:
                 cout << "Eligió Eliminar Una Cita" << endl;
+                //Logica para Eliminar una cita
+                //Bandera auxiliar = controlador -> eliminarCita();
                 break;
             default:
                 cout << "Opción no válida" << endl;

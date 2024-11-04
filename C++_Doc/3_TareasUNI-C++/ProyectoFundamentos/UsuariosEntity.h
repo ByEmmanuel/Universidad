@@ -27,22 +27,22 @@ public:
                                      nombre(std::move(n)), codigo(e){
     }
 
-    // Getter para el atributo 'nombre'
+
     string getNombre() const {
         return nombre;
     }
 
-    // Setter para el atributo 'nombre'
+
     void setNombre(string& nuevoNombre) {
         this->nombre = nuevoNombre;
     }
 
-    // Getter para el atributo 'codigo'
+
     int getCodigo() const {
         return codigo;
     }
 
-    // Setter para el atributo 'codigo'
+
     void setCodigo(string& nuevoCodigo) {
         int codigoInt = stoi(nuevoCodigo);
         if (codigoInt > 0) {  // Validación simple
@@ -60,7 +60,7 @@ public:
 };
 
 struct metaDatosUsuarios{
-    std::string nombre;
+    string nombre;
     int edad;
 };
 
