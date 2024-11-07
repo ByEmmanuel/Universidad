@@ -16,6 +16,7 @@ int id_usuario;
     int codigo;
     string correo;
     string llave_acceso;
+    //Retornar un mini calendario en terminal para que el usuario registre su cita
     //long numero_de_tarjeta;
 
 
