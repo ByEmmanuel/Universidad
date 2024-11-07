@@ -1,13 +1,16 @@
 #include <iostream>
 #include <vector>
 #include <iomanip> // para std::setw
+#include <set>
+#include <algorithm>
+
 
 using namespace std;
 
 class CalendarioTerminal {
 private:
     vector<int> calendarioActual;
-    vector<int> diaOcupado;
+    set<int> diaOcupado;
 
     // Función que determina si un año es bisiesto
     static bool esBisiesto(int year) {
@@ -34,8 +37,8 @@ private:
 
 public:
     // Función para generar el calendario y marcar el día seleccionado
-    vector<int> mostrarCalendario(int seleccionDia, int mes, int year) {
-        calendarioActual.clear();
+    vector<int> generarCalendario(int seleccionDia, int mes, int year) {
+        calendarioActual.clear();  // Limpia el calendario antes de generarlo
         vector<std::string> diasSemana = {"Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"};
         int primerDia = obtenerPrimerDiaDelMes(mes, year);
         int diasEnMes = obtenerDiasEnMes(mes, year);
@@ -48,32 +51,34 @@ public:
 
         // Espacios iniciales antes del primer día del mes
         for (int i = 0; i < primerDia; ++i) {
-            calendarioActual.push_back(0);  // Usa 0 como marcador de espacio vacío
-            cout << setw(4) << " ";
+            calendarioActual.push_back(0); // 0 indica espacio en blanco
         }
 
         for (int dia = 1; dia <= diasEnMes; ++dia) {
-            calendarioActual.push_back(dia);
+            calendarioActual.push_back(dia); // Agrega el día al vector
             if (seleccionDia == dia) {
-                diaOcupado.push_back(dia);
-            }
-            cout << setw(4) << dia;
-            if ((primerDia + dia) % 7 == 0) {
-                cout << "\n";
+                if (diaOcupado.count(dia)) {  // Día ya ocupado
+                    cout << "El día " << dia << " ya está ocupado. Por favor, elija otro día." << endl;
+                    return {};  // Retorna vacío si el día está ocupado
+                }
+                diaOcupado.insert(dia);  // Marca el día como ocupado si está disponible
             }
         }
-        cout << "\n";
         return calendarioActual;
     }
 
-    // Función estática para mostrar el calendario guardado
-    static void mostrarCalendario(const vector<int>& calendarioGuardado, int seleccionDia) {
+    // Función para mostrar el calendario guardado con días ocupados marcados
+    static void mostrarCalendario(const vector<int>& calendarioGuardado, const set<int>& diasOcupados) {
         int diaSemana = 0;
         for (int dia : calendarioGuardado) {
             if (dia == 0) {
                 cout << setw(4) << " ";
-            } else if (dia == seleccionDia) {
-                cout << setw(3) << dia << "x";
+            } else if (diasOcupados.count(dia)) {
+                if (to_string(dia).compare("^\\d{2}$")){
+                    cout << setw(5) << dia << "\b\bx"; // Marca el día ocupado con "x"
+                }else{
+                    cout << setw(3) << dia << "\b x"; // Marca el día ocupado con "x"
+                }
             } else {
                 cout << setw(4) << dia;
             }
@@ -84,5 +89,10 @@ public:
             }
         }
         cout << "\n";
+    }
+
+    // Getter para obtener los días ocupados desde fuera de la clase
+    const set<int>& obtenerDiasOcupados() const {
+        return diaOcupado;
     }
 };

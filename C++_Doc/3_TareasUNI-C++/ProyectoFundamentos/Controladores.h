@@ -19,6 +19,7 @@ CalendarioTerminal* calendario = new CalendarioTerminal(); // Crear instancia de
 pmr::list<UsuariosEntity> listaUsuarios;  // Cambiado pmr::list a std::list
 //pmr::vector<int> arrayCalendario;
 inline vector<int> calendarioDB;
+inline int opcDia;
 
 class Controladores{
 private:
@@ -69,14 +70,14 @@ public:
                         break;
                     case 6:
                         cout << "Ingrese Fecha para Cita\n" << endl;
-                        int opcDia;
+
                         cin >> opcDia;
-                    calendarioDB = calendario->mostrarCalendario(opcDia, 11,2024);
-                    CalendarioTerminal::mostrarCalendario(calendarioDB, opcDia);
 
+                    calendarioDB = calendario->generarCalendario(opcDia, 11, 2024);
+                    if (!calendarioDB.empty()) {
+                        CalendarioTerminal::mostrarCalendario(calendarioDB, calendario->obtenerDiasOcupados());
+                    }
 
-                    //calendario->mostrarCalendario(opcDia, 11,2024);
-                    //calendario->mostrarCalendarioGuardado();
                         break;
                     default:
                         cout << "Error" << endl;
@@ -106,6 +107,7 @@ public:
             usuario->setNombre(nombreCompletoUsuario);
             usuario->setCodigo(codigoALumno);
             usuario->setCorreo(correoAlumno);
+            usuario->setDiaCita(opcDia);
 
 
             listaUsuarios.push_front(*usuario);
@@ -128,9 +130,12 @@ public:
                 string correo;
                 cin >> correo;
                 UsuariosEntity usuario = RegistroDao::buscarUsuarioPorCorreo(correo, listaUsuarios);
-                if (usuario.getNombre().empty()){
+                /*
+                 *Esta funcion apaga el programa si el objeto devuelto esta vacio
+                 *if (usuario.getNombre().empty()){
                     return 0;
                 }
+                */
                 return 1;
 
         }
