@@ -1,6 +1,7 @@
 //
 // Created by Jesus Emmanuel Garcia on 08/09/24.
 //
+//Parte del codigo absolutamente necesaria e importante :v
 #include <iostream>
 #include <string>
 #include <list>
@@ -71,6 +72,8 @@ inline void sistema(){
             break;
         }
     }
+
+
 }
 
 

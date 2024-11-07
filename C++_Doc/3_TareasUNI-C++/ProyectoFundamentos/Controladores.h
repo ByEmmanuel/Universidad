@@ -3,22 +3,31 @@
 #include <string>
 #include <list>
 #include <array>
+#include <vector>
 #include <utility>
+
+#include "Controladores.h"
 #include "Usuarios.h"
 #include "RegistroDAO.h"
-#include "Controladores.h"
+#include "CalendarioTerminal.cpp"
 
 
-
+class CalendarioTerminal;
 using namespace std;
 inline CalcularTiempo* tiempo = new CalcularTiempo;
+CalendarioTerminal* calendario = new CalendarioTerminal(); // Crear instancia de Calendario
 pmr::list<UsuariosEntity> listaUsuarios;  // Cambiado pmr::list a std::list
+//pmr::vector<int> arrayCalendario;
+inline vector<int> calendarioDB;
 
 class Controladores{
 private:
-    /* data */
-    public:
-        Controladores(/* args */);
+
+public:
+        /*Controladores(CalendarioTerminal* calendario): calendario(calendario) {
+
+        };*/
+    Controladores();
 
 
 
@@ -32,7 +41,7 @@ private:
             case 1:
                 return 0;
             case 2:
-            for (int i = 0; i <= 5; i++){
+            for (int i = 0; i <= 6; i++){
                 switch (i){
                     case 0:
                         cout << "Ingrese Primer Nombre\n" << endl;
@@ -57,6 +66,17 @@ private:
                     case 5:
                         cout << "Ingrese Correo Alumno\n" << endl;
                         cin >> correoAlumno;
+                        break;
+                    case 6:
+                        cout << "Ingrese Fecha para Cita\n" << endl;
+                        int opcDia;
+                        cin >> opcDia;
+                    calendarioDB = calendario->mostrarCalendario(opcDia, 11,2024);
+                    CalendarioTerminal::mostrarCalendario(calendarioDB, opcDia);
+
+
+                    //calendario->mostrarCalendario(opcDia, 11,2024);
+                    //calendario->mostrarCalendarioGuardado();
                         break;
                     default:
                         cout << "Error" << endl;
@@ -120,6 +140,7 @@ private:
 };
 
 Controladores::Controladores(/* args */){
+
 
 }
 

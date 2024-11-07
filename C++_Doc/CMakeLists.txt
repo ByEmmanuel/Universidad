@@ -26,7 +26,13 @@ add_executable(C___Doc
         3_TareasUNI-C++/ProyectoFund.cpp
         3_TareasUNI-C++/Usuarios.cpp
         ]]
+
+        #[[
+        ]]
         3_TareasUNI-C++/ProyectoFundamentos/ProyectoFund.cpp
         3_TareasUNI-C++/ProyectoFundamentos/UsuariosEntity.h
-        PrimerProgramaConC++/Controladores.h
+        3_TareasUNI-C++/ProyectoFundamentos/Controladores.h
+        3_TareasUNI-C++/ProyectoFundamentos/CalendarioTerminal.cpp
+
+
 )
