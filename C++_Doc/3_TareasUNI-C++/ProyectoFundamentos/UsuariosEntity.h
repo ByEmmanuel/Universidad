@@ -16,6 +16,7 @@ int id_usuario;
     int codigo;
     string correo;
     string llave_acceso;
+    int diaCita;
     //Retornar un mini calendario en terminal para que el usuario registre su cita
     //long numero_de_tarjeta;
 
@@ -57,6 +58,14 @@ public:
 
     void setCorreo(const string& correo){
         this->correo = correo;
+    }
+
+    int getCita() const{
+        return diaCita;
+    }
+
+    void setDiaCita(int dia_cita){
+        this->diaCita = dia_cita;
     }
 };
 

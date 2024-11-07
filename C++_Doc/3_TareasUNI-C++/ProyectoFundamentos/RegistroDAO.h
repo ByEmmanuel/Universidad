@@ -60,12 +60,15 @@ public:
                 if (usuario.getCorreo() == correo) {
                     //cout << "El ususario buscado desde DAO es " << &usuario;
                     cout << "El ususario buscado desde DAO es " << usuario.getNombre()
-                           << "\n Codigo: " << usuario.getCodigo() << "\n Correo: " << usuario.getCorreo() << "\n";
+                           << "\n Codigo: " << usuario.getCodigo() << "\n Correo: " << usuario.getCorreo() << "\n "
+                            << "Y tu cita es el dia: " << usuario.getCita() << "\n\n";
                     return usuario;  // Retornamos la dirección del objeto encontrado
-                }else{
-                    cout << "Usuario no encontrado " << endl;
                 }
+                //esto hace que por cada usuario en la lista que no coincida imprima esto
+                // pero como en la lista el metodo inserta en modo pushFront
+                // cada que se agrega un usuario la funcion seria: [i + 1] donde i es el elemeneto recien agregado
             }
+            cout << "\n     Usuario no encontrado\n\n";
         }
         catch (const runtime_error& e) {
             cerr << "Usuario NO Encontrado: " << e.what() << endl;
