@@ -2,20 +2,22 @@
 // Created by Jesus Emmanuel Garcia on 11/09/24.
 //
 
+#pragma once
 #ifndef REGISTRODAO_H
 #define REGISTRODAO_H
 #include <string>
 #include <list>
 
-#include "UsuariosEntity.h"
+#include "Controladores.h"
+
 
 using namespace std;
-inline UsuariosEntity* usuario = new UsuariosEntity;
+
 
 //Linea generada por IA que no se que hace, segun es para el operador ' == '
 bool operator==(const string& lhs, const pmr::string& rhs);
 
-class RegistroDao{
+class RegistroDAO{
 
     /*De la Creacion del proyecto, CRUD
      * CREATE
@@ -75,6 +77,21 @@ public:
         }
         return {};  // Retornamos un objeto vacío si no se encuentra el usuario
     }
+
+    static int buscarCitaYmodificar(const string& correo, pmr::list<UsuariosEntity> listaUsuarios, /*int& diaViejo,*/ int& diaNuevo, CalendarioTerminal& calendario){
+        for (UsuariosEntity usuario : listaUsuarios){
+            if(usuario.getCorreo() == correo){
+                cout << "\nTu cita es el dia: " << usuario.getCita() << "\n";
+                //Logica de nueva cita
+                int diaNuevaCita = calendario.setNuevaFechaCal( diaNuevo,usuario.getCita());
+                usuario.setDiaCita(diaNuevaCita);
+                return usuario.getCita();
+            }
+        }
+        cout << "Usuario no encontrado o no tiene cita\n";
+        return 0;
+    }
+
 };
 
 

@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <vector>
 #include <iomanip> // para std::setw
@@ -94,5 +95,22 @@ public:
     // Getter para obtener los días ocupados desde fuera de la clase
     const set<int>& obtenerDiasOcupados() const {
         return diaOcupado;
+    }
+
+    int setNuevaFechaCal(int& diaNuevo, int diaViejo) {
+        // Busca si el día viejo está en el set
+        auto it = diaOcupado.find(diaViejo);
+        if (it != diaOcupado.end()){
+            // Si el día viejo existe
+            diaOcupado.erase(it);       // Elimina el valor antiguo
+            diaOcupado.insert(diaNuevo); // Inserta el valor nuevo
+            cout << "Tu nuevo día de cita es el: " << diaNuevo << endl;
+            return diaNuevo;
+        }
+        cout << "El día " << diaViejo << " no se encontró en los días ocupados." << endl;
+    }
+
+    void setCalendarioCctual(const vector<int>& calendario_actual){
+        calendarioActual = calendario_actual;
     }
 };

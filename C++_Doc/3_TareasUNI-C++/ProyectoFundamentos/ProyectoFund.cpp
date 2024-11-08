@@ -4,14 +4,13 @@
 #include <array>
 #include "CalcularTiempo.h"
 #include "UsuariosEntity.h"
-#include "RegistroDAO.h"
+
 #include "Controladores.h"
 
 using namespace std;
 
 bool bandera = true;
 int opcion;
-RegistroDao* dao = new RegistroDao;
 Controladores* controlador = new Controladores;
 //CalcularTiempo* tiempo = new CalcularTiempo();  // Inicializado `tiempo`
 
@@ -30,14 +29,14 @@ inline void sistema() {
         switch (opcion) {
             case 1:
                 cout << "Eligió Crear Cita" << std::endl;
-                banderaAuxiliar = controlador->reservar(opcion);  
+                banderaAuxiliar = controlador->reservarCita(opcion);
                 if (!banderaAuxiliar) {
                     bandera = false;
                 }
                 break;
             case 2:
                 cout << "Eligió Consultar una Cita" << endl;
-                banderaAuxiliar = controlador->consultar();  
+                banderaAuxiliar = controlador->consultarCita();
                 if (!banderaAuxiliar) {
                     bandera = false;
                 }
@@ -45,7 +44,10 @@ inline void sistema() {
             case 3:
                 cout << "Eligió Modificar Una Cita" << endl;
                 //Logica para modificar una cita
-                //Bandera auxiliar = controlador -> modificarCita();
+                banderaAuxiliar = controlador -> modificarCita();
+                if (!banderaAuxiliar) {
+                    bandera = true;
+                }
                 break;
             case 4:
                 cout << "Eligió Eliminar Una Cita" << endl;
@@ -68,7 +70,7 @@ int main() {
     tiempo->end();
     tiempo->retornarTiempo("Tiempo en clase principal");
 
-    delete dao;          // Liberar memoria asignada
+    //delete dao;          // Liberar memoria asignada
     delete controlador;   // Liberar memoria asignada
     delete tiempo;        // Liberar memoria asignada
 

@@ -32,7 +32,8 @@ add_executable(C___Doc
         3_TareasUNI-C++/ProyectoFundamentos/ProyectoFund.cpp
         3_TareasUNI-C++/ProyectoFundamentos/UsuariosEntity.h
         3_TareasUNI-C++/ProyectoFundamentos/Controladores.h
-        3_TareasUNI-C++/ProyectoFundamentos/CalendarioTerminal.cpp
+        3_TareasUNI-C++/ProyectoFundamentos/CalendarioTerminal.h
+        3_TareasUNI-C++/ProyectoFundamentos/RegistroDAO.h
 
 
 )

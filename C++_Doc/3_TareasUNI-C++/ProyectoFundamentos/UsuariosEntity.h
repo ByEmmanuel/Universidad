@@ -2,6 +2,7 @@
 // Created by Jesus Emmanuel Garcia on 08/09/24.
 //
 
+#pragma once
 #ifndef USUARIOS_H
 #define USUARIOS_H
 #include <set>
