@@ -2,21 +2,27 @@
 #include <iostream>
 #include <string>
 #include <list>
-#include <array>
+
 #include <vector>
-#include <utility>
 
-#include "Controladores.h"
-#include "Usuarios.h"
+
+//#include "Controladores.h"
+#include "UsuariosEntity.h"
+#include "CalendarioTerminal.h"
 #include "RegistroDAO.h"
-#include "CalendarioTerminal.cpp"
 
 
-class CalendarioTerminal;
 using namespace std;
 inline CalcularTiempo* tiempo = new CalcularTiempo;
-CalendarioTerminal* calendario = new CalendarioTerminal(); // Crear instancia de Calendario
+inline CalendarioTerminal* calendario = new CalendarioTerminal; // Crear instancia de Calendario
+inline RegistroDAO* registroDao = new RegistroDAO;
+inline UsuariosEntity* usuario = new UsuariosEntity;
+
+// La lista guarda en su momento los valores que se guardaron primero, los valores alterados (cambiados,
+// no se actualizan de la lista ya que es un usuario y esto simula ser la base de datos)
 pmr::list<UsuariosEntity> listaUsuarios;  // Cambiado pmr::list a std::list
+
+
 //pmr::vector<int> arrayCalendario;
 inline vector<int> calendarioDB;
 inline int opcDia;
@@ -32,7 +38,7 @@ public:
 
 
 
-    static int reservar(int opcion ){
+    static int reservarCita(int opcion ){
         cout << "Pulse 1 para cerrar la app, \nPulse 2 para continuar" << endl;
         cin >> opcion;
         cout << "opcion escogida : " << opcion << endl;
@@ -104,6 +110,7 @@ public:
                     cout << "Nombre no puede contener numeros" << endl;
                 }
             }
+
             usuario->setNombre(nombreCompletoUsuario);
             usuario->setCodigo(codigoALumno);
             usuario->setCorreo(correoAlumno);
@@ -113,7 +120,7 @@ public:
             listaUsuarios.push_front(*usuario);
 
 
-            UsuariosEntity usuarioEncontrado =  RegistroDao::buscarUsuarioPorNombre(nombreCompletoUsuario,listaUsuarios);
+            UsuariosEntity usuarioEncontrado =  registroDao->buscarUsuarioPorNombre(nombreCompletoUsuario,listaUsuarios);
             //cout << usuarioEncontrado;
             cout << "La lista esta conformada por ; " << usuarioEncontrado.getNombre() ;
 
@@ -125,21 +132,33 @@ public:
             }
 
     }
-        static int consultar(){
-                cout << "Ingrese correo alumno" << endl;
-                string correo;
-                cin >> correo;
-                UsuariosEntity usuario = RegistroDao::buscarUsuarioPorCorreo(correo, listaUsuarios);
-                /*
-                 *Esta funcion apaga el programa si el objeto devuelto esta vacio
-                 *if (usuario.getNombre().empty()){
-                    return 0;
-                }
-                */
-                return 1;
+    static int consultarCita(){
+        cout << "Ingrese correo alumno" << endl;
+        string correo;
+        cin >> correo;
+        UsuariosEntity usuario = registroDao->buscarUsuarioPorCorreo(correo, listaUsuarios);
+        /*
+            *Esta funcion apaga el programa si el objeto devuelto esta vacio
+            *if (usuario.getNombre().empty()){
+                return 0;
+            }
+            */
+        return 1;
 
-        }
+    }
 
+    static int modificarCita(){
+        cout << "Ingrese correo alumno" << endl;
+        string correo;
+        cin >> correo;
+        cout << "¿Por cual dia quieres cambiarlo?";
+        int diaCambCita;
+        cin >> diaCambCita;
+        registroDao->buscarCitaYmodificar(correo,listaUsuarios,diaCambCita, *calendario);
+
+        //registroDao->modificarCita();
+        return 0;
+    }
 
     ~Controladores();
 };
