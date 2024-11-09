@@ -49,13 +49,11 @@ public:
          catch (const runtime_error& e) {
              cerr << "Usuario NO Encontrado: " << e.what() << endl;
          }
-         return {};  // Retornamos un objeto vacío si no se encuentra el usuario
+         return {};
     }
 
     static UsuariosEntity buscarUsuarioPorCorreo(const string& correo, pmr::list<UsuariosEntity> listaUsuarios) {
-        //Lo ponemos dentro de un try catch por si no se encuentra el usuario, devolver un error (Excepcion)
         try {
-            // Iteramos sobre la lista de usuarios
             for (UsuariosEntity& usuario : listaUsuarios) {
 
                 // Si el nombre coincide, retornamos un puntero al usuario
@@ -66,30 +64,29 @@ public:
                             << "Y tu cita es el dia: " << usuario.getCita() << "\n\n";
                     return usuario;  // Retornamos la dirección del objeto encontrado
                 }
-                //esto hace que por cada usuario en la lista que no coincida imprima esto
-                // pero como en la lista el metodo inserta en modo pushFront
-                // cada que se agrega un usuario la funcion seria: [i + 1] donde i es el elemeneto recien agregado
             }
             cout << "\n     Usuario no encontrado\n\n";
         }
         catch (const runtime_error& e) {
             cerr << "Usuario NO Encontrado: " << e.what() << endl;
         }
-        return {};  // Retornamos un objeto vacío si no se encuentra el usuario
+        return {};
     }
 
-    static int buscarCitaYmodificar(const string& correo, pmr::list<UsuariosEntity> listaUsuarios, /*int& diaViejo,*/ int& diaNuevo, CalendarioTerminal& calendario){
-        for (UsuariosEntity usuario : listaUsuarios){
-            if(usuario.getCorreo() == correo){
+    // FUNCION UPDATE
+    static UsuariosEntity buscarCitaYmodificar(const string& correo, pmr::list<UsuariosEntity>& listaUsuarios,
+                                /*int& diaViejo,*/ int& diaNuevo, CalendarioTerminal& calendario){
+        for (UsuariosEntity& usuario : listaUsuarios) { // nota el uso de `&` aquí
+            if(usuario.getCorreo() == correo) {
                 cout << "\nTu cita es el dia: " << usuario.getCita() << "\n";
-                //Logica de nueva cita
-                int diaNuevaCita = calendario.setNuevaFechaCal( diaNuevo,usuario.getCita());
-                usuario.setDiaCita(diaNuevaCita);
-                return usuario.getCita();
+
+                int diaNuevaCita = calendario.setNuevaFechaCal(diaNuevo, usuario.getCita(), usuario);
+                usuario.setDiaCita(diaNuevaCita); // Ahora modificará el objeto original
+                cout << "Tu nuevo día de cita es el: " << usuario.getCita() << endl;
+                return usuario;
             }
         }
         cout << "Usuario no encontrado o no tiene cita\n";
-        return 0;
     }
 
 };
