@@ -46,13 +46,16 @@ inline void sistema() {
                 //Logica para modificar una cita
                 banderaAuxiliar = controlador -> modificarCita();
                 if (!banderaAuxiliar) {
-                    bandera = true;
+                    bandera = false;
                 }
                 break;
             case 4:
                 cout << "Eligió Eliminar Una Cita" << endl;
                 //Logica para Eliminar una cita
-                //Bandera auxiliar = controlador -> eliminarCita();
+                banderaAuxiliar = controlador -> eliminarCita();
+                if (!banderaAuxiliar) {
+                    bandera = false;
+                }
                 break;
             default:
                 cout << "Opción no válida" << endl;

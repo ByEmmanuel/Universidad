@@ -97,18 +97,35 @@ public:
         return diaOcupado;
     }
 
-    int setNuevaFechaCal(int& diaNuevo, int diaViejo) {
-        // Busca si el día viejo está en el set
-        auto it = diaOcupado.find(diaViejo);
-        if (it != diaOcupado.end()){
-            // Si el día viejo existe
-            diaOcupado.erase(it);       // Elimina el valor antiguo
-            diaOcupado.insert(diaNuevo); // Inserta el valor nuevo
-            cout << "Tu nuevo día de cita es el: " << diaNuevo << endl;
-            return diaNuevo;
+        int setNuevaFechaCal(int& diaNuevo, int diaViejo, UsuariosEntity& usuario) {
+            try {
+                auto it = diaOcupado.find(diaViejo);
+                if (it != diaOcupado.end()) {
+                    // Si el día viejo existe
+                    diaOcupado.erase(it);       // Elimina el valor antiguo
+                    diaOcupado.insert(diaNuevo); // Inserta el valor nuevo
+                    return diaNuevo;
+                }
+                cout << "El día " << diaViejo << " no se encontró en los días ocupados." << endl;
+            } catch (exception& e) {
+                cout << e.what();
+            }
+            return diaViejo; // Retorna el día viejo si no se encuentra el día ocupado
         }
-        cout << "El día " << diaViejo << " no se encontró en los días ocupados." << endl;
+
+    void borrarFechaCitaCal(int diaViejo, UsuariosEntity& usuario) {
+        try {
+            auto it = diaOcupado.find(diaViejo);
+            if (it != diaOcupado.end()) {
+                // Si el día viejo existe
+                diaOcupado.erase(it);       // Elimina el valor antiguo
+            }
+            cout << "El día " << diaViejo << " no se encontró en los días ocupados." << endl;
+        } catch (exception& e) {
+            cout << e.what();
+        }
     }
+
 
     void setCalendarioCctual(const vector<int>& calendario_actual){
         calendarioActual = calendario_actual;

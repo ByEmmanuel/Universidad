@@ -26,6 +26,7 @@ pmr::list<UsuariosEntity> listaUsuarios;  // Cambiado pmr::list a std::list
 //pmr::vector<int> arrayCalendario;
 inline vector<int> calendarioDB;
 inline int opcDia;
+inline int diaCambCita;
 
 class Controladores{
 private:
@@ -137,6 +138,8 @@ public:
         string correo;
         cin >> correo;
         UsuariosEntity usuario = registroDao->buscarUsuarioPorCorreo(correo, listaUsuarios);
+        CalendarioTerminal::mostrarCalendario(calendarioDB, calendario->obtenerDiasOcupados());
+
         /*
             *Esta funcion apaga el programa si el objeto devuelto esta vacio
             *if (usuario.getNombre().empty()){
@@ -152,12 +155,48 @@ public:
         string correo;
         cin >> correo;
         cout << "¿Por cual dia quieres cambiarlo?";
-        int diaCambCita;
-        cin >> diaCambCita;
-        registroDao->buscarCitaYmodificar(correo,listaUsuarios,diaCambCita, *calendario);
 
-        //registroDao->modificarCita();
-        return 0;
+        cin >> diaCambCita;
+        UsuariosEntity nuevoUsuario = registroDao->buscarCitaYmodificar(correo,listaUsuarios,diaCambCita, *calendario);
+        for (UsuariosEntity& usuario : listaUsuarios) {
+            if (usuario.getCorreo() == correo) {
+                usuario = nuevoUsuario;
+                break;
+            }
+        }
+        for (const auto& usuario : listaUsuarios ){
+            cout << "Estos son los usuarios y sus caracteristicas en la base de datos; \n";
+            cout << "\n Nombre Usuario: " << usuario.getNombre();
+            cout << "\n Codigo Usuario: " << usuario.getCodigo();
+            cout << "\n Cita Usuario: " << usuario.getCita();
+            cout << "\n Correo Usuario: " << usuario.getCorreo() << "\n";
+        }
+        return 1;
+    }
+
+    static int eliminarCita(){
+        cout << "Ingrese correo alumno" << endl;
+        string correo;
+        cin >> correo;
+        UsuariosEntity usuarioDAO = registroDao->buscarUsuarioPorCorreo(correo, listaUsuarios);
+
+        // Eliminar el usuario con la cita correspondiente
+        auto it = remove_if(listaUsuarios.begin(), listaUsuarios.end(),
+                                 [&](UsuariosEntity& usuario) {
+                                     calendario->borrarFechaCitaCal(usuario.getCita(), usuario);
+                                     return usuario.getCita() == usuarioDAO.getCita();
+                                 });
+        if (it != listaUsuarios.end()) {
+
+            listaUsuarios.erase(it, listaUsuarios.end());
+            cout << "Cita eliminada exitosamente." << endl;
+
+            CalendarioTerminal::mostrarCalendario(calendarioDB, calendario->obtenerDiasOcupados());
+            return 1;
+        } else {
+            cout << "No se encontró ninguna cita para eliminar." << endl;
+            return -1; // operación fallida
+        }
     }
 
     ~Controladores();
