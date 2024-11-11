@@ -154,7 +154,7 @@ public:
         cout << "Ingrese correo alumno" << endl;
         string correo;
         cin >> correo;
-        cout << "¿Por cual dia quieres cambiarlo?";
+        cout << "¿Por cual dia quieres cambiarlo?" << endl;
 
         cin >> diaCambCita;
         UsuariosEntity nuevoUsuario = registroDao->buscarCitaYmodificar(correo,listaUsuarios,diaCambCita, *calendario);
