@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.29)
-project(C___Doc)
+project(C++_Doc)
 
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories(.)
 include_directories(PrimerProgramaConC++)
 
-add_executable(C___Doc
+add_executable(C++_Doc
     #[[1_Introduccion-C++/1_PrimerTest.cpp
     1_Introduccion-C++/2_TiposDeDatos.cpp
     1_Introduccion-C++/3_Arrays.cpp
@@ -29,11 +29,6 @@ add_executable(C___Doc
 
         #[[
         ]]
-        3_TareasUNI-C++/ProyectoFundamentos/ProyectoFund.cpp
-        3_TareasUNI-C++/ProyectoFundamentos/UsuariosEntity.h
-        3_TareasUNI-C++/ProyectoFundamentos/Controladores.h
-        3_TareasUNI-C++/ProyectoFundamentos/CalendarioTerminal.h
-        3_TareasUNI-C++/ProyectoFundamentos/RegistroDAO.h
-
+    2_ProgramacionOrientadaObjetos/2_EdadPOO.cpp
 
 )
