@@ -1,10 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <_time.h>
-#include <regex.h>
-
-
 /*
  * Hacer un programa de interface de usuario
  * Crear una constante de usuarios y contraseñas
@@ -18,9 +11,22 @@
  * si no salir y camniar el color de la terminal
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <_time.h>
+#include <regex.h>
+
+#define MAX_USUARIOS 6
+#define MAX_LONGITUD 50
+
 //variables
 const int *pattern = "^[0-9]+$";  // Solo numeros
 char* menuUno[6] = {"Clientes","Pago","Almacen","Dudas","Otros","Salir"};
+// Simulación de base de datos de usuarios y contraseñas
+char usuariosRegistrados[MAX_USUARIOS][MAX_LONGITUD] =  {"David","Jose","Admin","Pepe","Luis","Maria"};
+char contraseñasUsuarios[MAX_USUARIOS][MAX_LONGITUD] = {"123456789","987654321","13579","24680"};
+
 int opc;
 int bandera = 1;
 int id_Usuario;
@@ -40,9 +46,47 @@ typedef struct Usuario{
     int celular;
     char email;
     char contacto;
-    //Retornar un mini calendario en terminal para que el usuario registre su cita
-    //long numero_de_tarjeta;
 };
+int loginUsuario(){
+    int intentosUsuario = 0;
+
+    do {
+        char usuarioID[MAX_LONGITUD];
+        printf("Ingrese Usuario: ");
+        scanf("%s", usuarioID);
+
+        // Buscar el usuario en la lista
+        int usuarioIndex = -1;
+        for (int i = 0; i < MAX_USUARIOS; i++) {
+            if (strcmp(usuarioID, usuariosRegistrados[i]) == 0) {
+                usuarioIndex = i;
+                break;
+            }
+        }
+
+        if (usuarioIndex != -1) {
+            char passwUsuario[MAX_LONGITUD];
+            // Si se encontró el usuario
+            printf("Ingrese Contraseña: ");
+            scanf("%s", passwUsuario);
+
+            // Verificar contraseña
+            if (strcmp(passwUsuario, contraseñasUsuarios[usuarioIndex]) == 0) {
+                printf("Inicio de sesión exitoso.\n");
+                return 1;
+            } else {
+                printf("Contraseña incorrecta.\n");
+            }
+        } else {
+            printf("Usuario no encontrado.\n");
+        }
+
+        intentosUsuario++;
+    } while (intentosUsuario < 3);  // Permitir 3 intentos
+
+    printf("Se agotaron los intentos.\n");
+    return 0;
+}
 
 inline static int preguntaSalida(){
 
@@ -129,6 +173,7 @@ inline int validador(){
 
     return 0;
 }
+
 int main(){
     printf("Bienvenido al sistema\n");
 printf("    ____         __ \n");
@@ -140,50 +185,53 @@ printf("/_/  \\___/\\__,_/\\____/_/   \\__,_/  \n");
 printf("      /\\     \n");
 printf("     /  \\    \n");
 
-    for(int i = 0; i < 6; i++){
-        printf(menuUno[i]);
-        printf("\n");
-    }
+    if (loginUsuario() == 1){
+        for(int i = 0; i < 6; i++){
+            printf(menuUno[i]);
+            printf("\n");
+        }
 
-    printf("Ingrese la opcion que desea \n");
-    scanf("%i",&opc);
+        printf("Ingrese la opcion que desea \n");
+        scanf("%i",&opc);
 
-    printf(&opc);
+        printf(&opc);
 
-    while (bandera == 1){
-        switch ("%i",opc){
+        while (bandera == 1){
+            switch ("%i",opc){
             case 1:
-            bandera = cliente(bandera);
+                bandera = cliente(bandera);
 
 
-            break;
+                break;
             case 2:
-            bandera = servicio(bandera);
+                bandera = servicio(bandera);
 
-            break;
+                break;
             case 3:
-            bandera = pago(bandera);
+                bandera = pago(bandera);
 
 
-            break;
+                break;
             case 4:
-            bandera = almacen(bandera);
+                bandera = almacen(bandera);
 
-            break;
+                break;
             case 5:
-            bandera = otro(bandera);
+                bandera = otro(bandera);
 
-            break;
+                break;
             case 6:
-            bandera = salir(bandera);
+                bandera = salir(bandera);
 
-            break;
+                break;
             default:
                 printf(" introdujo una opcion Invalida");
                 bandera = 0;
+            }
         }
     }
 
+    printf("Usuario Invalido");
     return 0;
 
 }
