@@ -29,6 +29,8 @@ add_executable(C++_Doc
 
         #[[
         ]]
-    2_ProgramacionOrientadaObjetos/2_EdadPOO.cpp
+
+        #2_ProgramacionOrientadaObjetos/2_EdadPOO.cpp
+        2_ProgramacionOrientadaObjetos/3_Herencia.cpp
 
 )
