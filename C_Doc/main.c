@@ -74,9 +74,8 @@ int loginUsuario(){
             if (strcmp(passwUsuario, contraseñasUsuarios[usuarioIndex]) == 0) {
                 printf("Inicio de sesión exitoso.\n");
                 return 1;
-            } else {
-                printf("Contraseña incorrecta.\n");
             }
+            printf("Contraseña incorrecta.\n");
         } else {
             printf("Usuario no encontrado.\n");
         }
