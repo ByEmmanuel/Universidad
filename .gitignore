@@ -7,6 +7,7 @@ cmake-build-debug/
 build
 .idea/
 cmake-build-release/
+cmake-build-debug
 out
 bin
 lib
