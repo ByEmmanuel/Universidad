@@ -16,6 +16,8 @@
 #include <string.h>
 #include <_time.h>
 #include <regex.h>
+#include "LogicaNegocio.h"
+#include "NegocioDTO.h"
 
 #define MAX_USUARIOS 6
 #define MAX_LONGITUD 50
@@ -25,28 +27,15 @@ const int *pattern = "^[0-9]+$";  // Solo numeros
 char* menuUno[6] = {"Clientes","Pago","Almacen","Dudas","Otros","Salir"};
 // Simulación de base de datos de usuarios y contraseñas
 char usuariosRegistrados[MAX_USUARIOS][MAX_LONGITUD] =  {"David","Jose","Admin","Pepe","Luis","Maria"};
-char contraseñasUsuarios[MAX_USUARIOS][MAX_LONGITUD] = {"123456789","987654321","13579","24680"};
+char contraseñasUsuarios[MAX_USUARIOS][MAX_LONGITUD] = {"123456789","987654321","01","24680"};
 
 int opc;
 int bandera = 1;
 int id_Usuario;
 
-// Estructura para el array dinámico
-typedef struct {
-    int *data;      // Puntero al array
-    size_t size;    // Tamaño actual
-    size_t capacity; // Capacidad total
-} Array;
 
-//Entidad Usuario
-typedef struct Usuario{
-    int id_usuario;
-    char nombreUsuario[20];
-    char apellido;
-    int celular;
-    char email;
-    char contacto;
-};
+
+
 int loginUsuario(){
     int intentosUsuario = 0;
 
@@ -100,40 +89,36 @@ inline static int preguntaSalida(){
     return 0;
 }
 
-void inicializarUsuario(struct Usuario *U,
-    int* id_usuario,
-    char* nombreUsuario,
-    char* apellido,
-    int celular,
-    char* email,
-    char* contacto) {
-    strncpy(U->nombreUsuario, nombreUsuario, sizeof(U->nombreUsuario) - 1); // Asegura que no haya desbordamiento
-    U->nombreUsuario[sizeof(U->nombreUsuario) - 1] = '\0'; // Asegura que la cadena estÈ terminada en null
-    U->apellido = *apellido;
-    U->celular = celular;
-    U->email = *email;
-    U->contacto = *contacto;
 
-}
 
-inline static int cliente(int bandera){
+int cliente(int bandera){
     printf("Opcion Cliente");
 //Funcion que crea a los clientes
-char* nombreUsuario[] = {};
-char* apellido[] = {};
-int* celular[] = {};
-char* email[] = {};
-char* contacto[] = {};
+char* nombreUsr[] = {};
+char* apellidoUsr[] = {};
+int celularUsr ;
+char* emailUsr[] = {};
+char* contactoUsr[] = {};
 
 //Agregar valores (Todo en un String A una lista)
     printf("\n Agregar Cliente? 1\n Eliminar Cliente 2\n");
     int opcCliente;
     scanf("%i",&opcCliente);
     if(opcCliente == 1){
-        struct Usuario usuario;
-        inicializarUsuario(&usuario,&id_Usuario + 1, "NombreUsuarioAQUI", "ApellidoAQUI", 1111, "EmailAQUI", "ContactoAQUI");
+        //Logica Agregar Cliente
+        printf("Ingrese Nombre\n");
+        scanf("%19s", nombreUsr);
+        printf("Ingrese Apellido\n ");
+        scanf("%19s", apellidoUsr);
+        printf("Ingrese Celular\n");
+        scanf("%9d", &celularUsr);
+        printf("Ingrese Email\n");
+        scanf("%29s", emailUsr);
+        printf("Ingrese Contacto\n");
+        scanf("%19s", contactoUsr);
 
-            };
+        inicializarUsuario(id_Usuario + 1, nombreUsr, apellidoUsr, celularUsr, emailUsr, contactoUsr);
+    };
 
     //"%i",
     if(preguntaSalida() == 1){
@@ -230,7 +215,7 @@ printf("     /  \\    \n");
         }
     }
 
-    printf("Usuario Invalido");
+
     return 0;
 
 }
