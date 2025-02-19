@@ -6,6 +6,23 @@
 #ifndef LOGICANEGOCIO_H
 #define LOGICANEGOCIO_H
 
+void imprimirMenuPrincipal();
+
+int menuPrincipal(int bandera);
+
+int loginUsuario();
+
+int preguntaSalida();
+
+int servicio();
+
+int pago();
+
+int almacen();
+
+int otro();
+
+int validador();
 
 
 
