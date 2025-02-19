@@ -16,10 +16,6 @@ typedef struct {
     char contacto[20];
 }Usuario;
 
-Usuario inicializarUsuario(int id_usuario,const char* nombreUsuario,const char* apellido,int celular,const char* email,const char* contacto);
-
-int cliente(int bandera);
-
 // Estructura para el array dinámico
 typedef struct {
     int *data;      // Puntero al array
@@ -27,6 +23,11 @@ typedef struct {
     size_t capacity; // Capacidad total
 } Array;
 
+Usuario inicializarUsuario(int id_usuario,const char* nombreUsuario,const char* apellido,int celular,const char* email,const char* contacto);
+
+int cliente();
+
+void mostrarUsuario(Usuario usr);
 
 
 #endif //NEGOCIODTO_H
