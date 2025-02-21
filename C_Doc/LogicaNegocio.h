@@ -6,9 +6,11 @@
 #ifndef LOGICANEGOCIO_H
 #define LOGICANEGOCIO_H
 
+void mostrarLogo();
+
 void imprimirMenuPrincipal();
 
-int menuPrincipal(int bandera);
+void menuPrincipal(int bandera);
 
 int loginUsuario();
 

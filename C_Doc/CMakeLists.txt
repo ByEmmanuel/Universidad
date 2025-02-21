@@ -7,7 +7,7 @@ add_executable(
         C_Doc main.c
         LogicaNegocio.h
         LogicaNegocio.c
-        NegocioDTO.c
-        NegocioDTO.h
+        UsuarioDTO.c
+        UsuarioDTO.h
 )
 

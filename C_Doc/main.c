@@ -17,8 +17,7 @@
 #include <_time.h>
 #include <regex.h>
 #include "LogicaNegocio.h"
-#include "NegocioDTO.h"
-
+#include "UsuarioDTO.h"
 
 
 //variables
@@ -29,18 +28,51 @@ const int *pattern = "^[0-9]+$";  // Solo numeros
 int bandera = 1;
 int id_Usuario;
 
+void menuPrincipal(int bandera){
+    while (bandera){
+        int opc;
+        scanf("%i",&opc);
+        //printf("Opcio usuario");
+        printf("%i",opc);
+        printf("\n");
+
+        switch (opc){
+        case 1:
+            cliente();
+            bandera = preguntaSalida();
+            break;
+        case 2:
+            servicio();
+            bandera = preguntaSalida();
+            break;
+        case 3:
+            pago();
+            bandera = preguntaSalida();
+            break;
+        case 4:
+            almacen();
+            bandera = preguntaSalida();
+            break;
+        case 5:
+            otro();
+            bandera = preguntaSalida();
+            break;
+        case 6:
+            printf("Gracias por usar el sistema");
+            bandera = 0;
+            opc = 0;
+            break;
+        default:
+            printf(" introdujo una opcion Invalida");
+            bandera = 0;
+        }
+    }
+
+};
+
 
 int main(){
-    printf("Bienvenido al sistema\n");
-printf("    ____         __ \n");
-printf("   / __/__  ____/ /___  _________ _\n");
-printf("   / __/__  ____/ /___  _________ _\n");
-printf("  / /_/ _ \\/ __  / __ \\/ ___/ __ `/\n");
-printf("/ __/  __/ /_/ / /_/ / /  / /_/ / \n");
-printf("/_/  \\___/\\__,_/\\____/_/   \\__,_/  \n");
-printf("      /\\     \n");
-printf("     /  \\    \n");
-
+    mostrarLogo();
     if (loginUsuario() == 1){
         imprimirMenuPrincipal();
         menuPrincipal(bandera);
