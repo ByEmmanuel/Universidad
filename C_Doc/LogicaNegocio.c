@@ -4,8 +4,7 @@
 #include "LogicaNegocio.h"
 #include <stdio.h>
 #include <string.h>
-
-#include "NegocioDTO.h"
+#include "UsuarioDTO.h"
 
 #define MAX_USUARIOS 6
 #define MAX_LONGITUD 50
@@ -53,48 +52,6 @@ int loginUsuario(){
     return 0;
 }
 
-int menuPrincipal(int bandera){
-    while (bandera){
-        int opc;
-        scanf("%i",&opc);
-        //printf("Opcio usuario");
-        printf("%i",opc);
-        printf("\n");
-
-        switch (opc){
-        case 1:
-            cliente();
-            bandera = preguntaSalida();
-            break;
-        case 2:
-            servicio();
-            bandera = preguntaSalida();
-            break;
-        case 3:
-            pago();
-            bandera = preguntaSalida();
-            break;
-        case 4:
-            almacen();
-            bandera = preguntaSalida();
-            break;
-        case 5:
-            otro();
-            bandera = preguntaSalida();
-            break;
-        case 6:
-            printf("Gracias por usar el sistema");
-            bandera = 0;
-            opc = 0;
-            break;
-        default:
-            printf(" introdujo una opcion Invalida");
-            bandera = 0;
-        }
-    }
-
-};
-
 int servicio(){
     printf("Opcion Servicio ");
     return 0;
@@ -138,4 +95,17 @@ int preguntaSalida(){
         return 1;
     }
     return 0;
+}
+
+void mostrarLogo(){
+    printf("Bienvenido al sistema\n");
+    printf("    ____           __ \n");
+    printf("   / __/__    ____/ /___  _________ \n");
+    printf("  / /_/ _ \\ / __  / __ / ___/ __ /\n");
+    printf(" / __/  __/ /_/ / /_/ / /  / /_/ / \n");
+    printf("/_/  \\___/\\__,_/\\____/_/   \\__,_/  \n");
+    printf("      /\\     \n");
+    printf("     /  \\    \n");
+    // Ingresar delay y cambiar la pantalla de color
+
 }
