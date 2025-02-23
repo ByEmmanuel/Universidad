@@ -28,6 +28,18 @@ const int *pattern = "^[0-9]+$";  // Solo numeros
 int bandera = 1;
 int id_Usuario;
 
+int main(){
+    mostrarLogo();
+    if (loginUsuario() == 1){
+        imprimirMenuPrincipal();
+        menuPrincipal(bandera);
+    }
+
+
+    return 0;
+
+}
+
 void menuPrincipal(int bandera){
     while (bandera){
         int opc;
@@ -70,16 +82,4 @@ void menuPrincipal(int bandera){
 
 };
 
-
-int main(){
-    mostrarLogo();
-    if (loginUsuario() == 1){
-        imprimirMenuPrincipal();
-        menuPrincipal(bandera);
-    }
-
-
-    return 0;
-
-}
 
