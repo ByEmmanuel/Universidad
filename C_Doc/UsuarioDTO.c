@@ -8,25 +8,24 @@
 #include <stdlib.h>
 #include <string.h>
 #include "LogicaNegocio.h"
+#include "Util.h"
 
 int id_UsuarioLogico = 0;
 // Declaración global del array de usuarios
 ArrayUsuarios arrayUsuarios;
 
+//Funciones Importantes para la ejecucion de todo el programa y evitar la reutilizacion de codigo
+// strncpy,
+
 Usuario inicializarUsuario(const int id_usuario, const char* nombreUsuario, const char* apellido,
-                           int celular, const char* email, const char* contacto) {
+                           long long celular, const char* email, const char* contacto) {
     Usuario usr = {0}; // Inicializa la estructura en 0 para evitar datos basura
     usr.id_usuario = id_usuario;
-    // Copiamos las cadenas asegurándonos de que terminen en '\0'
-    strncpy(usr.nombreUsuario, nombreUsuario, sizeof(usr.nombreUsuario) - 1);
-    usr.nombreUsuario[sizeof(usr.nombreUsuario) - 1] = '\0';
-    strncpy(usr.apellido, apellido, sizeof(usr.apellido) - 1);
-    usr.apellido[sizeof(usr.apellido) - 1] = '\0';
+    asignString(usr.nombreUsuario, nombreUsuario, sizeof(usr.nombreUsuario));
+    asignString(usr.apellido, apellido, sizeof(usr.apellido));
     usr.celular = celular;
-    strncpy(usr.email, email, sizeof(usr.email) - 1);
-    usr.email[sizeof(usr.email) - 1] = '\0';
-    strncpy(usr.contacto, contacto, sizeof(usr.contacto) - 1);
-    usr.contacto[sizeof(usr.contacto) - 1] = '\0';
+    asignString(usr.email, email, sizeof(usr.email));
+    asignString(usr.contacto, contacto, sizeof(usr.contacto));
     //Adiciona 1 al ID usuario desde aqui para que el usuario nunca tenga el mismo ID sin importar si es valido el usuario o no
     id_UsuarioLogico = id_UsuarioLogico + 1;
     return usr;
@@ -46,7 +45,7 @@ void inicializarArray(int capacidadInicial) {
 // Función para agregar un usuario a la lista
 int guardarUsuarioArray(Usuario usuario) {
     if (arrayUsuarios.total >= arrayUsuarios.capacidad) {
-        int nuevaCapacidad = arrayUsuarios.capacidad * 2;
+        int nuevaCapacidad = arrayUsuarios.capacidad == 0 ? 1 : arrayUsuarios.capacidad * 2;
         Usuario* nuevoArray = realloc(arrayUsuarios.lista, nuevaCapacidad * sizeof(Usuario));
         if (nuevoArray == NULL) {
             printf("Error al redimensionar el array de usuarios.\n");
@@ -63,7 +62,6 @@ int guardarUsuarioArray(Usuario usuario) {
 
 // Función para obtener un usuario por ID
 Usuario* obtenerUsuario(const int id) {
-
     for (int i = 0; i < arrayUsuarios.total; i++) {
         if (arrayUsuarios.lista[i].id_usuario == id) {
             mostrarUsuario(arrayUsuarios.lista[i]);
@@ -100,39 +98,44 @@ void modificarCliente(){
     switch (opcUsr) {
         case 1:
             printf("Ingrese nuevo Nombre: ");
-            int c;
-            while ((c = getchar()) != '\n' && c != EOF) {}// Limpia cualquier residuo en el búfer
+            cleanBuffer();
 
             if (fgets(reemplazoUsuario, sizeof(reemplazoUsuario), stdin) != NULL) {
                 reemplazoUsuario[strcspn(reemplazoUsuario, "\n")] = '\0'; // Eliminar el salto de línea
-
-                strncpy(usuarioNuevo->nombreUsuario, reemplazoUsuario, sizeof(usuarioNuevo->nombreUsuario) - 1);
-                usuarioNuevo->nombreUsuario[sizeof(usuarioNuevo->nombreUsuario) - 1] = '\0'; // Asegurar terminación
-            } else {
-                printf("Error al leer entrada.\n");
+                asignString(usuarioNuevo->nombreUsuario, reemplazoUsuario, sizeof(usuarioNuevo->nombreUsuario));
             }
+            printf("Error al leer entrada.\n");
             break;
         case 2:
             printf("Ingrese nuevo Apellido: ");
-            fgets(reemplazoUsuario, sizeof(reemplazoUsuario), stdin);
-            strncpy(usuarioNuevo->apellido, reemplazoUsuario, sizeof(usuarioNuevo->apellido) - 1);
-            usuarioNuevo->apellido[sizeof(usuarioNuevo->apellido) - 1] = '\0';
+            cleanBuffer();
+            if (fgets(reemplazoUsuario, sizeof(reemplazoUsuario), stdin) != NULL){
+                reemplazoUsuario[strcspn(reemplazoUsuario, "\n")] = '\0';
+                asignString(usuarioNuevo->apellido, reemplazoUsuario, sizeof(usuarioNuevo->apellido));
+            }
             break;
         case 3:
             printf("Ingrese nuevo Número Celular: ");
-            scanf("%d", &usuarioNuevo->celular);
+            cleanBuffer();
+            long long numero;
+            scanf("%lld",&numero);
+            usuarioNuevo->celular = numero;
+            printf("Número guardado: %lld\n", usuarioNuevo->celular);
             break;
         case 4:
             printf("Ingrese nuevo Email: ");
-            fgets(reemplazoUsuario, sizeof(reemplazoUsuario), stdin);
-            strncpy(usuarioNuevo->email, reemplazoUsuario, sizeof(usuarioNuevo->email) - 1);
-            usuarioNuevo->email[sizeof(usuarioNuevo->email) - 1] = '\0';
+            cleanBuffer();
+            reemplazoUsuario[strcspn(reemplazoUsuario, "\n")] = '\0'; // Eliminar el salto de línea
+            if (fgets(reemplazoUsuario, sizeof(reemplazoUsuario), stdin) != NULL){
+                asignString(usuarioNuevo->email, reemplazoUsuario, sizeof(usuarioNuevo->email));
+            };
             break;
         case 5:
             printf("Ingrese nuevo Contacto: ");
-            fgets(reemplazoUsuario, sizeof(reemplazoUsuario), stdin);
-            strncpy(usuarioNuevo->contacto, reemplazoUsuario, sizeof(usuarioNuevo->contacto) - 1);
-            usuarioNuevo->contacto[sizeof(usuarioNuevo->contacto) - 1] = '\0';
+            if (fgets(reemplazoUsuario, sizeof(reemplazoUsuario), stdin) != NULL){
+                reemplazoUsuario[strcspn(reemplazoUsuario, "\n")] = '\0'; // Eliminar el salto de línea
+                asignString(usuarioNuevo->contacto, reemplazoUsuario, sizeof(usuarioNuevo->contacto));
+            };
             break;
         case 6:
             printf("Saliendo...\n");
@@ -151,7 +154,6 @@ int cliente(){
 
     char* nombreUsr[] = {};
     char* apellidoUsr[] = {};
-    int celularUsr;
     char* emailUsr[] = {};
     char* contactoUsr[] = {};
 
@@ -163,6 +165,7 @@ int cliente(){
         return 1;
     }
     if(opcCliente == 1){
+        long long celularUsr;
         //Logica Agregar Cliente
         printf("Ingrese Nombre\n");
         scanf("%19s", nombreUsr);

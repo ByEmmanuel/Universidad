@@ -9,5 +9,7 @@ add_executable(
         LogicaNegocio.c
         UsuarioDTO.c
         UsuarioDTO.h
+        Util.c
+        Util.h
 )
 
