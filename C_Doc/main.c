@@ -34,10 +34,7 @@ int main(){
         imprimirMenuPrincipal();
         menuPrincipal(bandera);
     }
-
-
     return 0;
-
 }
 
 void menuPrincipal(int bandera){

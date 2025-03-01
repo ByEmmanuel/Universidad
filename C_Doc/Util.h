@@ -14,11 +14,21 @@ char* strFill(const char* str);              // Elimina espacios al inicio y fin
 //int porque no hay bool y
 int strEquals(const char* str1, const char* str2); // Compara dos cadenas
 int strIsEmpty(const char* str);            // Verifica si una cadena está vacía
+int strContains(const char* src, const char* str);
 //Metodo agregado
 void asignString(char *dst, const char *src, size_t n);
+char* cinString(int bufferSize);
 
 // ARRAYS
 ArrayList* arrayListNew(size_t capacidadInicial);
+
+void arrayListAdd(ArrayList* list, void* element);
+void* arrayListGet(ArrayList* list, size_t index);
+size_t arrayListSize(ArrayList* list);
+void arrayListFree(ArrayList* list);
+void arrayListClear(ArrayList* list);
+//int arrayListContains(ArrayList* list, void* element, bool (*equals)(void*, void*)); // Verifica si contiene un elemento
+void arrayListRemove(ArrayList* list, size_t index); // Elimina elemento por índice
 
 // FECHA
 typedef struct {
