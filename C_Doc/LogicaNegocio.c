@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "UsuarioDTO.h"
+#include "Util.h"
 
 #define MAX_USUARIOS 6
 #define MAX_LONGITUD 50
@@ -16,10 +17,8 @@ int loginUsuario(){
     int intentosUsuario = 0;
 
     do {
-        char usuarioID[MAX_LONGITUD];
         printf("Ingrese Usuario: ");
-        scanf("%s", usuarioID);
-
+        char* usuarioID = cinString(MAX_LONGITUD);
         // Buscar el usuario en la lista
         int usuarioIndex = -1;
         for (int i = 0; i < MAX_USUARIOS; i++) {
@@ -30,10 +29,11 @@ int loginUsuario(){
         }
 
         if (usuarioIndex != -1) {
-            char passwUsuario[MAX_LONGITUD];
-            // Si se encontró el usuario
+            //char passwUsuario[MAX_LONGITUD];
             printf("Ingrese Contraseña: ");
-            scanf("%s", passwUsuario);
+            char* passwUsuario = cinString(MAX_LONGITUD);
+            // Si se encontró el usuario
+            //scanf("%s", passwUsuario);
 
             // Verificar contraseña
             if (strcmp(passwUsuario, contraseñasUsuarios[usuarioIndex]) == 0) {
@@ -88,7 +88,7 @@ void imprimirMenuPrincipal(){
 int preguntaSalida(){
     printf("\n  Desea Volver Al menu principal?\n 1 : SI \n 2 : NO \n");
     int opcUsuario;
-    scanf("%i", &opcUsuario);
+    scanf("%d", &opcUsuario);
     printf("%i",opcUsuario);
     if(opcUsuario == 1){
         imprimirMenuPrincipal();

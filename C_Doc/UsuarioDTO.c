@@ -93,49 +93,60 @@ void modificarCliente(){
     int opcUsr;
     scanf("%d", &opcUsr);
 
-    char reemplazoUsuario[50]; // Buffer para almacenar entrada
+    //char reemplazoUsuario[50]; // Buffer para almacenar entrada
+    char* reemplazoUsuario;
+    cleanBuffer();
 
     switch (opcUsr) {
         case 1:
             printf("Ingrese nuevo Nombre: ");
-            cleanBuffer();
-
-            if (fgets(reemplazoUsuario, sizeof(reemplazoUsuario), stdin) != NULL) {
-                reemplazoUsuario[strcspn(reemplazoUsuario, "\n")] = '\0'; // Eliminar el salto de línea
+            reemplazoUsuario = cinString(50);
+            if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")) {
                 asignString(usuarioNuevo->nombreUsuario, reemplazoUsuario, sizeof(usuarioNuevo->nombreUsuario));
+                printf("Modificación realizada con éxito.\n");
+                break;
             }
             printf("Error al leer entrada.\n");
             break;
         case 2:
             printf("Ingrese nuevo Apellido: ");
-            cleanBuffer();
-            if (fgets(reemplazoUsuario, sizeof(reemplazoUsuario), stdin) != NULL){
-                reemplazoUsuario[strcspn(reemplazoUsuario, "\n")] = '\0';
+            reemplazoUsuario = cinString(50);
+            if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
                 asignString(usuarioNuevo->apellido, reemplazoUsuario, sizeof(usuarioNuevo->apellido));
+                printf("Modificación realizada con éxito.\n");
+                break;
             }
+            printf("Error al leer entrada.\n");
             break;
         case 3:
             printf("Ingrese nuevo Número Celular: ");
-            cleanBuffer();
             long long numero;
-            scanf("%lld",&numero);
-            usuarioNuevo->celular = numero;
-            printf("Número guardado: %lld\n", usuarioNuevo->celular);
+            scanf("%9lld",&numero);
+            if (numero != 0){
+                usuarioNuevo->celular = numero;
+                printf("Número guardado: %lld\n", usuarioNuevo->celular);
+            }
+            cleanBuffer();
             break;
         case 4:
             printf("Ingrese nuevo Email: ");
-            cleanBuffer();
-            reemplazoUsuario[strcspn(reemplazoUsuario, "\n")] = '\0'; // Eliminar el salto de línea
-            if (fgets(reemplazoUsuario, sizeof(reemplazoUsuario), stdin) != NULL){
+            reemplazoUsuario = cinString(50);
+            if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
                 asignString(usuarioNuevo->email, reemplazoUsuario, sizeof(usuarioNuevo->email));
+                printf("Modificación realizada con éxito.\n");
+                break;
             };
+            printf("Error al leer entrada.\n");
             break;
         case 5:
             printf("Ingrese nuevo Contacto: ");
-            if (fgets(reemplazoUsuario, sizeof(reemplazoUsuario), stdin) != NULL){
-                reemplazoUsuario[strcspn(reemplazoUsuario, "\n")] = '\0'; // Eliminar el salto de línea
+            reemplazoUsuario = cinString(50);
+            if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
                 asignString(usuarioNuevo->contacto, reemplazoUsuario, sizeof(usuarioNuevo->contacto));
+                printf("Modificación realizada con éxito.\n");
+                break;
             };
+            printf("Error al leer entrada.\n");
             break;
         case 6:
             printf("Saliendo...\n");
@@ -144,23 +155,16 @@ void modificarCliente(){
             printf("Opción inválida.\n");
             return;
     }
-
-    printf("Modificación realizada con éxito.\n");
 }
 
 int cliente(){
-    printf("Opcion Cliente");
     //Funcion que crea a los clientes
-
-    char* nombreUsr[] = {};
-    char* apellidoUsr[] = {};
-    char* emailUsr[] = {};
-    char* contactoUsr[] = {};
-
+    printf("Opcion Cliente");
     //Agregar valores (Todo en un String A una lista)
     printf("\n Agregar Cliente? 1\n Editar Cliente 2\n Menu Principal 3\n");
     int opcCliente;
     scanf("%d",&opcCliente);
+    cleanBuffer();
     if (opcCliente == 3){
         return 1;
     }
@@ -168,21 +172,39 @@ int cliente(){
         long long celularUsr;
         //Logica Agregar Cliente
         printf("Ingrese Nombre\n");
-        scanf("%19s", nombreUsr);
-        printf("Ingrese Apellido\n ");
-        scanf("%19s", apellidoUsr);
+        char* nombreUsr = cinString(19);
+        printf("Ingrese Apellido\n");
+        char* apellidoUsr = cinString(19);
         printf("Ingrese Celular\n");
         scanf("%9d", &celularUsr);
+        cleanBuffer();
         printf("Ingrese Email\n");
-        scanf("%29s", emailUsr);
+        char* emailUsr = cinString(49);
         printf("Ingrese Contacto\n");
-        scanf("%19s", contactoUsr);
+        char* contactoUsr = cinString(29);
 
+        while (!strContains(emailUsr,"@")){
+            free(emailUsr);
+            printf("Tu Email no es valido, ¿Deseas volver a ingrearlo? \n 1: SI 2: NO");
+            const char* opcUsr = cinString(5);
+            if (strContains(opcUsr, "1")){
+                printf("Ingrese Email\n");
+                emailUsr = cinString(49);
+            }else{
+                printf("Registro INVALIDO  : Email Invalido");
+                return 1;
+            }
+        }
         Usuario usuario = inicializarUsuario(id_UsuarioLogico, nombreUsr, apellidoUsr, celularUsr, emailUsr, contactoUsr);
 
         mostrarUsuario(usuario);
 
         guardarUsuarioArray(usuario);
+        free(nombreUsr);
+        free(apellidoUsr);
+        //free(celularUsr);
+        free(emailUsr);
+        free(contactoUsr);
 
     }else if (opcCliente == 2){
         modificarCliente();
@@ -195,7 +217,7 @@ void mostrarUsuario(Usuario usr) {
     printf("ID Usuario: %d\n", usr.id_usuario);
     printf("Nombre: %s\n", usr.nombreUsuario);
     printf("Apellido: %s\n", usr.apellido);
-    printf("Celular: %d\n", usr.celular);
+    printf("Celular: %lld\n", usr.celular);
     printf("Email: %s\n", usr.email);
     printf("Contacto: %s\n", usr.contacto);
 }
