@@ -13,23 +13,29 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <_time.h>
-#include <regex.h>
 #include "LogicaNegocio.h"
 #include "UsuarioDTO.h"
+#include <pthread.h>
+#include <unistd.h>
+#include "Util.h"
 
-
-//variables
-const int *pattern = "^[0-9]+$";  // Solo numeros
 
 // Simulación de base de datos de usuarios y contraseñas
 
 int bandera = 1;
 int id_Usuario;
 
+// Variable global para controlar el hilo del reloj
+volatile int running = 1;
+
+
 int main(){
+    // Inicio del programa
     mostrarLogo();
+    // Borra toda la pantalla y mueve el cursor al inicio
+    cleanScreen();
+    sleep(1);
     if (loginUsuario() == 1){
         imprimirMenuPrincipal();
         menuPrincipal(bandera);
@@ -40,29 +46,34 @@ int main(){
 void menuPrincipal(int bandera){
     while (bandera){
         int opc;
-        scanf("%i",&opc);
+        scanf("%d",&opc);
         //printf("Opcio usuario");
         printf("%i",opc);
         printf("\n");
 
         switch (opc){
         case 1:
+            cleanScreen();
             cliente();
             bandera = preguntaSalida();
             break;
         case 2:
+            cleanScreen();
             servicio();
             bandera = preguntaSalida();
             break;
         case 3:
+            cleanScreen();
             pago();
             bandera = preguntaSalida();
             break;
         case 4:
+            cleanScreen();
             almacen();
             bandera = preguntaSalida();
             break;
         case 5:
+            cleanScreen();
             otro();
             bandera = preguntaSalida();
             break;

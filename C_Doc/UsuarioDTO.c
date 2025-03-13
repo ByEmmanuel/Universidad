@@ -54,7 +54,6 @@ int guardarUsuarioArray(Usuario usuario) {
         arrayUsuarios.lista = nuevoArray;
         arrayUsuarios.capacidad = nuevaCapacidad;
     }
-
     arrayUsuarios.lista[arrayUsuarios.total] = usuario;
     arrayUsuarios.total++;
     return 1; // Retorna 1 si se guardó correctamente
@@ -62,6 +61,7 @@ int guardarUsuarioArray(Usuario usuario) {
 
 // Función para obtener un usuario por ID
 Usuario* obtenerUsuario(const int id) {
+    cleanScreen();
     for (int i = 0; i < arrayUsuarios.total; i++) {
         if (arrayUsuarios.lista[i].id_usuario == id) {
             mostrarUsuario(arrayUsuarios.lista[i]);
@@ -74,6 +74,7 @@ Usuario* obtenerUsuario(const int id) {
 }
 
 void modificarCliente(){
+    cleanScreen();
     printf("Ingrese ID, Folio o Numero de Cliente: ");
     int id_Cliente;
     scanf("%d", &id_Cliente);
@@ -169,6 +170,7 @@ int cliente(){
         return 1;
     }
     if(opcCliente == 1){
+        cleanScreen();
         long long celularUsr;
         //Logica Agregar Cliente
         printf("Ingrese Nombre\n");
@@ -188,6 +190,8 @@ int cliente(){
             printf("Tu Email no es valido, ¿Deseas volver a ingrearlo? \n 1: SI 2: NO");
             const char* opcUsr = cinString(5);
             if (strContains(opcUsr, "1")){
+                printf("\033[2A\033[2K\033[1B\033[2K");
+                fflush(stdout);
                 printf("Ingrese Email\n");
                 emailUsr = cinString(49);
             }else{
@@ -209,7 +213,7 @@ int cliente(){
     }else if (opcCliente == 2){
         modificarCliente();
     };
-
+    cleanScreen();
     return 1;
 }
 

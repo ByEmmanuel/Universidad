@@ -47,4 +47,5 @@ int dateCompare(SimpleDate* d1, SimpleDate* d2); // Compara dos fechas
 // Buffer
 void cleanBuffer();
 
+void cleanScreen();
 #endif //Util_H

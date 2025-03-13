@@ -15,6 +15,8 @@
 
 //  realloc, malloc
 
+// Macros para verificar el sistema operativo
+
 char* strFill(const char* str) {
     if (str == NULL) return NULL;
 
@@ -93,3 +95,7 @@ void cleanBuffer(){
     while ((c = getchar()) != '\n' && c != EOF) {}
 }
 
+
+void cleanScreen(){
+    printf("\033[2J\033[H");
+}

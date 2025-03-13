@@ -3,7 +3,10 @@
 //
 #include "LogicaNegocio.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+
 #include "UsuarioDTO.h"
 #include "Util.h"
 
@@ -38,6 +41,7 @@ int loginUsuario(){
             // Verificar contraseña
             if (strcmp(passwUsuario, contraseñasUsuarios[usuarioIndex]) == 0) {
                 printf("Inicio de sesión exitoso.\n");
+                printf("\033[2J\033[H");
                 return 1;
             }
             printf("Contraseña incorrecta.\n");
@@ -54,6 +58,8 @@ int loginUsuario(){
 
 int servicio(){
     printf("Opcion Servicio ");
+    //Ingresar manualmente que es lo que se quiere reconstruir
+    // Cabeza o culata
     return 0;
 }
 
@@ -76,16 +82,23 @@ int validador(){
     return 0;
 }
 
-void imprimirMenuPrincipal(){
-    printf("Ingrese la opcion que desea \n");
-    for(int i = 0; i < 6; i++){
-        char* menuUno[6] = {"Clientes","Pago","Almacen","Dudas","Otros","Salir"};
-        printf(menuUno[i]);
-        printf("\n");
+void imprimirMenuPrincipal() {
+    cleanScreen();
+    sleep(1);
+    printf("┌──────────────────────────────┐\n");
+    printf("│        MENÚ PRINCIPAL        │\n");
+    printf("├──────────────────────────────┤\n");
+    char* menuUno[6] = {"Clientes", "Pago", "Almacen", "Dudas", "Otros", "Salir"};
+    for (int i = 0; i < 6; i++) {
+        printf("│   %d - %-23s│\n", i+1, menuUno[i]);
     }
+    printf("│                              │\n");
+    printf("└──────────────────────────────┘\n");
+    printf("\033[10;1HSeleccione una opción: ");
 }
 
 int preguntaSalida(){
+    cleanScreen();
     printf("\n  Desea Volver Al menu principal?\n 1 : SI \n 2 : NO \n");
     int opcUsuario;
     scanf("%d", &opcUsuario);
@@ -99,13 +112,20 @@ int preguntaSalida(){
 
 void mostrarLogo(){
     printf("Bienvenido al sistema\n");
+    usleep(300000);
     printf("    ____           __ \n");
+    usleep(300000);
     printf("   / __/__    ____/ /___  _________ \n");
+    usleep(300000);
     printf("  / /_/ _ \\ / __  / __ / ___/ __ /\n");
+    usleep(300000);
     printf(" / __/  __/ /_/ / /_/ / /  / /_/ / \n");
+    usleep(300000);
     printf("/_/  \\___/\\__,_/\\____/_/   \\__,_/  \n");
+    usleep(800000);
     printf("      /\\     \n");
     printf("     /  \\    \n");
+    printf("    /    \\    \n");
     // Ingresar delay y cambiar la pantalla de color
 
 }
