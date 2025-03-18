@@ -22,11 +22,11 @@ public class EmpresaX {
     public static void main(String[] args) {
 
         boolean bandera = true;
+        Scanner scanner = new Scanner(System.in);
 
         while(bandera){
             System.out.println("Ingrese Opcion: ");
             System.out.println("1: Directivo.\n2: Obrero");
-            Scanner scanner = new Scanner(System.in);
             int opcUsr = scanner.nextInt();
             Obrero obrero = new Obrero();
             Directivo directivo = new Directivo();
@@ -38,7 +38,6 @@ public class EmpresaX {
                 directivo.setId_Usuario();
                 System.out.println("Tu ID DE USUARIO ES; " + directivo.getId_Usuario());
                 System.out.println("Deseas repetir el proceso?\n 1; Si\n 2; NO");
-                System.out.println("Deseas repetir el proceso?\n1: Si\n2: NO");
                 if (scanner.nextInt() == 2) {
                     bandera = false;
                 }
@@ -53,8 +52,8 @@ public class EmpresaX {
                     bandera = false;
                 }
             }
-            scanner.close();
         }
+        scanner.close();
     }
 
     public long getId_Usuario() {
@@ -68,7 +67,7 @@ public class EmpresaX {
 
 class Directivo extends EmpresaX{
     public Directivo(){
-        System.out.println(this.getClass());
+        //System.out.println(this.getClass());
     }
     int tipoDirectivo;
     String Oficina;
@@ -114,7 +113,7 @@ class Obrero extends EmpresaX{
     }
 
     public Obrero(){
-        System.out.println(this.getClass());
+        //System.out.println(this.getClass());
     }
 
 }
