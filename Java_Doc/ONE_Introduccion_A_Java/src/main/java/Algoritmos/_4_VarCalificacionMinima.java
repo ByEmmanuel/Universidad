@@ -53,7 +53,6 @@ public class _4_VarCalificacionMinima {
 
     private static Map<String, List<Integer>> generarFactores(Map<String, Integer> tabla, int calificacionMinima){
 
-
         Map<String, List<Integer>> tabla2 = new Hashtable<>();
         for (Map.Entry<String, Integer> entrada : tabla.entrySet()) {
             List<Integer> factores = new ArrayList<>();
