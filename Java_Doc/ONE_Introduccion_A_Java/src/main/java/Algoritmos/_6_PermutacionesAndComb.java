@@ -27,8 +27,6 @@ public class _6_PermutacionesAndComb {
 
                 System.out.println("Permutaciones; " + Permutaciones(num1,num2));
                 System.out.println("Combinaciones; " + Combinaciones(num1,num2));
-
-
             }
         }
     }
