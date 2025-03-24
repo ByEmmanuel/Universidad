@@ -44,6 +44,8 @@ SimpleDate* dateNow();                       // Obtiene la fecha y hora actual
 char* dateToString(SimpleDate* date);        // Convierte a cadena legible
 int dateCompare(SimpleDate* d1, SimpleDate* d2); // Compara dos fechas
 
+char* generarFolio(const char *nombre);
+
 // Buffer
 void cleanBuffer();
 

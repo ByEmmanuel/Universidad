@@ -9,6 +9,7 @@
 //Entidad Usuario
 typedef struct {
     int id_usuario;
+    char folio[12];
     char nombreUsuario[20];
     char apellido[20];
     long long celular;
@@ -30,7 +31,7 @@ typedef struct {
     size_t capacidad;// Capacidad total del arreglo
 } ArrayList;
 
-Usuario inicializarUsuario(int id_usuario,const char* nombreUsuario,const char* apellido,long long celular,const char* email,const char* contacto);
+Usuario inicializarUsuario(int id_usuario, const char* folio,const char* nombreUsuario,const char* apellido,long long celular,const char* email,const char* contacto);
 
 int cliente();
 

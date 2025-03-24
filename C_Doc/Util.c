@@ -3,9 +3,12 @@
 //
 
 #include "Util.h"
+
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 //Funciones importantes para reducir la repeticion de codigo
 //  strcspn
@@ -88,6 +91,36 @@ char* cinString(const int bufferSize) {
     }
     opcUsr[strcspn(opcUsr, "\n")] = '\0';
     return opcUsr;
+}
+
+char* generarFolio(const char *nombre) {
+    char* folio = (char*)malloc(13);
+
+    if (folio == NULL) {
+        printf("Error de memoria al reservar %d bytes\n", 13);
+        return NULL;
+    }
+
+    int len = strlen(nombre);
+
+    // Usar las primeras 3 letras del nombre o rellenar con 'X' si es más corto
+    for (int i = 0; i < 3; i++) {
+        if (i < len) {
+            folio[i] = toupper(nombre[i]); // Convertir a mayúscula
+        } else {
+            folio[i] = 'X';
+        }
+    }
+
+    // Generar 9 números pseudo-aleatorios en base al nombre
+    srand(time(NULL) + len); // Semilla basada en el tiempo y longitud del nombre
+    for (int i = 3; i < 12; i++) {
+        folio[i] = '0' + rand() % 10;
+    }
+
+    // Fin de cadena
+    folio[12] = '\0';
+    return folio;
 }
 // Limpia cualquier residuo en el búfer
 void cleanBuffer(){

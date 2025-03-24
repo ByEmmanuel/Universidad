@@ -84,7 +84,7 @@ int validador(){
 
 void imprimirMenuPrincipal() {
     cleanScreen();
-    sleep(1);
+    usleep(2000);
     printf("┌──────────────────────────────┐\n");
     printf("│        MENÚ PRINCIPAL        │\n");
     printf("├──────────────────────────────┤\n");
