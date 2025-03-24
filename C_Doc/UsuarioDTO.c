@@ -17,10 +17,11 @@ ArrayUsuarios arrayUsuarios;
 //Funciones Importantes para la ejecucion de todo el programa y evitar la reutilizacion de codigo
 // strncpy,
 
-Usuario inicializarUsuario(const int id_usuario, const char* nombreUsuario, const char* apellido,
+Usuario inicializarUsuario(const int id_usuario,const char* folio , const char* nombreUsuario, const char* apellido,
                            long long celular, const char* email, const char* contacto) {
     Usuario usr = {0}; // Inicializa la estructura en 0 para evitar datos basura
     usr.id_usuario = id_usuario;
+    asignString(usr.folio, folio, sizeof(usr.folio));
     asignString(usr.nombreUsuario, nombreUsuario, sizeof(usr.nombreUsuario));
     asignString(usr.apellido, apellido, sizeof(usr.apellido));
     usr.celular = celular;
@@ -79,8 +80,10 @@ void modificarCliente(){
     int id_Cliente;
     scanf("%d", &id_Cliente);
 
+    //Esta funcion puede ser contraproducente ya que si algun campo del objeto Usuario, esta vacio,
+    //esta opcion nunca va a funcionar
     Usuario* usuarioNuevo = obtenerUsuario(id_Cliente);
-    if (usuarioNuevo->nombreUsuario == NULL || usuarioNuevo->email == NULL || usuarioNuevo->nombreUsuario == "" || usuarioNuevo == NULL) {
+    if (strIsEmpty(usuarioNuevo->nombreUsuario) || strIsEmpty(usuarioNuevo->email) || strIsEmpty(usuarioNuevo->nombreUsuario) || usuarioNuevo == NULL) {
         printf("Cliente no encontrado.\n");
         return;
     }
@@ -175,6 +178,7 @@ int cliente(){
         //Logica Agregar Cliente
         printf("Ingrese Nombre\n");
         char* nombreUsr = cinString(19);
+        char* folio = generarFolio(nombreUsr);
         printf("Ingrese Apellido\n");
         char* apellidoUsr = cinString(19);
         printf("Ingrese Celular\n");
@@ -199,12 +203,13 @@ int cliente(){
                 return 1;
             }
         }
-        Usuario usuario = inicializarUsuario(id_UsuarioLogico, nombreUsr, apellidoUsr, celularUsr, emailUsr, contactoUsr);
+        Usuario usuario = inicializarUsuario(id_UsuarioLogico, folio, nombreUsr, apellidoUsr, celularUsr, emailUsr, contactoUsr);
 
         mostrarUsuario(usuario);
 
         guardarUsuarioArray(usuario);
         free(nombreUsr);
+        free(folio);
         free(apellidoUsr);
         //free(celularUsr);
         free(emailUsr);
@@ -219,7 +224,7 @@ int cliente(){
 
 void mostrarUsuario(Usuario usr) {
     printf("ID Usuario: %d\n", usr.id_usuario);
-    printf("HOLA MUNDO");
+    printf("Folio Usuario: %s\n", usr.folio);
     printf("Nombre: %s\n", usr.nombreUsuario);
     printf("Apellido: %s\n", usr.apellido);
     printf("Celular: %lld\n", usr.celular);
