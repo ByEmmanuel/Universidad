@@ -219,6 +219,7 @@ int cliente(){
 
 void mostrarUsuario(Usuario usr) {
     printf("ID Usuario: %d\n", usr.id_usuario);
+    printf("HOLA MUNDO");
     printf("Nombre: %s\n", usr.nombreUsuario);
     printf("Apellido: %s\n", usr.apellido);
     printf("Celular: %lld\n", usr.celular);
