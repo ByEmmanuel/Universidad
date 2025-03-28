@@ -78,6 +78,11 @@ void menuPrincipal(int bandera){
             bandera = preguntaSalida();
             break;
         case 6:
+            cleanScreen();
+            dudas();
+            bandera = preguntaSalida();
+            break;
+        case 7:
             printf("Gracias por usar el sistema");
             bandera = 0;
             opc = 0;
