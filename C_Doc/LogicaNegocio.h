@@ -24,7 +24,7 @@ int almacen();
 
 int otro();
 
-int validador();
+int dudas();
 
 
 

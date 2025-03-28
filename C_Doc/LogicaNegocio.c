@@ -39,7 +39,7 @@ int loginUsuario(){
             //scanf("%s", passwUsuario);
 
             // Verificar contraseña
-            if (strcmp(passwUsuario, contraseñasUsuarios[usuarioIndex]) == 0) {
+            if (strEquals(passwUsuario, contraseñasUsuarios[usuarioIndex])) {
                 printf("Inicio de sesión exitoso.\n");
                 printf("\033[2J\033[H");
                 return 1;
@@ -48,18 +48,30 @@ int loginUsuario(){
         } else {
             printf("Usuario no encontrado.\n");
         }
-
         intentosUsuario++;
     } while (intentosUsuario < 3);  // Permitir 3 intentos
 
     printf("Se agotaron los intentos.\n");
     return 0;
 }
+//Aqui iría va la funcion cliente pero esta puesta en DTO USUARIO
 
 int servicio(){
     printf("Opcion Servicio ");
+    printf("\n┌──────────────────────────────┐\n");
+    printf("│        MENÚ Servicio         │\n");
+    printf("├──────────────────────────────┤\n");
+    char* menu[6] = {"Ingreso","Lavado","Medidas","Rectificar","Ensamble","Salir O regresar"};
+    for (int i = 0; i < 6; i++) {
+        printf("│   %d - %-23s│\n", i+1, menu[i]);
+    }
+    printf("│                              │\n");
+    printf("└──────────────────────────────┘\n");
+    printf("\033[10;1HSeleccione una opción: ");
+
     //Ingresar manualmente que es lo que se quiere reconstruir
     // Cabeza o culata
+
     return 0;
 }
 
@@ -78,7 +90,8 @@ int otro(){
     return 0;
 }
 
-int validador(){
+int dudas(){
+    printf("Opcion Dudas");
     return 0;
 }
 
@@ -88,8 +101,8 @@ void imprimirMenuPrincipal() {
     printf("┌──────────────────────────────┐\n");
     printf("│        MENÚ PRINCIPAL        │\n");
     printf("├──────────────────────────────┤\n");
-    char* menuUno[6] = {"Clientes", "Pago", "Almacen", "Dudas", "Otros", "Salir"};
-    for (int i = 0; i < 6; i++) {
+    char* menuUno[7] = {"Clientes", "Servicio", "Pago", "Almacen", "Otros", "Dudas", "Salir"};
+    for (int i = 0; i < 7; i++) {
         printf("│   %d - %-23s│\n", i+1, menuUno[i]);
     }
     printf("│                              │\n");
