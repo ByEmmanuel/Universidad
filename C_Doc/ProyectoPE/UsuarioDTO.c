@@ -11,10 +11,13 @@
 #include "Util.h"
 
 int id_UsuarioLogico = 0;
+int id_Pieza = 0;
 // Declaración global del array de usuarios
 ArrayUsuarios arrayUsuarios;
+ArryTickets arrayTickets;
+ArrayList arrayPiezas;
 
-//Funciones Importantes para la ejecucion de todo el programa y evitar la reutilizacion de codigo
+//Funciones Importantes para la ejecucion detodo el programa y evitar la reutilizacion de codigo
 // strncpy,
 
 Usuario inicializarUsuario(const int id_usuario,const char* folio , const char* nombreUsuario, const char* apellido,
@@ -27,15 +30,61 @@ Usuario inicializarUsuario(const int id_usuario,const char* folio , const char* 
     usr.celular = celular;
     asignString(usr.email, email, sizeof(usr.email));
     asignString(usr.contacto, contacto, sizeof(usr.contacto));
+
+    usr.pieza = NULL;
     //Adiciona 1 al ID usuario desde aqui para que el usuario nunca tenga el mismo ID sin importar si es valido el usuario o no
     id_UsuarioLogico = id_UsuarioLogico + 1;
     return usr;
 }
+void asignarCulataUsuario(Usuario *usr, Culata* culata) {
+    usr->pieza = (Pieza*) culata;
+}
+void asignarMonoblockUsuario(Usuario *usr, Monoblock* monoblock){
+    usr->pieza = (Pieza*) monoblock;
+}
+
+Pieza inicializarPieza(const int id_Usuario, const int tipoPieza, const char* material, const float desgaste, float tolerancia,
+                        const float medidaOriginal, const float medidaActual, const int necesitaRectificacion ){
+    Pieza pz = {0};
+    pz.id_Usuario = id_Usuario;
+    pz.id_Pieza = id_Pieza;
+    pz.tipo = tipoPieza;
+    asignString(pz.material, material, sizeof(material));
+    pz.desgaste = desgaste;
+    pz.tolerancia = tolerancia;
+    pz.medidaOriginal = medidaOriginal;
+    pz.medidaActual = medidaActual;
+    pz.necesitaRectificacion = necesitaRectificacion;
+
+    return pz;
+}
+
+Culata* inicializarCulata(const Pieza pieza, const int numValvulas ,const float presionPrueba,
+                const int tipoCombustible, const int fisuras){
+    Culata* culata = malloc(sizeof(culata));
+    culata->base = pieza;
+    //culata.base.tipo = 1;
+    //asignString(culata.base.material, material ,30);
+    //culata.base.desgaste = desgaste;
+    //culata.base.tolerancia = tolerancia;
+    //culata.base.medidaOriginal = medidaOriginal;
+    //culata.base.medidaActual = medidaActual;
+    //culata.base.necesitaRectificacion = rectificacion;
+    culata->numValvulas = numValvulas;
+    culata->presionPrueba = presionPrueba;
+    culata->tipoCombustible = tipoCombustible;
+    culata->tieneFisuras = fisuras;
+    // Agregar medidas manualmente
+    return culata;
+}
 
 // 🔹 Inicializar el array con una capacidad inicial
+/**
+ * @Deprecated
+ */
 void inicializarArray(int capacidadInicial) {
-    arrayUsuarios.lista = (Usuario*)malloc(capacidadInicial * sizeof(Usuario));
-    if (arrayUsuarios.lista == NULL) {
+    arrayUsuarios.datos = (Usuario*)malloc(capacidadInicial * sizeof(Usuario));
+    if (arrayUsuarios.datos == NULL) {
         printf("Error al reservar memoria para el array.\n");
         exit(1);
     }
@@ -47,26 +96,45 @@ void inicializarArray(int capacidadInicial) {
 int guardarUsuarioArray(Usuario usuario) {
     if (arrayUsuarios.total >= arrayUsuarios.capacidad) {
         int nuevaCapacidad = arrayUsuarios.capacidad == 0 ? 1 : arrayUsuarios.capacidad * 2;
-        Usuario* nuevoArray = realloc(arrayUsuarios.lista, nuevaCapacidad * sizeof(Usuario));
+        Usuario* nuevoArray = realloc(arrayUsuarios.datos, nuevaCapacidad * sizeof(Usuario));
         if (nuevoArray == NULL) {
             printf("Error al redimensionar el array de usuarios.\n");
-            return 0; // Retornar 0 en caso de error
+            return -1;
         }
-        arrayUsuarios.lista = nuevoArray;
+        arrayUsuarios.datos = nuevoArray;
         arrayUsuarios.capacidad = nuevaCapacidad;
     }
-    arrayUsuarios.lista[arrayUsuarios.total] = usuario;
+    arrayUsuarios.datos[arrayUsuarios.total] = usuario;
     arrayUsuarios.total++;
     return 1; // Retorna 1 si se guardó correctamente
 }
+
+int guardarPiezaArray(Pieza* pieza) {
+    if (arrayPiezas.size >= arrayPiezas.capacidad) {
+        // Si la capacidad está llena, redimensionamos el arreglo
+        size_t nuevaCapacidad = arrayPiezas.capacidad == 0 ? 1 : arrayPiezas.capacidad * 2;
+        Pieza** nuevoArray = realloc(arrayPiezas.data, nuevaCapacidad * sizeof(Pieza*));
+        if (nuevoArray == NULL) {
+            printf("Error al redimensionar el array de Piezas.\n");
+            return -1;  // Si realloc falla, retornar error
+        }
+        arrayPiezas.data = nuevoArray;  // Asignar el nuevo arreglo redimensionado
+        arrayPiezas.capacidad = nuevaCapacidad; // Actualizar la capacidad
+    }
+    arrayPiezas.data[arrayPiezas.size] = pieza;  // Guardar puntero a la pieza
+    arrayPiezas.size++;  // Incrementar el número de elementos
+    return 0;  // Éxito
+}
+
+
 
 // Función para obtener un usuario por ID
 Usuario* obtenerUsuario(const int id) {
     cleanScreen();
     for (int i = 0; i < arrayUsuarios.total; i++) {
-        if (arrayUsuarios.lista[i].id_usuario == id) {
-            mostrarUsuario(arrayUsuarios.lista[i]);
-            return &arrayUsuarios.lista[i];
+        if (arrayUsuarios.datos[i].id_usuario == id) {
+            mostrarUsuario(arrayUsuarios.datos[i]);
+            return &arrayUsuarios.datos[i];
         }
     }
     // Retorna NULL si el usuario no existe
@@ -220,6 +288,35 @@ int cliente(){
     };
     cleanScreen();
     return 1;
+}
+
+void imprimirPiezasPorUsuario(int idUsuario) {
+    printf("Piezas para el Usuario ID: %d\n", idUsuario);
+    // Recorrer todas las piezas almacenadas
+    for (size_t i = 0; i < arrayPiezas.size; i++) {
+        Pieza* pieza = arrayPiezas.data[i];  // Obtener puntero a la pieza
+
+        // Verificar si el id_Usuario coincide
+        if (pieza->id_Usuario == idUsuario) {
+            // Imprimir datos comunes de la pieza
+            printf("ID Pieza: %d, Tipo: %d, Material: %s, Desgaste: %.2f%%\n",
+                   pieza->id_Pieza, pieza->tipo, pieza->material, pieza->desgaste);
+
+            // Si la pieza es una Culata
+            if (pieza->tipo == CULATA) {
+                Culata* culata = (Culata*)pieza;  // Hacer cast a Culata
+                printf("Culata: Número de válvulas: %d, Presión de prueba: %.2f, Combustible: %d, Tiene fisuras: %d\n",
+                       culata->numValvulas, culata->presionPrueba, culata->tipoCombustible, culata->tieneFisuras);
+            }
+            // Si la pieza es un Monoblock
+            else if (pieza->tipo == MONOBLOCK) {
+                Monoblock* monoblock = (Monoblock*)pieza;  // Hacer cast a Monoblock
+                printf("Monoblock: Número de cilindros: %d, Diámetro del cilindro: %.2f, Ovalización: %.2f, Alineación cigüeñal: %.2f\n",
+                       monoblock->numCilindros, monoblock->diametroCilindro, monoblock->ovalizacion, monoblock->alineacionCiguenal);
+            }
+            printf("\n");  // Línea en blanco entre piezas
+        }
+    }
 }
 
 void mostrarUsuario(Usuario usr) {
