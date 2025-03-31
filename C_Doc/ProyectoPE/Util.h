@@ -6,7 +6,7 @@
 
 #ifndef Util_H
 #define Util_H
-#include <sys/_types/_size_t.h>
+#include <stddef.h>
 #include "UsuarioDTO.h"
 
 //Strigs y metodos no agregados

@@ -66,7 +66,7 @@ int servicio(){
     float medidaOriginal;   // Medida original de la pieza en mm
     float medidaActual;     // Medida actual después del desgaste
     int numValvulas;
-    float presionPrueba;
+    double presionPrueba;
     TipoCombustible tipo_combustible = {};
     int tieneFisuras;
 
@@ -126,7 +126,7 @@ int servicio(){
                 scanf("%d", &numValvulas);
                 printf("Ingrese numero Valvulas\n");
                 // Ingresar presionPrueba
-                scanf("%f", &presionPrueba);
+                scanf("%d", &presionPrueba);
                 printf("Ingrese tipoCombustible");
                 // Ingresar tipoCombustible
                 int opcCombustible;
@@ -150,15 +150,21 @@ int servicio(){
                 // Ingresar tiene fisuras
                 printf("Tiene Fisuras?\n1: Si. \n2: No.");
                 scanf("%d", &tieneFisuras);
-                Pieza piezaUsuario = inicializarPieza(id_Usuario, 0, material, desgaste, tolerancia, medidaOriginal, medidaActual, necesitaRectificacion());
+                Pieza piezaUsuario = inicializarPieza(id_Usuario, 1, material, desgaste, tolerancia, medidaOriginal, medidaActual, necesitaRectificacion());
                 //Polimorfismo
-                Culata* pzc = inicializarCulata(piezaUsuario, numValvulas, presionPrueba, tipo_combustible,
-                                                tieneFisuras);
-                guardarPiezaArray((Pieza*)pzc);
+                printf("Num valvulas %d,\nPresion Prueba %f,\nTipoCombustible %d,\nFisuras? %d\n", numValvulas,
+                       presionPrueba, tipo_combustible, tieneFisuras);
+                Culata* pzc =  inicializarCulata(piezaUsuario, numValvulas, presionPrueba, tipo_combustible,
+                                              tieneFisuras);
+                if (pzc) {
+                    guardarPiezaArray((Pieza*)pzc);  // Guardamos la pieza como puntero
+                    free(pzc); // Liberamos memoria
+                }
             }else if (opcusr == 2){
 
             }
             printf("Opcion no valida");
+
             break;
         case 2:
         //Lavado

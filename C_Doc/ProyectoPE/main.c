@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <_time.h>
+#include <time.h>
 #include "LogicaNegocio.h"
 #include "UsuarioDTO.h"
 #include <pthread.h>
