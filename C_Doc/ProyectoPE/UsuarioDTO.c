@@ -15,7 +15,8 @@ int id_Pieza = 0;
 // Declaración global del array de usuarios
 ArrayUsuarios arrayUsuarios;
 ArryTickets arrayTickets;
-ArrayList arrayPiezas;
+ArrayList array_list;
+ArrayPiezas arrayPiezas;
 
 //Funciones Importantes para la ejecucion detodo el programa y evitar la reutilizacion de codigo
 // strncpy,
@@ -59,9 +60,9 @@ Pieza inicializarPieza(const int id_Usuario, const int tipoPieza, const char* ma
     return pz;
 }
 
-Culata* inicializarCulata(const Pieza pieza, const int numValvulas ,const float presionPrueba,
+Culata* inicializarCulata(const Pieza pieza, const int numValvulas ,const double presionPrueba,
                 const int tipoCombustible, const int fisuras){
-    Culata* culata = malloc(sizeof(culata));
+    Culata* culata = (Culata*)malloc(sizeof(Culata));
     culata->base = pieza;
     //culata.base.tipo = 1;
     //asignString(culata.base.material, material ,30);
@@ -110,19 +111,19 @@ int guardarUsuarioArray(Usuario usuario) {
 }
 
 int guardarPiezaArray(Pieza* pieza) {
-    if (arrayPiezas.size >= arrayPiezas.capacidad) {
+    if (arrayPiezas.tamaño >= arrayPiezas.capacidad) {
         // Si la capacidad está llena, redimensionamos el arreglo
-        size_t nuevaCapacidad = arrayPiezas.capacidad == 0 ? 1 : arrayPiezas.capacidad * 2;
-        Pieza** nuevoArray = realloc(arrayPiezas.data, nuevaCapacidad * sizeof(Pieza*));
+        int nuevaCapacidad = arrayPiezas.capacidad == 0 ? 1 : arrayPiezas.capacidad * 2;
+        Pieza* nuevoArray = realloc(arrayPiezas.datos, nuevaCapacidad * sizeof(Pieza));
         if (nuevoArray == NULL) {
             printf("Error al redimensionar el array de Piezas.\n");
             return -1;  // Si realloc falla, retornar error
         }
-        arrayPiezas.data = nuevoArray;  // Asignar el nuevo arreglo redimensionado
+        arrayPiezas.datos = nuevoArray;  // Asignar el nuevo arreglo redimensionado
         arrayPiezas.capacidad = nuevaCapacidad; // Actualizar la capacidad
     }
-    arrayPiezas.data[arrayPiezas.size] = pieza;  // Guardar puntero a la pieza
-    arrayPiezas.size++;  // Incrementar el número de elementos
+    arrayPiezas.datos[arrayPiezas.tamaño] = *pieza;  // Guardar puntero a la pieza
+    arrayPiezas.tamaño++;  // Incrementar el número de elementos
     return 0;  // Éxito
 }
 
@@ -233,11 +234,11 @@ int cliente(){
     //Funcion que crea a los clientes
     printf("Opcion Cliente");
     //Agregar valores (Todo en un String A una lista)
-    printf("\n Agregar Cliente? 1\n Editar Cliente 2\n Menu Principal 3\n");
+    printf("\n Agregar Cliente? 1\n Editar Cliente 2\n Listar Cliente 3\n Menu Principal 4\n");
     int opcCliente;
     scanf("%d",&opcCliente);
     cleanBuffer();
-    if (opcCliente == 3){
+    if (opcCliente == 4){
         return 1;
     }
     if(opcCliente == 1){
@@ -285,7 +286,21 @@ int cliente(){
 
     }else if (opcCliente == 2){
         modificarCliente();
+    }else if (opcCliente == 3) {
+        for (int i = 0; i < arrayUsuarios.capacidad; i++) {
+            printf("ID: %d\nFolio: %s\nNombre: %s\nApellido: %s\nCelular: %lld\nEmail: %s\nContacto: %s\n\n",
+                   arrayUsuarios.datos[i].id_usuario,
+                   arrayUsuarios.datos[i].folio,
+                   arrayUsuarios.datos[i].nombreUsuario,
+                   arrayUsuarios.datos[i].apellido,
+                   arrayUsuarios.datos[i].celular,
+                   arrayUsuarios.datos[i].email,
+                   arrayUsuarios.datos[i].contacto);
+                   //ArrayUsuarios->datos[i].id, ArrayUsuarios->datos[i].nombre, ArrayUsuarios->datos[i].edad);
+        }
+
     };
+
     cleanScreen();
     return 1;
 }
@@ -293,8 +308,8 @@ int cliente(){
 void imprimirPiezasPorUsuario(int idUsuario) {
     printf("Piezas para el Usuario ID: %d\n", idUsuario);
     // Recorrer todas las piezas almacenadas
-    for (size_t i = 0; i < arrayPiezas.size; i++) {
-        Pieza* pieza = arrayPiezas.data[i];  // Obtener puntero a la pieza
+    for (int i = 0; i < arrayPiezas.tamaño; i++) {
+        Pieza* pieza = &arrayPiezas.datos[i];  // Obtener puntero a la pieza
 
         // Verificar si el id_Usuario coincide
         if (pieza->id_Usuario == idUsuario) {
@@ -305,8 +320,12 @@ void imprimirPiezasPorUsuario(int idUsuario) {
             // Si la pieza es una Culata
             if (pieza->tipo == CULATA) {
                 Culata* culata = (Culata*)pieza;  // Hacer cast a Culata
-                printf("Culata: Número de válvulas: %d, Presión de prueba: %.2f, Combustible: %d, Tiene fisuras: %d\n",
-                       culata->numValvulas, culata->presionPrueba, culata->tipoCombustible, culata->tieneFisuras);
+
+                printf("Tolerancia: %.2f,\n Medida Original: %.2f,\n Medida Actual: %.2f,\n Necesita Rectificacion: %d,\n"
+                       "Número de válvulas: %d,\n Presión de prueba: %.2f,\n Combustible: %d,\n Tiene fisuras: %d,\n",
+                       pieza->tolerancia, pieza->medidaOriginal, pieza->medidaActual, culata->numValvulas,
+                       pieza->necesitaRectificacion, culata->presionPrueba, culata->tipoCombustible,
+                       culata->tieneFisuras);
             }
             // Si la pieza es un Monoblock
             else if (pieza->tipo == MONOBLOCK) {

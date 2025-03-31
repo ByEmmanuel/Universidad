@@ -4,12 +4,12 @@
 
 #ifndef NEGOCIODTO_H
 #define NEGOCIODTO_H
-#include <sys/_types/_size_t.h>
+#include <stddef.h>
 
 // 0 Monoblock, 1 culata
 typedef enum { MONOBLOCK, CULATA } TipoPieza;
 // 0 GASOLINA, 1 DIESEL, 2 HIBRIDO
-typedef enum { GASOLINA, DIESEL, HIBRIDO } TipoCombustible;
+typedef enum { GASOLINA = 0, DIESEL = 1, HIBRIDO = 2 } TipoCombustible;
 
 typedef struct{
     int id_Pieza;            // Identificador único de la pieza
@@ -27,7 +27,7 @@ typedef struct{
 typedef struct {
     Pieza base; // Composición: Culata contiene una Pieza
     int numValvulas;
-    float presionPrueba;
+    double presionPrueba;
     TipoCombustible tipoCombustible;
     int tieneFisuras;
 } Culata;
@@ -73,6 +73,12 @@ typedef struct{
     int capacidad;
 }ArryTickets;
 
+typedef struct {
+    Pieza* datos;  // Puntero a la lista de usuarios
+    int tamaño;       // Número actual de Piezas / elementos
+    int capacidad;   // Capacidad máxima del array
+} ArrayPiezas;
+
 // Array para x Objeto
 typedef struct {
     void** data;    // Arreglo dinámico de punteros genéricos
@@ -102,7 +108,7 @@ int guardarPiezaArray(Pieza* pieza);
 Pieza inicializarPieza(int id_Usuario, int tipoPieza, const char* material,float desgaste, float tolerancia,
     float medidaOriginal, float medidaActual, int necesitaRectificacion );
 
-Culata* inicializarCulata(Pieza pieza,int numValvulas ,float presionPrueba,
+Culata* inicializarCulata(Pieza pieza,int numValvulas ,double presionPrueba,
     int tipoCombustible,int fisuras);
 
 void imprimirPiezasPorUsuario(int id_usuario);
