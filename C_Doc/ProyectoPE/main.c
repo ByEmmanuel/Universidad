@@ -40,7 +40,8 @@ int main(){
         imprimirMenuPrincipal();
         menuPrincipal(bandera);
     }
-    imprimirPiezasPorUsuario(0);
+    //imprimirPiezasPorUsuario(0);
+    listarPiezas();
 
     return 0;
 }

@@ -60,7 +60,7 @@ Pieza inicializarPieza(const int id_Usuario, const int tipoPieza, const char* ma
     return pz;
 }
 
-Culata* inicializarCulata(const Pieza pieza, const int numValvulas ,const double presionPrueba,
+Culata inicializarCulata(const Pieza pieza, const int numValvulas ,const double presionPrueba,
                 const int tipoCombustible, const int fisuras){
     Culata* culata = (Culata*)malloc(sizeof(Culata));
     culata->base = pieza;
@@ -76,7 +76,7 @@ Culata* inicializarCulata(const Pieza pieza, const int numValvulas ,const double
     culata->tipoCombustible = tipoCombustible;
     culata->tieneFisuras = fisuras;
     // Agregar medidas manualmente
-    return culata;
+    return *culata;
 }
 
 // 🔹 Inicializar el array con una capacidad inicial
@@ -110,7 +110,7 @@ int guardarUsuarioArray(Usuario usuario) {
     return 1; // Retorna 1 si se guardó correctamente
 }
 
-int guardarPiezaArray(Pieza* pieza) {
+int guardarPiezaArray(void* pieza) {
     if (arrayPiezas.tamaño >= arrayPiezas.capacidad) {
         // Si la capacidad está llena, redimensionamos el arreglo
         int nuevaCapacidad = arrayPiezas.capacidad == 0 ? 1 : arrayPiezas.capacidad * 2;
@@ -122,12 +122,10 @@ int guardarPiezaArray(Pieza* pieza) {
         arrayPiezas.datos = nuevoArray;  // Asignar el nuevo arreglo redimensionado
         arrayPiezas.capacidad = nuevaCapacidad; // Actualizar la capacidad
     }
-    arrayPiezas.datos[arrayPiezas.tamaño] = *pieza;  // Guardar puntero a la pieza
+    arrayPiezas.datos[arrayPiezas.tamaño] = pieza;  // Guardar puntero a la pieza
     arrayPiezas.tamaño++;  // Incrementar el número de elementos
     return 0;  // Éxito
 }
-
-
 
 // Función para obtener un usuario por ID
 Usuario* obtenerUsuario(const int id) {
@@ -335,6 +333,40 @@ void imprimirPiezasPorUsuario(int idUsuario) {
             }
             printf("\n");  // Línea en blanco entre piezas
         }
+    }
+}
+
+void listarPiezas(){
+    printf("==============================================\n");
+    printf("          LISTADO DE TODAS LAS PIEZAS         \n");
+    printf("==============================================\n");
+
+    for (size_t i = 0; i < arrayPiezas.tamaño; i++) {
+        Pieza* pieza = (Pieza*)arrayPiezas.datos[i];  // Convertimos a Pieza*
+
+        printf("\nID Pieza: %d\n", pieza->id_Pieza);
+        printf("ID Usuario: %d\n", pieza->id_Usuario);
+        printf("Material: %s\n", pieza->material);
+        printf("Desgaste: %.2f%%\n", pieza->desgaste);
+        printf("Tolerancia: %.2f mm\n", pieza->tolerancia);
+        printf("Medida Original: %.2f mm\n", pieza->medidaOriginal);
+        printf("Medida Actual: %.2f mm\n", pieza->medidaActual);
+        printf("Necesita Rectificación: %s\n", pieza->necesitaRectificacion ? "Si" : "No");
+
+        if (pieza->tipo == CULATA) {
+            Culata* culata = (Culata*)pieza;
+            printf("Numero de Valvulas: %d\n", culata->numValvulas);
+            printf("Presion de Prueba: %.2f\n", culata->presionPrueba);
+            printf("Tipo de Combustible: %s\n", culata->tipoCombustible == 0 ? "Gasolina" : "Diesel");
+            printf("Tiene Fisuras: %s\n", culata->tieneFisuras ? "Si" : "No");
+        } else if (pieza->tipo == MONOBLOCK) {
+            Monoblock* monoblock = (Monoblock*)pieza;
+            printf("Numero de Cilindros: %d\n", monoblock->numCilindros);
+            printf("Diametro Cilindros: %.2f mm\n", monoblock->diametroCilindro);
+            printf("Altura Bloque: %.2f mm\n", monoblock->alineacionCiguenal);
+        }
+
+        printf("----------------------------------------------\n");
     }
 }
 

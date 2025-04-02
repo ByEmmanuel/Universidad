@@ -74,7 +74,7 @@ typedef struct{
 }ArryTickets;
 
 typedef struct {
-    Pieza* datos;  // Puntero a la lista de usuarios
+    void** datos;  // Puntero a la lista de usuarios
     int tamaño;       // Número actual de Piezas / elementos
     int capacidad;   // Capacidad máxima del array
 } ArrayPiezas;
@@ -103,14 +103,18 @@ int guardarUsuarioArray(Usuario usuario);
  */
 ArrayUsuarios* inicializarArrayUsuarios(int capacidadInicial);
 
-int guardarPiezaArray(Pieza* pieza);
+int guardarPiezaArray(void* pieza);
 
 Pieza inicializarPieza(int id_Usuario, int tipoPieza, const char* material,float desgaste, float tolerancia,
     float medidaOriginal, float medidaActual, int necesitaRectificacion );
 
-Culata* inicializarCulata(Pieza pieza,int numValvulas ,double presionPrueba,
+Culata inicializarCulata(Pieza pieza,int numValvulas ,double presionPrueba,
     int tipoCombustible,int fisuras);
 
 void imprimirPiezasPorUsuario(int id_usuario);
+
+void listarUsuarios(ArrayUsuarios listaUsuarios);
+
+void listarPiezas();
 
 #endif //NEGOCIODTO_H
