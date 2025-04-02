@@ -154,12 +154,10 @@ int servicio(){
                 //Polimorfismo
                 printf("Num valvulas %d,\nPresion Prueba %f,\nTipoCombustible %d,\nFisuras? %d\n", numValvulas,
                        presionPrueba, tipo_combustible, tieneFisuras);
-                Culata* pzc =  inicializarCulata(piezaUsuario, numValvulas, presionPrueba, tipo_combustible,
-                                              tieneFisuras);
-                if (pzc) {
-                    guardarPiezaArray((Pieza*)pzc);  // Guardamos la pieza como puntero
-                    free(pzc); // Liberamos memoria
-                }
+                    Culata* pzc = malloc(sizeof(Culata));  // Reservamos memoria para Culata
+                    *pzc = inicializarCulata(piezaUsuario, numValvulas, presionPrueba, tipo_combustible, tieneFisuras);
+                    guardarPiezaArray((void*)pzc);  // Se guarda como puntero genérico
+
             }else if (opcusr == 2){
 
             }
