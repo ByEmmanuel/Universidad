@@ -114,7 +114,7 @@ int guardarPiezaArray(void* pieza) {
     if (arrayPiezas.tamaño >= arrayPiezas.capacidad) {
         // Si la capacidad está llena, redimensionamos el arreglo
         int nuevaCapacidad = arrayPiezas.capacidad == 0 ? 1 : arrayPiezas.capacidad * 2;
-        Pieza* nuevoArray = realloc(arrayPiezas.datos, nuevaCapacidad * sizeof(Pieza));
+        void** nuevoArray = realloc(arrayPiezas.datos, nuevaCapacidad * sizeof(void*));
         if (nuevoArray == NULL) {
             printf("Error al redimensionar el array de Piezas.\n");
             return -1;  // Si realloc falla, retornar error
