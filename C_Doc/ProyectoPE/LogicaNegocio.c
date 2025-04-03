@@ -1,14 +1,16 @@
 //
 // Created by Jesus Emmanuel Garcia on 2/17/25.
 //
-#include "LogicaNegocio.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <ncurses.h>
 
 #include "UsuarioDTO.h"
 #include "Util.h"
+#include "UserInterface.h"
+#include "LogicaNegocio.h"
 
 #define MAX_USUARIOS 6
 #define MAX_LONGITUD 50

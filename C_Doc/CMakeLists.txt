@@ -12,5 +12,7 @@ add_executable(C_Doc
         ProyectoPE/UsuarioDTO.h
         ProyectoPE/Util.c
         ProyectoPE/Util.h
+        ProyectoPE/UserInterface.c
+        ProyectoPE/UserInterface.h
 )
 

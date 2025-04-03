@@ -74,24 +74,19 @@ void asignString(char *dst, const char *src, const size_t n){
 }
 
 // Funcion para evitar usar scanF y evitar desbordamientos de buffer
-char* cinString(const int bufferSize) {
-    // Validar el tamaño del búfer
-    if (bufferSize <= 0){
-        printf("Tamaño de búfer inválido: %d\n", bufferSize);
-        return NULL;
-    };
-    // Reservar memoria
-    char* opcUsr = (char*)malloc(bufferSize);
-    if (opcUsr == NULL){ printf("Error de memoria al reservar %d bytes\n", bufferSize);  return NULL;};
-    // Leer la entrada
-    if (fgets(opcUsr, bufferSize, stdin) == NULL) {
-        printf("Error al leer la entrada o EOF detectado\n");
-        free(opcUsr);
-        return NULL;
+// Función para leer cadenas de manera segura
+char* cinString(int length) {
+    char* buffer = (char*)malloc(length + 1); // Reservar espacio para la cadena
+    if (buffer == NULL) {
+        perror("Error al asignar memoria");
+        exit(1);
     }
-    opcUsr[strcspn(opcUsr, "\n")] = '\0';
-    return opcUsr;
+    if (fgets(buffer, length + 1, stdin) != NULL) {
+        buffer[strcspn(buffer, "\n")] = '\0'; // Eliminar el salto de línea al final
+    }
+    return buffer;
 }
+
 
 char* generarFolio(const char *nombre) {
     char* folio = (char*)malloc(13);

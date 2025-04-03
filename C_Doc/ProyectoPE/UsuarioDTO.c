@@ -4,10 +4,12 @@
 
 #include "UsuarioDTO.h"
 
+#include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "LogicaNegocio.h"
+#include "UserInterface.h"
 #include "Util.h"
 
 int id_UsuarioLogico = 0;
@@ -230,75 +232,89 @@ void modificarCliente(){
 
 int cliente(){
     //Funcion que crea a los clientes
-    printf("Opcion Cliente");
     //Agregar valores (Todo en un String A una lista)
-    printf("\n Agregar Cliente? 1\n Editar Cliente 2\n Listar Cliente 3\n Menu Principal 4\n");
-    int opcCliente;
-    scanf("%d",&opcCliente);
-    cleanBuffer();
-    if (opcCliente == 4){
-        return 1;
-    }
-    if(opcCliente == 1){
-        cleanScreen();
-        long long celularUsr;
-        //Logica Agregar Cliente
-        printf("Ingrese Nombre\n");
-        char* nombreUsr = cinString(19);
-        char* folio = generarFolio(nombreUsr);
-        printf("Ingrese Apellido\n");
-        char* apellidoUsr = cinString(19);
-        printf("Ingrese Celular\n");
-        scanf("%9d", &celularUsr);
-        cleanBuffer();
-        printf("Ingrese Email\n");
-        char* emailUsr = cinString(49);
-        printf("Ingrese Contacto\n");
-        char* contactoUsr = cinString(29);
 
-        while (!strContains(emailUsr,"@")){
+    // MENU CLIENTE
+    int opcCliente = menuCliente();
+    clear();
+    refresh();
+
+
+    if (opcCliente == 4) {
+        return 1;  // Volver al menú principal
+    }
+
+    if (opcCliente == 1) {
+        cleanScreen();
+        clear();
+        mvprintw(2, 10, "Agregar Cliente");
+        mvprintw(4, 10, "Ingrese Nombre: ");
+        char* nombreUsr = leerEntrada(4, 26, 19);
+        char* folio = generarFolio(nombreUsr);
+        mvprintw(5, 10, "Ingrese Apellido: ");
+        char* apellidoUsr = leerEntrada(5, 28, 19);
+        mvprintw(6, 10, "Ingrese Celular: ");
+        char* celularStr = leerEntrada(6, 27, 15);
+        long long celularUsr = atoll(celularStr);
+        mvprintw(7, 10, "Ingrese Email: ");
+        char* emailUsr = leerEntrada(7, 25, 49);
+        mvprintw(8, 10, "Ingrese Contacto: ");
+        char* contactoUsr = leerEntrada(8, 28, 29);
+
+
+        while (!strContains(emailUsr, "@")) {
             free(emailUsr);
-            printf("Tu Email no es valido, ¿Deseas volver a ingrearlo? \n 1: SI 2: NO");
-            const char* opcUsr = cinString(5);
-            if (strContains(opcUsr, "1")){
-                printf("\033[2A\033[2K\033[1B\033[2K");
-                fflush(stdout);
-                printf("Ingrese Email\n");
-                emailUsr = cinString(49);
-            }else{
-                printf("Registro INVALIDO  : Email Invalido");
+
+            mvprintw(10,10,"Tu Email no es valido, ¿Deseas volver a ingresarlo? \n 1: SI 2: NO\n");
+            const char* opcUsr = leerEntrada(10,28,5);
+            if (strContains(opcUsr, "1")) {
+                mvprintw(10,10,"\033[2A\033[2K\033[1B\033[2K");
+                clear();
+                //fflush(stdout);
+                mvprintw(10,12,"Ingrese Email\n");
+                emailUsr = leerEntrada(15,28,49);
+            } else {
+                mvprintw(10,13,"Registro INVÁLIDO: Email Inválido\n");
+                free(nombreUsr);
+                free(folio);
+                free(apellidoUsr);
+                free(contactoUsr);
                 return 1;
             }
         }
+
         Usuario usuario = inicializarUsuario(id_UsuarioLogico, folio, nombreUsr, apellidoUsr, celularUsr, emailUsr, contactoUsr);
-
         mostrarUsuario(usuario);
-
         guardarUsuarioArray(usuario);
+
         free(nombreUsr);
         free(folio);
         free(apellidoUsr);
-        //free(celularUsr);
         free(emailUsr);
         free(contactoUsr);
 
-    }else if (opcCliente == 2){
+    } else if (opcCliente == 2){
         modificarCliente();
-    }else if (opcCliente == 3) {
-        for (int i = 0; i < arrayUsuarios.capacidad; i++) {
-            printf("ID: %d\nFolio: %s\nNombre: %s\nApellido: %s\nCelular: %lld\nEmail: %s\nContacto: %s\n\n",
-                   arrayUsuarios.datos[i].id_usuario,
-                   arrayUsuarios.datos[i].folio,
-                   arrayUsuarios.datos[i].nombreUsuario,
-                   arrayUsuarios.datos[i].apellido,
-                   arrayUsuarios.datos[i].celular,
-                   arrayUsuarios.datos[i].email,
-                   arrayUsuarios.datos[i].contacto);
-                   //ArrayUsuarios->datos[i].id, ArrayUsuarios->datos[i].nombre, ArrayUsuarios->datos[i].edad);
+    }else if (opcCliente == 3) {  // Listar Clientes
+        cleanScreen();
+        if (arrayUsuarios.capacidad == 0) {
+            printf("No hay clientes registrados.\n");
+        } else {
+            for (int i = 0; i < arrayUsuarios.capacidad; i++) {
+                printf("ID: %d\nFolio: %s\nNombre: %s\nApellido: %s\nCelular: %lld\nEmail: %s\nContacto: %s\n\n",
+                       arrayUsuarios.datos[i].id_usuario,
+                       arrayUsuarios.datos[i].folio,
+                       arrayUsuarios.datos[i].nombreUsuario,
+                       arrayUsuarios.datos[i].apellido,
+                       arrayUsuarios.datos[i].celular,
+                       arrayUsuarios.datos[i].email,
+                       arrayUsuarios.datos[i].contacto);
+            }
         }
 
-    };
-
+        printf("\nPresiona ENTER para continuar...");
+        getchar();  // Pausa antes de limpiar la pantalla
+    }
     cleanScreen();
     return 1;
 }
@@ -371,11 +387,11 @@ void listarPiezas(){
 }
 
 void mostrarUsuario(Usuario usr) {
-    printf("ID Usuario: %d\n", usr.id_usuario);
-    printf("Folio Usuario: %s\n", usr.folio);
-    printf("Nombre: %s\n", usr.nombreUsuario);
-    printf("Apellido: %s\n", usr.apellido);
-    printf("Celular: %lld\n", usr.celular);
-    printf("Email: %s\n", usr.email);
-    printf("Contacto: %s\n", usr.contacto);
+    mvprintw(10,10,"ID Usuario: %d\n", usr.id_usuario);
+    mvprintw(10,11,"Folio Usuario: %s\n", usr.folio);
+    mvprintw(10,12,"Nombre: %s\n", usr.nombreUsuario);
+    mvprintw(10,13,"Apellido: %s\n", usr.apellido);
+    mvprintw(10,14,"Celular: %lld\n", usr.celular);
+    mvprintw(10,15,"Email: %s\n", usr.email);
+    mvprintw(10,16,"Contacto: %s\n", usr.contacto);
 }

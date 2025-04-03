@@ -16,6 +16,7 @@
 #include <time.h>
 #include "LogicaNegocio.h"
 #include "UsuarioDTO.h"
+#include "UserInterface.h"
 #include <pthread.h>
 #include <unistd.h>
 #include "Util.h"
@@ -37,7 +38,8 @@ int main(){
     cleanScreen();
     sleep(1);
     if (loginUsuario() == 1){
-        imprimirMenuPrincipal();
+        //imprimirMenuPrincipal();
+        mostrarVentana(1);
         menuPrincipal(bandera);
     }
     //imprimirPiezasPorUsuario(0);
