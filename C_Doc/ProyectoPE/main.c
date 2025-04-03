@@ -33,6 +33,8 @@ volatile int running = 1;
 
 int main(){
     // Inicio del programa
+    testing(1);
+    system("reset");
     mostrarLogo();
     // Borra toda la pantalla y mueve el cursor al inicio
     cleanScreen();

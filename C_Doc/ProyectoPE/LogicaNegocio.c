@@ -251,7 +251,7 @@ void imprimirMenuServicio(){
 
 int preguntaSalida(){
     cleanScreen();
-    printf("\n  Desea Volver Al menu principal?\n 1 : SI \n 2 : NO \n");
+    mvprintw(10,30,"Desea Volver Al menu principal? 1 : SI - 2 : NO ");
     int opcUsuario;
     scanf("%d", &opcUsuario);
     printf("%i",opcUsuario);
@@ -264,20 +264,39 @@ int preguntaSalida(){
 
 void mostrarLogo(){
     printf("Bienvenido al sistema\n");
-    usleep(300000);
+    //usleep(300000);
     printf("    ____           __ \n");
-    usleep(300000);
+    //usleep(300000);
     printf("   / __/__    ____/ /___  _________ \n");
-    usleep(300000);
-    printf("  / /_/ _ \\ / __  / __ / ___/ __ /\n");
-    usleep(300000);
+    //usleep(300000);
+    //printf("  / /_/ _ \\ / __  / __ / ___/ __ /\n");
+    //usleep(300000);
     printf(" / __/  __/ /_/ / /_/ / /  / /_/ / \n");
-    usleep(300000);
+    //usleep(300000);
     printf("/_/  \\___/\\__,_/\\____/_/   \\__,_/  \n");
-    usleep(800000);
+    //usleep(800000);
     printf("      /\\     \n");
     printf("     /  \\    \n");
     printf("    /    \\    \n");
     // Ingresar delay y cambiar la pantalla de color
+
+}
+
+void testing(int encendido) {
+    if (encendido) {
+        //agregarUsuarios(*(ArrayUsuarios*)Arrays);
+        agregarUsuarios();
+        //agregarPiezas(*(ArrayPiezas*)Arrays);
+    }
+}
+
+void agregarUsuarios() {
+    Usuario usuario1 = inicializarUsuario(0,"00001", "Usuario1", "Apellido 1", 1234567890, "EmailPrueba1@1", "Contacto1");
+    guardarUsuarioArray(usuario1);
+    Usuario usuario2 = inicializarUsuario(1,"00002", "Usuario2", "Apellido 2", 1987654321, "EmailPrueba2@2", "Contacto2");
+    guardarUsuarioArray(usuario2);
+}
+
+void agregarPiezas() {
 
 }

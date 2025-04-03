@@ -30,6 +30,11 @@ int dudas();
 
 int necesitaRectificacion();
 
+//FUNCIONEs DE TESTEO, NO TENER EN PRODUCCION
+void testing(int encendido);
+void agregarUsuarios();
+void agregarPiezas();
+
 
 
 #endif //LOGICANEGOCIO_H

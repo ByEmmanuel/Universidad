@@ -81,20 +81,6 @@ Culata inicializarCulata(const Pieza pieza, const int numValvulas ,const double 
     return *culata;
 }
 
-// 🔹 Inicializar el array con una capacidad inicial
-/**
- * @Deprecated
- */
-void inicializarArray(int capacidadInicial) {
-    arrayUsuarios.datos = (Usuario*)malloc(capacidadInicial * sizeof(Usuario));
-    if (arrayUsuarios.datos == NULL) {
-        printf("Error al reservar memoria para el array.\n");
-        exit(1);
-    }
-    arrayUsuarios.total = 0;
-    arrayUsuarios.capacidad = capacidadInicial;
-}
-
 // Función para agregar un usuario a la lista
 int guardarUsuarioArray(Usuario usuario) {
     if (arrayUsuarios.total >= arrayUsuarios.capacidad) {
@@ -157,12 +143,7 @@ void modificarCliente(){
         return;
     }
 
-    printf("Ingrese la opción que desea modificar:\n");
-    char* menuUno[] = {"Nombre", "Apellido", "Num Celular", "Email", "Contacto", "Salir"};
-    for (int i = 0; i < 6; i++) {
-        printf("%d. %s\n", i + 1, menuUno[i]);
-    }
-
+    //menuModificarCliente(0);
     int opcUsr;
     scanf("%d", &opcUsr);
 
@@ -264,15 +245,14 @@ int cliente(){
 
         while (!strContains(emailUsr, "@")) {
             free(emailUsr);
-
-            mvprintw(10,10,"Tu Email no es valido, ¿Deseas volver a ingresarlo? \n 1: SI 2: NO\n");
-            const char* opcUsr = leerEntrada(10,28,5);
+            mvprintw(10,10,"Tu Email no es valido, ¿Deseas volver a ingresarlo? 1: SI 2: NO");
+            const char* opcUsr = leerEntrada(12,10,25);
             if (strContains(opcUsr, "1")) {
                 mvprintw(10,10,"\033[2A\033[2K\033[1B\033[2K");
                 clear();
                 //fflush(stdout);
                 mvprintw(10,12,"Ingrese Email\n");
-                emailUsr = leerEntrada(15,28,49);
+                emailUsr = leerEntrada(11,12,49);
             } else {
                 mvprintw(10,13,"Registro INVÁLIDO: Email Inválido\n");
                 free(nombreUsr);
@@ -300,18 +280,19 @@ int cliente(){
         if (arrayUsuarios.capacidad == 0) {
             printf("No hay clientes registrados.\n");
         } else {
+            int y = 2;
             for (int i = 0; i < arrayUsuarios.capacidad; i++) {
-                printf("ID: %d\nFolio: %s\nNombre: %s\nApellido: %s\nCelular: %lld\nEmail: %s\nContacto: %s\n\n",
-                       arrayUsuarios.datos[i].id_usuario,
-                       arrayUsuarios.datos[i].folio,
-                       arrayUsuarios.datos[i].nombreUsuario,
-                       arrayUsuarios.datos[i].apellido,
-                       arrayUsuarios.datos[i].celular,
-                       arrayUsuarios.datos[i].email,
-                       arrayUsuarios.datos[i].contacto);
+                mvprintw(y++, 1, "ID: %d", arrayUsuarios.datos[i].id_usuario);
+                mvprintw(y++, 1, "Folio: %s", arrayUsuarios.datos[i].folio);
+                mvprintw(y++, 1, "Nombre: %s", arrayUsuarios.datos[i].nombreUsuario);
+                mvprintw(y++, 1, "Apellido: %s", arrayUsuarios.datos[i].apellido);
+                mvprintw(y++, 1, "Celular: %lld", arrayUsuarios.datos[i].celular);
+                mvprintw(y++, 1, "Email: %s", arrayUsuarios.datos[i].email);
+                mvprintw(y++, 1, "Contacto: %s", arrayUsuarios.datos[i].contacto);
+                y++; // Dejar una línea en blanco entre registros
             }
         }
-
+        mvprintw(10, 10, "Capacidad En El arrayUsuarios: %d", arrayUsuarios.capacidad);
         printf("\nPresiona ENTER para continuar...");
         getchar();  // Pausa antes de limpiar la pantalla
     }
@@ -323,7 +304,7 @@ void imprimirPiezasPorUsuario(int idUsuario) {
     printf("Piezas para el Usuario ID: %d\n", idUsuario);
     // Recorrer todas las piezas almacenadas
     for (int i = 0; i < arrayPiezas.tamaño; i++) {
-        Pieza* pieza = &arrayPiezas.datos[i];  // Obtener puntero a la pieza
+        Pieza* pieza = arrayPiezas.datos[i];  // Obtener puntero a la pieza
 
         // Verificar si el id_Usuario coincide
         if (pieza->id_Usuario == idUsuario) {

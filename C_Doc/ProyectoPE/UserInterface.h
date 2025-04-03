@@ -6,6 +6,7 @@
 #define USERINTERFACE_H
 
 void menuPrincipal(int highlight);
+//void menuModificarCliente(int highlight );
 void mostrarVentana(int menuventana);
 int menuCliente();
 

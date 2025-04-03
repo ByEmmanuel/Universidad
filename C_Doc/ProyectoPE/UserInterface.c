@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <ncurses.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define NUM_OPTIONS 7
 
@@ -23,6 +24,19 @@ void mainMenu(int highlight) {
     }
     refresh();
 }
+
+/*void menuModificarCliente(int highlight ) {
+    char* menuUno[7] = {"Nombre", "Apellido", "Num Celular", "Email", "Contacto", "Salir"};
+    clear();
+    for (int i = 0; i < NUM_OPTIONS; i++) {
+        if (i == highlight) {
+            attron(A_REVERSE);
+        }
+        mvprintw(i + 5, 10, "%s", menuUno[i]);
+        attroff(A_REVERSE);
+    }
+    refresh();
+}*/
 
 int menuCliente() {
     int opcion = 0;
@@ -73,7 +87,7 @@ void ejecutarOpcion(int opcion) {
         mvprintw(10, 10, "Opción %d no implementada aún.", opcion + 1);
         refresh();
     }
-    mvprintw(12, 10, "Presiona cualquier tecla para volver al menú...");
+    mvprintw(1, 60, "Presiona cualquier tecla para volver al menu...");
     refresh();
     getch();
 }
@@ -122,10 +136,23 @@ void mostrarVentana(int menuventana) {
 
 // Función auxiliar para leer una cadena con ncurses
 char* leerEntrada(int y, int x, int maxLen) {
-    char* buffer = malloc(maxLen + 1);
-    if (!buffer) return NULL;
+    char* buffer = (char*)malloc(maxLen + 1);
+    if (!buffer) {
+        mvprintw(y, x, "Error: No se pudo asignar memoria.");
+        refresh();
+        return NULL;
+    }
+
+    memset(buffer, 0, maxLen + 1); // Inicializa el buffer con ceros para evitar residuos
     echo(); // Mostrar lo que el usuario escribe
     mvgetnstr(y, x, buffer, maxLen); // Leer cadena con límite
     noecho(); // Desactivar eco después de leer
+
+    // Si el usuario solo presiona ENTER, devolver NULL para manejarlo en otro lado
+    if (strlen(buffer) == 0) {
+        free(buffer);
+        return NULL;
+    }
+
     return buffer;
 }

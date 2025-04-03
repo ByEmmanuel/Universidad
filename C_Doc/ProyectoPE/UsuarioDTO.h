@@ -98,11 +98,6 @@ void modificarCliente();
 
 int guardarUsuarioArray(Usuario usuario);
 
-/**
- * @Deprecated
- */
-ArrayUsuarios* inicializarArrayUsuarios(int capacidadInicial);
-
 int guardarPiezaArray(void* pieza);
 
 Pieza inicializarPieza(int id_Usuario, int tipoPieza, const char* material,float desgaste, float tolerancia,
