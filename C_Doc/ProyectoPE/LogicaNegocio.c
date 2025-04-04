@@ -15,8 +15,8 @@
 #define MAX_USUARIOS 6
 #define MAX_LONGITUD 50
 
-char usuariosRegistrados[MAX_USUARIOS][MAX_LONGITUD] =  {"David","Jose","Admin","Pepe","Luis","Maria"};
-char contraseñasUsuarios[MAX_USUARIOS][MAX_LONGITUD] = {"123456789","987654321","01","24680"};
+char usuariosRegistrados[MAX_USUARIOS][MAX_LONGITUD] =  {"David","Jose","Admin","Pepe","Luis",""};
+char contraseñasUsuarios[MAX_USUARIOS][MAX_LONGITUD] = {"123456789","987654321","01","24680",""};
 
 int loginUsuario(){
     int intentosUsuario = 0;
@@ -43,7 +43,7 @@ int loginUsuario(){
             // Verificar contraseña
             if (strEquals(passwUsuario, contraseñasUsuarios[usuarioIndex])) {
                 printf("Inicio de sesión exitoso.\n");
-                printf("\033[2J\033[H");
+                //printf("\033[2J\033[H");
                 return 1;
             }
             printf("Contraseña incorrecta.\n");
@@ -59,7 +59,7 @@ int loginUsuario(){
 //Aqui iría va la funcion cliente pero esta puesta en DTO USUARIO
 
 int servicio(){
-    imprimirMenuServicio();
+    //imprimirMenuServicio();
     //Varibales locales
 
     // Material de la pieza (Hierro, Aluminio, etc.)
@@ -72,7 +72,7 @@ int servicio(){
     TipoCombustible tipo_combustible = {};
     int tieneFisuras;
 
-    int opc;
+    int opc = menuServicio();
 
     scanf("%d",&opc);
     int opcusr;
@@ -215,6 +215,10 @@ int dudas(){
     return 0;
 }
 
+int salir() {
+    exit(0);  // Finaliza el programa pero la terminal permanecerá abierta
+}
+
 int necesitaRectificacion(){
     //Implementar funcion
     return 0;
@@ -222,7 +226,7 @@ int necesitaRectificacion(){
 
 
 void imprimirMenuPrincipal() {
-    cleanScreen();
+    /*cleanScreen();
     usleep(2000);
     printf("┌──────────────────────────────┐\n");
     printf("│        MENÚ PRINCIPAL        │\n");
@@ -233,11 +237,16 @@ void imprimirMenuPrincipal() {
     }
     printf("│                              │\n");
     printf("└──────────────────────────────┘\n");
-    printf("\033[10;1HSeleccione una opción: ");
+    printf("\033[10;1HSeleccione una opción: ");*/
+
+    //mainMenu();
 }
 
 void imprimirMenuServicio(){
-    printf("\n┌──────────────────────────────┐\n");
+    //menuServicio(0);
+
+    /*
+     *printf("\n┌──────────────────────────────┐\n");
     printf("│        MENÚ Servicio         │\n");
     printf("├──────────────────────────────┤\n");
     char* menu[6] = {"Ingreso","Lavado","Medidas","Rectificar","Ensamble","Salir O regresar"};
@@ -247,18 +256,21 @@ void imprimirMenuServicio(){
     printf("│                              │\n");
     printf("└──────────────────────────────┘\n");
     printf("\033[10;1HSeleccione una opción: ");
+    */
+
+
 }
 
 int preguntaSalida(){
-    cleanScreen();
+    /*cleanScreen();
     mvprintw(10,30,"Desea Volver Al menu principal? 1 : SI - 2 : NO ");
-    int opcUsuario;
-    scanf("%d", &opcUsuario);
-    printf("%i",opcUsuario);
-    if(opcUsuario == 1){
-        imprimirMenuPrincipal();
+    int* opcUsuario = leerInt(10,30,2);
+    mvprintw(10,15,"%d",*opcUsuario);
+    if(*opcUsuario == 1){
+        //imprimirMenuPrincipal();
+        free(opcUsuario);
         return 1;
-    }
+    }*/
     return 0;
 }
 
@@ -269,7 +281,7 @@ void mostrarLogo(){
     //usleep(300000);
     printf("   / __/__    ____/ /___  _________ \n");
     //usleep(300000);
-    //printf("  / /_/ _ \\ / __  / __ / ___/ __ /\n");
+    printf("  / /_/ _ \\ / __  / __ / ___/ __ /\n");
     //usleep(300000);
     printf(" / __/  __/ /_/ / /_/ / /  / /_/ / \n");
     //usleep(300000);
@@ -278,6 +290,7 @@ void mostrarLogo(){
     printf("      /\\     \n");
     printf("     /  \\    \n");
     printf("    /    \\    \n");
+    //sleep(1);
     // Ingresar delay y cambiar la pantalla de color
 
 }

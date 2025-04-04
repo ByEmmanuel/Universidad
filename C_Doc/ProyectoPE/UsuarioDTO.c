@@ -120,95 +120,130 @@ Usuario* obtenerUsuario(const int id) {
     cleanScreen();
     for (int i = 0; i < arrayUsuarios.total; i++) {
         if (arrayUsuarios.datos[i].id_usuario == id) {
-            mostrarUsuario(arrayUsuarios.datos[i]);
+            //mostrarUsuario(arrayUsuarios.datos[i]);
             return &arrayUsuarios.datos[i];
         }
     }
     // Retorna NULL si el usuario no existe
-    printf("Usuario no encontrado... Vuelve a intentar\n");
+    mvprintw(15,15,"Usuario no encontrado... Vuelve a intentar\n");
     return NULL;
 }
 
 void modificarCliente(){
     cleanScreen();
-    printf("Ingrese ID, Folio o Numero de Cliente: ");
-    int id_Cliente;
-    scanf("%d", &id_Cliente);
+    clear();
+    mvprintw(10,15,"Ingrese ID, Folio o Numero de Cliente: ");
+
+    int* ptr_id_Cliente = leerInt(11, 15, 2);
+    if (ptr_id_Cliente == NULL) {
+        mvprintw(12,15,"Error al leer ID.\n");
+        return;
+    }
+    int id_Cliente = *ptr_id_Cliente;
+    free(ptr_id_Cliente);  // Liberamos la memoria
+
+    //scanf("%d", &id_Cliente);
 
     //Esta funcion puede ser contraproducente ya que si algun campo del objeto Usuario, esta vacio,
     //esta opcion nunca va a funcionar
     Usuario* usuarioNuevo = obtenerUsuario(id_Cliente);
-    if (strIsEmpty(usuarioNuevo->nombreUsuario) || strIsEmpty(usuarioNuevo->email) || strIsEmpty(usuarioNuevo->nombreUsuario) || usuarioNuevo == NULL) {
-        printf("Cliente no encontrado.\n");
+    if (usuarioNuevo == NULL) {
+        mvprintw(12,15,"Cliente no encontrado.\n");
         return;
     }
 
-    //menuModificarCliente(0);
-    int opcUsr;
-    scanf("%d", &opcUsr);
+    if (strIsEmpty(usuarioNuevo->nombreUsuario) || strIsEmpty(usuarioNuevo->email) || strIsEmpty(usuarioNuevo->nombreUsuario)) {
+        mvprintw(12,15,"Cliente con datos incompletos.\n");
+        return;
+    }
+
+    mvprintw(0,0,"Debug: usuarioNuevo = %p", usuarioNuevo);
+    refresh();
+    mvprintw(1, 0, "usuarioNuevo: %p", usuarioNuevo);
+    mvprintw(2, 1, "ID: %d", usuarioNuevo->id_usuario);
+    mvprintw(3, 1, "Folio: %s", usuarioNuevo->folio);
+    mvprintw(4, 1, "Nombre: %s", usuarioNuevo->nombreUsuario);
+    mvprintw(5, 1, "Apellido: %s", usuarioNuevo->apellido);
+    mvprintw(6, 1, "Celular: %lld", usuarioNuevo->celular);
+    mvprintw(7, 1, "Email: %s", usuarioNuevo->email);
+    mvprintw(8, 1, "Contacto: %s", usuarioNuevo->contacto);
+    refresh();
+
+    const int opcUsr = menuModificarCliente();
+    clear();
+    refresh();
 
     //char reemplazoUsuario[50]; // Buffer para almacenar entrada
     char* reemplazoUsuario;
-    cleanBuffer();
+    //<cleanBuffer();
 
     switch (opcUsr) {
         case 1:
-            printf("Ingrese nuevo Nombre: ");
-            reemplazoUsuario = cinString(50);
+            mvprintw(9,15,"Ingrese nuevo Nombre: ");
+            reemplazoUsuario = leerString(10,15,50);
             if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")) {
                 asignString(usuarioNuevo->nombreUsuario, reemplazoUsuario, sizeof(usuarioNuevo->nombreUsuario));
-                printf("Modificación realizada con éxito.\n");
+                mvprintw(12,15,"Modificación realizada con éxito.\n");
+                clear();
+                refresh();
                 break;
             }
-            printf("Error al leer entrada.\n");
+            mvprintw(12,15,"Error al leer entrada.\n");
             break;
         case 2:
-            printf("Ingrese nuevo Apellido: ");
-            reemplazoUsuario = cinString(50);
+            mvprintw(9,15,"Ingrese nuevo Apellido: ");
+            reemplazoUsuario = leerString(10,15,50);
             if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
                 asignString(usuarioNuevo->apellido, reemplazoUsuario, sizeof(usuarioNuevo->apellido));
-                printf("Modificación realizada con éxito.\n");
+                mvprintw(12,15,"Modificación realizada con éxito.\n");
                 break;
             }
             printf("Error al leer entrada.\n");
             break;
         case 3:
-            printf("Ingrese nuevo Número Celular: ");
-            long long numero;
-            scanf("%9lld",&numero);
-            if (numero != 0){
-                usuarioNuevo->celular = numero;
-                printf("Número guardado: %lld\n", usuarioNuevo->celular);
+            mvprintw(9,15,"Ingrese nuevo Número Celular: ");
+            int* ptr_numero = leerInt(10,15,10);
+            if (ptr_numero == NULL) {
+                mvprintw(12,15,"Error al leer número de celular.\n");
+                return;
             }
+            usuarioNuevo->celular = *ptr_numero;
+            free(ptr_numero);
             cleanBuffer();
             break;
         case 4:
-            printf("Ingrese nuevo Email: ");
-            reemplazoUsuario = cinString(50);
+            mvprintw(9,15,"Ingrese nuevo Email: ");
+            reemplazoUsuario = leerString(10,15,50);
             if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
                 asignString(usuarioNuevo->email, reemplazoUsuario, sizeof(usuarioNuevo->email));
-                printf("Modificación realizada con éxito.\n");
+                mvprintw(12,15,"Modificación realizada con éxito.\n");
                 break;
             };
-            printf("Error al leer entrada.\n");
+            mvprintw(12,15,"Error al leer entrada.\n");
             break;
         case 5:
-            printf("Ingrese nuevo Contacto: ");
-            reemplazoUsuario = cinString(50);
+            mvprintw(9,15,"Ingrese nuevo Contacto: ");
+            reemplazoUsuario = leerString(10,15,50);
             if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
                 asignString(usuarioNuevo->contacto, reemplazoUsuario, sizeof(usuarioNuevo->contacto));
-                printf("Modificación realizada con éxito.\n");
+                mvprintw(12,15,"Modificación realizada con éxito.\n");
                 break;
             };
-            printf("Error al leer entrada.\n");
+            mvprintw(12,15,"Error al leer entrada.\n");
             break;
         case 6:
-            printf("Saliendo...\n");
+            mvprintw(2, 10, "Saliendo del menú...");  // Muestra mensaje de depuración
+            refresh();  // Asegúrate de que el mensaje se actualice
+            //@Deprecated
+            //endwin();   // Finaliza ncurses, si lo necesitas
             return;
         default:
-            printf("Opción inválida.\n");
+            mvprintw(12,15,"Opción inválida.\n");
             return;
     }
+    //cleanBuffer();
+    clear();
+    refresh();
 }
 
 int cliente(){
@@ -224,35 +259,34 @@ int cliente(){
     if (opcCliente == 4) {
         return 1;  // Volver al menú principal
     }
-
     if (opcCliente == 1) {
         cleanScreen();
         clear();
         mvprintw(2, 10, "Agregar Cliente");
         mvprintw(4, 10, "Ingrese Nombre: ");
-        char* nombreUsr = leerEntrada(4, 26, 19);
+        char* nombreUsr = leerString(4, 26, 19);
         char* folio = generarFolio(nombreUsr);
         mvprintw(5, 10, "Ingrese Apellido: ");
-        char* apellidoUsr = leerEntrada(5, 28, 19);
+        char* apellidoUsr = leerString(5, 28, 19);
         mvprintw(6, 10, "Ingrese Celular: ");
-        char* celularStr = leerEntrada(6, 27, 15);
+        char* celularStr = leerString(6, 27, 15);
         long long celularUsr = atoll(celularStr);
         mvprintw(7, 10, "Ingrese Email: ");
-        char* emailUsr = leerEntrada(7, 25, 49);
+        char* emailUsr = leerString(7, 25, 49);
         mvprintw(8, 10, "Ingrese Contacto: ");
-        char* contactoUsr = leerEntrada(8, 28, 29);
+        char* contactoUsr = leerString(8, 28, 29);
 
 
         while (!strContains(emailUsr, "@")) {
             free(emailUsr);
             mvprintw(10,10,"Tu Email no es valido, ¿Deseas volver a ingresarlo? 1: SI 2: NO");
-            const char* opcUsr = leerEntrada(12,10,25);
+            const char* opcUsr = leerString(12,10,25);
             if (strContains(opcUsr, "1")) {
                 mvprintw(10,10,"\033[2A\033[2K\033[1B\033[2K");
                 clear();
                 //fflush(stdout);
                 mvprintw(10,12,"Ingrese Email\n");
-                emailUsr = leerEntrada(11,12,49);
+                emailUsr = leerString(11,12,49);
             } else {
                 mvprintw(10,13,"Registro INVÁLIDO: Email Inválido\n");
                 free(nombreUsr);
@@ -293,10 +327,11 @@ int cliente(){
             }
         }
         mvprintw(10, 10, "Capacidad En El arrayUsuarios: %d", arrayUsuarios.capacidad);
-        printf("\nPresiona ENTER para continuar...");
+        mvprintw(10, 10, "\nPresiona ENTER para continuar...");
         getchar();  // Pausa antes de limpiar la pantalla
     }
     cleanScreen();
+    //mvprintw(10, 10, "Saliendo opcCliente");
     return 1;
 }
 

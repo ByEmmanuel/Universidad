@@ -5,6 +5,7 @@
 #include "Util.h"
 
 #include <ctype.h>
+#include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -125,5 +126,6 @@ void cleanBuffer(){
 
 
 void cleanScreen(){
+    //clear();
     printf("\033[2J\033[H");
 }

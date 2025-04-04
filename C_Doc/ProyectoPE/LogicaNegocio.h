@@ -12,7 +12,7 @@ void imprimirMenuPrincipal();
 
 void imprimirMenuServicio();
 
-void menuPrincipal(int bandera);
+void menuPrincipal();
 
 int loginUsuario();
 
@@ -27,6 +27,8 @@ int almacen();
 int otro();
 
 int dudas();
+
+int salir();
 
 int necesitaRectificacion();
 

@@ -11,6 +11,7 @@
  * si no salir y camniar el color de la terminal
  */
 
+#include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -18,6 +19,7 @@
 #include "UsuarioDTO.h"
 #include "UserInterface.h"
 #include <pthread.h>
+#include <string.h>
 #include <unistd.h>
 #include "Util.h"
 
@@ -33,36 +35,54 @@ volatile int running = 1;
 
 int main(){
     // Inicio del programa
-    testing(1);
+    testing(0);
     system("reset");
+    clear();
+    refresh();
     mostrarLogo();
     // Borra toda la pantalla y mueve el cursor al inicio
-    cleanScreen();
+
     sleep(1);
     if (loginUsuario() == 1){
         //imprimirMenuPrincipal();
-        mostrarVentana(1);
-        menuPrincipal(bandera);
+        //mostrarVentana(1);
+        menuPrincipal();
     }
     //imprimirPiezasPorUsuario(0);
-    listarPiezas();
+    //listarPiezas();
 
     return 0;
 }
 
-void menuPrincipal(int bandera){
+void menuPrincipal(){
     while (bandera){
-        int opc;
-        scanf("%d",&opc);
-        //printf("Opcio usuario");
-        printf("%i",opc);
-        printf("\n");
 
-        switch (opc){
+        /*int* ptr_id_Cliente = leerInt(11, 15, 2);// Leer el entero
+        if (ptr_id_Cliente == NULL) {
+            mvprintw(12,15,"Error al leer Entrada.\n");
+            return;
+        }
+        int opc = *ptr_id_Cliente;
+        free(ptr_id_Cliente);  // Liberamos la memoria
+
+        if (ptr_id_Cliente != NULL) {
+            char buffer[12]; // Buffer para la cadena (suficiente para un int, incluyendo signo y terminador)
+            snprintf(buffer, sizeof(buffer), "%d", opc); // Convertir el entero a cadena
+            mvprintw(10, 15, buffer); // Mostrar la cadena en la pantalla
+        } else {
+            mvprintw(14, 10, "Entrada inválida"); // Manejar el caso de entrada inválida
+        }
+        refresh(); // Actualizar la pantalla*/
+        int opc = mostrarVentana(1);
+        //printf("%d",opc);
+        ejecutarOpcion(opc);
+
+        /*switch (opc){
         case 1:
             cleanScreen();
             cliente();
-            bandera = preguntaSalida();
+            //bandera = preguntaSalida();
+            bandera = 0;
             break;
         case 2:
             cleanScreen();
@@ -90,15 +110,18 @@ void menuPrincipal(int bandera){
             bandera = preguntaSalida();
             break;
         case 7:
-            printf("Gracias por usar el sistema");
+            cleanScreen();
+            mvprintw(10,15,"Gracias por usar el sistema");
             bandera = 0;
-            opc = 0;
             break;
         default:
-            printf(" introdujo una opcion Invalida");
+            mvprintw(10,15,"Introdujo una opcion Invalida");
             bandera = 0;
         }
+        */
+
     }
+
 
 };
 
