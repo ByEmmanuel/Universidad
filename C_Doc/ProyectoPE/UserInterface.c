@@ -13,7 +13,7 @@
 #define NUM_OPTIONS 7
 
 int (*funcionesInt[NUM_OPTIONS])() = {
-    cliente, /*servicio*/ NULL, NULL, NULL, NULL, NULL, salir // Solo "Clientes" está implementado
+    cliente, servicio, NULL, NULL, NULL, NULL, salir // Solo "Clientes" está implementado
 };
 
 void ejecutarOpcion(int opcion) {
@@ -32,16 +32,12 @@ void ejecutarOpcion(int opcion) {
     getch();
 }
 //-------------------------------------FUNCION PRINCIPAL (VENTANA) --------------------------
-int mostrarVentana(int menuventana)
-{
+int mostrarVentana(int menuventana){
     int ch, highlight = 0;
     char* menuUno[NUM_OPTIONS] = {"Clientes", "Servicio", "Pago", "Almacen", "Otros", "Dudas", "Salir"};
-
-    initscr();
     noecho();
     cbreak();
     keypad(stdscr, TRUE);
-
     while (1)
     {
         switch (menuventana)
@@ -63,11 +59,8 @@ int mostrarVentana(int menuventana)
             mvprintw(10, 10, "Opción no válida o ocurrió un error");
             refresh();
             getch();
-        //@Deprecated
-        //endwin();
             return -1; // Retorno de error
         }
-
         ch = getch();
         switch (ch)
         {
@@ -83,10 +76,7 @@ int mostrarVentana(int menuventana)
         }
     }
 }
-
 //------------------------------------------- FUNCIONES MENU CLIENTES ------------------------
-
-
 int menuCliente() {
     int opcion = 0;
     int ch;
@@ -111,7 +101,6 @@ int menuCliente() {
         }
         refresh();
         ch = getch();
-
         switch (ch) {
         case KEY_UP:
             opcion = (opcion == 0) ? numOpciones - 1 : opcion - 1;
@@ -131,13 +120,10 @@ int menuModificarCliente() {
     int ch;
     const int numOpciones = 6;
     char* opciones[numOpciones] = {"Nombre", "Apellido", "Num Celular", "Email", "Contacto", "Salir"};
-
     clear();
     noecho();
     cbreak();
     keypad(stdscr, TRUE);
-
-
     while (1) {
         for (int i = 0; i < numOpciones; i++) {
             if (i == opcion) {
@@ -165,7 +151,44 @@ int menuModificarCliente() {
 }
 //------------------------------------------- FUNCIONES MENU SERVICIO ------------------------
 int menuServicio(){
+    int opcion = 0;
+    int ch;
+    const int numOpciones = 6;
+    clear();
+    noecho();
+    cbreak();
+    keypad(stdscr, TRUE);
+    // Solo un clear() es suficiente
+    while (1) {
+        for (int i = 0; i < numOpciones; i++) {
+            if (i == opcion) {
+                attron(A_REVERSE);
+            }
+            switch (i) {
+            case 0: mvprintw(5, 10, "Ingreso"); break;
+            case 1: mvprintw(6, 10, "Lavado"); break;
+            case 2: mvprintw(7, 10, "Medidas"); break;
+            case 3: mvprintw(8, 10, "Rectificar"); break;
+            case 4: mvprintw(9, 10, "Ensamble"); break;
+            case 5: mvprintw(10, 10, "Salir"); break;
+            }
+            attroff(A_REVERSE);
+        }
+        refresh();
+        ch = getch();
 
+        switch (ch) {
+        case KEY_UP:
+            opcion = (opcion == 0) ? numOpciones - 1 : opcion - 1;
+            break;
+        case KEY_DOWN:
+            opcion = (opcion == numOpciones - 1) ? 0 : opcion + 1;
+            break;
+        case 10:  // ENTER: Confirmar selección
+            return opcion+1;
+        }
+    }
+    return 0; // Nunca se alcanza, pero por seguridad
 }
 
 ;

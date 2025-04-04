@@ -59,9 +59,7 @@ int loginUsuario(){
 //Aqui iría va la funcion cliente pero esta puesta en DTO USUARIO
 
 int servicio(){
-    //imprimirMenuServicio();
     //Varibales locales
-
     // Material de la pieza (Hierro, Aluminio, etc.)
     float desgaste;         // Nivel de desgaste en porcentaje (0-100%)
     float tolerancia;       // Tolerancia máxima de desgaste permitida antes de rectificar
@@ -74,14 +72,15 @@ int servicio(){
 
     int opc = menuServicio();
 
-    scanf("%d",&opc);
     int opcusr;
     switch (opc){
         case 1:
             //Ingreso culata o monoblock
-            printf("Ingrese una opcion\n 1: Culata.\n 2: Monoblock\n");
+            mvprintw(10,10,"Ingrese una opcion 1: Culata. 2: Monoblock");
             scanf("%d",&opcusr);
             //Culata
+
+        //restoy trabajando aqui
 
             //Ingresar todos estos parametros
         /**
@@ -183,9 +182,8 @@ int servicio(){
 
             break;
         case 6:
-            //Salir
-
-            break;
+            //Menu Anterior
+            return 1;
     default:
         break;
     }
@@ -214,8 +212,9 @@ int dudas(){
     printf("Opcion Dudas");
     return 0;
 }
-
+// AQUI VAN LAS FUNCIONES QUE QUIERES QUE SE EJECUTEN ANTES DE QUE TERMINE EL PROGRAMA
 int salir() {
+    listarPiezas();
     exit(0);  // Finaliza el programa pero la terminal permanecerá abierta
 }
 
@@ -275,7 +274,7 @@ int preguntaSalida(){
 }
 
 void mostrarLogo(){
-    printf("Bienvenido al sistema\n");
+    printf("\nBienvenido al sistema\n");
     //usleep(300000);
     printf("    ____           __ \n");
     //usleep(300000);
@@ -297,9 +296,10 @@ void mostrarLogo(){
 
 void testing(int encendido) {
     if (encendido) {
-        //agregarUsuarios(*(ArrayUsuarios*)Arrays);
+        usleep(200);
+        printf("\n------TESTING MODE ON------");
         agregarUsuarios();
-        //agregarPiezas(*(ArrayPiezas*)Arrays);
+        agregarPiezas();
     }
 }
 
@@ -311,5 +311,13 @@ void agregarUsuarios() {
 }
 
 void agregarPiezas() {
+    Pieza piezaUsuario = inicializarPieza(0, 1, "Metal", .1123, .1125, .1300, .1180, 2);
+    Culata* pzc = malloc(sizeof(Culata));
+    *pzc = inicializarCulata(piezaUsuario, 16, .10, 2,2);
+    guardarPiezaArray((void*)pzc);  // Se guarda como puntero genérico
 
+    Pieza piezaUsuario2 = inicializarPieza(1, 2, "Aluminio", 0.1000, 0.1050, 0.1250, 0.1150, 1);
+    Culata* pzc2 = malloc(sizeof(Culata));
+    *pzc2 = inicializarCulata(piezaUsuario, 18, 0.12, 1, 3);
+    guardarPiezaArray((void*)pzc2);
 }

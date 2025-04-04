@@ -32,10 +32,9 @@ int id_Usuario;
 // Variable global para controlar el hilo del reloj
 volatile int running = 1;
 
-
 int main(){
     // Inicio del programa
-    testing(0);
+    testing(1);
     system("reset");
     clear();
     refresh();
@@ -49,79 +48,17 @@ int main(){
         menuPrincipal();
     }
     //imprimirPiezasPorUsuario(0);
-    //listarPiezas();
+
 
     return 0;
 }
 
 void menuPrincipal(){
+    initscr();
     while (bandera){
-
-        /*int* ptr_id_Cliente = leerInt(11, 15, 2);// Leer el entero
-        if (ptr_id_Cliente == NULL) {
-            mvprintw(12,15,"Error al leer Entrada.\n");
-            return;
-        }
-        int opc = *ptr_id_Cliente;
-        free(ptr_id_Cliente);  // Liberamos la memoria
-
-        if (ptr_id_Cliente != NULL) {
-            char buffer[12]; // Buffer para la cadena (suficiente para un int, incluyendo signo y terminador)
-            snprintf(buffer, sizeof(buffer), "%d", opc); // Convertir el entero a cadena
-            mvprintw(10, 15, buffer); // Mostrar la cadena en la pantalla
-        } else {
-            mvprintw(14, 10, "Entrada inválida"); // Manejar el caso de entrada inválida
-        }
-        refresh(); // Actualizar la pantalla*/
         int opc = mostrarVentana(1);
-        //printf("%d",opc);
         ejecutarOpcion(opc);
-
-        /*switch (opc){
-        case 1:
-            cleanScreen();
-            cliente();
-            //bandera = preguntaSalida();
-            bandera = 0;
-            break;
-        case 2:
-            cleanScreen();
-            servicio();
-            bandera = preguntaSalida();
-            break;
-        case 3:
-            cleanScreen();
-            pago();
-            bandera = preguntaSalida();
-            break;
-        case 4:
-            cleanScreen();
-            almacen();
-            bandera = preguntaSalida();
-            break;
-        case 5:
-            cleanScreen();
-            otro();
-            bandera = preguntaSalida();
-            break;
-        case 6:
-            cleanScreen();
-            dudas();
-            bandera = preguntaSalida();
-            break;
-        case 7:
-            cleanScreen();
-            mvprintw(10,15,"Gracias por usar el sistema");
-            bandera = 0;
-            break;
-        default:
-            mvprintw(10,15,"Introdujo una opcion Invalida");
-            bandera = 0;
-        }
-        */
-
     }
-
 
 };
 

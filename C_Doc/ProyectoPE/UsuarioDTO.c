@@ -369,37 +369,47 @@ void imprimirPiezasPorUsuario(int idUsuario) {
 }
 
 void listarPiezas(){
-    printf("==============================================\n");
-    printf("          LISTADO DE TODAS LAS PIEZAS         \n");
-    printf("==============================================\n");
-
+    noecho();              // No muestra lo que escribe el usuario
+    cbreak();              // Lectura sin necesidad de ENTER
+    keypad(stdscr, TRUE);  // Permite teclas especiales
+    int fila = 1;
+    mvprintw(fila++, 10, "==============================================");
+    mvprintw(fila++, 15, "LISTADO DE TODAS LAS PIEZAS");
+    mvprintw(fila++, 10, "==============================================");
     for (size_t i = 0; i < arrayPiezas.tamaño; i++) {
-        Pieza* pieza = (Pieza*)arrayPiezas.datos[i];  // Convertimos a Pieza*
-
-        printf("\nID Pieza: %d\n", pieza->id_Pieza);
-        printf("ID Usuario: %d\n", pieza->id_Usuario);
-        printf("Material: %s\n", pieza->material);
-        printf("Desgaste: %.2f%%\n", pieza->desgaste);
-        printf("Tolerancia: %.2f mm\n", pieza->tolerancia);
-        printf("Medida Original: %.2f mm\n", pieza->medidaOriginal);
-        printf("Medida Actual: %.2f mm\n", pieza->medidaActual);
-        printf("Necesita Rectificación: %s\n", pieza->necesitaRectificacion ? "Si" : "No");
-
+        Pieza* pieza = (Pieza*)arrayPiezas.datos[i];
+        fila++;
+        mvprintw(fila++, 2, "ID Pieza: %d", pieza->id_Pieza);
+        mvprintw(fila++, 2, "ID Usuario: %d", pieza->id_Usuario);
+        mvprintw(fila++, 2, "Material: %s", pieza->material);
+        mvprintw(fila++, 2, "Desgaste: %.2f%%", pieza->desgaste);
+        mvprintw(fila++, 2, "Tolerancia: %.2f mm", pieza->tolerancia);
+        mvprintw(fila++, 2, "Medida Original: %.2f mm", pieza->medidaOriginal);
+        mvprintw(fila++, 2, "Medida Actual: %.2f mm", pieza->medidaActual);
+        mvprintw(fila++, 2, "Necesita Rectificación: %s", pieza->necesitaRectificacion ? "Sí" : "No");
         if (pieza->tipo == CULATA) {
             Culata* culata = (Culata*)pieza;
-            printf("Numero de Valvulas: %d\n", culata->numValvulas);
-            printf("Presion de Prueba: %.2f\n", culata->presionPrueba);
-            printf("Tipo de Combustible: %s\n", culata->tipoCombustible == 0 ? "Gasolina" : "Diesel");
-            printf("Tiene Fisuras: %s\n", culata->tieneFisuras ? "Si" : "No");
+            mvprintw(fila++, 4, "Numero de Válvulas: %d", culata->numValvulas);
+            mvprintw(fila++, 4, "Presión de Prueba: %.2f", culata->presionPrueba);
+            mvprintw(fila++, 4, "Tipo de Combustible: %s", culata->tipoCombustible == 0 ? "Gasolina" : "Diésel");
+            mvprintw(fila++, 4, "Tiene Fisuras: %s", culata->tieneFisuras ? "Sí" : "No");
         } else if (pieza->tipo == MONOBLOCK) {
             Monoblock* monoblock = (Monoblock*)pieza;
-            printf("Numero de Cilindros: %d\n", monoblock->numCilindros);
-            printf("Diametro Cilindros: %.2f mm\n", monoblock->diametroCilindro);
-            printf("Altura Bloque: %.2f mm\n", monoblock->alineacionCiguenal);
+            mvprintw(fila++, 4, "Número de Cilindros: %d", monoblock->numCilindros);
+            mvprintw(fila++, 4, "Diámetro de Cilindros: %.2f mm", monoblock->diametroCilindro);
+            mvprintw(fila++, 4, "Altura del Bloque: %.2f mm", monoblock->alineacionCiguenal);
         }
-
-        printf("----------------------------------------------\n");
+        mvprintw(fila++, 10, "----------------------------------------------");
+        // Manejo de overflow vertical
+        if (fila >= LINES - 5) {
+            mvprintw(fila++, 10, "Presiona cualquier tecla para continuar...");
+            getch();
+            clear();
+            fila = 1;
+        }
     }
+    mvprintw(fila++, 10, "Fin del listado. Presiona cualquier tecla...");
+    getch();
 }
 
 void mostrarUsuario(Usuario usr) {
