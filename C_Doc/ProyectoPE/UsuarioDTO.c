@@ -235,7 +235,8 @@ int cliente(){
     printf("\n Agregar Cliente? 1\n Editar Cliente 2\n Listar Cliente 3\n Menu Principal 4\n");
     int opcCliente;
     scanf("%d",&opcCliente);
-    cleanBuffer();
+    //cleanBuffer();
+    printf("Debug - Opción ingresada: %d\n", opcCliente); // <-- Añade esto
     if (opcCliente == 4){
         return 1;
     }
@@ -307,7 +308,7 @@ void imprimirPiezasPorUsuario(int idUsuario) {
     printf("Piezas para el Usuario ID: %d\n", idUsuario);
     // Recorrer todas las piezas almacenadas
     for (int i = 0; i < arrayPiezas.tamaño; i++) {
-        Pieza* pieza = &arrayPiezas.datos[i];  // Obtener puntero a la pieza
+        Pieza* pieza = arrayPiezas.datos[i];  // Obtener puntero a la pieza
 
         // Verificar si el id_Usuario coincide
         if (pieza->id_Usuario == idUsuario) {

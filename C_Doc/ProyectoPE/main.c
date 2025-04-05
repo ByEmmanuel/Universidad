@@ -16,7 +16,7 @@
 #include <time.h>
 #include "LogicaNegocio.h"
 #include "UsuarioDTO.h"
-#include <pthread.h>
+//#include <pthread.h>
 #include <unistd.h>
 #include "Util.h"
 
