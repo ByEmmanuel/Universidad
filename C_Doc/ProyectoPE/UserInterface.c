@@ -8,11 +8,20 @@
 #include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
-#include <arm/limits.h>
+#include <limits.h>
 
-#define NUM_OPTIONS 7
+#define SIZE_DOS 2
+#define SIZE_TRES 3
+#define SIZE_CUATRO 4
+#define SIZE_CINCO 5
+#define SIZE_SEIS 6
+#define SIZE_SIETE 7
+int numOpciones = 0;
 
-int (*funcionesInt[NUM_OPTIONS])() = {
+
+char** menuActual = NULL; // Apuntador genérico para evitar repetición de código.
+
+int (*funcionesInt[SIZE_SIETE])() = {
     cliente, servicio, NULL, NULL, NULL, NULL, salir // Solo "Clientes" está implementado
 };
 
@@ -32,167 +41,61 @@ void ejecutarOpcion(int opcion) {
     getch();
 }
 //-------------------------------------FUNCION PRINCIPAL (VENTANA) --------------------------
-int mostrarVentana(int menuventana){
+void imprimirMenu(char* menu[], int numOpciones, int highlight) {
+    for (int i = 0; i < numOpciones; i++) {
+        if (i == highlight) {
+            attron(A_REVERSE);
+        }
+        mvprintw(i + 5, 10, "%s", menu[i]);
+        attroff(A_REVERSE);
+    }
+    refresh();
+}
+
+int mostrarMenu(int menuventana, const char* pregunta) {
     int ch, highlight = 0;
-    char* menuUno[NUM_OPTIONS] = {"Clientes", "Servicio", "Pago", "Almacen", "Otros", "Dudas", "Salir"};
-    noecho();
-    cbreak();
-    keypad(stdscr, TRUE);
-    while (1)
-    {
-        switch (menuventana)
-        {
-        case 1:
-            clear();
-            for (int i = 0; i < NUM_OPTIONS; i++)
-            {
-                if (i == highlight)
-                {
-                    attron(A_REVERSE);
-                }
-                mvprintw(i + 5, 10, "%s", menuUno[i]);
-                attroff(A_REVERSE);
-            }
-            refresh();
-            break;
-        default:
-            mvprintw(10, 10, "Opción no válida o ocurrió un error");
-            refresh();
-            getch();
-            return -1; // Retorno de error
-        }
-        ch = getch();
-        switch (ch)
-        {
-        case KEY_UP:
-            highlight = (highlight == 0) ? NUM_OPTIONS - 1 : highlight - 1;
-            break;
-        case KEY_DOWN:
-            highlight = (highlight == NUM_OPTIONS - 1) ? 0 : highlight + 1;
-            break;
-        case 10: // ENTER
-            //endwin();
-            return highlight + 1; // Retorna la opción seleccionada
-        }
-    }
-}
-//------------------------------------------- FUNCIONES MENU CLIENTES ------------------------
-int menuCliente() {
-    int opcion = 0;
-    int ch;
-    const int numOpciones = 4;
-    clear();
-    noecho();
-    cbreak();
-    keypad(stdscr, TRUE);
-    // Solo un clear() es suficiente
-    while (1) {
-        for (int i = 0; i < numOpciones; i++) {
-            if (i == opcion) {
-                attron(A_REVERSE);
-            }
-            switch (i) {
-            case 0: mvprintw(5, 10, "Agregar Cliente"); break;
-            case 1: mvprintw(6, 10, "Editar Cliente"); break;
-            case 2: mvprintw(7, 10, "Listar Cliente"); break;
-            case 3: mvprintw(8, 10, "Menu Principal"); break;
-            }
-            attroff(A_REVERSE);
-        }
-        refresh();
-        ch = getch();
-        switch (ch) {
-        case KEY_UP:
-            opcion = (opcion == 0) ? numOpciones - 1 : opcion - 1;
-            break;
-        case KEY_DOWN:
-            opcion = (opcion == numOpciones - 1) ? 0 : opcion + 1;
-            break;
-        case 10:  // ENTER: Confirmar selección
-            return opcion+1;
-        }
-    }
-    return 0; // Nunca se alcanza, pero por seguridad
-}
+    char* menuUno[SIZE_SIETE] = {"Clientes", "Servicio", "Pago", "Almacen", "Otros", "Dudas", "Salir"};
+    char* menuDos[SIZE_CUATRO] = {"Agregar Cliente", "Editar Cliente", "Listar Cliente", "Menu Principal"};
+    char* menuTres[SIZE_SEIS] = {"Nombre", "Apellido", "Num Celular", "Email", "Contacto", "Salir"};
+    char* menuCuatro[SIZE_SEIS] = {"Ingreso", "Lavado", "Medidas", "Rectificar", "Ensamble", "Salir"};
+    char* menuCinco[SIZE_DOS] = {"CULATA", "MONOBLOCK"};
+    char* menuSeis[SIZE_TRES] = {"1 : Gasolina","2: Diesel","3: Electrico"};
+    char* menuSiete[SIZE_DOS] = {"SI","NO"};
 
-int menuModificarCliente() {
-    int opcion = 0;
-    int ch;
-    const int numOpciones = 6;
-    char* opciones[numOpciones] = {"Nombre", "Apellido", "Num Celular", "Email", "Contacto", "Salir"};
-    clear();
+    char** menuActual = NULL;
+    int numOpciones = 0;
+    switch (menuventana) {
+    case 1: menuActual = menuUno; numOpciones = SIZE_SIETE; break;
+    case 2: menuActual = menuDos; numOpciones = SIZE_CUATRO; break;
+    case 3: menuActual = menuTres; numOpciones = SIZE_SEIS; break;
+    case 4: menuActual = menuCuatro; numOpciones = SIZE_SEIS; break;
+    case 5: menuActual = menuCinco; numOpciones = SIZE_DOS; break;
+    case 6: menuActual = menuSeis; numOpciones = SIZE_TRES; break;
+    case 7: menuActual = menuSiete; numOpciones = SIZE_DOS; break;
+    default:
+        mvprintw(10, 10, "Opción no válida o ocurrió un error");
+        refresh();
+        getch();
+        return -1;
+    }
+
     noecho();
     cbreak();
     keypad(stdscr, TRUE);
-    while (1) {
-        for (int i = 0; i < numOpciones; i++) {
-            if (i == opcion) {
-                attron(A_REVERSE);
-            }
-            mvprintw(i + 5, 10, "%s", opciones[i]);
-            attroff(A_REVERSE);
-        }
-        refresh();
 
+    while (1) {
+        clear();
+        mvprintw(2, 10, "%s", pregunta); // Mostrar pregunta arriba
+        imprimirMenu(menuActual, numOpciones, highlight); // El menú comienza en línea 5
         ch = getch();
 
         switch (ch) {
-        case KEY_UP:
-            opcion = (opcion == 0) ? numOpciones - 1 : opcion - 1;
-            break;
-        case KEY_DOWN:
-            opcion = (opcion == numOpciones - 1) ? 0 : opcion + 1;
-            break;
-        case 10:  // ENTER: Confirmar selección
-            return opcion + 1;
-        default: break;
+        case KEY_UP: highlight = (highlight == 0) ? numOpciones - 1 : highlight - 1; break;
+        case KEY_DOWN: highlight = (highlight == numOpciones - 1) ? 0 : highlight + 1; break;
+        case 10: return highlight + 1; // ENTER
         }
     }
 }
-//------------------------------------------- FUNCIONES MENU SERVICIO ------------------------
-int menuServicio(){
-    int opcion = 0;
-    int ch;
-    const int numOpciones = 6;
-    clear();
-    noecho();
-    cbreak();
-    keypad(stdscr, TRUE);
-    // Solo un clear() es suficiente
-    while (1) {
-        for (int i = 0; i < numOpciones; i++) {
-            if (i == opcion) {
-                attron(A_REVERSE);
-            }
-            switch (i) {
-            case 0: mvprintw(5, 10, "Ingreso"); break;
-            case 1: mvprintw(6, 10, "Lavado"); break;
-            case 2: mvprintw(7, 10, "Medidas"); break;
-            case 3: mvprintw(8, 10, "Rectificar"); break;
-            case 4: mvprintw(9, 10, "Ensamble"); break;
-            case 5: mvprintw(10, 10, "Salir"); break;
-            }
-            attroff(A_REVERSE);
-        }
-        refresh();
-        ch = getch();
-
-        switch (ch) {
-        case KEY_UP:
-            opcion = (opcion == 0) ? numOpciones - 1 : opcion - 1;
-            break;
-        case KEY_DOWN:
-            opcion = (opcion == numOpciones - 1) ? 0 : opcion + 1;
-            break;
-        case 10:  // ENTER: Confirmar selección
-            return opcion+1;
-        }
-    }
-    return 0; // Nunca se alcanza, pero por seguridad
-}
-
-;
-
 
 // Función auxiliar para leer una cadena con ncurses
 char* leerString(int y, int x, int maxLen) {
@@ -213,7 +116,6 @@ char* leerString(int y, int x, int maxLen) {
         free(buffer);
         return NULL;
     }
-
     return buffer;
 }
 
@@ -261,5 +163,58 @@ int* leerInt(int y, int x, int maxLen) {
         return NULL;
     }
     *num = (int)numLong;
+    return num;
+}
+
+float* leerFloat(int y, int x, int maxLen) {
+    if (maxLen <= 0) {
+        mvprintw(y + 1, x, "Error: Longitud máxima inválida.");
+        refresh();
+        return NULL;
+    }
+    char buffer[maxLen + 1];
+    memset(buffer, 0, maxLen + 1);
+    echo();
+    mvgetnstr(y, x, buffer, maxLen);
+    noecho();
+    if (strlen(buffer) == 0) {
+        return NULL;
+    }
+    // Validación: permitir números con signo y punto decimal
+    int i = 0, dotCount = 0;
+    if (buffer[0] == '-') {
+        i++;  // Saltar el signo negativo
+    }
+    for (; buffer[i] != '\0'; i++) {
+        if (buffer[i] == '.') {
+            dotCount++;
+            if (dotCount > 1) { // Más de un punto decimal es inválido
+                mvprintw(y + 1, x, "Error: Número no válido.");
+                refresh();
+                return NULL;
+            }
+        } else if (!isdigit((unsigned char)buffer[i])) {
+            mvprintw(y + 1, x, "Error: Solo números Enteros.");
+            refresh();
+            return NULL;
+        }
+    }
+    // Convertir a float usando strtof
+    char* endptr;
+    float numFloat = strtof(buffer, &endptr);
+
+    if (*endptr != '\0') {
+        mvprintw(y + 1, x, "Error: Conversión inválida.");
+        refresh();
+        return NULL;
+    }
+    // Reservar memoria para el número y devolverlo
+    float* num = (float*)malloc(sizeof(float));
+    if (!num) {
+        mvprintw(y + 1, x, "Error: No se pudo asignar memoria.");
+        refresh();
+        return NULL;
+    }
+    *num = numFloat;
     return num;
 }

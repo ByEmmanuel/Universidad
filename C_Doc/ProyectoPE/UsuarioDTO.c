@@ -169,7 +169,7 @@ void modificarCliente(){
     mvprintw(8, 1, "Contacto: %s", usuarioNuevo->contacto);
     refresh();
 
-    const int opcUsr = menuModificarCliente();
+    const int opcUsr = mostrarMenu(3,".");
     clear();
     refresh();
 
@@ -251,7 +251,7 @@ int cliente(){
     //Agregar valores (Todo en un String A una lista)
 
     // MENU CLIENTE
-    int opcCliente = menuCliente();
+    int opcCliente = mostrarMenu(2,".");
     clear();
     refresh();
 

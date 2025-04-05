@@ -61,78 +61,55 @@ int loginUsuario(){
 int servicio(){
     //Varibales locales
     // Material de la pieza (Hierro, Aluminio, etc.)
-    float desgaste;         // Nivel de desgaste en porcentaje (0-100%)
-    float tolerancia;       // Tolerancia máxima de desgaste permitida antes de rectificar
-    float medidaOriginal;   // Medida original de la pieza en mm
-    float medidaActual;     // Medida actual después del desgaste
-    int numValvulas;
-    double presionPrueba;
+    // Nivel de desgaste en porcentaje (0-100%)
+    // Tolerancia máxima de desgaste permitida antes de rectificar
+    // Medida original de la pieza en mm
+    // Medida actual después del desgaste
     TipoCombustible tipo_combustible = {};
-    int tieneFisuras;
 
-    int opc = menuServicio();
+    int opc = mostrarMenu(4,".");
 
     int opcusr;
     switch (opc){
         case 1:
             //Ingreso culata o monoblock
-            mvprintw(10,10,"Ingrese una opcion 1: Culata. 2: Monoblock");
-            scanf("%d",&opcusr);
-            //Culata
-
-        //restoy trabajando aqui
-
-            //Ingresar todos estos parametros
-        /**
-    char material[30];      // Material de la pieza (Hierro, Aluminio, etc.)
-
-    float desgaste;         // Nivel de desgaste en porcentaje (0-100%)
-    float tolerancia;       // Tolerancia máxima de desgaste permitida antes de rectificar
-    float medidaOriginal;   // Medida original de la pieza en mm
-    float medidaActual;     // Medida actual después del desgaste
-    int necesitaRectificacion; // 1 = Sí, 0 = No (según tolerancia)
-    int numValvulas;
-    float presionPrueba;
-    char tipoCombustible[20];
-    int tieneFisuras;
-
-         */
+            //mvprintw(10,10,"Ingrese una opcion 1: Culata. 2: Monoblock");
+            opcusr = mostrarMenu(5,".");
             if (opcusr == 1){
-                printf("Ingrese Id Usuario: ");
+                 mvprintw(9,10,"Ingrese Id Usuario: ");
                 //Esto debe ser el folio, pero esta agregado asi por temas de testeo
-                int id_Usuario;
-                scanf("%d", &id_Usuario);
+                const int id_Usuario = *leerInt(10,10,10000);
+                //scanf("%d", &id_Usuario);
                 //Generar numero de servicio
 
                 // Ingresar material
-                printf("\nIngrese material del motor\n");
-                char* material = cinString(30);
+                mvprintw(11,10,"Ingrese material del motor");
+                const char* material = leerString(12,10,30);
 
                 // Ingresar desgaste
-                printf("Ingresar desgaste\n");
-                scanf("%f", &desgaste);
+                mvprintw(13,10,"Ingresar desgaste");
+                const float desgaste = *leerFloat(14, 10, 30);
                 // Ingresar tolerancia
-                printf("Ingrese tolerancia\n");
-                scanf("%f", &tolerancia);
+                mvprintw(15,10,"Ingrese tolerancia");
+                const float tolerancia = *leerFloat(16, 10, 100);
                 // Ingresar medidaOriginal
-                printf("Ingrese medida Original\n");
-                scanf("%f", &medidaOriginal);
+                mvprintw(17,10,"Ingrese medida Original");
+                const float medidaOriginal = *leerFloat(18, 10, 100);
                 // Ingresar medidaActual
-                printf("Ingrese Medida Actual\n");
-                scanf("%f", &medidaActual);
-                printf("¿Rectificacion?");
+                mvprintw(19,10,"Ingrese Medida Actual");
+                const float medidaActual = *leerFloat(20, 10, 100);
                 // comprobar necesitaRectificacion
                 //Funcion necesita rectificacion
                 // Ingresar numValvulas
-                scanf("%d", &numValvulas);
-                printf("Ingrese numero Valvulas\n");
+                mvprintw(21,10,"Ingrese numero Valvulas\n");
+                const int numValvulas = *leerInt(22, 10, 50);
                 // Ingresar presionPrueba
-                scanf("%d", &presionPrueba);
-                printf("Ingrese tipoCombustible");
+                mvprintw(23,10,"Ingrese PresionPrueba");
+                const float presionPrueba = *leerFloat(24, 10, 20);
                 // Ingresar tipoCombustible
-                int opcCombustible;
-                printf("Ingrese tipo de combustible\n1: Gasolina\n2: Diesel\n3: Electrico");
-                scanf("%d", &opcCombustible);
+                mvprintw(25,10,"Ingrese tipo de combustible");
+                const int opcCombustible = mostrarMenu(6,".");
+
                 switch (opcCombustible){
                 case 1:
                     tipo_combustible = 0;
@@ -149,12 +126,15 @@ int servicio(){
                 }
                 //Selectiva multiple
                 // Ingresar tiene fisuras
-                printf("Tiene Fisuras?\n1: Si. \n2: No.");
-                scanf("%d", &tieneFisuras);
-                Pieza piezaUsuario = inicializarPieza(id_Usuario, 1, material, desgaste, tolerancia, medidaOriginal, medidaActual, necesitaRectificacion());
+
+                const int tieneFisuras = mostrarMenu(7,"¿Tiene Fisuras?");
+
+                const int rectificacion = mostrarMenu(7,"¿Necesita Rectificación?");
+
+                const Pieza piezaUsuario = inicializarPieza(id_Usuario, 1, material, desgaste, tolerancia, medidaOriginal, medidaActual, rectificacion);
                 //Polimorfismo
-                printf("Num valvulas %d,\nPresion Prueba %f,\nTipoCombustible %d,\nFisuras? %d\n", numValvulas,
-                       presionPrueba, tipo_combustible, tieneFisuras);
+                /*printf("Num valvulas %d,\nPresion Prueba %f,\nTipoCombustible %d,\nFisuras? %d\n", numValvulas,
+                       presionPrueba, tipo_combustible, tieneFisuras);*/
                     Culata* pzc = malloc(sizeof(Culata));  // Reservamos memoria para Culata
                     *pzc = inicializarCulata(piezaUsuario, numValvulas, presionPrueba, tipo_combustible, tieneFisuras);
                     guardarPiezaArray((void*)pzc);  // Se guarda como puntero genérico
@@ -217,12 +197,6 @@ int salir() {
     listarPiezas();
     exit(0);  // Finaliza el programa pero la terminal permanecerá abierta
 }
-
-int necesitaRectificacion(){
-    //Implementar funcion
-    return 0;
-}
-
 
 void imprimirMenuPrincipal() {
     /*cleanScreen();

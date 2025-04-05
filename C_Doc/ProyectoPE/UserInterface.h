@@ -11,12 +11,11 @@ int mainMenu();
 */
 int menuServicio();
 void ejecutarOpcion(int opcion);
-int mostrarVentana(int menuventana);
-int menuCliente();
-int menuModificarCliente();
+int mostrarMenu(int menuventana, const char* pregunta);
 
 
 char* leerString(int y, int x, int maxLen);
 int* leerInt(int y, int x, int maxLen);
+float* leerFloat(int y, int x, int maxLen);
 
 #endif //USERINTERFACE_H

@@ -56,7 +56,7 @@ int main(){
 void menuPrincipal(){
     initscr();
     while (bandera){
-        int opc = mostrarVentana(1);
+        int opc = mostrarMenu(1,".");
         ejecutarOpcion(opc);
     }
 
