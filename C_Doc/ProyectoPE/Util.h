@@ -17,7 +17,6 @@ int strIsEmpty(const char* str);            // Verifica si una cadena est√° vac√
 int strContains(const char* src, const char* str);
 //Metodo agregado
 void asignString(char *dst, const char *src, size_t n);
-char* cinString(int bufferSize);
 
 // ARRAYS
 ArrayList* arrayListNew(size_t capacidadInicial);
@@ -45,6 +44,13 @@ char* dateToString(SimpleDate* date);        // Convierte a cadena legible
 int dateCompare(SimpleDate* d1, SimpleDate* d2); // Compara dos fechas
 
 char* generarFolio(const char *nombre);
+
+//Validar Campos
+// Tipos de datos a validad, INT, String (char* ), LONG, FLOAT
+int validarObjeto(const char* src);
+int leerIntSeguro(int y, int x, int maxLen, char* pregunta);
+float leerFloatSeguro(int y, int x, int maxLen, char* pregunta);
+char* leerStringSeguro(int y, int x, int maxLen, char* pregunta);
 
 // Buffer
 void cleanBuffer();

@@ -18,12 +18,25 @@
 char usuariosRegistrados[MAX_USUARIOS][MAX_LONGITUD] =  {"David","Jose","Admin","Pepe","Luis",""};
 char contraseñasUsuarios[MAX_USUARIOS][MAX_LONGITUD] = {"123456789","987654321","01","24680",""};
 
+char* enterString(int length) {
+    char* buffer = (char*)malloc(length + 1); // Reservar espacio para la cadena
+    if (buffer == NULL) {
+        perror("Error al asignar memoria");
+        exit(1);
+    }
+    if (fgets(buffer, length + 1, stdin) != NULL) {
+        buffer[strcspn(buffer, "\n")] = '\0'; // Eliminar el salto de línea al final
+    }
+    return buffer;
+}
+
 int loginUsuario(){
     int intentosUsuario = 0;
 
     do {
         printf("Ingrese Usuario: ");
-        char* usuarioID = cinString(MAX_LONGITUD);
+        // Función para leer cadenas de manera segura
+        char* usuarioID = enterString(MAX_LONGITUD);
         // Buscar el usuario en la lista
         int usuarioIndex = -1;
         for (int i = 0; i < MAX_USUARIOS; i++) {
@@ -36,7 +49,7 @@ int loginUsuario(){
         if (usuarioIndex != -1) {
             //char passwUsuario[MAX_LONGITUD];
             printf("Ingrese Contraseña: ");
-            char* passwUsuario = cinString(MAX_LONGITUD);
+            char* passwUsuario = enterString(MAX_LONGITUD);
             // Si se encontró el usuario
             //scanf("%s", passwUsuario);
 
@@ -76,39 +89,37 @@ int servicio(){
             //mvprintw(10,10,"Ingrese una opcion 1: Culata. 2: Monoblock");
             opcusr = mostrarMenu(5,".");
             if (opcusr == 1){
-                 mvprintw(9,10,"Ingrese Id Usuario: ");
                 //Esto debe ser el folio, pero esta agregado asi por temas de testeo
-                const int id_Usuario = *leerInt(10,10,10000);
-                //scanf("%d", &id_Usuario);
+
+                const int id_Usuario = leerIntSeguro(10,10,10000,"Ingrese Id Usuario: ");
+                // o para mayor control:
+                mvprintw(12, 10, "                                                 ");
                 //Generar numero de servicio
-
                 // Ingresar material
-                mvprintw(11,10,"Ingrese material del motor");
-                const char* material = leerString(12,10,30);
-
+                const char* material = leerStringSeguro(12,10,30,"Ingrese material del motor");
+                mvprintw(14, 10, "                                                 ");
                 // Ingresar desgaste
-                mvprintw(13,10,"Ingresar desgaste");
-                const float desgaste = *leerFloat(14, 10, 30);
+                const float desgaste = leerFloatSeguro(14, 10, 30,"Ingresar desgaste");
+                mvprintw(16, 10, "                                                 ");
                 // Ingresar tolerancia
-                mvprintw(15,10,"Ingrese tolerancia");
-                const float tolerancia = *leerFloat(16, 10, 100);
+                const float tolerancia = leerFloatSeguro(16, 10, 100, "Ingrese tolerancia");
+                mvprintw(18, 10, "                                                 ");
                 // Ingresar medidaOriginal
-                mvprintw(17,10,"Ingrese medida Original");
-                const float medidaOriginal = *leerFloat(18, 10, 100);
+                const float medidaOriginal = leerFloatSeguro(18, 10, 100,"Ingrese medida Original");
+                mvprintw(20, 10, "                                                 ");
                 // Ingresar medidaActual
-                mvprintw(19,10,"Ingrese Medida Actual");
-                const float medidaActual = *leerFloat(20, 10, 100);
+                const float medidaActual = leerFloatSeguro(20, 10, 100,"Ingrese Medida Actual");
+                mvprintw(22, 10, "                                                 ");
                 // comprobar necesitaRectificacion
                 //Funcion necesita rectificacion
                 // Ingresar numValvulas
-                mvprintw(21,10,"Ingrese numero Valvulas\n");
-                const int numValvulas = *leerInt(22, 10, 50);
+                const int numValvulas = leerIntSeguro(22, 10, 50,"Ingrese numero Valvulas");
+                mvprintw(24, 10, "                                                 ");
                 // Ingresar presionPrueba
-                mvprintw(23,10,"Ingrese PresionPrueba");
-                const float presionPrueba = *leerFloat(24, 10, 20);
+                const float presionPrueba = leerFloatSeguro(24, 10, 20,"Ingrese PresionPrueba");
+                mvprintw(26, 10, "                                                 ");
                 // Ingresar tipoCombustible
-                mvprintw(25,10,"Ingrese tipo de combustible");
-                const int opcCombustible = mostrarMenu(6,".");
+                const int opcCombustible = mostrarMenu(6,"Ingrese tipo de combustible");
 
                 switch (opcCombustible){
                 case 1:
@@ -198,41 +209,6 @@ int salir() {
     exit(0);  // Finaliza el programa pero la terminal permanecerá abierta
 }
 
-void imprimirMenuPrincipal() {
-    /*cleanScreen();
-    usleep(2000);
-    printf("┌──────────────────────────────┐\n");
-    printf("│        MENÚ PRINCIPAL        │\n");
-    printf("├──────────────────────────────┤\n");
-    char* menuUno[7] = {"Clientes", "Servicio", "Pago", "Almacen", "Otros", "Dudas", "Salir"};
-    for (int i = 0; i < 7; i++) {
-        printf("│   %d - %-23s│\n", i+1, menuUno[i]);
-    }
-    printf("│                              │\n");
-    printf("└──────────────────────────────┘\n");
-    printf("\033[10;1HSeleccione una opción: ");*/
-
-    //mainMenu();
-}
-
-void imprimirMenuServicio(){
-    //menuServicio(0);
-
-    /*
-     *printf("\n┌──────────────────────────────┐\n");
-    printf("│        MENÚ Servicio         │\n");
-    printf("├──────────────────────────────┤\n");
-    char* menu[6] = {"Ingreso","Lavado","Medidas","Rectificar","Ensamble","Salir O regresar"};
-    for (int i = 0; i < 6; i++) {
-        printf("│   %d - %-23s│\n", i+1, menu[i]);
-    }
-    printf("│                              │\n");
-    printf("└──────────────────────────────┘\n");
-    printf("\033[10;1HSeleccione una opción: ");
-    */
-
-
-}
 
 int preguntaSalida(){
     /*cleanScreen();

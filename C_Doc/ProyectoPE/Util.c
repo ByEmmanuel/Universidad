@@ -5,11 +5,14 @@
 #include "Util.h"
 
 #include <ctype.h>
+#include <limits.h>
 #include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+#include "UserInterface.h"
 
 //Funciones importantes para reducir la repeticion de codigo
 //  strcspn
@@ -74,21 +77,6 @@ void asignString(char *dst, const char *src, const size_t n){
     dst[n - 1] = '\0';
 }
 
-// Funcion para evitar usar scanF y evitar desbordamientos de buffer
-// Función para leer cadenas de manera segura
-char* cinString(int length) {
-    char* buffer = (char*)malloc(length + 1); // Reservar espacio para la cadena
-    if (buffer == NULL) {
-        perror("Error al asignar memoria");
-        exit(1);
-    }
-    if (fgets(buffer, length + 1, stdin) != NULL) {
-        buffer[strcspn(buffer, "\n")] = '\0'; // Eliminar el salto de línea al final
-    }
-    return buffer;
-}
-
-
 char* generarFolio(const char *nombre) {
     char* folio = (char*)malloc(13);
 
@@ -124,6 +112,183 @@ void cleanBuffer(){
     while ((c = getchar()) != '\n' && c != EOF) {}
 }
 
+int validarObjeto(const char* src) {
+    int len = strlen(src);
+    if (len =! NULL || len > 0) {
+        return 1;
+    }
+    return 0;
+}
+
+// Función auxiliar para leer una cadena con ncurses
+char* leerString(int y, int x, int maxLen, char* pregunta) {
+    mvprintw(y,x + 10,pregunta);
+    char* buffer = (char*)malloc(maxLen + 1);
+    if (!buffer) {
+        mvprintw(y, x, "Error: No se pudo asignar memoria.");
+        refresh();
+        return NULL;
+    }
+
+    memset(buffer, 0, maxLen + 1); // Inicializa el buffer con ceros para evitar residuos
+    echo(); // Mostrar lo que el usuario escribe
+    mvgetnstr(y, x + 40, buffer, maxLen); // Leer cadena con límite
+    noecho(); // Desactivar eco después de leer
+
+    // Si el usuario solo presiona ENTER, devolver NULL para manejarlo en otro lado
+    if (strlen(buffer) == 0) {
+        free(buffer);
+        return NULL;
+    }
+    return buffer;
+}
+
+int* leerInt(int y, int x, int maxLen, char* pregunta) {
+    mvprintw(y,x + 10,pregunta);
+    // Validar maxLen
+    if (maxLen <= 0) {
+        mvprintw(y + 1, x, "Error: Longitud máxima inválida.");
+        refresh();
+        return NULL;
+    }
+    char buffer[maxLen + 1];
+    memset(buffer, 0, maxLen + 1);
+    echo();
+    mvgetnstr(y, x + 30, buffer, maxLen);
+    noecho();
+    // Si la entrada está vacía, devolver NULL
+    if (strlen(buffer) == 0) {
+        return NULL;
+    }
+    // Verificar si es un número válido (incluyendo signo negativo)
+    int i = 0;
+    if (buffer[0] == '-') {
+        i++; // Saltar el signo negativo
+    }
+    for (; buffer[i] != '\0'; i++) {
+        if (!isdigit((unsigned char)buffer[i])) {
+            mvprintw(y + 1, x, "Entrada no valida: solo numeros.");
+            refresh();
+            return NULL;
+        }
+    }
+    // Convertir a entero con manejo de desbordamiento
+    char* endptr;
+    long numLong = strtol(buffer, &endptr, 10);
+    if (*endptr != '\0' || numLong > INT_MAX || numLong < INT_MIN) {
+        mvprintw(y + 1, x, "Error: Número fuera de rango.");
+        refresh();
+        return NULL;
+    }
+    // Asignar memoria para el resultado
+    int* num = (int*)malloc(sizeof(int));
+    if (!num) {
+        mvprintw(y + 1, x, "Error: No se pudo asignar memoria.");
+        refresh();
+        return NULL;
+    }
+    *num = (int)numLong;
+    return num;
+}
+
+float* leerFloat(int y, int x, int maxLen, char* pregunta) {
+    mvprintw(y,x + 10,pregunta);
+    if (maxLen <= 0) {
+        mvprintw(y + 1, x, "Error: Longitud máxima inválida.");
+        refresh();
+        return NULL;
+    }
+    char buffer[maxLen + 1];
+    memset(buffer, 0, maxLen + 1);
+    echo();
+    mvgetnstr(y, x + 30 , buffer, maxLen);
+    noecho();
+    if (strlen(buffer) == 0) {
+        return NULL;
+    }
+    // Validación: permitir números con signo y punto decimal
+    int i = 0, dotCount = 0;
+    if (buffer[0] == '-') {
+        i++;  // Saltar el signo negativo
+    }
+    for (; buffer[i] != '\0'; i++) {
+        if (buffer[i] == '.') {
+            dotCount++;
+            if (dotCount > 1) { // Más de un punto decimal es inválido
+                mvprintw(y + 1, x, "Error: Número no válido.");
+                refresh();
+                return NULL;
+            }
+        } else if (!isdigit((unsigned char)buffer[i])) {
+            mvprintw(y + 1, x, "Error: Solo números Enteros.");
+            refresh();
+            return NULL;
+        }
+    }
+    // Convertir a float usando strtof
+    char* endptr;
+    float numFloat = strtof(buffer, &endptr);
+
+    if (*endptr != '\0') {
+        mvprintw(y + 1, x, "Error: Conversión inválida.");
+        refresh();
+        return NULL;
+    }
+    // Reservar memoria para el número y devolverlo
+    float* num = (float*)malloc(sizeof(float));
+    if (!num) {
+        mvprintw(y + 1, x, "Error: No se pudo asignar memoria.");
+        refresh();
+        return NULL;
+    }
+    *num = numFloat;
+    return num;
+}
+
+int leerIntSeguro(int y, int x, int maxLen, char* pregunta) {
+    int* valor = NULL;
+    do {
+        valor = leerInt(y , x, maxLen, pregunta);
+        if (valor == NULL) {
+            mvprintw(y + 2 , x, "X Entrada invalida. Intentalo de nuevo.");
+            refresh();
+        }
+    } while (valor == NULL);
+
+    int resultado = *valor;
+    free(valor);
+    return resultado;
+}
+float leerFloatSeguro(int y, int x, int maxLen, char* pregunta) {
+    float* valor = NULL;
+    do {
+        valor = leerFloat(y, x, maxLen, pregunta);
+        if (valor == NULL) {
+            mvprintw(y + 2, x , "X Entrada invalida. Intentalo de nuevo.");
+            refresh();
+        }
+    } while (valor == NULL);
+
+    float resultado = *valor;
+    free(valor);
+    return resultado;
+}
+
+
+char* leerStringSeguro(int y, int x, int maxLen, char* pregunta) {
+    char* valor = NULL;
+    do {
+        valor = leerString(y, x, maxLen, pregunta);
+        if (valor == NULL) {
+            mvprintw(y + 2, x , "X Entrada invalida. Intentalo de nuevo.");
+            refresh();
+        }
+    } while (valor == NULL);
+
+    char* resultado = valor;
+    free(valor);
+    return resultado;
+}
 
 void cleanScreen(){
     //clear();

@@ -8,10 +8,6 @@
 
 void mostrarLogo();
 
-void imprimirMenuPrincipal();
-
-void imprimirMenuServicio();
-
 void menuPrincipal();
 
 int loginUsuario();

@@ -132,17 +132,7 @@ Usuario* obtenerUsuario(const int id) {
 void modificarCliente(){
     cleanScreen();
     clear();
-    mvprintw(10,15,"Ingrese ID, Folio o Numero de Cliente: ");
-
-    int* ptr_id_Cliente = leerInt(11, 15, 2);
-    if (ptr_id_Cliente == NULL) {
-        mvprintw(12,15,"Error al leer ID.\n");
-        return;
-    }
-    int id_Cliente = *ptr_id_Cliente;
-    free(ptr_id_Cliente);  // Liberamos la memoria
-
-    //scanf("%d", &id_Cliente);
+    int id_Cliente = leerIntSeguro(11, 15, 2,"Ingrese ID, Folio o Numero de Cliente: ");
 
     //Esta funcion puede ser contraproducente ya que si algun campo del objeto Usuario, esta vacio,
     //esta opcion nunca va a funcionar
@@ -179,8 +169,7 @@ void modificarCliente(){
 
     switch (opcUsr) {
         case 1:
-            mvprintw(9,15,"Ingrese nuevo Nombre: ");
-            reemplazoUsuario = leerString(10,15,50);
+            reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Nombre: ");
             if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")) {
                 asignString(usuarioNuevo->nombreUsuario, reemplazoUsuario, sizeof(usuarioNuevo->nombreUsuario));
                 mvprintw(12,15,"Modificación realizada con éxito.\n");
@@ -191,8 +180,7 @@ void modificarCliente(){
             mvprintw(12,15,"Error al leer entrada.\n");
             break;
         case 2:
-            mvprintw(9,15,"Ingrese nuevo Apellido: ");
-            reemplazoUsuario = leerString(10,15,50);
+            reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Apellido: ");
             if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
                 asignString(usuarioNuevo->apellido, reemplazoUsuario, sizeof(usuarioNuevo->apellido));
                 mvprintw(12,15,"Modificación realizada con éxito.\n");
@@ -201,19 +189,12 @@ void modificarCliente(){
             printf("Error al leer entrada.\n");
             break;
         case 3:
-            mvprintw(9,15,"Ingrese nuevo Número Celular: ");
-            int* ptr_numero = leerInt(10,15,10);
-            if (ptr_numero == NULL) {
-                mvprintw(12,15,"Error al leer número de celular.\n");
-                return;
-            }
-            usuarioNuevo->celular = *ptr_numero;
-            free(ptr_numero);
+            int ptr_numero = leerIntSeguro(10,15,10,"Ingrese nuevo Número Celular: ");
+            usuarioNuevo->celular = ptr_numero;
             cleanBuffer();
             break;
         case 4:
-            mvprintw(9,15,"Ingrese nuevo Email: ");
-            reemplazoUsuario = leerString(10,15,50);
+            reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Email: ");
             if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
                 asignString(usuarioNuevo->email, reemplazoUsuario, sizeof(usuarioNuevo->email));
                 mvprintw(12,15,"Modificación realizada con éxito.\n");
@@ -222,8 +203,7 @@ void modificarCliente(){
             mvprintw(12,15,"Error al leer entrada.\n");
             break;
         case 5:
-            mvprintw(9,15,"Ingrese nuevo Contacto: ");
-            reemplazoUsuario = leerString(10,15,50);
+            reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Contacto: ");
             if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
                 asignString(usuarioNuevo->contacto, reemplazoUsuario, sizeof(usuarioNuevo->contacto));
                 mvprintw(12,15,"Modificación realizada con éxito.\n");
@@ -262,33 +242,29 @@ int cliente(){
     if (opcCliente == 1) {
         cleanScreen();
         clear();
-        mvprintw(2, 10, "Agregar Cliente");
-        mvprintw(4, 10, "Ingrese Nombre: ");
-        char* nombreUsr = leerString(4, 26, 19);
+        mvprintw(1,10,"Agregar Cliente");
+        char* nombreUsr = leerStringSeguro(3, 0, 19,"Ingrese Nombre: ");
+        mvprintw(6, 10, "                                                 ");
         char* folio = generarFolio(nombreUsr);
-        mvprintw(5, 10, "Ingrese Apellido: ");
-        char* apellidoUsr = leerString(5, 28, 19);
-        mvprintw(6, 10, "Ingrese Celular: ");
-        char* celularStr = leerString(6, 27, 15);
-        long long celularUsr = atoll(celularStr);
-        mvprintw(7, 10, "Ingrese Email: ");
-        char* emailUsr = leerString(7, 25, 49);
-        mvprintw(8, 10, "Ingrese Contacto: ");
-        char* contactoUsr = leerString(8, 28, 29);
+        char* apellidoUsr = leerStringSeguro(6, 0, 19,"Ingrese Apellido: ");
+        mvprintw(9, 10, "                                                 ");
+        int celularUsr = leerIntSeguro(10, 0, 15,"Ingrese Celular: ");
+        mvprintw(12, 10, "                                                 ");
+        char* emailUsr = leerStringSeguro(12, 0, 49,"Ingrese Email: ");
+        mvprintw(15, 10, "                                                 ");
+        char* contactoUsr = leerStringSeguro(15, 0, 29,"Ingrese Contacto: ");
+        mvprintw(18, 10, "                                                 ");
 
 
         while (!strContains(emailUsr, "@")) {
             free(emailUsr);
-            mvprintw(10,10,"Tu Email no es valido, ¿Deseas volver a ingresarlo? 1: SI 2: NO");
-            const char* opcUsr = leerString(12,10,25);
-            if (strContains(opcUsr, "1")) {
-                mvprintw(10,10,"\033[2A\033[2K\033[1B\033[2K");
+            if (mostrarMenu(7,"Tu Email no es valido, ¿Deseas volver a ingresarlo?") == 1){
+                //mvprintw(10,10,"\033[2A\033[2K\033[1B\033[2K");
                 clear();
                 //fflush(stdout);
-                mvprintw(10,12,"Ingrese Email\n");
-                emailUsr = leerString(11,12,49);
+                emailUsr = leerStringSeguro(11,12,49,"Ingrese Email");
             } else {
-                mvprintw(10,13,"Registro INVÁLIDO: Email Inválido\n");
+                mvprintw(10,13,"Registro INVÁLIDO: Email Inválido");
                 free(nombreUsr);
                 free(folio);
                 free(apellidoUsr);
@@ -304,7 +280,6 @@ int cliente(){
         free(nombreUsr);
         free(folio);
         free(apellidoUsr);
-        free(emailUsr);
         free(contactoUsr);
 
     } else if (opcCliente == 2){
