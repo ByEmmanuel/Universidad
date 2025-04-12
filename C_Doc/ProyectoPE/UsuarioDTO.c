@@ -159,7 +159,7 @@ void modificarCliente(){
     mvprintw(8, 1, "Contacto: %s", usuarioNuevo->contacto);
     refresh();
 
-    const int opcUsr = mostrarMenu(3,".");
+    const int opcUsr = mostrarMenu(3,".") + 1;
     clear();
     refresh();
 
@@ -189,8 +189,7 @@ void modificarCliente(){
             printf("Error al leer entrada.\n");
             break;
         case 3:
-            int ptr_numero = leerIntSeguro(10,15,10,"Ingrese nuevo Número Celular: ");
-            usuarioNuevo->celular = ptr_numero;
+            usuarioNuevo->celular = leerIntSeguro(10,15,10,"Ingrese nuevo Número Celular: ");
             cleanBuffer();
             break;
         case 4:
@@ -231,7 +230,8 @@ int cliente(){
     //Agregar valores (Todo en un String A una lista)
 
     // MENU CLIENTE
-    int opcCliente = mostrarMenu(2,".");
+    int opcCliente = mostrarMenu(2,".") + 1;
+    char* emailUsr;
     clear();
     refresh();
 
@@ -243,32 +243,25 @@ int cliente(){
         cleanScreen();
         clear();
         mvprintw(1,10,"Agregar Cliente");
-        char* nombreUsr = leerStringSeguro(3, 0, 19,"Ingrese Nombre: ");
+        const char* nombreUsr = leerStringSeguro(3, 0, 19,"Ingrese Nombre: ");
         mvprintw(6, 10, "                                                 ");
-        char* folio = generarFolio(nombreUsr);
-        char* apellidoUsr = leerStringSeguro(6, 0, 19,"Ingrese Apellido: ");
+        const char* folio = generarFolio(nombreUsr);
+        const char* apellidoUsr = leerStringSeguro(6, 0, 19,"Ingrese Apellido: ");
         mvprintw(9, 10, "                                                 ");
-        int celularUsr = leerIntSeguro(10, 0, 15,"Ingrese Celular: ");
+        const int celularUsr = leerIntSeguro(10, 0, 15,"Ingrese Celular: ");
         mvprintw(12, 10, "                                                 ");
-        char* emailUsr = leerStringSeguro(12, 0, 49,"Ingrese Email: ");
+        emailUsr = leerStringSeguro(12, 0, 49, "Ingrese Email: ");
         mvprintw(15, 10, "                                                 ");
-        char* contactoUsr = leerStringSeguro(15, 0, 29,"Ingrese Contacto: ");
+        const char* contactoUsr = leerStringSeguro(15, 0, 29,"Ingrese Contacto: ");
         mvprintw(18, 10, "                                                 ");
 
 
         while (!strContains(emailUsr, "@")) {
-            free(emailUsr);
             if (mostrarMenu(7,"Tu Email no es valido, ¿Deseas volver a ingresarlo?") == 1){
-                //mvprintw(10,10,"\033[2A\033[2K\033[1B\033[2K");
                 clear();
-                //fflush(stdout);
                 emailUsr = leerStringSeguro(11,12,49,"Ingrese Email");
             } else {
                 mvprintw(10,13,"Registro INVÁLIDO: Email Inválido");
-                free(nombreUsr);
-                free(folio);
-                free(apellidoUsr);
-                free(contactoUsr);
                 return 1;
             }
         }
@@ -277,10 +270,10 @@ int cliente(){
         mostrarUsuario(usuario);
         guardarUsuarioArray(usuario);
 
-        free(nombreUsr);
+        /*free(nombreUsr);
         free(folio);
         free(apellidoUsr);
-        free(contactoUsr);
+        free(contactoUsr);*/
 
     } else if (opcCliente == 2){
         modificarCliente();
@@ -343,6 +336,15 @@ void imprimirPiezasPorUsuario(int idUsuario) {
     }
 }
 
+const char* tipoCombustibleToStr(TipoCombustible tipo) {
+    switch (tipo) {
+    case GASOLINA: return "Gasolina";
+    case DIESEL:   return "Diesel";
+    case HIBRIDO:  return "Híbrido";
+    default:       return "Desconocido";
+    }
+}
+
 void listarPiezas(){
     noecho();              // No muestra lo que escribe el usuario
     cbreak();              // Lectura sin necesidad de ENTER
@@ -366,7 +368,7 @@ void listarPiezas(){
             Culata* culata = (Culata*)pieza;
             mvprintw(fila++, 4, "Numero de Válvulas: %d", culata->numValvulas);
             mvprintw(fila++, 4, "Presión de Prueba: %.2f", culata->presionPrueba);
-            mvprintw(fila++, 4, "Tipo de Combustible: %s", culata->tipoCombustible == 0 ? "Gasolina" : "Diésel");
+            mvprintw(fila++, 4, "Tipo de Combustible: %s", tipoCombustibleToStr(culata->tipoCombustible));
             mvprintw(fila++, 4, "Tiene Fisuras: %s", culata->tieneFisuras ? "Sí" : "No");
         } else if (pieza->tipo == MONOBLOCK) {
             Monoblock* monoblock = (Monoblock*)pieza;

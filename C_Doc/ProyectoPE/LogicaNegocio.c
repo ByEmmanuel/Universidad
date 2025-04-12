@@ -80,17 +80,16 @@ int servicio(){
     // Medida actual después del desgaste
     TipoCombustible tipo_combustible = {};
 
-    int opc = mostrarMenu(4,".");
+    int opc = mostrarMenu(4,".") + 1;
 
     int opcusr;
     switch (opc){
         case 1:
             //Ingreso culata o monoblock
             //mvprintw(10,10,"Ingrese una opcion 1: Culata. 2: Monoblock");
-            opcusr = mostrarMenu(5,".");
+            opcusr = mostrarMenu(5,".") + 1;
             if (opcusr == 1){
                 //Esto debe ser el folio, pero esta agregado asi por temas de testeo
-
                 const int id_Usuario = leerIntSeguro(10,10,10000,"Ingrese Id Usuario: ");
                 // o para mayor control:
                 mvprintw(12, 10, "                                                 ");
@@ -119,37 +118,20 @@ int servicio(){
                 const float presionPrueba = leerFloatSeguro(24, 10, 20,"Ingrese PresionPrueba");
                 mvprintw(26, 10, "                                                 ");
                 // Ingresar tipoCombustible
-                const int opcCombustible = mostrarMenu(6,"Ingrese tipo de combustible");
-
-                switch (opcCombustible){
-                case 1:
-                    tipo_combustible = 0;
-                    break;
-                case 2:
-                    tipo_combustible = 1;
-                    break;
-                case 3:
-                    tipo_combustible = 2;
-                    break;
-                default:
-                    tipo_combustible = 0;
-                    break;
-                }
-                //Selectiva multiple
-                // Ingresar tiene fisuras
+                tipo_combustible = mostrarMenu(6,"Ingrese tipo de combustible");
 
                 const int tieneFisuras = mostrarMenu(7,"¿Tiene Fisuras?");
 
                 const int rectificacion = mostrarMenu(7,"¿Necesita Rectificación?");
-
+                // Ahora puedes usar buffer como un char*
+                mvprintw(0, 0, "Rectificacion?: %d", rectificacion);
+                mvprintw(0, 1, "Tiene Fisuras?: %d", tieneFisuras);
+                mvprintw(0, 2, "Tipo Combustible: %d", tipo_combustible);
                 const Pieza piezaUsuario = inicializarPieza(id_Usuario, 1, material, desgaste, tolerancia, medidaOriginal, medidaActual, rectificacion);
                 //Polimorfismo
-                /*printf("Num valvulas %d,\nPresion Prueba %f,\nTipoCombustible %d,\nFisuras? %d\n", numValvulas,
-                       presionPrueba, tipo_combustible, tieneFisuras);*/
                     Culata* pzc = malloc(sizeof(Culata));  // Reservamos memoria para Culata
                     *pzc = inicializarCulata(piezaUsuario, numValvulas, presionPrueba, tipo_combustible, tieneFisuras);
                     guardarPiezaArray((void*)pzc);  // Se guarda como puntero genérico
-
             }else if (opcusr == 2){
 
             }

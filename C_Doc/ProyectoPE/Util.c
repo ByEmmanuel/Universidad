@@ -122,20 +122,19 @@ int validarObjeto(const char* src) {
 
 // Función auxiliar para leer una cadena con ncurses
 char* leerString(int y, int x, int maxLen, char* pregunta) {
-    mvprintw(y,x + 10,pregunta);
+    mvprintw(y, x, "%s: ", pregunta);
     char* buffer = (char*)malloc(maxLen + 1);
     if (!buffer) {
-        mvprintw(y, x, "Error: No se pudo asignar memoria.");
+        mvprintw(y + 1, x, "Error: No se pudo asignar memoria.");
         refresh();
         return NULL;
     }
 
-    memset(buffer, 0, maxLen + 1); // Inicializa el buffer con ceros para evitar residuos
-    echo(); // Mostrar lo que el usuario escribe
-    mvgetnstr(y, x + 40, buffer, maxLen); // Leer cadena con límite
-    noecho(); // Desactivar eco después de leer
+    memset(buffer, 0, maxLen + 1);
+    echo();
+    mvgetnstr(y, x + strlen(pregunta) + 2, buffer, maxLen);
+    noecho();
 
-    // Si el usuario solo presiona ENTER, devolver NULL para manejarlo en otro lado
     if (strlen(buffer) == 0) {
         free(buffer);
         return NULL;
@@ -144,26 +143,26 @@ char* leerString(int y, int x, int maxLen, char* pregunta) {
 }
 
 int* leerInt(int y, int x, int maxLen, char* pregunta) {
-    mvprintw(y,x + 10,pregunta);
-    // Validar maxLen
+    mvprintw(y, x, "%s: ", pregunta);
     if (maxLen <= 0) {
         mvprintw(y + 1, x, "Error: Longitud máxima inválida.");
         refresh();
         return NULL;
     }
+
     char buffer[maxLen + 1];
     memset(buffer, 0, maxLen + 1);
     echo();
-    mvgetnstr(y, x + 30, buffer, maxLen);
+    mvgetnstr(y, x + strlen(pregunta) + 2, buffer, maxLen);
     noecho();
-    // Si la entrada está vacía, devolver NULL
+
     if (strlen(buffer) == 0) {
         return NULL;
     }
     // Verificar si es un número válido (incluyendo signo negativo)
     int i = 0;
     if (buffer[0] == '-') {
-        i++; // Saltar el signo negativo
+        i++;
     }
     for (; buffer[i] != '\0'; i++) {
         if (!isdigit((unsigned char)buffer[i])) {
@@ -187,22 +186,25 @@ int* leerInt(int y, int x, int maxLen, char* pregunta) {
         refresh();
         return NULL;
     }
+
     *num = (int)numLong;
     return num;
 }
 
 float* leerFloat(int y, int x, int maxLen, char* pregunta) {
-    mvprintw(y,x + 10,pregunta);
+    mvprintw(y, x, "%s: ", pregunta);
     if (maxLen <= 0) {
         mvprintw(y + 1, x, "Error: Longitud máxima inválida.");
         refresh();
         return NULL;
     }
+
     char buffer[maxLen + 1];
     memset(buffer, 0, maxLen + 1);
     echo();
-    mvgetnstr(y, x + 30 , buffer, maxLen);
+    mvgetnstr(y, x + strlen(pregunta) + 2, buffer, maxLen);
     noecho();
+
     if (strlen(buffer) == 0) {
         return NULL;
     }
@@ -211,6 +213,7 @@ float* leerFloat(int y, int x, int maxLen, char* pregunta) {
     if (buffer[0] == '-') {
         i++;  // Saltar el signo negativo
     }
+
     for (; buffer[i] != '\0'; i++) {
         if (buffer[i] == '.') {
             dotCount++;
@@ -220,7 +223,7 @@ float* leerFloat(int y, int x, int maxLen, char* pregunta) {
                 return NULL;
             }
         } else if (!isdigit((unsigned char)buffer[i])) {
-            mvprintw(y + 1, x, "Error: Solo números Enteros.");
+            mvprintw(y + 1, x, "Error: Solo números válidos.");
             refresh();
             return NULL;
         }
@@ -228,7 +231,6 @@ float* leerFloat(int y, int x, int maxLen, char* pregunta) {
     // Convertir a float usando strtof
     char* endptr;
     float numFloat = strtof(buffer, &endptr);
-
     if (*endptr != '\0') {
         mvprintw(y + 1, x, "Error: Conversión inválida.");
         refresh();
@@ -241,6 +243,7 @@ float* leerFloat(int y, int x, int maxLen, char* pregunta) {
         refresh();
         return NULL;
     }
+
     *num = numFloat;
     return num;
 }
@@ -285,9 +288,9 @@ char* leerStringSeguro(int y, int x, int maxLen, char* pregunta) {
         }
     } while (valor == NULL);
 
-    char* resultado = valor;
-    free(valor);
-    return resultado;
+    //char* resultado = valor;
+    return valor;
+    //return leerString(y, x, maxLen, pregunta);
 }
 
 void cleanScreen(){

@@ -27,7 +27,6 @@ int (*funcionesInt[SIZE_SIETE])() = {
 
 void ejecutarOpcion(int opcion) {
     clear();
-    opcion-=1;
     if (funcionesInt[opcion] != NULL) {
         mvprintw(10, 10, "Has seleccionado: Opción %d", opcion+1);
         refresh();
@@ -60,7 +59,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     char* menuCuatro[SIZE_SEIS] = {"Ingreso", "Lavado", "Medidas", "Rectificar", "Ensamble", "Salir"};
     char* menuCinco[SIZE_DOS] = {"CULATA", "MONOBLOCK"};
     char* menuSeis[SIZE_TRES] = {"1 : Gasolina","2: Diesel","3: Electrico"};
-    char* menuSiete[SIZE_DOS] = {"SI","NO"};
+    char* menuSiete[SIZE_DOS] = {"NO","SI"};
 
     char** menuActual = NULL;
     int numOpciones = 0;
@@ -92,7 +91,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
         switch (ch) {
         case KEY_UP: highlight = (highlight == 0) ? numOpciones - 1 : highlight - 1; break;
         case KEY_DOWN: highlight = (highlight == numOpciones - 1) ? 0 : highlight + 1; break;
-        case 10: return highlight + 1; // ENTER
+        case 10: return highlight ; // ENTER
         }
     }
 }
