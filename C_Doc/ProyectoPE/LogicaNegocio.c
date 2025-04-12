@@ -129,11 +129,12 @@ int servicio(){
                 mvprintw(0, 2, "Tipo Combustible: %d", tipo_combustible);
                 const Pieza piezaUsuario = inicializarPieza(id_Usuario, 1, material, desgaste, tolerancia, medidaOriginal, medidaActual, rectificacion);
                 //Polimorfismo
-                    Culata* pzc = malloc(sizeof(Culata));  // Reservamos memoria para Culata
-                    *pzc = inicializarCulata(piezaUsuario, numValvulas, presionPrueba, tipo_combustible, tieneFisuras);
+                    Culata* pzc = inicializarCulata(piezaUsuario, numValvulas, presionPrueba, tipo_combustible, tieneFisuras);
                     guardarPiezaArray((void*)pzc);  // Se guarda como puntero genérico
             }else if (opcusr == 2){
-
+                mvprintw(10,10,"Opcion Monoblock");
+            }else if (opcusr == 3){
+                listarPiezas();
             }
             printf("Opcion no valida");
 
@@ -236,20 +237,20 @@ void testing(int encendido) {
 }
 
 void agregarUsuarios() {
-    Usuario usuario1 = inicializarUsuario(0,"00001", "Usuario1", "Apellido 1", 1234567890, "EmailPrueba1@1", "Contacto1");
+    const Usuario usuario1 = inicializarUsuario(0,"00001", "Usuario1", "Apellido 1", 1234567890, "EmailPrueba1@1", "Contacto1");
     guardarUsuarioArray(usuario1);
-    Usuario usuario2 = inicializarUsuario(1,"00002", "Usuario2", "Apellido 2", 1987654321, "EmailPrueba2@2", "Contacto2");
+    const Usuario usuario2 = inicializarUsuario(1,"00002", "Usuario2", "Apellido 2", 1987654321, "EmailPrueba2@2", "Contacto2");
     guardarUsuarioArray(usuario2);
 }
 
 void agregarPiezas() {
-    Pieza piezaUsuario = inicializarPieza(0, 1, "Metal", .1123, .1125, .1300, .1180, 2);
-    Culata* pzc = malloc(sizeof(Culata));
-    *pzc = inicializarCulata(piezaUsuario, 16, .10, 2,2);
+    Pieza piezaUsuario = inicializarPieza(0, 1, "Metal", .1123f, .1125f, .1300f, .1180f, 0);
+    piezaUsuario.tipo = CULATA;
+    Culata* pzc = inicializarCulata(piezaUsuario, 16, .10, 2,1);
     guardarPiezaArray((void*)pzc);  // Se guarda como puntero genérico
 
-    Pieza piezaUsuario2 = inicializarPieza(1, 2, "Aluminio", 0.1000, 0.1050, 0.1250, 0.1150, 1);
-    Culata* pzc2 = malloc(sizeof(Culata));
-    *pzc2 = inicializarCulata(piezaUsuario, 18, 0.12, 1, 3);
+    Pieza piezaUsuario2 = inicializarPieza(1, 2, "Aluminio", 0.1000f, 0.1050f, 0.1250f, 0.1150f, 1);
+    piezaUsuario2.tipo = CULATA;
+    Culata* pzc2 = inicializarCulata(piezaUsuario2, 18, 0.12, 1, 0);
     guardarPiezaArray((void*)pzc2);
 }

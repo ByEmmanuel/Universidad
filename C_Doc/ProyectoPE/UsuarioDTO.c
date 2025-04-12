@@ -62,23 +62,17 @@ Pieza inicializarPieza(const int id_Usuario, const int tipoPieza, const char* ma
     return pz;
 }
 
-Culata inicializarCulata(const Pieza pieza, const int numValvulas ,const double presionPrueba,
+Culata* inicializarCulata(const Pieza pieza, const int numValvulas ,const double presionPrueba,
                 const int tipoCombustible, const int fisuras){
-    Culata* culata = (Culata*)malloc(sizeof(Culata));
+    Culata* culata = malloc(sizeof(Culata));
+    culata->base.tipo = CULATA;  // ← ¡Necesario!
     culata->base = pieza;
-    //culata.base.tipo = 1;
-    //asignString(culata.base.material, material ,30);
-    //culata.base.desgaste = desgaste;
-    //culata.base.tolerancia = tolerancia;
-    //culata.base.medidaOriginal = medidaOriginal;
-    //culata.base.medidaActual = medidaActual;
-    //culata.base.necesitaRectificacion = rectificacion;
     culata->numValvulas = numValvulas;
     culata->presionPrueba = presionPrueba;
     culata->tipoCombustible = tipoCombustible;
     culata->tieneFisuras = fisuras;
     // Agregar medidas manualmente
-    return *culata;
+    return culata;
 }
 
 // Función para agregar un usuario a la lista
@@ -101,7 +95,7 @@ int guardarUsuarioArray(Usuario usuario) {
 int guardarPiezaArray(void* pieza) {
     if (arrayPiezas.tamaño >= arrayPiezas.capacidad) {
         // Si la capacidad está llena, redimensionamos el arreglo
-        int nuevaCapacidad = arrayPiezas.capacidad == 0 ? 1 : arrayPiezas.capacidad * 2;
+        const int nuevaCapacidad = arrayPiezas.capacidad == 0 ? 1 : arrayPiezas.capacidad * 2;
         void** nuevoArray = realloc(arrayPiezas.datos, nuevaCapacidad * sizeof(void*));
         if (nuevoArray == NULL) {
             printf("Error al redimensionar el array de Piezas.\n");
@@ -354,27 +348,27 @@ void listarPiezas(){
     mvprintw(fila++, 15, "LISTADO DE TODAS LAS PIEZAS");
     mvprintw(fila++, 10, "==============================================");
     for (size_t i = 0; i < arrayPiezas.tamaño; i++) {
-        Pieza* pieza = (Pieza*)arrayPiezas.datos[i];
+        Culata* culata = (Culata*)arrayPiezas.datos[i];
+        Pieza* pieza = &culata->base;
         fila++;
         mvprintw(fila++, 2, "ID Pieza: %d", pieza->id_Pieza);
         mvprintw(fila++, 2, "ID Usuario: %d", pieza->id_Usuario);
         mvprintw(fila++, 2, "Material: %s", pieza->material);
-        mvprintw(fila++, 2, "Desgaste: %.2f%%", pieza->desgaste);
-        mvprintw(fila++, 2, "Tolerancia: %.2f mm", pieza->tolerancia);
-        mvprintw(fila++, 2, "Medida Original: %.2f mm", pieza->medidaOriginal);
-        mvprintw(fila++, 2, "Medida Actual: %.2f mm", pieza->medidaActual);
+        mvprintw(fila++, 2, "Desgaste: %.4f%%", pieza->desgaste);
+        mvprintw(fila++, 2, "Tolerancia: %.4f mm", pieza->tolerancia);
+        mvprintw(fila++, 2, "Medida Original: %.4f mm", pieza->medidaOriginal);
+        mvprintw(fila++, 2, "Medida Actual: %.4f mm", pieza->medidaActual);
         mvprintw(fila++, 2, "Necesita Rectificación: %s", pieza->necesitaRectificacion ? "Sí" : "No");
         if (pieza->tipo == CULATA) {
-            Culata* culata = (Culata*)pieza;
             mvprintw(fila++, 4, "Numero de Válvulas: %d", culata->numValvulas);
-            mvprintw(fila++, 4, "Presión de Prueba: %.2f", culata->presionPrueba);
+            mvprintw(fila++, 4, "Presión de Prueba: %.4f", culata->presionPrueba);
             mvprintw(fila++, 4, "Tipo de Combustible: %s", tipoCombustibleToStr(culata->tipoCombustible));
             mvprintw(fila++, 4, "Tiene Fisuras: %s", culata->tieneFisuras ? "Sí" : "No");
         } else if (pieza->tipo == MONOBLOCK) {
             Monoblock* monoblock = (Monoblock*)pieza;
             mvprintw(fila++, 4, "Número de Cilindros: %d", monoblock->numCilindros);
-            mvprintw(fila++, 4, "Diámetro de Cilindros: %.2f mm", monoblock->diametroCilindro);
-            mvprintw(fila++, 4, "Altura del Bloque: %.2f mm", monoblock->alineacionCiguenal);
+            mvprintw(fila++, 4, "Diámetro de Cilindros: %.4f mm", monoblock->diametroCilindro);
+            mvprintw(fila++, 4, "Altura del Bloque: %.4f mm", monoblock->alineacionCiguenal);
         }
         mvprintw(fila++, 10, "----------------------------------------------");
         // Manejo de overflow vertical
@@ -385,7 +379,7 @@ void listarPiezas(){
             fila = 1;
         }
     }
-    mvprintw(fila++, 10, "Fin del listado. Presiona cualquier tecla...");
+    mvprintw(fila++, 10, "Fin del listado...");
     getch();
 }
 

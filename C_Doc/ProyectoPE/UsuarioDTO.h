@@ -103,7 +103,7 @@ int guardarPiezaArray(void* pieza);
 Pieza inicializarPieza(int id_Usuario, int tipoPieza, const char* material,float desgaste, float tolerancia,
     float medidaOriginal, float medidaActual, int necesitaRectificacion );
 
-Culata inicializarCulata(Pieza pieza,int numValvulas ,double presionPrueba,
+Culata* inicializarCulata(Pieza pieza,int numValvulas ,double presionPrueba,
     int tipoCombustible,int fisuras);
 
 void imprimirPiezasPorUsuario(int id_usuario);

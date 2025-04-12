@@ -57,7 +57,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     char* menuDos[SIZE_CUATRO] = {"Agregar Cliente", "Editar Cliente", "Listar Cliente", "Menu Principal"};
     char* menuTres[SIZE_SEIS] = {"Nombre", "Apellido", "Num Celular", "Email", "Contacto", "Salir"};
     char* menuCuatro[SIZE_SEIS] = {"Ingreso", "Lavado", "Medidas", "Rectificar", "Ensamble", "Salir"};
-    char* menuCinco[SIZE_DOS] = {"CULATA", "MONOBLOCK"};
+    char* menuCinco[SIZE_TRES] = {"CULATA", "MONOBLOCK", "Listar Piezas"};
     char* menuSeis[SIZE_TRES] = {"1 : Gasolina","2: Diesel","3: Electrico"};
     char* menuSiete[SIZE_DOS] = {"NO","SI"};
 
@@ -68,7 +68,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     case 2: menuActual = menuDos; numOpciones = SIZE_CUATRO; break;
     case 3: menuActual = menuTres; numOpciones = SIZE_SEIS; break;
     case 4: menuActual = menuCuatro; numOpciones = SIZE_SEIS; break;
-    case 5: menuActual = menuCinco; numOpciones = SIZE_DOS; break;
+    case 5: menuActual = menuCinco; numOpciones = SIZE_TRES; break;
     case 6: menuActual = menuSeis; numOpciones = SIZE_TRES; break;
     case 7: menuActual = menuSiete; numOpciones = SIZE_DOS; break;
     default:
