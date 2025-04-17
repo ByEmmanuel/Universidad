@@ -12,7 +12,9 @@
 #include <string.h>
 #include <time.h>
 
+
 #include "UserInterface.h"
+
 
 //Funciones importantes para reducir la repeticion de codigo
 //  strcspn
@@ -21,8 +23,6 @@
 //  fgets
 
 //  realloc, malloc
-
-// Macros para verificar el sistema operativo
 
 char* strFill(const char* str) {
     if (str == NULL) return NULL;
@@ -112,12 +112,12 @@ void cleanBuffer(){
     while ((c = getchar()) != '\n' && c != EOF) {}
 }
 
-int validarObjeto(const char* src) {
-    int len = strlen(src);
-    if (len =! NULL || len > 0) {
-        return 1;
+int validarString(const char* src) {
+    if (src == NULL) {
+        // usuario presionó ESC o no ingresó nada
+        return -1;
     }
-    return 0;
+    return 1;
 }
 
 // Función auxiliar para leer una cadena con ncurses
@@ -129,12 +129,40 @@ char* leerString(int y, int x, int maxLen, char* pregunta) {
         refresh();
         return NULL;
     }
-
     memset(buffer, 0, maxLen + 1);
-    echo();
-    mvgetnstr(y, x + strlen(pregunta) + 2, buffer, maxLen);
-    noecho();
 
+    noecho(); // Desactivar echo para controlar manualmente
+    cbreak();  // Desactivar buffer de línea
+    keypad(stdscr, TRUE); // Permitir teclas especiales
+
+    int ch, pos = 0;
+    move(y, x + strlen(pregunta) + 2);
+
+    while (1) {
+        ch = getch();
+        if (ch == 27) { // ESC
+            free(buffer);
+            return NULL;
+        } else if (ch == '\n' || ch == KEY_ENTER) {
+            break;
+        } else if (ch == KEY_BACKSPACE || ch == 127 || ch == 8) {
+            if (pos > 0) {
+                pos--;
+                move(y, x + strlen(pregunta) + 2 + pos);
+                addch(' ');
+                move(y, x + strlen(pregunta) + 2 + pos);
+                buffer[pos] = '\0';
+                refresh();
+            }
+        } else if (isprint(ch) && pos < maxLen) {
+            buffer[pos] = ch;
+            mvaddch(y, x + strlen(pregunta) + 2 + pos, ch);
+            pos++;
+            refresh();
+        }
+    }
+
+    buffer[pos] = '\0';
     if (strlen(buffer) == 0) {
         free(buffer);
         return NULL;
@@ -142,48 +170,63 @@ char* leerString(int y, int x, int maxLen, char* pregunta) {
     return buffer;
 }
 
-int* leerInt(int y, int x, int maxLen, char* pregunta) {
+int* leerInt(int y, int x, int maxLen, char* pregunta, int* codigoError) {
+    // Inicializar código de error a 0 (sin error)
+    if (codigoError) *codigoError = 0;
+
     mvprintw(y, x, "%s: ", pregunta);
-    if (maxLen <= 0) {
-        mvprintw(y + 1, x, "Error: Longitud máxima inválida.");
-        refresh();
-        return NULL;
-    }
+    refresh();
 
     char buffer[maxLen + 1];
     memset(buffer, 0, maxLen + 1);
     echo();
-    mvgetnstr(y, x + strlen(pregunta) + 2, buffer, maxLen);
+
+    // Captura con detección de ESC directamente
+    int ch = getch();
+    if (ch == 27) {  // ESC presionado antes de escribir
+        noecho();
+        if (codigoError) *codigoError = LEERINT_ESC;
+        return NULL;
+    }
+
+    // Si no es ESC, regresamos el carácter al buffer de entrada
+    ungetch(ch);
+
+    mvgetnstr(y, x + (int)strlen(pregunta) + 2, buffer, maxLen);
     noecho();
 
     if (strlen(buffer) == 0) {
+        if (codigoError) *codigoError = LEERINT_EMPTY;
         return NULL;
     }
-    // Verificar si es un número válido (incluyendo signo negativo)
+
+    // Validación numérica
     int i = 0;
-    if (buffer[0] == '-') {
-        i++;
-    }
+    if (buffer[0] == '-') i++;
     for (; buffer[i] != '\0'; i++) {
         if (!isdigit((unsigned char)buffer[i])) {
-            mvprintw(y + 1, x, "Entrada no valida: solo numeros.");
+            mvprintw(y + 1, x, "Entrada no válida: solo números.");
             refresh();
+            if (codigoError) *codigoError = LEERINT_ERROR;
             return NULL;
         }
     }
-    // Convertir a entero con manejo de desbordamiento
+
+    // Conversión con control de límites
     char* endptr;
     long numLong = strtol(buffer, &endptr, 10);
     if (*endptr != '\0' || numLong > INT_MAX || numLong < INT_MIN) {
-        mvprintw(y + 1, x, "Error: Número fuera de rango.");
+        mvprintw(y + 1, x, "Error: número fuera de rango.");
         refresh();
+        if (codigoError) *codigoError = LEERINT_ERROR;
         return NULL;
     }
-    // Asignar memoria para el resultado
+
     int* num = (int*)malloc(sizeof(int));
     if (!num) {
-        mvprintw(y + 1, x, "Error: No se pudo asignar memoria.");
+        mvprintw(y + 1, x, "Error al asignar memoria.");
         refresh();
+        if (codigoError) *codigoError = LEERINT_ERROR;
         return NULL;
     }
 
@@ -250,11 +293,22 @@ float* leerFloat(int y, int x, int maxLen, char* pregunta) {
 
 int leerIntSeguro(int y, int x, int maxLen, char* pregunta) {
     int* valor = NULL;
+    int codigoError = 0;
+
     do {
-        valor = leerInt(y , x, maxLen, pregunta);
+        // Limpiar la línea donde se mostrará el mensaje de error
+        move(y + 1, x);
+        clrtoeol();
+        refresh();
+
+        valor = leerInt(y, x, maxLen, pregunta, &codigoError);
+
+        // Si valor es NULL, verificamos el código de error
         if (valor == NULL) {
-            mvprintw(y + 2 , x, "X Entrada invalida. Intentalo de nuevo.");
-            refresh();
+            if (codigoError == LEERINT_ESC) {
+                return -1; // Retornar -1 si se presionó ESC
+            }
+            // Para otros errores (entrada vacía o inválida), continuamos el bucle
         }
     } while (valor == NULL);
 
@@ -262,12 +316,14 @@ int leerIntSeguro(int y, int x, int maxLen, char* pregunta) {
     free(valor);
     return resultado;
 }
+
 float leerFloatSeguro(int y, int x, int maxLen, char* pregunta) {
     float* valor = NULL;
     do {
         valor = leerFloat(y, x, maxLen, pregunta);
         if (valor == NULL) {
             mvprintw(y + 2, x , "X Entrada invalida. Intentalo de nuevo.");
+            getch();
             refresh();
         }
     } while (valor == NULL);
@@ -285,6 +341,9 @@ char* leerStringSeguro(int y, int x, int maxLen, char* pregunta) {
         if (valor == NULL) {
             mvprintw(y + 2, x , "X Entrada invalida. Intentalo de nuevo.");
             refresh();
+            getch();
+            // salir si es ESC
+            return NULL;
         }
     } while (valor == NULL);
 

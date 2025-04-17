@@ -6,6 +6,10 @@
 
 #ifndef Util_H
 #define Util_H
+#define RETURN_IF_ESC(x) if ((x) == -1) return -1
+#define LEERINT_ESC -1
+#define LEERINT_ERROR -2
+#define LEERINT_EMPTY -3
 #include <stddef.h>
 #include "UsuarioDTO.h"
 
@@ -47,7 +51,7 @@ char* generarFolio(const char *nombre);
 
 //Validar Campos
 // Tipos de datos a validad, INT, String (char* ), LONG, FLOAT
-int validarObjeto(const char* src);
+int validarString(const char* src);
 int leerIntSeguro(int y, int x, int maxLen, char* pregunta);
 float leerFloatSeguro(int y, int x, int maxLen, char* pregunta);
 char* leerStringSeguro(int y, int x, int maxLen, char* pregunta);

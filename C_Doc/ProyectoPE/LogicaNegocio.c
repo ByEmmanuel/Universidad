@@ -80,22 +80,27 @@ int servicio(){
     // Medida actual después del desgaste
     TipoCombustible tipo_combustible = {};
 
-    int opc = mostrarMenu(4,".") + 1;
-
+    const int opc = mostrarMenu(4,".") + 1;
+    RETURN_IF_ESC(opc);
     int opcusr;
     switch (opc){
         case 1:
             //Ingreso culata o monoblock
             //mvprintw(10,10,"Ingrese una opcion 1: Culata. 2: Monoblock");
             opcusr = mostrarMenu(5,".") + 1;
+            RETURN_IF_ESC(opcusr);
             if (opcusr == 1){
                 //Esto debe ser el folio, pero esta agregado asi por temas de testeo
                 const int id_Usuario = leerIntSeguro(10,10,10000,"Ingrese Id Usuario: ");
+                RETURN_IF_ESC(id_Usuario);
                 // o para mayor control:
                 mvprintw(12, 10, "                                                 ");
                 //Generar numero de servicio
                 // Ingresar material
                 const char* material = leerStringSeguro(12,10,30,"Ingrese material del motor");
+                if (material == NULL) {
+                    return -1;
+                }
                 mvprintw(14, 10, "                                                 ");
                 // Ingresar desgaste
                 const float desgaste = leerFloatSeguro(14, 10, 30,"Ingresar desgaste");
@@ -124,13 +129,15 @@ int servicio(){
 
                 const int rectificacion = mostrarMenu(7,"¿Necesita Rectificación?");
                 // Ahora puedes usar buffer como un char*
-                mvprintw(0, 0, "Rectificacion?: %d", rectificacion);
-                mvprintw(0, 1, "Tiene Fisuras?: %d", tieneFisuras);
-                mvprintw(0, 2, "Tipo Combustible: %d", tipo_combustible);
+                mvprintw(3, 55, "Rectificacion?: %d", rectificacion);
+                mvprintw(4, 55, "Tiene Fisuras?: %d", tieneFisuras);
+                mvprintw(5, 55, "Tipo Combustible: %d", tipo_combustible);
                 const Pieza piezaUsuario = inicializarPieza(id_Usuario, 1, material, desgaste, tolerancia, medidaOriginal, medidaActual, rectificacion);
                 //Polimorfismo
                     Culata* pzc = inicializarCulata(piezaUsuario, numValvulas, presionPrueba, tipo_combustible, tieneFisuras);
                     guardarPiezaArray((void*)pzc);  // Se guarda como puntero genérico
+                mvprintw(8, 55, "Pieza Guardada Correctamente");
+                getch();
             }else if (opcusr == 2){
                 mvprintw(10,10,"Opcion Monoblock");
             }else if (opcusr == 3){
@@ -173,7 +180,28 @@ int pago(){
 }
 
 int almacen(){
-    printf("Opcion Almacen");
+    const int opcUsr = mostrarMenu(8, ".");
+    RETURN_IF_ESC(opcUsr);
+    switch (opcUsr){
+    case 1:
+        //const int opcUsrInventario = mostrarMenu(9,".");
+        break;
+    case 2:
+        //const int opcUsrControl = mostrarMenu(10,".");
+        break;
+    case 3:
+        //const int opcUsrHerramientas = mostrarMenu(11,".");
+        break;
+    case 4:
+        //const int opcUsrProveedores = mostrarMenu(12,".");
+        break;
+    case 5:
+        //const int opcUsrReportes = mostrarMenu(13,".");
+        break;
+    default:
+
+        break;
+    }
     return 0;
 }
 
@@ -190,20 +218,6 @@ int dudas(){
 int salir() {
     listarPiezas();
     exit(0);  // Finaliza el programa pero la terminal permanecerá abierta
-}
-
-
-int preguntaSalida(){
-    /*cleanScreen();
-    mvprintw(10,30,"Desea Volver Al menu principal? 1 : SI - 2 : NO ");
-    int* opcUsuario = leerInt(10,30,2);
-    mvprintw(10,15,"%d",*opcUsuario);
-    if(*opcUsuario == 1){
-        //imprimirMenuPrincipal();
-        free(opcUsuario);
-        return 1;
-    }*/
-    return 0;
 }
 
 void mostrarLogo(){

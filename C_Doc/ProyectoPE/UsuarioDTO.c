@@ -39,12 +39,6 @@ Usuario inicializarUsuario(const int id_usuario,const char* folio , const char* 
     id_UsuarioLogico = id_UsuarioLogico + 1;
     return usr;
 }
-void asignarCulataUsuario(Usuario *usr, Culata* culata) {
-    usr->pieza = (Pieza*) culata;
-}
-void asignarMonoblockUsuario(Usuario *usr, Monoblock* monoblock){
-    usr->pieza = (Pieza*) monoblock;
-}
 
 Pieza inicializarPieza(const int id_Usuario, const int tipoPieza, const char* material, const float desgaste, float tolerancia,
                         const float medidaOriginal, const float medidaActual, const int necesitaRectificacion ){
@@ -71,7 +65,6 @@ Culata* inicializarCulata(const Pieza pieza, const int numValvulas ,const double
     culata->presionPrueba = presionPrueba;
     culata->tipoCombustible = tipoCombustible;
     culata->tieneFisuras = fisuras;
-    // Agregar medidas manualmente
     return culata;
 }
 
@@ -133,11 +126,13 @@ void modificarCliente(){
     Usuario* usuarioNuevo = obtenerUsuario(id_Cliente);
     if (usuarioNuevo == NULL) {
         mvprintw(12,15,"Cliente no encontrado.\n");
+        getch();
         return;
     }
 
     if (strIsEmpty(usuarioNuevo->nombreUsuario) || strIsEmpty(usuarioNuevo->email) || strIsEmpty(usuarioNuevo->nombreUsuario)) {
         mvprintw(12,15,"Cliente con datos incompletos.\n");
+        getch();
         return;
     }
 
@@ -154,8 +149,6 @@ void modificarCliente(){
     refresh();
 
     const int opcUsr = mostrarMenu(3,".") + 1;
-    clear();
-    refresh();
 
     //char reemplazoUsuario[50]; // Buffer para almacenar entrada
     char* reemplazoUsuario;
@@ -163,58 +156,71 @@ void modificarCliente(){
 
     switch (opcUsr) {
         case 1:
+            clear();
+            refresh();
             reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Nombre: ");
             if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")) {
                 asignString(usuarioNuevo->nombreUsuario, reemplazoUsuario, sizeof(usuarioNuevo->nombreUsuario));
                 mvprintw(12,15,"Modificación realizada con éxito.\n");
-                clear();
-                refresh();
+                getch();
                 break;
             }
             mvprintw(12,15,"Error al leer entrada.\n");
             break;
         case 2:
+            clear();
+            refresh();
             reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Apellido: ");
             if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
                 asignString(usuarioNuevo->apellido, reemplazoUsuario, sizeof(usuarioNuevo->apellido));
                 mvprintw(12,15,"Modificación realizada con éxito.\n");
+                getch();
                 break;
             }
             printf("Error al leer entrada.\n");
             break;
         case 3:
-            usuarioNuevo->celular = leerIntSeguro(10,15,10,"Ingrese nuevo Número Celular: ");
-            cleanBuffer();
+            clear();
+            refresh();
+        usuarioNuevo->celular = leerIntSeguro(10,15,10,"Ingrese nuevo Número Celular: ");
+            if (usuarioNuevo->celular != 0) mvprintw(12,15,"Modificación realizada con éxito.\n");
+            getch();
             break;
         case 4:
+            clear();
+            refresh();
             reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Email: ");
             if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
                 asignString(usuarioNuevo->email, reemplazoUsuario, sizeof(usuarioNuevo->email));
                 mvprintw(12,15,"Modificación realizada con éxito.\n");
+                getch();
                 break;
             };
             mvprintw(12,15,"Error al leer entrada.\n");
+            getch();
             break;
         case 5:
+            clear();
+            refresh();
             reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Contacto: ");
             if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
                 asignString(usuarioNuevo->contacto, reemplazoUsuario, sizeof(usuarioNuevo->contacto));
                 mvprintw(12,15,"Modificación realizada con éxito.\n");
+                getch();
                 break;
             };
             mvprintw(12,15,"Error al leer entrada.\n");
+            getch();
             break;
         case 6:
             mvprintw(2, 10, "Saliendo del menú...");  // Muestra mensaje de depuración
             refresh();  // Asegúrate de que el mensaje se actualice
-            //@Deprecated
-            //endwin();   // Finaliza ncurses, si lo necesitas
             return;
         default:
             mvprintw(12,15,"Opción inválida.\n");
+            getch();
             return;
     }
-    //cleanBuffer();
     clear();
     refresh();
 }
@@ -238,24 +244,39 @@ int cliente(){
         clear();
         mvprintw(1,10,"Agregar Cliente");
         const char* nombreUsr = leerStringSeguro(3, 0, 19,"Ingrese Nombre: ");
+        if (nombreUsr == NULL) {
+            return -1;
+        }
         mvprintw(6, 10, "                                                 ");
         const char* folio = generarFolio(nombreUsr);
         const char* apellidoUsr = leerStringSeguro(6, 0, 19,"Ingrese Apellido: ");
+        if (apellidoUsr == NULL) {
+            return -1;
+        }
         mvprintw(9, 10, "                                                 ");
         const int celularUsr = leerIntSeguro(10, 0, 15,"Ingrese Celular: ");
         mvprintw(12, 10, "                                                 ");
         emailUsr = leerStringSeguro(12, 0, 49, "Ingrese Email: ");
+        if (emailUsr == NULL) {
+            return -1;
+        }
         mvprintw(15, 10, "                                                 ");
         const char* contactoUsr = leerStringSeguro(15, 0, 29,"Ingrese Contacto: ");
+        if (contactoUsr == NULL) {
+            return -1;
+        }
         mvprintw(18, 10, "                                                 ");
-
 
         while (!strContains(emailUsr, "@")) {
             if (mostrarMenu(7,"Tu Email no es valido, ¿Deseas volver a ingresarlo?") == 1){
                 clear();
                 emailUsr = leerStringSeguro(11,12,49,"Ingrese Email");
+                if (emailUsr == NULL) {
+                    return -1;
+                }
             } else {
                 mvprintw(10,13,"Registro INVÁLIDO: Email Inválido");
+                getch();
                 return 1;
             }
         }
@@ -263,11 +284,9 @@ int cliente(){
         Usuario usuario = inicializarUsuario(id_UsuarioLogico, folio, nombreUsr, apellidoUsr, celularUsr, emailUsr, contactoUsr);
         mostrarUsuario(usuario);
         guardarUsuarioArray(usuario);
-
-        /*free(nombreUsr);
-        free(folio);
-        free(apellidoUsr);
-        free(contactoUsr);*/
+        clear();
+        mvprintw(10,13,"Registro Correcto, Presione Enter");
+        getch();
 
     } else if (opcCliente == 2){
         modificarCliente();
@@ -287,6 +306,8 @@ int cliente(){
                 mvprintw(y++, 1, "Contacto: %s", arrayUsuarios.datos[i].contacto);
                 y++; // Dejar una línea en blanco entre registros
             }
+            getch();
+            return 1;
         }
         mvprintw(10, 10, "Capacidad En El arrayUsuarios: %d", arrayUsuarios.capacidad);
         mvprintw(10, 10, "\nPresiona ENTER para continuar...");

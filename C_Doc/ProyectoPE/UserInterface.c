@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-
+#define ESC 27
 #define SIZE_DOS 2
 #define SIZE_TRES 3
 #define SIZE_CUATRO 4
@@ -22,7 +22,7 @@ int numOpciones = 0;
 char** menuActual = NULL; // Apuntador genérico para evitar repetición de código.
 
 int (*funcionesInt[SIZE_SIETE])() = {
-    cliente, servicio, NULL, NULL, NULL, NULL, salir // Solo "Clientes" está implementado
+    cliente, servicio, NULL,almacen, NULL, NULL, salir // Solo "Clientes" está implementado
 };
 
 void ejecutarOpcion(int opcion) {
@@ -34,10 +34,12 @@ void ejecutarOpcion(int opcion) {
     } else {
         mvprintw(10, 10, "Opción %d no implementada aún.", opcion+1);
         refresh();
+        getch();
     }
+    //Por aqui no pasa el flujo del programa
     mvprintw(1, 60, "Presiona cualquier tecla para volver al menu...");
     refresh();
-    getch();
+    //getch();
 }
 //-------------------------------------FUNCION PRINCIPAL (VENTANA) --------------------------
 void imprimirMenu(char* menu[], int numOpciones, int highlight) {
@@ -52,14 +54,45 @@ void imprimirMenu(char* menu[], int numOpciones, int highlight) {
 }
 
 int mostrarMenu(int menuventana, const char* pregunta) {
+/**
+    * Almacén
+    ├── Inventario General
+    │   ├── Ver piezas
+    │   ├── Buscar / Filtrar
+    │   └── Agregar / Editar / Eliminar
+    ├── Control de Stock
+    │   ├── Entradas / Salidas
+    │   ├── Alertas de stock mínimo
+    │   └── Historial de movimientos
+    ├── Herramientas y Equipos
+    │   ├── Estado de herramientas
+    │   ├── Registro de mantenimiento
+    │   └── Asignación
+    ├── Proveedores y Compras
+    │   ├── Registro de proveedor
+    │   ├── Historial de compras
+    │   └── Pedidos pendientes
+    └── Reportes
+        ├── Movimientos
+        ├── Piezas más usadas
+        └── Piezas inactivas
+ */
     int ch, highlight = 0;
     char* menuUno[SIZE_SIETE] = {"Clientes", "Servicio", "Pago", "Almacen", "Otros", "Dudas", "Salir"};
-    char* menuDos[SIZE_CUATRO] = {"Agregar Cliente", "Editar Cliente", "Listar Cliente", "Menu Principal"};
+    char* menuDos[SIZE_CUATRO] = {"Agregar", "Editar", "Listar", "Menu Principal"};
     char* menuTres[SIZE_SEIS] = {"Nombre", "Apellido", "Num Celular", "Email", "Contacto", "Salir"};
     char* menuCuatro[SIZE_SEIS] = {"Ingreso", "Lavado", "Medidas", "Rectificar", "Ensamble", "Salir"};
     char* menuCinco[SIZE_TRES] = {"CULATA", "MONOBLOCK", "Listar Piezas"};
     char* menuSeis[SIZE_TRES] = {"1 : Gasolina","2: Diesel","3: Electrico"};
     char* menuSiete[SIZE_DOS] = {"NO","SI"};
+    char* menuOcho[SIZE_CINCO] = {"Inventario General","Control de Stock","Herramientas y Equipos","Proveedores y Compras","Reportes"};
+
+
+    char* subMenuUno[SIZE_TRES] = {"Ver piezas", "Buscar / Filtrar","Agregar / Editar / Eliminar"};
+    char* subMenuDos[SIZE_TRES] = {"Entradas / Salidas","Alertas de stock mínimo","Historial de movimientos"};
+    char* subMenuTres[SIZE_TRES] = {"Estado de herramientas", "Registro de mantenimiento","Asignación"};
+    char* subMenuCuatro[SIZE_TRES] = {"Registro de proveedor","Historial de compras","Pedidos pendientes"};
+    char* subMenuCinco[SIZE_TRES] = {"Movimientos","Piezas más usadas","Piezas inactivas"};
 
     char** menuActual = NULL;
     int numOpciones = 0;
@@ -71,6 +104,14 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     case 5: menuActual = menuCinco; numOpciones = SIZE_TRES; break;
     case 6: menuActual = menuSeis; numOpciones = SIZE_TRES; break;
     case 7: menuActual = menuSiete; numOpciones = SIZE_DOS; break;
+    case 8: menuActual = menuOcho; numOpciones = SIZE_CINCO; break;
+    //SubMenus
+    case 9: menuActual = subMenuUno; numOpciones = SIZE_TRES; break;
+    case 10: menuActual = subMenuDos; numOpciones = SIZE_TRES; break;
+    case 11: menuActual = subMenuTres; numOpciones = SIZE_TRES; break;
+    case 12: menuActual = subMenuCuatro; numOpciones = SIZE_TRES; break;
+    case 13: menuActual = subMenuCinco; numOpciones = SIZE_TRES; break;
+
     default:
         mvprintw(10, 10, "Opción no válida o ocurrió un error");
         refresh();
@@ -78,6 +119,8 @@ int mostrarMenu(int menuventana, const char* pregunta) {
         return -1;
     }
 
+
+    ESCDELAY = 25;
     noecho();
     cbreak();
     keypad(stdscr, TRUE);
@@ -92,6 +135,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
         case KEY_UP: highlight = (highlight == 0) ? numOpciones - 1 : highlight - 1; break;
         case KEY_DOWN: highlight = (highlight == numOpciones - 1) ? 0 : highlight + 1; break;
         case 10: return highlight ; // ENTER
+        case ESC: return -1;
         }
     }
 }
