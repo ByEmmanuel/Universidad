@@ -35,6 +35,7 @@ Usuario inicializarUsuario(const int id_usuario,const char* folio , const char* 
     asignString(usr.contacto, contacto, sizeof(usr.contacto));
 
     usr.pieza = NULL;
+    usr.activo = 1;
     //Adiciona 1 al ID usuario desde aqui para que el usuario nunca tenga el mismo ID sin importar si es valido el usuario o no
     id_UsuarioLogico = id_UsuarioLogico + 1;
     return usr;
@@ -71,7 +72,7 @@ Culata* inicializarCulata(const Pieza pieza, const int numValvulas ,const double
 // Función para agregar un usuario a la lista
 int guardarUsuarioArray(Usuario usuario) {
     if (arrayUsuarios.total >= arrayUsuarios.capacidad) {
-        int nuevaCapacidad = arrayUsuarios.capacidad == 0 ? 1 : arrayUsuarios.capacidad * 2;
+        const int nuevaCapacidad = arrayUsuarios.capacidad == 0 ? 1 : arrayUsuarios.capacidad * 2;
         Usuario* nuevoArray = realloc(arrayUsuarios.datos, nuevaCapacidad * sizeof(Usuario));
         if (nuevoArray == NULL) {
             printf("Error al redimensionar el array de usuarios.\n");
@@ -213,6 +214,12 @@ void modificarCliente(){
             getch();
             break;
         case 6:
+            if (mostrarMenu(7, "¿Deseas eliminar a este usuario?") == 1) usuarioNuevo->activo = 0;
+            asignString(usuarioNuevo->apellido, "0", sizeof(usuarioNuevo->apellido));
+            usuarioNuevo->celular = 0;
+            asignString(usuarioNuevo->contacto, "0", sizeof(usuarioNuevo->contacto));
+            break;
+        case 7:
             mvprintw(2, 10, "Saliendo del menú...");  // Muestra mensaje de depuración
             refresh();  // Asegúrate de que el mensaje se actualice
             return;
@@ -281,7 +288,7 @@ int cliente(){
             }
         }
 
-        Usuario usuario = inicializarUsuario(id_UsuarioLogico, folio, nombreUsr, apellidoUsr, celularUsr, emailUsr, contactoUsr);
+        const Usuario usuario = inicializarUsuario(id_UsuarioLogico, folio, nombreUsr, apellidoUsr, celularUsr, emailUsr, contactoUsr);
         mostrarUsuario(usuario);
         guardarUsuarioArray(usuario);
         clear();
@@ -296,9 +303,10 @@ int cliente(){
             printf("No hay clientes registrados.\n");
         } else {
             int y = 2;
-            for (int i = 0; i < arrayUsuarios.capacidad; i++) {
+            for (int i = 0; i < arrayUsuarios.total; i++) {
                 mvprintw(y++, 1, "ID: %d", arrayUsuarios.datos[i].id_usuario);
                 mvprintw(y++, 1, "Folio: %s", arrayUsuarios.datos[i].folio);
+                mvprintw(y++, 1, "Activo?: %d", arrayUsuarios.datos[i].activo);
                 mvprintw(y++, 1, "Nombre: %s", arrayUsuarios.datos[i].nombreUsuario);
                 mvprintw(y++, 1, "Apellido: %s", arrayUsuarios.datos[i].apellido);
                 mvprintw(y++, 1, "Celular: %lld", arrayUsuarios.datos[i].celular);
@@ -318,6 +326,10 @@ int cliente(){
     return 1;
 }
 
+/**
+ *
+ * @deprecated
+ */
 void imprimirPiezasPorUsuario(int idUsuario) {
     printf("Piezas para el Usuario ID: %d\n", idUsuario);
     // Recorrer todas las piezas almacenadas
@@ -404,12 +416,25 @@ void listarPiezas(){
     getch();
 }
 
+void listarFoliosUsuarios(){
+    int y = 3;
+    for (int i = 0; i < arrayUsuarios.total; i++) {
+        mvprintw(y, 40, "Activo?: %s", arrayUsuarios.datos[i].activo ? "True" : "False");
+        mvprintw(y, 60, "ID: %d", arrayUsuarios.datos[i].id_usuario);
+        mvprintw(y, 70, "Nombre: %s", arrayUsuarios.datos[i].nombreUsuario);
+        mvprintw(y, 90, "Folio: %s", arrayUsuarios.datos[i].folio);
+
+        y++; // Dejar una línea en blanco entre registros
+    }
+}
+
 void mostrarUsuario(Usuario usr) {
     mvprintw(10,10,"ID Usuario: %d\n", usr.id_usuario);
     mvprintw(10,11,"Folio Usuario: %s\n", usr.folio);
-    mvprintw(10,12,"Nombre: %s\n", usr.nombreUsuario);
-    mvprintw(10,13,"Apellido: %s\n", usr.apellido);
-    mvprintw(10,14,"Celular: %lld\n", usr.celular);
-    mvprintw(10,15,"Email: %s\n", usr.email);
-    mvprintw(10,16,"Contacto: %s\n", usr.contacto);
+    mvprintw(10,12, "Activo?: %d", usr.activo);
+    mvprintw(10,13,"Nombre: %s\n", usr.nombreUsuario);
+    mvprintw(10,14,"Apellido: %s\n", usr.apellido);
+    mvprintw(10,15,"Celular: %lld\n", usr.celular);
+    mvprintw(10,16,"Email: %s\n", usr.email);
+    mvprintw(10,17,"Contacto: %s\n", usr.contacto);
 }

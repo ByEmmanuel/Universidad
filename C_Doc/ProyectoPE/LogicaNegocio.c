@@ -89,6 +89,7 @@ int servicio(){
             //mvprintw(10,10,"Ingrese una opcion 1: Culata. 2: Monoblock");
             opcusr = mostrarMenu(5,".") + 1;
             RETURN_IF_ESC(opcusr);
+            listarFoliosUsuarios();
             if (opcusr == 1){
                 //Esto debe ser el folio, pero esta agregado asi por temas de testeo
                 const int id_Usuario = leerIntSeguro(10,10,10000,"Ingrese Id Usuario: ");
@@ -243,7 +244,7 @@ void mostrarLogo(){
 
 void testing(int encendido) {
     if (encendido) {
-        usleep(200);
+        //usleep(200);
         printf("\n------TESTING MODE ON------");
         agregarUsuarios();
         agregarPiezas();

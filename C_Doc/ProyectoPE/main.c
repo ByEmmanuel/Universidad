@@ -41,7 +41,7 @@ int main(){
     mostrarLogo();
     // Borra toda la pantalla y mueve el cursor al inicio
 
-    sleep(1);
+    //sleep(1);
     if (loginUsuario() == 1){
         //imprimirMenuPrincipal();
         //mostrarVentana(1);

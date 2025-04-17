@@ -6,7 +6,6 @@
 #define USERINTERFACE_H
 
 
-int menuServicio();
 void ejecutarOpcion(int opcion);
 int mostrarMenu(int menuventana, const char* pregunta);
 
