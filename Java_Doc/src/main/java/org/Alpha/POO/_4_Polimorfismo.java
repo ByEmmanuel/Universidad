@@ -1,4 +1,5 @@
-package org.POO;
+/*
+package org.Alpha.POO;
 
 import java.util.Scanner;
 
@@ -111,3 +112,4 @@ public class _4_Polimorfismo {
         scanner.close();
     }
 }
+*/

@@ -1,4 +1,4 @@
-package org.Algoritmos;
+package org.Alpha.Algoritmos;
 
 public class _7_Random {
     public static void main(String[] args) {

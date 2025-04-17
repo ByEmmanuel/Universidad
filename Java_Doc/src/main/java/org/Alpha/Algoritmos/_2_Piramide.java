@@ -1,4 +1,4 @@
-package org.Algoritmos;
+package org.Alpha.Algoritmos;
 
 public class _2_Piramide {
     public static void main(String[] args) {

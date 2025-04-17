@@ -8,9 +8,9 @@
  *   Complejidad del algoritmo segun chatGPT O(1)
  * */
 
-package org.Algoritmos;
+package org.Alpha.Algoritmos;
 
-import org.ONE_Introduccion_A_Java.CalcularTiempo;
+import org.Alpha.ONE_Introduccion_A_Java.CalcularTiempo;
 
 import java.util.ArrayList;
 import java.util.Scanner;

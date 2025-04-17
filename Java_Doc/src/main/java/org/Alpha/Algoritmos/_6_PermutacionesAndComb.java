@@ -1,4 +1,4 @@
-package org.Algoritmos;
+package org.Alpha.Algoritmos;
 
 import java.util.Scanner;
 

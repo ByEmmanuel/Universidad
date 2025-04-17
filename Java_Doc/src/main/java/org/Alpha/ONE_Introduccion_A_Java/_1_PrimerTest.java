@@ -1,5 +1,5 @@
 //Este es el paquete donde se encuentra la clase Java (Es decir, esta clase)
-package org.ONE_Introduccion_A_Java;
+package org.Alpha.ONE_Introduccion_A_Java;
 
 /**
  *  Descripción: Este es un programa de prueba para aprender las bases de JAVA
