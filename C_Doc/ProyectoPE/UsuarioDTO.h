@@ -33,6 +33,7 @@ typedef struct {
 } Culata;
 
 // Estructura Monoblock que "hereda" de Pieza
+/**@deprecated Funcion en desuso*/
 typedef struct {
     Pieza base; // Composición: Monoblock contiene una Pieza
     int numCilindros;
@@ -51,8 +52,10 @@ typedef struct {
     long long celular;
     char email[30];
     char contacto[20];
+    int activo;
 }Usuario;
 
+/**@deprecated Funcion en desuso*/
 typedef struct{
     Usuario* usuario;
     Pieza* pieza;
@@ -67,6 +70,7 @@ typedef struct {
     int capacidad;   // Capacidad máxima del array
 } ArrayUsuarios;
 
+/**@deprecated Funcion en desuso*/
 typedef struct{
     Ticket* datos;
     int tamaño;
@@ -86,9 +90,8 @@ typedef struct {
     size_t capacidad;// Capacidad total del arreglo
 } ArrayList;
 
-void asignarPiezaUsuario(Usuario *usr, Pieza *pieza);
-
-Usuario inicializarUsuario(int id_usuario, const char* folio,const char* nombreUsuario,const char* apellido,long long celular,const char* email,const char* contacto);
+Usuario inicializarUsuario(int id_usuario, const char* folio,const char* nombreUsuario,
+    const char* apellido,long long celular,const char* email,const char* contacto);
 
 int cliente();
 
@@ -98,22 +101,21 @@ void modificarCliente();
 
 int guardarUsuarioArray(Usuario usuario);
 
-/**
- * @Deprecated
- */
-ArrayUsuarios* inicializarArrayUsuarios(int capacidadInicial);
-
 int guardarPiezaArray(void* pieza);
 
 Pieza inicializarPieza(int id_Usuario, int tipoPieza, const char* material,float desgaste, float tolerancia,
     float medidaOriginal, float medidaActual, int necesitaRectificacion );
 
-Culata inicializarCulata(Pieza pieza,int numValvulas ,double presionPrueba,
+Culata* inicializarCulata(Pieza pieza,int numValvulas ,double presionPrueba,
     int tipoCombustible,int fisuras);
 
+/**@deprecated */
 void imprimirPiezasPorUsuario(int id_usuario);
 
+/**@deprecated */
 void listarUsuarios(ArrayUsuarios listaUsuarios);
+
+void listarFoliosUsuarios();
 
 void listarPiezas();
 

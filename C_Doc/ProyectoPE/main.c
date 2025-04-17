@@ -11,12 +11,15 @@
  * si no salir y camniar el color de la terminal
  */
 
+#include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include "LogicaNegocio.h"
 #include "UsuarioDTO.h"
-//#include <pthread.h>
+#include "UserInterface.h"
+#include <pthread.h>
+#include <string.h>
 #include <unistd.h>
 #include "Util.h"
 
@@ -29,71 +32,32 @@ int id_Usuario;
 // Variable global para controlar el hilo del reloj
 volatile int running = 1;
 
-
 int main(){
     // Inicio del programa
+    testing(1);
+    system("reset");
+    clear();
+    refresh();
     mostrarLogo();
     // Borra toda la pantalla y mueve el cursor al inicio
-    cleanScreen();
-    sleep(1);
+
+    //sleep(1);
     if (loginUsuario() == 1){
-        imprimirMenuPrincipal();
-        menuPrincipal(bandera);
+        //imprimirMenuPrincipal();
+        //mostrarVentana(1);
+        menuPrincipal();
     }
     //imprimirPiezasPorUsuario(0);
-    listarPiezas();
+
 
     return 0;
 }
 
-void menuPrincipal(int bandera){
+void menuPrincipal(){
+    initscr();
     while (bandera){
-        int opc;
-        scanf("%d",&opc);
-        //printf("Opcio usuario");
-        printf("%i",opc);
-        printf("\n");
-
-        switch (opc){
-        case 1:
-            cleanScreen();
-            cliente();
-            bandera = preguntaSalida();
-            break;
-        case 2:
-            cleanScreen();
-            servicio();
-            bandera = preguntaSalida();
-            break;
-        case 3:
-            cleanScreen();
-            pago();
-            bandera = preguntaSalida();
-            break;
-        case 4:
-            cleanScreen();
-            almacen();
-            bandera = preguntaSalida();
-            break;
-        case 5:
-            cleanScreen();
-            otro();
-            bandera = preguntaSalida();
-            break;
-        case 6:
-            cleanScreen();
-            dudas();
-            bandera = preguntaSalida();
-            break;
-        case 7:
-            printf("Gracias por usar el sistema");
-            bandera = 0;
-            opc = 0;
-            break;
-        default:
-            printf(" introdujo una opcion Invalida");
-            bandera = 0;
-        }
+        const int opc = mostrarMenu(1,".");
+        ejecutarOpcion(opc);
     }
 
 };

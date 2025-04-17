@@ -1,27 +1,42 @@
 //
 // Created by Jesus Emmanuel Garcia on 2/17/25.
 //
-#include "LogicaNegocio.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <ncurses.h>
 
 #include "UsuarioDTO.h"
 #include "Util.h"
+#include "UserInterface.h"
+#include "LogicaNegocio.h"
 
 #define MAX_USUARIOS 6
 #define MAX_LONGITUD 50
 
-char usuariosRegistrados[MAX_USUARIOS][MAX_LONGITUD] =  {"David","Jose","Admin","Pepe","Luis","Maria"};
-char contraseñasUsuarios[MAX_USUARIOS][MAX_LONGITUD] = {"123456789","987654321","01","24680"};
+char usuariosRegistrados[MAX_USUARIOS][MAX_LONGITUD] =  {"David","Jose","Admin","Pepe","Luis",""};
+char contraseñasUsuarios[MAX_USUARIOS][MAX_LONGITUD] = {"123456789","987654321","01","24680",""};
+
+char* enterString(int length) {
+    char* buffer = (char*)malloc(length + 1); // Reservar espacio para la cadena
+    if (buffer == NULL) {
+        perror("Error al asignar memoria");
+        exit(1);
+    }
+    if (fgets(buffer, length + 1, stdin) != NULL) {
+        buffer[strcspn(buffer, "\n")] = '\0'; // Eliminar el salto de línea al final
+    }
+    return buffer;
+}
 
 int loginUsuario(){
     int intentosUsuario = 0;
 
     do {
         printf("Ingrese Usuario: ");
-        char* usuarioID = cinString(MAX_LONGITUD);
+        // Función para leer cadenas de manera segura
+        char* usuarioID = enterString(MAX_LONGITUD);
         // Buscar el usuario en la lista
         int usuarioIndex = -1;
         for (int i = 0; i < MAX_USUARIOS; i++) {
@@ -34,14 +49,14 @@ int loginUsuario(){
         if (usuarioIndex != -1) {
             //char passwUsuario[MAX_LONGITUD];
             printf("Ingrese Contraseña: ");
-            char* passwUsuario = cinString(MAX_LONGITUD);
+            char* passwUsuario = enterString(MAX_LONGITUD);
             // Si se encontró el usuario
             //scanf("%s", passwUsuario);
 
             // Verificar contraseña
             if (strEquals(passwUsuario, contraseñasUsuarios[usuarioIndex])) {
                 printf("Inicio de sesión exitoso.\n");
-                printf("\033[2J\033[H");
+                //printf("\033[2J\033[H");
                 return 1;
             }
             printf("Contraseña incorrecta.\n");
@@ -57,109 +72,77 @@ int loginUsuario(){
 //Aqui iría va la funcion cliente pero esta puesta en DTO USUARIO
 
 int servicio(){
-    imprimirMenuServicio();
     //Varibales locales
-
     // Material de la pieza (Hierro, Aluminio, etc.)
-    float desgaste;         // Nivel de desgaste en porcentaje (0-100%)
-    float tolerancia;       // Tolerancia máxima de desgaste permitida antes de rectificar
-    float medidaOriginal;   // Medida original de la pieza en mm
-    float medidaActual;     // Medida actual después del desgaste
-    int numValvulas;
-    double presionPrueba;
+    // Nivel de desgaste en porcentaje (0-100%)
+    // Tolerancia máxima de desgaste permitida antes de rectificar
+    // Medida original de la pieza en mm
+    // Medida actual después del desgaste
     TipoCombustible tipo_combustible = {};
-    int tieneFisuras;
 
-    int opc;
-
-    scanf("%d",&opc);
+    const int opc = mostrarMenu(4,".") + 1;
+    RETURN_IF_ESC(opc);
     int opcusr;
     switch (opc){
         case 1:
             //Ingreso culata o monoblock
-            printf("Ingrese una opcion\n 1: Culata.\n 2: Monoblock\n");
-            scanf("%d",&opcusr);
-            //Culata
-
-            //Ingresar todos estos parametros
-        /**
-    char material[30];      // Material de la pieza (Hierro, Aluminio, etc.)
-
-    float desgaste;         // Nivel de desgaste en porcentaje (0-100%)
-    float tolerancia;       // Tolerancia máxima de desgaste permitida antes de rectificar
-    float medidaOriginal;   // Medida original de la pieza en mm
-    float medidaActual;     // Medida actual después del desgaste
-    int necesitaRectificacion; // 1 = Sí, 0 = No (según tolerancia)
-    int numValvulas;
-    float presionPrueba;
-    char tipoCombustible[20];
-    int tieneFisuras;
-
-         */
+            //mvprintw(10,10,"Ingrese una opcion 1: Culata. 2: Monoblock");
+            opcusr = mostrarMenu(5,".") + 1;
+            RETURN_IF_ESC(opcusr);
+            listarFoliosUsuarios();
             if (opcusr == 1){
-                printf("Ingrese Id Usuario: ");
                 //Esto debe ser el folio, pero esta agregado asi por temas de testeo
-                int id_Usuario;
-                scanf("%d", &id_Usuario);
+                const int id_Usuario = leerIntSeguro(10,10,10000,"Ingrese Id Usuario: ");
+                RETURN_IF_ESC(id_Usuario);
+                // o para mayor control:
+                mvprintw(12, 10, "                                                 ");
                 //Generar numero de servicio
-
                 // Ingresar material
-                printf("\nIngrese material del motor\n");
-                char* material = cinString(30);
-
+                const char* material = leerStringSeguro(12,10,30,"Ingrese material del motor");
+                if (material == NULL) {
+                    return -1;
+                }
+                mvprintw(14, 10, "                                                 ");
                 // Ingresar desgaste
-                printf("Ingresar desgaste\n");
-                scanf("%f", &desgaste);
+                const float desgaste = leerFloatSeguro(14, 10, 30,"Ingresar desgaste");
+                mvprintw(16, 10, "                                                 ");
                 // Ingresar tolerancia
-                printf("Ingrese tolerancia\n");
-                scanf("%f", &tolerancia);
+                const float tolerancia = leerFloatSeguro(16, 10, 100, "Ingrese tolerancia");
+                mvprintw(18, 10, "                                                 ");
                 // Ingresar medidaOriginal
-                printf("Ingrese medida Original\n");
-                scanf("%f", &medidaOriginal);
+                const float medidaOriginal = leerFloatSeguro(18, 10, 100,"Ingrese medida Original");
+                mvprintw(20, 10, "                                                 ");
                 // Ingresar medidaActual
-                printf("Ingrese Medida Actual\n");
-                scanf("%f", &medidaActual);
-                printf("¿Rectificacion?");
+                const float medidaActual = leerFloatSeguro(20, 10, 100,"Ingrese Medida Actual");
+                mvprintw(22, 10, "                                                 ");
                 // comprobar necesitaRectificacion
                 //Funcion necesita rectificacion
                 // Ingresar numValvulas
-                scanf("%d", &numValvulas);
-                printf("Ingrese numero Valvulas\n");
+                const int numValvulas = leerIntSeguro(22, 10, 50,"Ingrese numero Valvulas");
+                mvprintw(24, 10, "                                                 ");
                 // Ingresar presionPrueba
-                scanf("%d", &presionPrueba);
-                printf("Ingrese tipoCombustible");
+                const float presionPrueba = leerFloatSeguro(24, 10, 20,"Ingrese PresionPrueba");
+                mvprintw(26, 10, "                                                 ");
                 // Ingresar tipoCombustible
-                int opcCombustible;
-                printf("Ingrese tipo de combustible\n1: Gasolina\n2: Diesel\n3: Electrico");
-                scanf("%d", &opcCombustible);
-                switch (opcCombustible){
-                case 1:
-                    tipo_combustible = 0;
-                    break;
-                case 2:
-                    tipo_combustible = 1;
-                    break;
-                case 3:
-                    tipo_combustible = 2;
-                    break;
-                default:
-                    tipo_combustible = 0;
-                    break;
-                }
-                //Selectiva multiple
-                // Ingresar tiene fisuras
-                printf("Tiene Fisuras?\n1: Si. \n2: No.");
-                scanf("%d", &tieneFisuras);
-                Pieza piezaUsuario = inicializarPieza(id_Usuario, 1, material, desgaste, tolerancia, medidaOriginal, medidaActual, necesitaRectificacion());
+                tipo_combustible = mostrarMenu(6,"Ingrese tipo de combustible");
+
+                const int tieneFisuras = mostrarMenu(7,"¿Tiene Fisuras?");
+
+                const int rectificacion = mostrarMenu(7,"¿Necesita Rectificación?");
+                // Ahora puedes usar buffer como un char*
+                mvprintw(3, 55, "Rectificacion?: %d", rectificacion);
+                mvprintw(4, 55, "Tiene Fisuras?: %d", tieneFisuras);
+                mvprintw(5, 55, "Tipo Combustible: %d", tipo_combustible);
+                const Pieza piezaUsuario = inicializarPieza(id_Usuario, 1, material, desgaste, tolerancia, medidaOriginal, medidaActual, rectificacion);
                 //Polimorfismo
-                printf("Num valvulas %d,\nPresion Prueba %f,\nTipoCombustible %d,\nFisuras? %d\n", numValvulas,
-                       presionPrueba, tipo_combustible, tieneFisuras);
-                    Culata* pzc = malloc(sizeof(Culata));  // Reservamos memoria para Culata
-                    *pzc = inicializarCulata(piezaUsuario, numValvulas, presionPrueba, tipo_combustible, tieneFisuras);
+                    Culata* pzc = inicializarCulata(piezaUsuario, numValvulas, presionPrueba, tipo_combustible, tieneFisuras);
                     guardarPiezaArray((void*)pzc);  // Se guarda como puntero genérico
-
+                mvprintw(8, 55, "Pieza Guardada Correctamente");
+                getch();
             }else if (opcusr == 2){
-
+                mvprintw(10,10,"Opcion Monoblock");
+            }else if (opcusr == 3){
+                listarPiezas();
             }
             printf("Opcion no valida");
 
@@ -181,9 +164,8 @@ int servicio(){
 
             break;
         case 6:
-            //Salir
-
-            break;
+            //Menu Anterior
+            return 1;
     default:
         break;
     }
@@ -199,7 +181,28 @@ int pago(){
 }
 
 int almacen(){
-    printf("Opcion Almacen");
+    const int opcUsr = mostrarMenu(8, ".");
+    RETURN_IF_ESC(opcUsr);
+    switch (opcUsr){
+    case 1:
+        //const int opcUsrInventario = mostrarMenu(9,".");
+        break;
+    case 2:
+        //const int opcUsrControl = mostrarMenu(10,".");
+        break;
+    case 3:
+        //const int opcUsrHerramientas = mostrarMenu(11,".");
+        break;
+    case 4:
+        //const int opcUsrProveedores = mostrarMenu(12,".");
+        break;
+    case 5:
+        //const int opcUsrReportes = mostrarMenu(13,".");
+        break;
+    default:
+
+        break;
+    }
     return 0;
 }
 
@@ -212,70 +215,57 @@ int dudas(){
     printf("Opcion Dudas");
     return 0;
 }
-
-int necesitaRectificacion(){
-    //Implementar funcion
-    return 0;
-}
-
-
-void imprimirMenuPrincipal() {
-    cleanScreen();
-    usleep(2000);
-    printf("┌──────────────────────────────┐\n");
-    printf("│        MENÚ PRINCIPAL        │\n");
-    printf("├──────────────────────────────┤\n");
-    char* menuUno[7] = {"Clientes", "Servicio", "Pago", "Almacen", "Otros", "Dudas", "Salir"};
-    for (int i = 0; i < 7; i++) {
-        printf("│   %d - %-23s│\n", i+1, menuUno[i]);
-    }
-    printf("│                              │\n");
-    printf("└──────────────────────────────┘\n");
-    printf("\033[10;1HSeleccione una opción: ");
-}
-
-void imprimirMenuServicio(){
-    printf("\n┌──────────────────────────────┐\n");
-    printf("│        MENÚ Servicio         │\n");
-    printf("├──────────────────────────────┤\n");
-    char* menu[6] = {"Ingreso","Lavado","Medidas","Rectificar","Ensamble","Salir O regresar"};
-    for (int i = 0; i < 6; i++) {
-        printf("│   %d - %-23s│\n", i+1, menu[i]);
-    }
-    printf("│                              │\n");
-    printf("└──────────────────────────────┘\n");
-    printf("\033[10;1HSeleccione una opción: ");
-}
-
-int preguntaSalida(){
-    cleanScreen();
-    printf("\n  Desea Volver Al menu principal?\n 1 : SI \n 2 : NO \n");
-    int opcUsuario;
-    scanf("%d", &opcUsuario);
-    printf("%i",opcUsuario);
-    if(opcUsuario == 1){
-        imprimirMenuPrincipal();
-        return 1;
-    }
-    return 0;
+// AQUI VAN LAS FUNCIONES QUE QUIERES QUE SE EJECUTEN ANTES DE QUE TERMINE EL PROGRAMA
+int salir() {
+    listarPiezas();
+    exit(0);  // Finaliza el programa pero la terminal permanecerá abierta
 }
 
 void mostrarLogo(){
-    printf("Bienvenido al sistema\n");
-    usleep(300000);
+    printf("\nBienvenido al sistema\n");
+    //usleep(300000);
     printf("    ____           __ \n");
-    usleep(300000);
+    //usleep(300000);
     printf("   / __/__    ____/ /___  _________ \n");
-    usleep(300000);
+    //usleep(300000);
     printf("  / /_/ _ \\ / __  / __ / ___/ __ /\n");
-    usleep(300000);
+    //usleep(300000);
     printf(" / __/  __/ /_/ / /_/ / /  / /_/ / \n");
-    usleep(300000);
+    //usleep(300000);
     printf("/_/  \\___/\\__,_/\\____/_/   \\__,_/  \n");
-    usleep(800000);
+    //usleep(800000);
     printf("      /\\     \n");
     printf("     /  \\    \n");
     printf("    /    \\    \n");
+    //sleep(1);
     // Ingresar delay y cambiar la pantalla de color
 
+}
+
+void testing(int encendido) {
+    if (encendido) {
+        //usleep(200);
+        printf("\n------TESTING MODE ON------");
+        agregarUsuarios();
+        agregarPiezas();
+    }
+}
+
+void agregarUsuarios() {
+    const Usuario usuario1 = inicializarUsuario(0,"00001", "Usuario1", "Apellido 1", 1234567890, "EmailPrueba1@1", "Contacto1");
+    guardarUsuarioArray(usuario1);
+    const Usuario usuario2 = inicializarUsuario(1,"00002", "Usuario2", "Apellido 2", 1987654321, "EmailPrueba2@2", "Contacto2");
+    guardarUsuarioArray(usuario2);
+}
+
+void agregarPiezas() {
+    Pieza piezaUsuario = inicializarPieza(0, 1, "Metal", .1123f, .1125f, .1300f, .1180f, 0);
+    piezaUsuario.tipo = CULATA;
+    Culata* pzc = inicializarCulata(piezaUsuario, 16, .10, 2,1);
+    guardarPiezaArray((void*)pzc);  // Se guarda como puntero genérico
+
+    Pieza piezaUsuario2 = inicializarPieza(1, 2, "Aluminio", 0.1000f, 0.1050f, 0.1250f, 0.1150f, 1);
+    piezaUsuario2.tipo = CULATA;
+    Culata* pzc2 = inicializarCulata(piezaUsuario2, 18, 0.12, 1, 0);
+    guardarPiezaArray((void*)pzc2);
 }

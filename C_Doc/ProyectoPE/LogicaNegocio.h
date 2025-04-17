@@ -8,11 +8,7 @@
 
 void mostrarLogo();
 
-void imprimirMenuPrincipal();
-
-void imprimirMenuServicio();
-
-void menuPrincipal(int bandera);
+void menuPrincipal();
 
 int loginUsuario();
 
@@ -28,7 +24,12 @@ int otro();
 
 int dudas();
 
-int necesitaRectificacion();
+int salir();
+
+//FUNCIONEs DE TESTEO, NO TENER EN PRODUCCION
+void testing(int encendido);
+void agregarUsuarios();
+void agregarPiezas();
 
 
 

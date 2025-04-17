@@ -6,10 +6,15 @@
 
 #ifndef Util_H
 #define Util_H
+#define RETURN_IF_ESC(x) if ((x) == -1) return -1
+#define LEERINT_ESC -1
+#define LEERINT_ERROR -2
+#define LEERINT_EMPTY -3
 #include <stddef.h>
 #include "UsuarioDTO.h"
 
 //Strigs y metodos no agregados
+/**@deprecated */
 char* strFill(const char* str);              // Elimina espacios al inicio y final
 //int porque no hay bool y
 int strEquals(const char* str1, const char* str2); // Compara dos cadenas
@@ -17,11 +22,14 @@ int strIsEmpty(const char* str);            // Verifica si una cadena est√° vac√
 int strContains(const char* src, const char* str);
 //Metodo agregado
 void asignString(char *dst, const char *src, size_t n);
-char* cinString(int bufferSize);
 
 // ARRAYS
+/**@deprecated */
 ArrayList* arrayListNew(size_t capacidadInicial);
 
+/**@deprecated
+ * Grupo de funciones en desuso
+ */
 void arrayListAdd(ArrayList* list, void* element);
 void* arrayListGet(ArrayList* list, size_t index);
 size_t arrayListSize(ArrayList* list);
@@ -40,13 +48,25 @@ typedef struct {
     int second;
 } SimpleDate;
 
+/**@deprecated
+ * Grupo de funciones en desuso
+ */
 SimpleDate* dateNow();                       // Obtiene la fecha y hora actual
 char* dateToString(SimpleDate* date);        // Convierte a cadena legible
 int dateCompare(SimpleDate* d1, SimpleDate* d2); // Compara dos fechas
 
 char* generarFolio(const char *nombre);
 
+//Validar Campos
+// Tipos de datos a validad, INT, String (char* ), LONG, FLOAT
+/**@deprecated */
+int validarString(const char* src);
+int leerIntSeguro(int y, int x, int maxLen, char* pregunta);
+float leerFloatSeguro(int y, int x, int maxLen, char* pregunta);
+char* leerStringSeguro(int y, int x, int maxLen, char* pregunta);
+
 // Buffer
+/**@deprecated */
 void cleanBuffer();
 
 void cleanScreen();
