@@ -6,7 +6,15 @@
 #define USUARIOS_H
 #include <set>
 #include <string>
+<<<<<<< HEAD
+=======
 
+<<<<<<< HEAD
+
+>>>>>>> 8bc55eb (Añadiendo JAVA)
+
+=======
+>>>>>>> 3b87006 (Añadiendo estructuras de control y Contador de tiempo JAVA)
 using namespace std;
 
 class Usuarios {
