@@ -6,10 +6,6 @@
 #ifndef LOGICANEGOCIO_H
 #define LOGICANEGOCIO_H
 
-#include "UsuarioDTO.h"
-
-char* empleado;
-
 void mostrarLogo();
 
 void menuPrincipal();
@@ -29,10 +25,6 @@ int otro();
 int dudas();
 
 int salir();
-
-Usuario* obtenerUsuarioById(const int id);
-
-int asignarPiezaUsuario(Usuario* usuario, void* pieza);
 
 //FUNCIONEs DE TESTEO, NO TENER EN PRODUCCION
 void testing(int encendido);

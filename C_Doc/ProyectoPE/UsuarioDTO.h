@@ -90,14 +90,6 @@ typedef struct {
     size_t capacidad;// Capacidad total del arreglo
 } ArrayList;
 
-/**Variables globales que se usan en todo momento de la ejecucion del programa,
- * No se crean nuevas instancias de estos objetos
- */
-ArrayUsuarios arrayUsuarios;
-ArryTickets arrayTickets;
-ArrayList array_list;
-ArrayPiezas arrayPiezas;
-
 Usuario inicializarUsuario(int id_usuario, const char* folio,const char* nombreUsuario,
     const char* apellido,long long celular,const char* email,const char* contacto);
 

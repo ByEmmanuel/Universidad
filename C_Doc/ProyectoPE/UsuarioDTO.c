@@ -15,7 +15,10 @@
 int id_UsuarioLogico = 0;
 int id_Pieza = 0;
 // Declaración global del array de usuarios
-
+ArrayUsuarios arrayUsuarios;
+ArryTickets arrayTickets;
+ArrayList array_list;
+ArrayPiezas arrayPiezas;
 
 //Funciones Importantes para la ejecucion detodo el programa y evitar la reutilizacion de codigo
 // strncpy,
@@ -101,7 +104,8 @@ int guardarPiezaArray(void* pieza) {
 }
 
 // Función para obtener un usuario por ID
-Usuario* obtenerUsuarioById(const int id) {
+Usuario* obtenerUsuario(const int id) {
+    cleanScreen();
     for (int i = 0; i < arrayUsuarios.total; i++) {
         if (arrayUsuarios.datos[i].id_usuario == id) {
             //mostrarUsuario(arrayUsuarios.datos[i]);
@@ -109,8 +113,7 @@ Usuario* obtenerUsuarioById(const int id) {
         }
     }
     // Retorna NULL si el usuario no existe
-    mvprintw(12, 10, "Usuario no encontrado O no corresponde a un numero de ID");
-    getch();
+    mvprintw(15,15,"Usuario no encontrado... Vuelve a intentar\n");
     return NULL;
 }
 
@@ -121,8 +124,7 @@ void modificarCliente(){
 
     //Esta funcion puede ser contraproducente ya que si algun campo del objeto Usuario, esta vacio,
     //esta opcion nunca va a funcionar
-    cleanScreen();
-    Usuario* usuarioNuevo = obtenerUsuarioById(id_Cliente);
+    Usuario* usuarioNuevo = obtenerUsuario(id_Cliente);
     if (usuarioNuevo == NULL) {
         mvprintw(12,15,"Cliente no encontrado.\n");
         getch();
@@ -303,11 +305,6 @@ int cliente(){
             int y = 2;
             for (int i = 0; i < arrayUsuarios.total; i++) {
                 mvprintw(y++, 1, "ID: %d", arrayUsuarios.datos[i].id_usuario);
-                if (arrayUsuarios.datos[i].pieza != NULL) {
-                    mvprintw(y++, 1, "Pieza: %s", arrayUsuarios.datos[i].pieza->material);
-                } else {
-                    mvprintw(y++, 1, "Pieza: (no asignada)");
-                }
                 mvprintw(y++, 1, "Folio: %s", arrayUsuarios.datos[i].folio);
                 mvprintw(y++, 1, "Activo?: %d", arrayUsuarios.datos[i].activo);
                 mvprintw(y++, 1, "Nombre: %s", arrayUsuarios.datos[i].nombreUsuario);
