@@ -94,7 +94,7 @@ int servicio(){
                 //Esto debe ser el folio, pero esta agregado asi por temas de testeo
                 const int id_Usuario = leerIntSeguro(10,10,10000,"Ingrese Id Usuario: ");
                 RETURN_IF_ESC(id_Usuario);
-                // o para mayor control:
+                if(obtenerUsuarioById(id_Usuario) == NULL)return -1;
                 mvprintw(12, 10, "                                                 ");
                 //Generar numero de servicio
                 // Ingresar material
@@ -137,6 +137,9 @@ int servicio(){
                 //Polimorfismo
                     Culata* pzc = inicializarCulata(piezaUsuario, numValvulas, presionPrueba, tipo_combustible, tieneFisuras);
                     guardarPiezaArray((void*)pzc);  // Se guarda como puntero genérico
+
+                    Usuario* usuario = obtenerUsuarioById(id_Usuario);
+                    asignarPiezaUsuario(usuario, pzc);
                 mvprintw(8, 55, "Pieza Guardada Correctamente");
                 getch();
             }else if (opcusr == 2){
@@ -242,6 +245,17 @@ void mostrarLogo(){
 
 }
 
+int asignarPiezaUsuario(Usuario* usuario, void* pieza){
+    if (usuario == NULL || usuario->activo != 1){
+        mvprintw(10,10,"Usuario invalido o no encontrado");
+        getch();
+        return 0;
+    }
+    usuario->pieza = pieza;
+    return 1;
+};
+
+
 void testing(int encendido) {
     if (encendido) {
         //usleep(200);
@@ -263,9 +277,14 @@ void agregarPiezas() {
     piezaUsuario.tipo = CULATA;
     Culata* pzc = inicializarCulata(piezaUsuario, 16, .10, 2,1);
     guardarPiezaArray((void*)pzc);  // Se guarda como puntero genérico
+    Usuario* usuario1 = obtenerUsuarioById(0);
+    asignarPiezaUsuario(usuario1, (void*)pzc);
 
     Pieza piezaUsuario2 = inicializarPieza(1, 2, "Aluminio", 0.1000f, 0.1050f, 0.1250f, 0.1150f, 1);
     piezaUsuario2.tipo = CULATA;
     Culata* pzc2 = inicializarCulata(piezaUsuario2, 18, 0.12, 1, 0);
     guardarPiezaArray((void*)pzc2);
+
+    Usuario* usuario2 = obtenerUsuarioById(1);
+    asignarPiezaUsuario(usuario2, pzc2);
 }

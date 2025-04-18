@@ -18,7 +18,7 @@
 #define SIZE_SIETE 7
 int numOpciones = 0;
 
-
+/**@deprecated */
 char** menuActual = NULL; // Apuntador genérico para evitar repetición de código.
 
 int (*funcionesInt[SIZE_SIETE])() = {
