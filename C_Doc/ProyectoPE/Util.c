@@ -12,8 +12,11 @@
 #include <string.h>
 #include <time.h>
 
+#include "LogicaNegocio.h"
+#include "Escape.h"
+#include "Util.h"
+#include "UsuarioDTO.h"
 
-#include "UserInterface.h"
 
 
 //Funciones importantes para reducir la repeticion de codigo

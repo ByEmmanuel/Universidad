@@ -6,6 +6,9 @@
 #ifndef LOGICANEGOCIO_H
 #define LOGICANEGOCIO_H
 
+int id_UsuarioLogico ;
+int id_Pieza ;
+
 void mostrarLogo();
 
 void menuPrincipal();

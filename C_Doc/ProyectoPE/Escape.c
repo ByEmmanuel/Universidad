@@ -1,7 +1,10 @@
-#include "UserInterface.h"
+#include "Escape.h"
 
 #include <ctype.h>
 
+#include "LogicaNegocio.h"
+#include "Escape.h"
+#include "Util.h"
 #include "LogicaNegocio.h"
 #include "UsuarioDTO.h"
 #include <stdio.h>
