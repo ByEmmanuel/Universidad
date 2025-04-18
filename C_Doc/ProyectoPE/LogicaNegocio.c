@@ -55,8 +55,8 @@ int loginUsuario(){
 
             // Verificar contraseña
             if (strEquals(passwUsuario, contraseñasUsuarios[usuarioIndex])) {
+                empleado = usuarioID;
                 printf("Inicio de sesión exitoso.\n");
-                //printf("\033[2J\033[H");
                 return 1;
             }
             printf("Contraseña incorrecta.\n");
@@ -94,6 +94,7 @@ int servicio(){
                 //Esto debe ser el folio, pero esta agregado asi por temas de testeo
                 const int id_Usuario = leerIntSeguro(10,10,10000,"Ingrese Id Usuario: ");
                 RETURN_IF_ESC(id_Usuario);
+                //Esta linea impide que si el usuario no existe no se hara nada
                 if(obtenerUsuarioById(id_Usuario) == NULL)return -1;
                 mvprintw(12, 10, "                                                 ");
                 //Generar numero de servicio
@@ -140,7 +141,7 @@ int servicio(){
 
                     Usuario* usuario = obtenerUsuarioById(id_Usuario);
                     asignarPiezaUsuario(usuario, pzc);
-                mvprintw(8, 55, "Pieza Guardada Correctamente");
+                mvprintw(8, 55, "Pieza Asignada y Guardada Correctamente");
                 getch();
             }else if (opcusr == 2){
                 mvprintw(10,10,"Opcion Monoblock");
@@ -184,11 +185,14 @@ int pago(){
 }
 
 int almacen(){
-    const int opcUsr = mostrarMenu(8, ".");
+    const int opcUsr = mostrarMenu(8, ".") + 1;
     RETURN_IF_ESC(opcUsr);
     switch (opcUsr){
     case 1:
         //const int opcUsrInventario = mostrarMenu(9,".");
+            clear();
+            mvprintw(10,10,"Atiende: %s",empleado);
+            getch();
         break;
     case 2:
         //const int opcUsrControl = mostrarMenu(10,".");

@@ -8,6 +8,8 @@
 
 #include "UsuarioDTO.h"
 
+char* empleado;
+
 void mostrarLogo();
 
 void menuPrincipal();

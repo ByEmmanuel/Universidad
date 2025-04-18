@@ -57,13 +57,10 @@ int mostrarMenu(int menuventana, const char* pregunta) {
 /**
     * Almacén
     ├── Inventario General
-    │   ├── Ver piezas
-    │   ├── Buscar / Filtrar
-    │   └── Agregar / Editar / Eliminar
-    ├── Control de Stock
-    │   ├── Entradas / Salidas
-    │   ├── Alertas de stock mínimo
-    │   └── Historial de movimientos
+    │   ├── Ver piezas                      -> Listar Piezas
+    │   ├── Buscar / Filtrar                -> Buscar piezas por numero de serie
+    │   ├── Agregar / Editar / Eliminar     -> Create Update Delete Piezas
+    │   └── Historial de movimientos        -> Ver el historial de Adicion, Edicion y Eliminacion de  las piezas. Cada apartado llevara la fecha
     ├── Herramientas y Equipos
     │   ├── Estado de herramientas
     │   ├── Registro de mantenimiento
@@ -85,7 +82,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     char* menuCinco[SIZE_TRES] = {"CULATA", "MONOBLOCK", "Listar Piezas"};
     char* menuSeis[SIZE_TRES] = {"1 : Gasolina","2: Diesel","3: Electrico"};
     char* menuSiete[SIZE_DOS] = {"NO","SI"};
-    char* menuOcho[SIZE_CINCO] = {"Inventario General","Control de Stock","Herramientas y Equipos","Proveedores y Compras","Reportes"};
+    char* menuOcho[SIZE_CUATRO] = {"Inventario General / Stock","Herramientas y Equipos","Proveedores y Compras","Reportes"};
 
 
     char* subMenuUno[SIZE_TRES] = {"Ver piezas", "Buscar / Filtrar","Agregar / Editar / Eliminar"};
@@ -104,7 +101,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     case 5: menuActual = menuCinco; numOpciones = SIZE_TRES; break;
     case 6: menuActual = menuSeis; numOpciones = SIZE_TRES; break;
     case 7: menuActual = menuSiete; numOpciones = SIZE_DOS; break;
-    case 8: menuActual = menuOcho; numOpciones = SIZE_CINCO; break;
+    case 8: menuActual = menuOcho; numOpciones = SIZE_CUATRO; break;
     //SubMenus
     case 9: menuActual = subMenuUno; numOpciones = SIZE_TRES; break;
     case 10: menuActual = subMenuDos; numOpciones = SIZE_TRES; break;
