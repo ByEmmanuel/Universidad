@@ -17,12 +17,11 @@
 #include <time.h>
 #include "LogicaNegocio.h"
 #include "UsuarioDTO.h"
-#include "Escape.h"
-#include "LogicaNegocio.h"
-#include "Escape.h"
+#include "UserInterface.h"
+#include <pthread.h>
+#include <string.h>
+#include <unistd.h>
 #include "Util.h"
-#include "LogicaNegocio.h"
-#include "UsuarioDTO.h"
 
 
 // Simulación de base de datos de usuarios y contraseñas
