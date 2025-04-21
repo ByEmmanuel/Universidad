@@ -8,7 +8,8 @@
 
 #include "UsuarioDTO.h"
 
-char* empleado;
+//No Usar variables en haders
+//char* empleado;
 
 void mostrarLogo();
 
@@ -33,6 +34,8 @@ int salir();
 Usuario* obtenerUsuarioById(const int id);
 
 int asignarPiezaUsuario(Usuario* usuario, void* pieza);
+
+void printCulata(const Culata* c);
 
 //FUNCIONEs DE TESTEO, NO TENER EN PRODUCCION
 void testing(int encendido);

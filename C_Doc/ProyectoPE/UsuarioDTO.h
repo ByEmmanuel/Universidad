@@ -6,36 +6,50 @@
 #define NEGOCIODTO_H
 #include <stddef.h>
 
+#include "Motores.h"
+
+//#include "Motores.h"
+
 // 0 Monoblock, 1 culata
-typedef enum { MONOBLOCK, CULATA } TipoPieza;
+typedef enum { MONOBLOCK = 0, CULATA = 1 } TipoPieza;
 // 0 GASOLINA, 1 DIESEL, 2 HIBRIDO
 typedef enum { GASOLINA = 0, DIESEL = 1, HIBRIDO = 2 } TipoCombustible;
+//  Encapsulamiento Privado
+//  Dejar de usar Pieza como Base -> Cambiar a motor
 
 typedef struct{
-    int id_Pieza;            // Identificador único de la pieza
-    int id_Usuario;
-    TipoPieza tipo;
+    int id_pieza;            // Identificador único de la pieza
+    int id_usuario;         // Este id esta sujeto con una relacion al usuario
+
+    const char* nombre;
+    const char* fabricante;
+    float cilindrada;              // Litros
+    float compresionOriginal;      // psi
+    const char* numeroSerie;       // Número de serie único del motor
+    TipoCombustible tipoCombustible;
+
+    TipoPieza tipoPieza;
     char material[30];      // Material de la pieza (Hierro, Aluminio, etc.)
     float desgaste;         // Nivel de desgaste en porcentaje (0-100%)
     float tolerancia;       // Tolerancia máxima de desgaste permitida antes de rectificar
-    float medidaOriginal;   // Medida original de la pieza en mm
-    float medidaActual;     // Medida actual después del desgaste
+    float medidaOriginal;   // Medida original de la pieza -> mm
+    float medidaActual;     // Medida actual después del desgaste -> mm
     int necesitaRectificacion; // 1 = Sí, 0 = No (según tolerancia)
-}Pieza;
+}Motor;
 
 // Estructura Culata que "hereda" de Pieza
 typedef struct {
-    Pieza base; // Composición: Culata contiene una Pieza
+    Motor motor; // Composición: Culata contiene una Pieza
     int numValvulas;
     double presionPrueba;
-    TipoCombustible tipoCombustible;
+    //TipoCombustible tipoCombustible;// Movido a Motor
     int tieneFisuras;
 } Culata;
 
 // Estructura Monoblock que "hereda" de Pieza
 /**@deprecated Funcion en desuso*/
 typedef struct {
-    Pieza base; // Composición: Monoblock contiene una Pieza
+    Motor motor; // Composición: Monoblock contiene una Pieza
     int numCilindros;
     float diametroCilindro;
     float ovalizacion;
@@ -44,7 +58,9 @@ typedef struct {
 
 //Entidad Usuario
 typedef struct {
-    Pieza* pieza;
+    //Antes
+    //Pieza* pieza
+    Motor* motor;
     int id_usuario;
     char folio[12];
     char nombreUsuario[20];
@@ -58,7 +74,7 @@ typedef struct {
 /**@deprecated Funcion en desuso*/
 typedef struct{
     Usuario* usuario;
-    Pieza* pieza;
+    Motor* pieza;
     char detalles[255];
     char detalles2[255];
 }Ticket;
@@ -92,11 +108,28 @@ typedef struct {
 
 /**Variables globales que se usan en todo momento de la ejecucion del programa,
  * No se crean nuevas instancias de estos objetos
- */
+V2 - NO USAR -> Causa Error de compilacion
 ArrayUsuarios arrayUsuarios;
 ArryTickets arrayTickets;
 ArrayList array_list;
 ArrayPiezas arrayPiezas;
+*/
+
+typedef struct {
+    const char* nombre;
+    const char* fabricante;
+    float cilindrada;              // Litros
+    float compresionOriginal;      // psi
+    TipoCombustible tipoCombustible;
+
+    TipoPieza tipoPieza;
+    char* material;      // Material de la pieza (Hierro, Aluminio, etc.)
+    float desgaste;         // Nivel de desgaste en porcentaje (0-100%)
+    float tolerancia;       // Tolerancia máxima de desgaste permitida antes de rectificar
+    float medidaOriginal;   // Medida original de la pieza -> mm
+    float medidaActual;     // Medida actual después del desgaste -> mm
+    int necesitaRectificacion; // 1 = Sí, 0 = No (según tolerancia)
+}Paramsmotor;
 
 Usuario inicializarUsuario(int id_usuario, const char* folio,const char* nombreUsuario,
     const char* apellido,long long celular,const char* email,const char* contacto);
@@ -111,11 +144,14 @@ int guardarUsuarioArray(Usuario usuario);
 
 int guardarPiezaArray(void* pieza);
 
-Pieza inicializarPieza(int id_Usuario, int tipoPieza, const char* material,float desgaste, float tolerancia,
-    float medidaOriginal, float medidaActual, int necesitaRectificacion );
+Motor inicializarMotor(Paramsmotor motor, int id_usuario, int id_pieza, const char* numero_serie);
 
-Culata* inicializarCulata(Pieza pieza,int numValvulas ,double presionPrueba,
-    int tipoCombustible,int fisuras);
+//Culata* inicializarCulata(Paramsmotor pieza, int num_valvulas, double presion_prueba, int fisuras);
+Culata* inicializarCulata(const Motor pieza, const int numValvulas ,const double presionPrueba
+                /** const int tipoCombustible */, const int fisuras);
+
+//Culata* inicializarCulata(Motor pieza,int numValvulas , double presionPrueba
+//    /** int tipoCombustible */ ,int fisuras);
 
 /**@deprecated */
 void imprimirPiezasPorUsuario(int id_usuario);
