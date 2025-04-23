@@ -322,9 +322,10 @@ float leerFloatSeguro(int y, int x, int maxLen, char* pregunta) {
     do {
         valor = leerFloat(y, x, maxLen, pregunta);
         if (valor == NULL) {
-            mvprintw(y + 2, x , "X Entrada invalida. Intentalo de nuevo.");
+            mvprintw(y+1, x , "X Entrada invalida. Intentalo de nuevo.");
             getch();
             refresh();
+            mvprintw(y+1, 10, "                                                                                                          ");
         }
     } while (valor == NULL);
 
@@ -339,17 +340,15 @@ char* leerStringSeguro(int y, int x, int maxLen, char* pregunta) {
     do {
         valor = leerString(y, x, maxLen, pregunta);
         if (valor == NULL) {
-            mvprintw(y + 2, x , "X Entrada invalida. Intentalo de nuevo.");
+            mvprintw(y+1, x , "Entrada inválida. Inténtalo de nuevo.");
             refresh();
             getch();
-            // salir si es ESC
-            return NULL;
+            mvprintw(y+1, 10, "                                                                                                          ");
+            // volverá a repetir el do-while
         }
     } while (valor == NULL);
 
-    //char* resultado = valor;
     return valor;
-    //return leerString(y, x, maxLen, pregunta);
 }
 
 void cleanScreen(){

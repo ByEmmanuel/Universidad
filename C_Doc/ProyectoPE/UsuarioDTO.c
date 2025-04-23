@@ -47,23 +47,9 @@ Usuario inicializarUsuario(const int id_usuario,const char* folio , const char* 
  * Las variables que no pertenecen unicamente del motor
  * @param id_usuario,
  * @param id_pieza,
+ * @param numero_serie
  */
 Motor inicializarMotor(Paramsmotor motor, const int id_usuario, const int id_pieza, const char* numero_serie){
-    /**
-     Paramsmotor
-    tipoPieza
-    material
-    desgaste
-    tolerancia
-    medidaOriginal
-    medidaActual
-    necesitaRectificacion
-    tipoCombustible
-    nombre
-    fabricante
-    cilindrada
-    compresionOriginal
-     */
     Motor pz = {0};
 
     pz.tipoCombustible = motor.tipoCombustible;
@@ -413,9 +399,10 @@ const char* tipoCombustibleToStr(TipoCombustible tipo) {
 }
 
 void listarPiezas(){
-    noecho();              // No muestra lo que escribe el usuario
-    cbreak();              // Lectura sin necesidad de ENTER
-    keypad(stdscr, TRUE);  // Permite teclas especiales
+    clear();
+    noecho();
+    cbreak();
+    keypad(stdscr, TRUE);
 
     int fila = 1;
     mvprintw(fila++, 10, "==============================================");
@@ -423,7 +410,7 @@ void listarPiezas(){
     mvprintw(fila++, 10, "==============================================");
 
     for (size_t i = 0; i < arrayPiezas.tamaño; i++) {
-        Motor* pieza = (Motor*)arrayPiezas.datos[i]; // Interpretamos como motor base
+        Motor* pieza = (Motor*)arrayPiezas.datos[i];
         fila++;
         mvprintw(fila++, 2, "ID Pieza: %d", pieza->id_pieza);
         mvprintw(fila++, 2, "ID Usuario: %d", pieza->id_usuario);
@@ -433,7 +420,6 @@ void listarPiezas(){
         mvprintw(fila++, 2, "Compresión Original: %.2f psi", pieza->compresionOriginal);
         mvprintw(fila++, 2, "Número de Serie: %s", pieza->numeroSerie);
         mvprintw(fila++, 2, "Tipo de Combustible: %s", tipoCombustibleToStr(pieza->tipoCombustible));
-        //mvprintw(fila++, 2, "Tipo de Pieza: %s", );
         mvprintw(fila++, 2, "Material: %s", pieza->material);
         mvprintw(fila++, 2, "Desgaste: %.2f%%", pieza->desgaste * 100.0f);
         mvprintw(fila++, 2, "Tolerancia: %.4f mm", pieza->tolerancia);
@@ -443,11 +429,13 @@ void listarPiezas(){
 
         if (pieza->tipoPieza == CULATA) {
             Culata* culata = (Culata*)pieza;
+            mvprintw(fila++, 4, "Tipo de Pieza: Culata");
             mvprintw(fila++, 4, "N° Válvulas: %d", culata->numValvulas);
             mvprintw(fila++, 4, "Presión Prueba: %.2f bar", culata->presionPrueba);
             mvprintw(fila++, 4, "Tiene Fisuras: %s", culata->tieneFisuras ? "Sí" : "No");
         } else if (pieza->tipoPieza == MONOBLOCK) {
             Monoblock* monoblock = (Monoblock*)pieza;
+            mvprintw(fila++, 4, "Tipo de Pieza: Monoblock");
             mvprintw(fila++, 4, "N° Cilindros: %d", monoblock->numCilindros);
             mvprintw(fila++, 4, "Diámetro Cilindros: %.2f mm", monoblock->diametroCilindro);
             mvprintw(fila++, 4, "Alineación Cigüeñal: %.2f mm", monoblock->alineacionCiguenal);
@@ -455,7 +443,6 @@ void listarPiezas(){
 
         mvprintw(fila++, 10, "----------------------------------------------");
 
-        // Evitar overflow de pantalla
         if (fila >= LINES - 5) {
             mvprintw(fila++, 10, "Presiona cualquier tecla para continuar...");
             getch();

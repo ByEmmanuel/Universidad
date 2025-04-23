@@ -6,9 +6,6 @@
 #define NEGOCIODTO_H
 #include <stddef.h>
 
-#include "Motores.h"
-
-//#include "Motores.h"
 
 // 0 Monoblock, 1 culata
 typedef enum { MONOBLOCK = 0, CULATA = 1 } TipoPieza;
@@ -74,7 +71,8 @@ typedef struct {
 /**@deprecated Funcion en desuso*/
 typedef struct{
     Usuario* usuario;
-    Motor* pieza;
+    Culata* culata;
+    Monoblock* monoblock;
     char detalles[255];
     char detalles2[255];
 }Ticket;

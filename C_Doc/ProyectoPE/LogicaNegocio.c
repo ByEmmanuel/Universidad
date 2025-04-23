@@ -11,7 +11,6 @@
 #include "Util.h"
 #include "UserInterface.h"
 #include "LogicaNegocio.h"
-#include "Motores.h"
 
 #define MAX_USUARIOS 6
 #define MAX_LONGITUD 50
@@ -82,7 +81,7 @@ int servicio(){
     // Medida original de la pieza en mm
     // Medida actual después del desgaste
     //TipoCombustible tipo_combustible = {};
-
+    int y = 2;
     const int opc = mostrarMenu(4,".") + 1;
     RETURN_IF_ESC(opc);
     int opcusrParteMotor;
@@ -95,43 +94,39 @@ int servicio(){
             listarFoliosUsuarios();
             if (opcusrParteMotor == 1){
                 //Esto debe ser el folio, pero esta agregado asi por temas de testeo
-                const int id_Usuario = leerIntSeguro(10,10,10000,"Ingrese Id Usuario: ");
+                const int id_Usuario = leerIntSeguro(y+=6,10,10000,"Ingrese Id Usuario: ");
                 RETURN_IF_ESC(id_Usuario);
                 //Esta linea impide que si el usuario no existe no se hara nada
+
                 if(obtenerUsuarioById(id_Usuario) == NULL)return -1;
-                mvprintw(12, 10, "                                                 ");
                 //Generar numero de servicio
                 // Ingresar material
-                char* material = leerStringSeguro(12,10,30,"Ingrese material del motor");
+                char* material = leerStringSeguro(y+=2,10,30,"Ingrese material del motor ");
                 if (material == NULL) {
                     return -1;
                 }
-                mvprintw(14, 10, "                                                 ");
+                char* fabricante = leerStringSeguro(y+=2,10,20,"Ingrese Fabricante del motor");
+                char* nombreMotor = leerStringSeguro(y+=2,10,20,"Ingrese Nombre del motor");
+                char* numeroDeSerie = leerStringSeguro(y+=2,10,20,"Ingrese Numero de serie del motor");
                 // Ingresar desgaste
-                const float desgaste = leerFloatSeguro(14, 10, 30,"Ingresar desgaste");
-                mvprintw(16, 10, "                                                 ");
-                // Ingresar tolerancia
-                const float tolerancia = leerFloatSeguro(16, 10, 100, "Ingrese tolerancia");
-                mvprintw(18, 10, "                                                 ");
+                const float desgaste = leerFloatSeguro(y+=2, 10, 30,"Ingresar desgaste float");
+                // Este campo es automatico
+                const float tolerancia = leerFloatSeguro(y+=2, 10, 100, "Ingrese tolerancia float");
                 // Ingresar medidaOriginal
-                const float medidaOriginal = leerFloatSeguro(18, 10, 100,"Ingrese medida Original");
-                mvprintw(20, 10, "                                                 ");
+                const float medidaOriginal = leerFloatSeguro(y+=2, 10, 100,"Ingrese medida Original float");
                 // Ingresar medidaActual
-                const float medidaActual = leerFloatSeguro(20, 10, 100,"Ingrese Medida Actual");
-                mvprintw(22, 10, "                                                 ");
+                const float medidaActual = leerFloatSeguro(y+=2, 10, 100,"Ingrese Medida Actual float");
+                const float cilindrada = leerFloatSeguro(y+=2, 10, 100,"Ingrese Cilindrada en litros float");
+                const float compresionOriginal = leerFloatSeguro(y+=2, 10, 100,"Ingrese Compresion Original float");
                 // comprobar necesitaRectificacion
                 //Funcion necesita rectificacion
                 // Ingresar numValvulas
-                const int numValvulas = leerIntSeguro(22, 10, 50,"Ingrese numero Valvulas");
-                mvprintw(24, 10, "                                                 ");
+                const int numValvulas = leerIntSeguro(y+=2, 10, 50,"Ingrese numero Valvulas entero");
                 // Ingresar presionPrueba
-                const float presionPrueba = leerFloatSeguro(24, 10, 20,"Ingrese PresionPrueba");
-                mvprintw(26, 10, "                                                 ");
+                const float presionPrueba = leerFloatSeguro(y+=2, 10, 20,"Ingrese PresionPrueba float");
                 // Ingresar tipoCombustible
                 int tipo_combustible = mostrarMenu(6,"Ingrese tipo de combustible");
-
                 const int tieneFisuras = mostrarMenu(7,"¿Tiene Fisuras?");
-
                 const int rectificacion = mostrarMenu(7,"¿Necesita Rectificación?");
                 // Ahora puedes usar buffer como un char*
                 mvprintw(3, 55, "Rectificacion?: %d", rectificacion);
@@ -139,49 +134,31 @@ int servicio(){
                 mvprintw(5, 55, "Tipo Combustible: %d", tipo_combustible);
 
                 Paramsmotor registro_motor = {
-
-                        /**
-        .nombre = "1.8L i-VTEC",
-        .fabricante = "Honda",
-        .cilindrada = 1.8f,
-        .compresionOriginal = 190.0f,
-        .tipoCombustible = 0,             // 0 = Gasolina
-        .tipoPieza = CULATA,              // Definido en enum TipoPieza
-        .material = "Aluminio",
-        .desgaste = 0.09f,                // 9% de desgaste
-        .tolerancia = 0.10f,
-        .medidaOriginal = 81.0f,
-        .medidaActual = 80.93f,
-        .necesitaRectificacion = 0       // No necesita rectificación
-
-                         */
-                        //Campos por agregar;
-                        .nombre = "POR AGREGAR",
-                        .fabricante = "POR AGREGAR",
-                        .cilindrada = 0.0,
-                        .compresionOriginal = 0.0,
+                        .nombre = nombreMotor,
+                        .fabricante = fabricante,
+                        .cilindrada = cilindrada,
+                        .compresionOriginal = compresionOriginal,
                         .tipoCombustible = tipo_combustible,
-                        //.numeroSerie = "POR AGREGAR",
                         //Esta debe de ponerse en automatico en otra funcion
                         .tipoPieza = CULATA,
                         .material = material,
                         .desgaste = desgaste,
                         .tolerancia = tolerancia ,
-                        .medidaOriginal = medidaActual,
+                        .medidaOriginal = medidaOriginal,
                         .medidaActual = medidaActual,
                         .necesitaRectificacion = rectificacion
                 };
                 //const Motor piezaUsuario = inicializarMotor(registro_motor, );
                 //Por agregar numero de serie
-                    Motor motor = inicializarMotor(registro_motor, id_Usuario, id_pieza_global, "JKOXS1234");
+                    Motor motor = inicializarMotor(registro_motor, id_Usuario, id_pieza_global, numeroDeSerie);
                 //Polimorfismo
                     Culata* pzc = inicializarCulata(motor, numValvulas, presionPrueba, tieneFisuras);
                     guardarPiezaArray((void*)pzc);  // Se guarda como puntero genérico
 
                     Usuario* usuario = obtenerUsuarioById(id_Usuario);
                     asignarPiezaUsuario(usuario, pzc);
-                mvprintw(8, 55, "Pieza Asignada y Guardada Correctamente");
-                id_pieza_global ++;
+                    mvprintw(8, 55, "Pieza Asignada y Guardada Correctamente");
+                id_pieza_global++;
                 getch();
             }else if (opcusrParteMotor == 2){
                 mvprintw(10,10,"Opcion Monoblock");
@@ -192,22 +169,18 @@ int servicio(){
 
             break;
         case 2:
-        //Lavado
+            //Lavado
 
             break;
         case 3:
-        //Medidas
+            //Rectificar
 
             break;
         case 4:
-        //Rectificar
-
-            break;
-        case 5:
             //Ensamble
 
             break;
-        case 6:
+        case 5:
             //Menu Anterior
             return 1;
     default:
@@ -317,7 +290,6 @@ void agregarUsuarios() {
 }
 
 void agregarPiezas() {
-    //Motor piezaUsuario = inicializarMotor(0, 1, "Metal", .1123f, .1125f, .1300f, .1180f, 0,1);
 
     const Paramsmotor motores_registrados[2] = {
             {
@@ -370,38 +342,6 @@ void agregarPiezas() {
     Usuario* usuario2 = obtenerUsuarioById(1);
     asignarPiezaUsuario(usuario2, pzc2);
 
-    //Motor pieza1 = inicializarMotor(0, 0, "Aluminio", 0.05f, 0.12f, 79.0f, 78.95f, 0, 180.0f);
-
-    /**
-
-    Culata* culata1 = inicializarCulata(pieza1, 16, 0.10, 0);
-    guardarPiezaArray((void*)culata1);
-
-    //Motor pieza2 = inicializarMotor(1, 0, "Hierro", 0.08f, 0.15f, 79.5f, 79.35f, 1, 400.0f);
-
-    Culata* culata2 = inicializarCulata(pieza2, 16, 0.15, 1);
-    guardarPiezaArray((void*)culata2);
-
-    //Motor pieza3 = inicializarMotor(2, 0, "Hierro Fundido", 0.10f, 0.20f, 99.5f, 99.3f, 0, 195.0f);
-
-    Culata* culata3 = inicializarCulata(pieza3, 16, 0.18, 0);
-    guardarPiezaArray((void*)culata3);
-
-    //Motor pieza4 = inicializarMotor(3, 0, "Acero", 0.06f, 0.14f, 87.5f, 87.4f, 0, 210.0f);
-
-    Culata* culata4 = inicializarCulata(pieza4, 16, 0.12, 0);
-    guardarPiezaArray((void*)culata4);
-
-    //Motor pieza5 = inicializarMotor(4, 0, "Hierro", 0.09f, 0.18f, 93.0f, 92.8f, 1, 410.0f);
-
-    Culata* culata5 = inicializarCulata(pieza5, 16, 0.16, 1);
-    guardarPiezaArray((void*)culata5);
-
-    //Motor pieza6 = inicializarMotor(5, 0, "Aluminio", 0.07f, 0.13f, 89.0f, 88.85f, 0, 185.0f);
-
-    Culata* culata6 = inicializarCulata(pieza6, 16, 0.14, 0);
-    guardarPiezaArray((void*)culata6);
-
-    */
+    id_pieza_global+=2;
 
 }
