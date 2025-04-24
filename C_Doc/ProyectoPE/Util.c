@@ -137,7 +137,6 @@ char* leerString(int y, int x, int maxLen, char* pregunta) {
 
     int ch, pos = 0;
     move(y, x + strlen(pregunta) + 2);
-
     while (1) {
         ch = getch();
         if (ch == 27) { // ESC
@@ -325,7 +324,7 @@ float leerFloatSeguro(int y, int x, int maxLen, char* pregunta) {
             mvprintw(y+1, x , "X Entrada invalida. Intentalo de nuevo.");
             getch();
             refresh();
-            mvprintw(y+1, 10, "                                                                                                          ");
+            mvprintw(y+1, 0, "                                                                                                                                                        ");
         }
     } while (valor == NULL);
 
@@ -340,10 +339,14 @@ char* leerStringSeguro(int y, int x, int maxLen, char* pregunta) {
     do {
         valor = leerString(y, x, maxLen, pregunta);
         if (valor == NULL) {
-            mvprintw(y+1, x , "Entrada inválida. Inténtalo de nuevo.");
+            mvprintw(y + 1, x, "Entrada inválida o cancelada con (ESC). Inténtalo de nuevo.");
             refresh();
-            getch();
-            mvprintw(y+1, 10, "                                                                                                          ");
+            int ch = getch();
+            if (ch == 27) return NULL;  // salir si presiona ESC
+
+            move(y + 1, x);
+            clrtoeol();  // Limpia la línea del mensaje
+            mvprintw(y+1, 0, "                                                                                                                                                        ");
             // volverá a repetir el do-while
         }
     } while (valor == NULL);

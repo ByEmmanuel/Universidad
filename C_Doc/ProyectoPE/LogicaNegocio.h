@@ -31,11 +31,16 @@ int dudas();
 
 int salir();
 
-Usuario* obtenerUsuarioById(const int id);
+Usuario* obtenerUsuarioByIdUsuario(int id);
+void* obtenerPiezaByIdUsuario(int id);
 
-int asignarPiezaUsuario(Usuario* usuario, void* pieza);
+void imprimirDetallesTicket(int id);
+
+int asignarPiezaUsuario(Usuario* usuario, Culata* culata, Monoblock* monoblock );
 
 void printCulata(const Culata* c);
+
+const char* tipoCombustibleToStr(TipoCombustible tipo);
 
 //FUNCIONEs DE TESTEO, NO TENER EN PRODUCCION
 void testing(int encendido);

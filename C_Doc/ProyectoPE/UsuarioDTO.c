@@ -15,7 +15,7 @@
 int id_UsuarioLogico = 0;
 //int id_Pieza = 0;
 ArrayUsuarios arrayUsuarios;
-ArryTickets arrayTickets;
+ArrayTickets arrayTickets = {0};  // ← variable global
 ArrayList array_list;
 ArrayPiezas arrayPiezas;
 // Declaración global del array de usuarios
@@ -35,7 +35,7 @@ Usuario inicializarUsuario(const int id_usuario,const char* folio , const char* 
     asignString(usr.email, email, sizeof(usr.email));
     asignString(usr.contacto, contacto, sizeof(usr.contacto));
 
-    usr.motor = NULL;
+    usr.culata = NULL;
     usr.activo = 1;
     //Adiciona 1 al ID usuario desde aqui para que el usuario nunca tenga el mismo ID sin importar si es valido el usuario o no
     id_UsuarioLogico = id_UsuarioLogico + 1;
@@ -90,7 +90,7 @@ Culata* inicializarCulata(const Motor pieza, const int numValvulas ,const double
 
 // Función para agregar un usuario a la lista
 int guardarUsuarioArray(Usuario usuario) {
-    if (arrayUsuarios.total >= arrayUsuarios.capacidad) {
+    if (arrayUsuarios.tamanno >= arrayUsuarios.capacidad) {
         const int nuevaCapacidad = arrayUsuarios.capacidad == 0 ? 1 : arrayUsuarios.capacidad * 2;
         Usuario* nuevoArray = realloc(arrayUsuarios.datos, nuevaCapacidad * sizeof(Usuario));
         if (nuevoArray == NULL) {
@@ -100,13 +100,13 @@ int guardarUsuarioArray(Usuario usuario) {
         arrayUsuarios.datos = nuevoArray;
         arrayUsuarios.capacidad = nuevaCapacidad;
     }
-    arrayUsuarios.datos[arrayUsuarios.total] = usuario;
-    arrayUsuarios.total++;
+    arrayUsuarios.datos[arrayUsuarios.tamanno] = usuario;
+    arrayUsuarios.tamanno++;
     return 1; // Retorna 1 si se guardó correctamente
 }
 
-int guardarPiezaArray(void* pieza) {
-    if (arrayPiezas.tamaño >= arrayPiezas.capacidad) {
+int guardarPiezaArray(void* pieza, int id_usuario) {
+    if (arrayPiezas.tamanno >= arrayPiezas.capacidad) {
         // Si la capacidad está llena, redimensionamos el arreglo
         const int nuevaCapacidad = arrayPiezas.capacidad == 0 ? 1 : arrayPiezas.capacidad * 2;
         void** nuevoArray = realloc(arrayPiezas.datos, nuevaCapacidad * sizeof(void*));
@@ -117,25 +117,69 @@ int guardarPiezaArray(void* pieza) {
         arrayPiezas.datos = nuevoArray;  // Asignar el nuevo arreglo redimensionado
         arrayPiezas.capacidad = nuevaCapacidad; // Actualizar la capacidad
     }
-    arrayPiezas.datos[arrayPiezas.tamaño] = pieza;  // Guardar puntero a la pieza
-    arrayPiezas.tamaño++;  // Incrementar el número de elementos
-    return 0;  // Éxito
+    arrayPiezas.datos[arrayPiezas.tamanno] = pieza;  // Guardar puntero a la pieza
+    arrayPiezas.tamanno++;  // Incrementar el número de elementos
+    //Agregar Id Usuario generico por cada pieza
+    arrayPiezas.id_usuario = id_usuario;
+    return 1;  // Éxito
 }
 
+Ticket inicializarTicket(Usuario* usuario,Culata* culata,
+Monoblock* monoblock,char* detalles, char* detalles2){
+    Ticket ticket = {0};
+    if (usuario != NULL) ticket.usuario = usuario;
+    if (culata != NULL) ticket.culata = culata;
+    if (monoblock != NULL) ticket.monoblock = monoblock;
+    ticket.detalles = detalles;
+    ticket.detalles2 = detalles2;
+
+    return ticket;
+}
+
+
 // Función para obtener un usuario por ID
-Usuario* obtenerUsuarioById(const int id) {
-    for (int i = 0; i < arrayUsuarios.total; i++) {
+Usuario* obtenerUsuarioByIdUsuario(const int id) {
+    for (int i = 0; i < arrayUsuarios.tamanno; i++) {
         if (arrayUsuarios.datos[i].id_usuario == id) {
             //mostrarUsuario(arrayUsuarios.datos[i]);
             return &arrayUsuarios.datos[i];
         }
     }
     // Retorna NULL si el usuario no existe
-    mvprintw(12, 10, "Usuario no encontrado O no corresponde a un numero de ID");
+    mvprintw(12, 10, "Usuario no encontrado o no corresponde a un numero de ID");
     getch();
     return NULL;
 }
 
+void* obtenerPiezaByIdUsuario(const int id) {
+    for (int i = 0; i < arrayPiezas.tamanno; i++) {
+        Motor* pieza = (Motor*) arrayPiezas.datos[i];  // cast seguro
+        if (pieza->id_usuario == id) {
+            return pieza;  // Retorna el puntero a la pieza
+        }
+    }
+
+    // Retorna NULL si el usuario no existe
+    mvprintw(12, 10, "X Pieza no encontrada o ID de usuario inválido");
+    getch();
+    return NULL;
+}
+
+int guardarTicket(Ticket ticket){
+    if (arrayTickets.tamanno >= arrayTickets.capacidad){
+        const int nuevaCapacidad = arrayTickets.capacidad == 0 ? 1 : arrayTickets.capacidad * 2;
+        Ticket* nuevoArray = realloc(arrayTickets.datos, nuevaCapacidad * sizeof(Ticket));
+        if (nuevoArray == NULL) {
+            printf("Error al redimensionar el array de tickets.\n");
+            return -1;
+        }
+        arrayTickets.datos = nuevoArray;
+        arrayTickets.capacidad = nuevaCapacidad;
+    }
+    arrayTickets.datos[arrayTickets.tamanno] = ticket;
+    arrayTickets.tamanno++;
+    return 1;
+}
 void modificarCliente(){
     cleanScreen();
     clear();
@@ -144,7 +188,7 @@ void modificarCliente(){
     //Esta funcion puede ser contraproducente ya que si algun campo del objeto Usuario, esta vacio,
     //esta opcion nunca va a funcionar
     cleanScreen();
-    Usuario* usuarioNuevo = obtenerUsuarioById(id_Cliente);
+    Usuario* usuarioNuevo = obtenerUsuarioByIdUsuario(id_Cliente);
     if (usuarioNuevo == NULL) {
         mvprintw(12,15,"Cliente no encontrado.\n");
         getch();
@@ -323,10 +367,10 @@ int cliente(){
             printf("No hay clientes registrados.\n");
         } else {
             int y = 2;
-            for (int i = 0; i < arrayUsuarios.total; i++) {
+            for (int i = 0; i < arrayUsuarios.tamanno; i++) {
                 mvprintw(y++, 1, "ID: %d", arrayUsuarios.datos[i].id_usuario);
-                if (arrayUsuarios.datos[i].motor != NULL) {
-                    mvprintw(y++, 1, "Pieza: %s", arrayUsuarios.datos[i].motor->material);
+                if (arrayUsuarios.datos[i].culata != NULL) {
+                    mvprintw(y++, 1, "Pieza: %s", arrayUsuarios.datos[i].culata->motor.material);
                     //mvprintw(y++, 1, "Pieza: %s", arrayUsuarios.datos[i].motor->nombre);
                 } else {
                     mvprintw(y++, 1, "Motor: (no asignada)");
@@ -359,7 +403,7 @@ int cliente(){
 void imprimirPiezasPorUsuario(int idUsuario) {
     printf("Piezas para el Usuario ID: %d\n", idUsuario);
     // Recorrer todas las piezas almacenadas
-    for (int i = 0; i < arrayPiezas.tamaño; i++) {
+    for (int i = 0; i < arrayPiezas.tamanno; i++) {
         Motor* pieza = arrayPiezas.datos[i];  // Obtener puntero a la pieza
 
         // Verificar si el id_Usuario coincide
@@ -409,7 +453,7 @@ void listarPiezas(){
     mvprintw(fila++, 15, "LISTADO DE TODAS LAS PIEZAS");
     mvprintw(fila++, 10, "==============================================");
 
-    for (size_t i = 0; i < arrayPiezas.tamaño; i++) {
+    for (size_t i = 0; i < arrayPiezas.tamanno; i++) {
         Motor* pieza = (Motor*)arrayPiezas.datos[i];
         fila++;
         mvprintw(fila++, 2, "ID Pieza: %d", pieza->id_pieza);
@@ -457,7 +501,7 @@ void listarPiezas(){
 
 void listarFoliosUsuarios(){
     int y = 3;
-    for (int i = 0; i < arrayUsuarios.total; i++) {
+    for (int i = 0; i < arrayUsuarios.tamanno; i++) {
         mvprintw(y, 40, "Activo?: %s", arrayUsuarios.datos[i].activo ? "True" : "False");
         mvprintw(y, 60, "ID: %d", arrayUsuarios.datos[i].id_usuario);
         mvprintw(y, 70, "Nombre: %s", arrayUsuarios.datos[i].nombreUsuario);

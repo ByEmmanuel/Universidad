@@ -57,7 +57,8 @@ typedef struct {
 typedef struct {
     //Antes
     //Pieza* pieza
-    Motor* motor;
+    Culata* culata;
+    Monoblock* monoblock;
     int id_usuario;
     char folio[12];
     char nombreUsuario[20];
@@ -68,32 +69,31 @@ typedef struct {
     int activo;
 }Usuario;
 
-/**@deprecated Funcion en desuso*/
 typedef struct{
     Usuario* usuario;
     Culata* culata;
     Monoblock* monoblock;
-    char detalles[255];
-    char detalles2[255];
+    char* detalles;
+    char* detalles2;
 }Ticket;
 
 // Estructura para el array dinámico de Usuarios
 typedef struct {
     Usuario* datos;  // Puntero a la lista de usuarios
-    int total;       // Número actual de usuarios / elementos
+    int tamanno;       // Número actual de usuarios / elementos
     int capacidad;   // Capacidad máxima del array
 } ArrayUsuarios;
 
-/**@deprecated Funcion en desuso*/
 typedef struct{
     Ticket* datos;
-    int tamaño;
+    int tamanno;
     int capacidad;
-}ArryTickets;
+}ArrayTickets;
 
 typedef struct {
     void** datos;  // Puntero a la lista de usuarios
-    int tamaño;       // Número actual de Piezas / elementos
+    int id_usuario;
+    int tamanno;       // Número actual de Piezas / elementos
     int capacidad;   // Capacidad máxima del array
 } ArrayPiezas;
 
@@ -132,6 +132,11 @@ typedef struct {
 Usuario inicializarUsuario(int id_usuario, const char* folio,const char* nombreUsuario,
     const char* apellido,long long celular,const char* email,const char* contacto);
 
+Ticket inicializarTicket(Usuario* usuario,Culata* culata,
+Monoblock* monoblock,char* detalles, char* detalles2);
+
+extern ArrayTickets arrayTickets;  // ← accedida desde otros .c
+
 int cliente();
 
 void mostrarUsuario(Usuario usr);
@@ -140,13 +145,15 @@ void modificarCliente();
 
 int guardarUsuarioArray(Usuario usuario);
 
-int guardarPiezaArray(void* pieza);
+int guardarPiezaArray(void* pieza, int id_usuario);
+
+int guardarTicket(Ticket ticket);
 
 Motor inicializarMotor(Paramsmotor motor, int id_usuario, int id_pieza, const char* numero_serie);
 
 //Culata* inicializarCulata(Paramsmotor pieza, int num_valvulas, double presion_prueba, int fisuras);
-Culata* inicializarCulata(const Motor pieza, const int numValvulas ,const double presionPrueba
-                /** const int tipoCombustible */, const int fisuras);
+Culata* inicializarCulata(Motor pieza, int numValvulas ,double presionPrueba
+                /** const int tipoCombustible */,int fisuras);
 
 //Culata* inicializarCulata(Motor pieza,int numValvulas , double presionPrueba
 //    /** int tipoCombustible */ ,int fisuras);
