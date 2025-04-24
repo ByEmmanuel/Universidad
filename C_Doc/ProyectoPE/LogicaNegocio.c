@@ -17,6 +17,8 @@
 
 char usuariosRegistrados[MAX_USUARIOS][MAX_LONGITUD] =  {"David","Jose","Admin","Pepe","Luis",""};
 char contraseñasUsuarios[MAX_USUARIOS][MAX_LONGITUD] = {"123456789","987654321","01","24680",""};
+char* empleado;
+int id_pieza_global = 0;
 
 char* enterString(int length) {
     char* buffer = (char*)malloc(length + 1); // Reservar espacio para la cadena
@@ -78,96 +80,108 @@ int servicio(){
     // Tolerancia máxima de desgaste permitida antes de rectificar
     // Medida original de la pieza en mm
     // Medida actual después del desgaste
-    TipoCombustible tipo_combustible = {};
-
+    //TipoCombustible tipo_combustible = {};
+    int y = 2;
     const int opc = mostrarMenu(4,".") + 1;
     RETURN_IF_ESC(opc);
-    int opcusr;
+    int opcusrParteMotor;
     switch (opc){
         case 1:
             //Ingreso culata o monoblock
             //mvprintw(10,10,"Ingrese una opcion 1: Culata. 2: Monoblock");
-            opcusr = mostrarMenu(5,".") + 1;
-            RETURN_IF_ESC(opcusr);
+            opcusrParteMotor = mostrarMenu(5,".") + 1;
+            RETURN_IF_ESC(opcusrParteMotor);
             listarFoliosUsuarios();
-            if (opcusr == 1){
+            if (opcusrParteMotor == 1){
                 //Esto debe ser el folio, pero esta agregado asi por temas de testeo
-                const int id_Usuario = leerIntSeguro(10,10,10000,"Ingrese Id Usuario: ");
+                const int id_Usuario = leerIntSeguro(y+=6,10,10000,"Ingrese Id Usuario: ");
                 RETURN_IF_ESC(id_Usuario);
                 //Esta linea impide que si el usuario no existe no se hara nada
-                if(obtenerUsuarioById(id_Usuario) == NULL)return -1;
-                mvprintw(12, 10, "                                                 ");
+
+                if(obtenerUsuarioByIdUsuario(id_Usuario) == NULL)return -1;
                 //Generar numero de servicio
                 // Ingresar material
-                const char* material = leerStringSeguro(12,10,30,"Ingrese material del motor");
+                char* material = leerStringSeguro(y+=2,10,30,"Ingrese material del motor ");
                 if (material == NULL) {
                     return -1;
                 }
-                mvprintw(14, 10, "                                                 ");
+                char* fabricante = leerStringSeguro(y+=2,10,20,"Ingrese Fabricante del motor");
+                char* nombreMotor = leerStringSeguro(y+=2,10,20,"Ingrese Nombre del motor");
+                char* numeroDeSerie = leerStringSeguro(y+=2,10,20,"Ingrese Numero de serie del motor");
                 // Ingresar desgaste
-                const float desgaste = leerFloatSeguro(14, 10, 30,"Ingresar desgaste");
-                mvprintw(16, 10, "                                                 ");
-                // Ingresar tolerancia
-                const float tolerancia = leerFloatSeguro(16, 10, 100, "Ingrese tolerancia");
-                mvprintw(18, 10, "                                                 ");
+                const float desgaste = leerFloatSeguro(y+=2, 10, 30,"Ingresar desgaste float");
+                // Este campo es automatico
+                const float tolerancia = leerFloatSeguro(y+=2, 10, 100, "Ingrese tolerancia float");
                 // Ingresar medidaOriginal
-                const float medidaOriginal = leerFloatSeguro(18, 10, 100,"Ingrese medida Original");
-                mvprintw(20, 10, "                                                 ");
+                const float medidaOriginal = leerFloatSeguro(y+=2, 10, 100,"Ingrese medida Original float");
                 // Ingresar medidaActual
-                const float medidaActual = leerFloatSeguro(20, 10, 100,"Ingrese Medida Actual");
-                mvprintw(22, 10, "                                                 ");
+                const float medidaActual = leerFloatSeguro(y+=2, 10, 100,"Ingrese Medida Actual float");
+                const float cilindrada = leerFloatSeguro(y+=2, 10, 100,"Ingrese Cilindrada en litros float");
+                const float compresionOriginal = leerFloatSeguro(y+=2, 10, 100,"Ingrese Compresion Original float");
                 // comprobar necesitaRectificacion
                 //Funcion necesita rectificacion
                 // Ingresar numValvulas
-                const int numValvulas = leerIntSeguro(22, 10, 50,"Ingrese numero Valvulas");
-                mvprintw(24, 10, "                                                 ");
+                const int numValvulas = leerIntSeguro(y+=2, 10, 50,"Ingrese numero Valvulas entero");
                 // Ingresar presionPrueba
-                const float presionPrueba = leerFloatSeguro(24, 10, 20,"Ingrese PresionPrueba");
-                mvprintw(26, 10, "                                                 ");
+                const float presionPrueba = leerFloatSeguro(y+=2, 10, 20,"Ingrese PresionPrueba float");
                 // Ingresar tipoCombustible
-                tipo_combustible = mostrarMenu(6,"Ingrese tipo de combustible");
-
+                int tipo_combustible = mostrarMenu(6,"Ingrese tipo de combustible");
                 const int tieneFisuras = mostrarMenu(7,"¿Tiene Fisuras?");
-
                 const int rectificacion = mostrarMenu(7,"¿Necesita Rectificación?");
                 // Ahora puedes usar buffer como un char*
                 mvprintw(3, 55, "Rectificacion?: %d", rectificacion);
                 mvprintw(4, 55, "Tiene Fisuras?: %d", tieneFisuras);
                 mvprintw(5, 55, "Tipo Combustible: %d", tipo_combustible);
-                const Pieza piezaUsuario = inicializarPieza(id_Usuario, 1, material, desgaste, tolerancia, medidaOriginal, medidaActual, rectificacion);
-                //Polimorfismo
-                    Culata* pzc = inicializarCulata(piezaUsuario, numValvulas, presionPrueba, tipo_combustible, tieneFisuras);
-                    guardarPiezaArray((void*)pzc);  // Se guarda como puntero genérico
 
-                    Usuario* usuario = obtenerUsuarioById(id_Usuario);
-                    asignarPiezaUsuario(usuario, pzc);
-                mvprintw(8, 55, "Pieza Asignada y Guardada Correctamente");
+                Paramsmotor registro_motor = {
+                        .nombre = nombreMotor,
+                        .fabricante = fabricante,
+                        .cilindrada = cilindrada,
+                        .compresionOriginal = compresionOriginal,
+                        .tipoCombustible = tipo_combustible,
+                        //Esta debe de ponerse en automatico en otra funcion
+                        .tipoPieza = CULATA,
+                        .material = material,
+                        .desgaste = desgaste,
+                        .tolerancia = tolerancia ,
+                        .medidaOriginal = medidaOriginal,
+                        .medidaActual = medidaActual,
+                        .necesitaRectificacion = rectificacion
+                };
+                //const Motor piezaUsuario = inicializarMotor(registro_motor, );
+                //Por agregar numero de serie
+                    Motor motor = inicializarMotor(registro_motor, id_Usuario, id_pieza_global, numeroDeSerie);
+                //Polimorfismo
+                    Culata* pzc = inicializarCulata(motor, numValvulas, presionPrueba, tieneFisuras);
+                    guardarPiezaArray(pzc, id_Usuario);  // Se guarda como puntero genérico
+
+                    Usuario* usuario = obtenerUsuarioByIdUsuario(id_Usuario);
+                    asignarPiezaUsuario(usuario, pzc, NULL);
+                    mvprintw(8, 55, "Pieza Asignada y Guardada Correctamente");
+                id_pieza_global++;
                 getch();
-            }else if (opcusr == 2){
+            }else if (opcusrParteMotor == 2){
                 mvprintw(10,10,"Opcion Monoblock");
-            }else if (opcusr == 3){
+            }else if (opcusrParteMotor == 3){
                 listarPiezas();
             }
             printf("Opcion no valida");
 
             break;
-        case 2:
-        //Lavado
+        case 2:{
+                //Lavado
 
+            }
             break;
         case 3:
-        //Medidas
+            //Rectificar
 
             break;
         case 4:
-        //Rectificar
-
-            break;
-        case 5:
             //Ensamble
 
             break;
-        case 6:
+        case 5:
             //Menu Anterior
             return 1;
     default:
@@ -180,7 +194,47 @@ int servicio(){
 }
 
 int pago(){
-    printf("Opcion pago ");
+    clear();
+    const int id_usuario = leerIntSeguro(6,10,10000,"Ingrese Id Usuario: ");
+    RETURN_IF_ESC(id_usuario);
+
+    Usuario* usuario = obtenerUsuarioByIdUsuario(id_usuario);
+    if (usuario == NULL) {
+        mvprintw(8,10,"⚠️ Usuario no encontrado.");
+        getch();
+        return -1;
+    }
+
+    void* pieza = obtenerPiezaByIdUsuario(id_usuario);
+    if (!pieza) {
+        mvprintw(10, 10, "⚠️ No se encontró ninguna pieza asociada al usuario con ID %d", id_usuario);
+        getch();
+        return -1;
+    }
+
+    Culata* culata = NULL;
+    Monoblock* monoblock = NULL;
+
+    Motor* motorBase = (Motor*)pieza;
+    if (motorBase->tipoPieza == CULATA) {
+        culata = (Culata*)pieza;
+    } else if (motorBase->tipoPieza == MONOBLOCK) {
+        monoblock = (Monoblock*)pieza;
+    }
+
+    char* detalles = leerStringSeguro(10,10,255,"Ingrese detalles de la operación -MAX 255- ");
+    char* detalles2 = leerStringSeguro(15,10,255,"Ingrese detalles 2 de la operación -MAX 255- ");
+
+    Ticket ticket = inicializarTicket(usuario, culata, monoblock, detalles, detalles2);
+    if (guardarTicket(ticket) != 1){
+        mvprintw(20,10,"❌ Error al registrar el ticket. Inténtelo de nuevo.");
+        getch();
+        return -1;
+    }
+
+    mvprintw(20,10,"¡Ticket registrado correctamente!");
+
+    imprimirDetallesTicket(id_usuario);
     return 0;
 }
 
@@ -249,16 +303,93 @@ void mostrarLogo(){
 
 }
 
-int asignarPiezaUsuario(Usuario* usuario, void* pieza){
+int asignarPiezaUsuario(Usuario* usuario, Culata* culata, Monoblock* monoblock ){
     if (usuario == NULL || usuario->activo != 1){
         mvprintw(10,10,"Usuario invalido o no encontrado");
         getch();
         return 0;
     }
-    usuario->pieza = pieza;
+    if (culata != NULL) usuario->culata = culata;
+    if (culata != NULL) usuario->monoblock = monoblock;
     return 1;
 };
 
+void imprimirDetallesTicket(int id_usuario){
+    int fila = 1;
+    clear();
+    mvprintw(fila++, 4, "IMPRIMIR DETALLES TICKET USUARIO ON");
+    mvprintw(fila++, 4, "Tamanno array %d", arrayTickets.tamanno);
+
+    for (int i = 0; i < arrayTickets.tamanno; i++){
+        if (arrayTickets.datos[i].usuario->id_usuario == id_usuario){
+            Usuario* usr = arrayTickets.datos[i].usuario;
+
+            mvprintw(fila++, 4, "==============================================");
+            mvprintw(fila++, 10, "INFORMACION DEL USUARIO");
+            mvprintw(fila++, 4, "==============================================");
+            mvprintw(fila++, 2, "ID Usuario: %d", usr->id_usuario);
+            mvprintw(fila++, 2, "Folio: %s", usr->folio);
+            mvprintw(fila++, 2, "Nombre: %s %s", usr->nombreUsuario, usr->apellido);
+            mvprintw(fila++, 2, "Celular: %lld", usr->celular);
+            mvprintw(fila++, 2, "Email: %s", usr->email);
+            mvprintw(fila++, 2, "Contacto: %s", usr->contacto);
+            mvprintw(fila++, 2, "Activo: %s", usr->activo ? "Si" : "No");
+
+            Culata* culata = usr->culata;
+            Monoblock* monoblock = usr->monoblock;
+            Motor* motor = NULL;
+
+            if (culata != NULL) {
+                motor = &culata->motor;
+            } else if (monoblock != NULL) {
+                motor = &monoblock->motor;
+            }
+
+            if (motor == NULL) {
+                mvprintw(fila++, 2, "Motor: No asignado.");
+                getch();
+                return;
+            }
+
+            mvprintw(fila++, 4, "==============================================");
+            mvprintw(fila++, 10, "INFORMACION DE LA PIEZA / MOTOR");
+            mvprintw(fila++, 4, "==============================================");
+
+            mvprintw(fila++, 2, "ID Pieza: %d", motor->id_pieza);
+            mvprintw(fila++, 2, "ID Usuario: %d", motor->id_usuario);
+            mvprintw(fila++, 2, "Nombre Motor: %s", motor->nombre);
+            mvprintw(fila++, 2, "Fabricante: %s", motor->fabricante);
+            mvprintw(fila++, 2, "Numero Serie: %s", motor->numeroSerie);
+            mvprintw(fila++, 2, "Cilindrada: %.2f L", motor->cilindrada);
+            mvprintw(fila++, 2, "Compresion Original: %.2f psi", motor->compresionOriginal);
+            mvprintw(fila++, 2, "Combustible: %s", tipoCombustibleToStr(motor->tipoCombustible));
+            mvprintw(fila++, 2, "Material: %s", motor->material);
+            mvprintw(fila++, 2, "Desgaste: %.2f%%", motor->desgaste * 100);
+            mvprintw(fila++, 2, "Tolerancia: %.4f mm", motor->tolerancia);
+            mvprintw(fila++, 2, "Medida Original: %.4f mm", motor->medidaOriginal);
+            mvprintw(fila++, 2, "Medida Actual: %.4f mm", motor->medidaActual);
+            mvprintw(fila++, 2, "Rectificacion: %s", motor->necesitaRectificacion ? "Si" : "No");
+
+            if (motor->tipoPieza == CULATA && culata != NULL) {
+                mvprintw(fila++, 4, "----------- CULATA -----------");
+                mvprintw(fila++, 4, "Numero Valvulas: %d", culata->numValvulas);
+                mvprintw(fila++, 4, "Presion de Prueba: %.2f bar", culata->presionPrueba);
+                mvprintw(fila++, 4, "Fisuras: %s", culata->tieneFisuras ? "Si" : "No");
+            } else if (motor->tipoPieza == MONOBLOCK && monoblock != NULL) {
+                mvprintw(fila++, 4, "---------- MONOBLOCK ---------");
+                mvprintw(fila++, 4, "Numero Cilindros: %d", monoblock->numCilindros);
+                mvprintw(fila++, 4, "Diametro: %.2f mm", monoblock->diametroCilindro);
+                mvprintw(fila++, 4, "Ovalizacion: %.2f mm", monoblock->ovalizacion);
+                mvprintw(fila++, 4, "Alineacion Ciguenal: %.2f mm", monoblock->alineacionCiguenal);
+            }
+
+            mvprintw(fila++, 4, "==============================================");
+            mvprintw(fila++, 10, "Presiona cualquier tecla para continuar...");
+            getch();
+            return;
+        }
+    }
+}
 
 void testing(int encendido) {
     if (encendido) {
@@ -277,18 +408,58 @@ void agregarUsuarios() {
 }
 
 void agregarPiezas() {
-    Pieza piezaUsuario = inicializarPieza(0, 1, "Metal", .1123f, .1125f, .1300f, .1180f, 0);
-    piezaUsuario.tipo = CULATA;
-    Culata* pzc = inicializarCulata(piezaUsuario, 16, .10, 2,1);
-    guardarPiezaArray((void*)pzc);  // Se guarda como puntero genérico
-    Usuario* usuario1 = obtenerUsuarioById(0);
-    asignarPiezaUsuario(usuario1, (void*)pzc);
 
-    Pieza piezaUsuario2 = inicializarPieza(1, 2, "Aluminio", 0.1000f, 0.1050f, 0.1250f, 0.1150f, 1);
-    piezaUsuario2.tipo = CULATA;
-    Culata* pzc2 = inicializarCulata(piezaUsuario2, 18, 0.12, 1, 0);
-    guardarPiezaArray((void*)pzc2);
+    const Paramsmotor motores_registrados[2] = {
+            {
+                .nombre = "1.8L i-VTEC",
+                .fabricante = "Honda",
+                .cilindrada = 1.8f,
+                .compresionOriginal = 190.0f,
+                .tipoCombustible = 0,             // 0 = Gasolina
+                .tipoPieza = CULATA,              // Definido en enum TipoPieza
+                .material = "Aluminio",
+                .desgaste = 0.09f,                // 9% de desgaste
+                .tolerancia = 0.10f,
+                .medidaOriginal = 81.0f,
+                .medidaActual = 80.93f,
+                .necesitaRectificacion = 0       // No necesita rectificación
+            },
+            {
+                .nombre = "3.2L Duratorq",
+                .fabricante = "Ford",
+                .cilindrada = 3.2f,
+                .compresionOriginal = 410.0f,
+                .tipoCombustible = 1,             // 1 = Diesel
+                .tipoPieza = MONOBLOCK,           // Definido en enum TipoPieza
+                .material = "Hierro fundido",
+                .desgaste = 0.14f,                // 14% de desgaste
+                .tolerancia = 0.12f,
+                .medidaOriginal = 89.9f,
+                .medidaActual = 89.76f,
+                .necesitaRectificacion = 1       // Sí necesita rectificación
+            }
+    };
 
-    Usuario* usuario2 = obtenerUsuarioById(1);
-    asignarPiezaUsuario(usuario2, pzc2);
+    //id_pieza_global tiene problemas para actualizarse 
+
+    //Sospechozo, le asigno 2 veces el tipo de pieza, 1 aqui y otra en inicializarCulata
+    //piezaUsuario.tipoPieza = CULATA;
+    const int id_usuario = 0, id_usuario_2 = 1;
+    Motor piezaUsuario = inicializarMotor(motores_registrados[0],id_usuario,0,"NUMSERIE");
+    piezaUsuario.tipoPieza = CULATA;
+    Culata* pzc = inicializarCulata(piezaUsuario, 16, .10, 2);
+    guardarPiezaArray(pzc,id_usuario);  // Se guarda como puntero genérico
+    Usuario* usuario1 = obtenerUsuarioByIdUsuario(id_usuario);
+    asignarPiezaUsuario(usuario1, pzc, NULL);
+
+
+    Motor piezaUsuario2 = inicializarMotor(motores_registrados[1], id_usuario_2,1,"NUMSERIE");
+    piezaUsuario2.tipoPieza = CULATA;
+    Culata* pzc2 = inicializarCulata(piezaUsuario2, 18, 0.12, 1);
+    guardarPiezaArray(pzc2, id_usuario_2);
+    Usuario* usuario2 = obtenerUsuarioByIdUsuario(id_usuario_2);
+    asignarPiezaUsuario(usuario2, pzc2, NULL);
+
+    id_pieza_global+=2;
+
 }
