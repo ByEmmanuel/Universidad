@@ -193,50 +193,7 @@ int servicio(){
     return 0;
 }
 
-int pago(){
-    clear();
-    const int id_usuario = leerIntSeguro(6,10,10000,"Ingrese Id Usuario: ");
-    RETURN_IF_ESC(id_usuario);
 
-    Usuario* usuario = obtenerUsuarioByIdUsuario(id_usuario);
-    if (usuario == NULL) {
-        mvprintw(8,10,"⚠️ Usuario no encontrado.");
-        getch();
-        return -1;
-    }
-
-    void* pieza = obtenerPiezaByIdUsuario(id_usuario);
-    if (!pieza) {
-        mvprintw(10, 10, "⚠️ No se encontró ninguna pieza asociada al usuario con ID %d", id_usuario);
-        getch();
-        return -1;
-    }
-
-    Culata* culata = NULL;
-    Monoblock* monoblock = NULL;
-
-    Motor* motorBase = (Motor*)pieza;
-    if (motorBase->tipoPieza == CULATA) {
-        culata = (Culata*)pieza;
-    } else if (motorBase->tipoPieza == MONOBLOCK) {
-        monoblock = (Monoblock*)pieza;
-    }
-
-    char* detalles = leerStringSeguro(10,10,255,"Ingrese detalles de la operación -MAX 255- ");
-    char* detalles2 = leerStringSeguro(15,10,255,"Ingrese detalles 2 de la operación -MAX 255- ");
-
-    Ticket ticket = inicializarTicket(usuario, culata, monoblock, detalles, detalles2);
-    if (guardarTicket(ticket) != 1){
-        mvprintw(20,10,"❌ Error al registrar el ticket. Inténtelo de nuevo.");
-        getch();
-        return -1;
-    }
-
-    mvprintw(20,10,"¡Ticket registrado correctamente!");
-
-    imprimirDetallesTicket(id_usuario);
-    return 0;
-}
 
 int almacen(){
     const int opcUsr = mostrarMenu(8, ".") + 1;
@@ -314,82 +271,6 @@ int asignarPiezaUsuario(Usuario* usuario, Culata* culata, Monoblock* monoblock )
     return 1;
 };
 
-void imprimirDetallesTicket(int id_usuario){
-    int fila = 1;
-    clear();
-    mvprintw(fila++, 4, "IMPRIMIR DETALLES TICKET USUARIO ON");
-    mvprintw(fila++, 4, "Tamanno array %d", arrayTickets.tamanno);
-
-    for (int i = 0; i < arrayTickets.tamanno; i++){
-        if (arrayTickets.datos[i].usuario->id_usuario == id_usuario){
-            Usuario* usr = arrayTickets.datos[i].usuario;
-
-            mvprintw(fila++, 4, "==============================================");
-            mvprintw(fila++, 10, "INFORMACION DEL USUARIO");
-            mvprintw(fila++, 4, "==============================================");
-            mvprintw(fila++, 2, "ID Usuario: %d", usr->id_usuario);
-            mvprintw(fila++, 2, "Folio: %s", usr->folio);
-            mvprintw(fila++, 2, "Nombre: %s %s", usr->nombreUsuario, usr->apellido);
-            mvprintw(fila++, 2, "Celular: %lld", usr->celular);
-            mvprintw(fila++, 2, "Email: %s", usr->email);
-            mvprintw(fila++, 2, "Contacto: %s", usr->contacto);
-            mvprintw(fila++, 2, "Activo: %s", usr->activo ? "Si" : "No");
-
-            Culata* culata = usr->culata;
-            Monoblock* monoblock = usr->monoblock;
-            Motor* motor = NULL;
-
-            if (culata != NULL) {
-                motor = &culata->motor;
-            } else if (monoblock != NULL) {
-                motor = &monoblock->motor;
-            }
-
-            if (motor == NULL) {
-                mvprintw(fila++, 2, "Motor: No asignado.");
-                getch();
-                return;
-            }
-
-            mvprintw(fila++, 4, "==============================================");
-            mvprintw(fila++, 10, "INFORMACION DE LA PIEZA / MOTOR");
-            mvprintw(fila++, 4, "==============================================");
-
-            mvprintw(fila++, 2, "ID Pieza: %d", motor->id_pieza);
-            mvprintw(fila++, 2, "ID Usuario: %d", motor->id_usuario);
-            mvprintw(fila++, 2, "Nombre Motor: %s", motor->nombre);
-            mvprintw(fila++, 2, "Fabricante: %s", motor->fabricante);
-            mvprintw(fila++, 2, "Numero Serie: %s", motor->numeroSerie);
-            mvprintw(fila++, 2, "Cilindrada: %.2f L", motor->cilindrada);
-            mvprintw(fila++, 2, "Compresion Original: %.2f psi", motor->compresionOriginal);
-            mvprintw(fila++, 2, "Combustible: %s", tipoCombustibleToStr(motor->tipoCombustible));
-            mvprintw(fila++, 2, "Material: %s", motor->material);
-            mvprintw(fila++, 2, "Desgaste: %.2f%%", motor->desgaste * 100);
-            mvprintw(fila++, 2, "Tolerancia: %.4f mm", motor->tolerancia);
-            mvprintw(fila++, 2, "Medida Original: %.4f mm", motor->medidaOriginal);
-            mvprintw(fila++, 2, "Medida Actual: %.4f mm", motor->medidaActual);
-            mvprintw(fila++, 2, "Rectificacion: %s", motor->necesitaRectificacion ? "Si" : "No");
-
-            if (motor->tipoPieza == CULATA && culata != NULL) {
-                mvprintw(fila++, 4, "----------- CULATA -----------");
-                mvprintw(fila++, 4, "Numero Valvulas: %d", culata->numValvulas);
-                mvprintw(fila++, 4, "Presion de Prueba: %.2f bar", culata->presionPrueba);
-                mvprintw(fila++, 4, "Fisuras: %s", culata->tieneFisuras ? "Si" : "No");
-            } else if (motor->tipoPieza == MONOBLOCK && monoblock != NULL) {
-                mvprintw(fila++, 4, "---------- MONOBLOCK ---------");
-                mvprintw(fila++, 4, "Numero Cilindros: %d", monoblock->numCilindros);
-                mvprintw(fila++, 4, "Diametro: %.2f mm", monoblock->diametroCilindro);
-                mvprintw(fila++, 4, "Ovalizacion: %.2f mm", monoblock->ovalizacion);
-                mvprintw(fila++, 4, "Alineacion Ciguenal: %.2f mm", monoblock->alineacionCiguenal);
-            }
-
-            mvprintw(fila++, 4, "==============================================");
-            mvprintw(fila++, 10, "Presiona cualquier tecla para continuar...");
-            getch();
-            return;
-        }
-    }
-}
 
 void testing(int encendido) {
     if (encendido) {

@@ -354,6 +354,30 @@ char* leerStringSeguro(int y, int x, int maxLen, char* pregunta) {
     return valor;
 }
 
+void imprimirTextoMultilinea(int fila, int columna, const char* texto, int anchoMaximo) {
+    int len = strlen(texto);
+    int inicio = 0;
+
+    while (inicio < len) {
+        char buffer[anchoMaximo + 1];
+        int fin = inicio + anchoMaximo;
+
+        if (fin >= len) fin = len;
+        else {
+            while (fin > inicio && texto[fin] != ' ') fin--;  // retrocede al espacio anterior
+            if (fin == inicio) fin = inicio + anchoMaximo;    // palabra larga sin espacios
+        }
+
+        int largoLinea = fin - inicio;
+        strncpy(buffer, texto + inicio, largoLinea);
+        buffer[largoLinea] = '\0';
+
+        mvprintw(fila++, columna, "%s", buffer);
+        while (texto[fin] == ' ') fin++;  // saltar espacios múltiples
+        inicio = fin;
+    }
+}
+
 void cleanScreen(){
     //clear();
     printf("\033[2J\033[H");

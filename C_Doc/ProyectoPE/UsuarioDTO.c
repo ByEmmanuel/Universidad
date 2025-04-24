@@ -180,6 +180,32 @@ int guardarTicket(Ticket ticket){
     arrayTickets.tamanno++;
     return 1;
 }
+
+Ticket* obtenerTicketByIdUsuario(int id_usuario){
+    for (int i = 0; i < arrayTickets.tamanno; i++) {
+        if (arrayTickets.datos[i].usuario->id_usuario == id_usuario) {
+            //mostrarUsuario(arrayUsuarios.datos[i]);
+            return &arrayTickets.datos[i];
+        }
+    }
+    // Retorna NULL si el usuario no existe
+    return NULL;
+
+}
+
+int existeUsuario(){
+    const int id_usuario = leerIntSeguro(6,10,10000,"Ingrese Id Usuario: ");
+    RETURN_IF_ESC(id_usuario);
+
+    Usuario* usuario = obtenerUsuarioByIdUsuario(id_usuario);
+    if (usuario == NULL) {
+        mvprintw(15,10,"️ Usuario no encontrado.");
+        getch();
+        return -1;
+    }
+    return id_usuario;
+}
+
 void modificarCliente(){
     cleanScreen();
     clear();

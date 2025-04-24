@@ -57,6 +57,7 @@ int dateCompare(SimpleDate* d1, SimpleDate* d2); // Compara dos fechas
 
 char* generarFolio(const char *nombre);
 
+// Estas funciones son para ncurses
 //Validar Campos
 // Tipos de datos a validad, INT, String (char* ), LONG, FLOAT
 /**@deprecated */
@@ -64,6 +65,8 @@ int validarString(const char* src);
 int leerIntSeguro(int y, int x, int maxLen, char* pregunta);
 float leerFloatSeguro(int y, int x, int maxLen, char* pregunta);
 char* leerStringSeguro(int y, int x, int maxLen, char* pregunta);
+void imprimirTextoMultilinea(int fila, int columna, const char* texto, int anchoMaximo);
+
 
 // Buffer
 /**@deprecated */

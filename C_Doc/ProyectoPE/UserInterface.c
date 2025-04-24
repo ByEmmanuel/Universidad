@@ -7,8 +7,7 @@
 #include <stdio.h>
 #include <ncurses.h>
 #include <stdlib.h>
-#include <string.h>
-#include <limits.h>
+
 #define ESC 27
 #define SIZE_DOS 2
 #define SIZE_TRES 3
@@ -26,7 +25,7 @@ int (*funcionesInt[SIZE_SIETE])() = {
 void ejecutarOpcion(int opcion) {
     clear();
     if (funcionesInt[opcion] != NULL) {
-        mvprintw(10, 10, "Has seleccionado: Opción %d", opcion+1);
+        //mvprintw(10, 10, "Has seleccionado: Opción %d", opcion+1);
         refresh();
         funcionesInt[opcion]();  // Ejecuta la función de la opción
     } else {
@@ -76,7 +75,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     char* menuUno[SIZE_SIETE] = {"Clientes", "Servicio", "Pago", "Almacen", "Otros", "Dudas", "Salir"};
     char* menuDos[SIZE_CUATRO] = {"Agregar", "Editar", "Listar", "Menu Principal"};
     char* menuTres[SIZE_SIETE] = {"Nombre", "Apellido", "Num Celular", "Email", "Contacto", "Eliminar","Salir"};
-    char* menuCuatro[SIZE_SEIS] = {"Ingreso", "Lavado", "Medidas", "Rectificar", "Ensamble", "Salir"};
+    char* menuCuatro[SIZE_CINCO] = {"Ingreso / Medidas", "Lavado",  "Rectificar", "Ensamble", "Salir"};
     char* menuCinco[SIZE_TRES] = {"CULATA", "MONOBLOCK", "Listar Piezas"};
     char* menuSeis[SIZE_TRES] = {"1 : Gasolina","2: Diesel","3: Electrico"};
     char* menuSiete[SIZE_DOS] = {"NO","SI"};
@@ -88,6 +87,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     char* subMenuTres[SIZE_TRES] = {"Estado de herramientas", "Registro de mantenimiento","Asignación"};
     char* subMenuCuatro[SIZE_TRES] = {"Registro de proveedor","Historial de compras","Pedidos pendientes"};
     char* subMenuCinco[SIZE_TRES] = {"Movimientos","Piezas más usadas","Piezas inactivas"};
+    char* subMenuSeis[SIZE_CUATRO] = {"Generar Nota", "Generar Ticket" , "Generar Factura", "Listar detalles del usuario"};
 
     char** menuActual = NULL;
     int numOpciones = 0;
@@ -95,7 +95,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     case 1: menuActual = menuUno; numOpciones = SIZE_SIETE; break;
     case 2: menuActual = menuDos; numOpciones = SIZE_CUATRO; break;
     case 3: menuActual = menuTres; numOpciones = SIZE_SIETE; break;
-    case 4: menuActual = menuCuatro; numOpciones = SIZE_SEIS; break;
+    case 4: menuActual = menuCuatro; numOpciones = SIZE_CINCO; break;
     case 5: menuActual = menuCinco; numOpciones = SIZE_TRES; break;
     case 6: menuActual = menuSeis; numOpciones = SIZE_TRES; break;
     case 7: menuActual = menuSiete; numOpciones = SIZE_DOS; break;
@@ -106,6 +106,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     case 11: menuActual = subMenuTres; numOpciones = SIZE_TRES; break;
     case 12: menuActual = subMenuCuatro; numOpciones = SIZE_TRES; break;
     case 13: menuActual = subMenuCinco; numOpciones = SIZE_TRES; break;
+    case 14: menuActual = subMenuSeis; numOpciones = SIZE_CUATRO; break;
 
     default:
         mvprintw(10, 10, "Opción no válida o ocurrió un error");

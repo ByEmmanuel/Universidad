@@ -34,7 +34,7 @@ volatile int running = 1;
 
 int main(){
     // Inicio del programa
-    testing(1);
+    testing(0);
     system("reset");
     clear();
     refresh();
