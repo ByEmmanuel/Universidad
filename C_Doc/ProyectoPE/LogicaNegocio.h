@@ -33,14 +33,25 @@ int salir();
 
 Usuario* obtenerUsuarioByIdUsuario(int id);
 void* obtenerPiezaByIdUsuario(int id);
+Ticket* obtenerTicketByIdUsuario(int id_usuario);
+int obtenerIdSiExisteUsuario();
 
 void imprimirDetallesTicket(int id);
 
 int asignarPiezaUsuario(Usuario* usuario, Culata* culata, Monoblock* monoblock );
 
+/**
+ * @deprecated
+ */
 void printCulata(const Culata* c);
 
 const char* tipoCombustibleToStr(TipoCombustible tipo);
+
+
+// FUNCIONES DE USO EXCLUSIVAMENTE PARA TICKETS
+int generarNota(int id);
+int generarTicket(int id);
+int generarFactura(int id);
 
 //FUNCIONEs DE TESTEO, NO TENER EN PRODUCCION
 void testing(int encendido);

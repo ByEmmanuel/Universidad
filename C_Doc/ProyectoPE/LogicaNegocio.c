@@ -20,17 +20,6 @@ char contraseñasUsuarios[MAX_USUARIOS][MAX_LONGITUD] = {"123456789","987654321"
 char* empleado;
 int id_pieza_global = 0;
 
-char* enterString(int length) {
-    char* buffer = (char*)malloc(length + 1); // Reservar espacio para la cadena
-    if (buffer == NULL) {
-        perror("Error al asignar memoria");
-        exit(1);
-    }
-    if (fgets(buffer, length + 1, stdin) != NULL) {
-        buffer[strcspn(buffer, "\n")] = '\0'; // Eliminar el salto de línea al final
-    }
-    return buffer;
-}
 
 int loginUsuario(){
     int intentosUsuario = 0;
@@ -170,7 +159,13 @@ int servicio(){
             break;
         case 2:{
                 //Lavado
-
+                clear();
+                if (mostrarMenu(7, "¿Desea agregar el lavado a su servicio?") == 0) return -1;
+                clear();
+                int id_usuario = obtenerIdSiExisteUsuario();
+                RETURN_IF_ESC(id_usuario);
+                Ticket* ticket = obtenerTicketByIdUsuario(id_usuario);
+                ticket->lavado = 1;
             }
             break;
         case 3:

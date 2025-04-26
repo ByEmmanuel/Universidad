@@ -11,18 +11,17 @@
 #include "LogicaNegocio.h"
 #include "UserInterface.h"
 #include "Util.h"
-
+//Variable encapsulada -> Private
 int id_UsuarioLogico = 0;
 //int id_Pieza = 0;
-ArrayUsuarios arrayUsuarios;
+// Declaración global de array's
+ArrayUsuarios arrayUsuarios = {0};
 ArrayTickets arrayTickets = {0};  // ← variable global
 ArrayList array_list;
 ArrayPiezas arrayPiezas;
-// Declaración global del array de usuarios
 
 
 //Funciones Importantes para la ejecucion detodo el programa y evitar la reutilizacion de codigo
-// strncpy,
 
 Usuario inicializarUsuario(const int id_usuario,const char* folio , const char* nombreUsuario, const char* apellido,
                            long long celular, const char* email, const char* contacto) {
@@ -38,7 +37,7 @@ Usuario inicializarUsuario(const int id_usuario,const char* folio , const char* 
     usr.culata = NULL;
     usr.activo = 1;
     //Adiciona 1 al ID usuario desde aqui para que el usuario nunca tenga el mismo ID sin importar si es valido el usuario o no
-    id_UsuarioLogico = id_UsuarioLogico + 1;
+    setIdUsuarioLogico(getIdUsuarioLogico() + 1);
     return usr;
 }
 
@@ -180,257 +179,30 @@ int guardarTicket(Ticket ticket){
     arrayTickets.tamanno++;
     return 1;
 }
-void modificarCliente(){
-    cleanScreen();
-    clear();
-    int id_Cliente = leerIntSeguro(11, 15, 2,"Ingrese ID, Folio o Numero de Cliente: ");
 
-    //Esta funcion puede ser contraproducente ya que si algun campo del objeto Usuario, esta vacio,
-    //esta opcion nunca va a funcionar
-    cleanScreen();
-    Usuario* usuarioNuevo = obtenerUsuarioByIdUsuario(id_Cliente);
-    if (usuarioNuevo == NULL) {
-        mvprintw(12,15,"Cliente no encontrado.\n");
-        getch();
-        return;
+Ticket* obtenerTicketByIdUsuario(int id_usuario){
+    for (int i = 0; i < arrayTickets.tamanno; i++) {
+        if (arrayTickets.datos[i].usuario->id_usuario == id_usuario) {
+            //mostrarUsuario(arrayUsuarios.datos[i]);
+            return &arrayTickets.datos[i];
+        }
     }
+    // Retorna NULL si el usuario no existe
+    return NULL;
 
-    if (strIsEmpty(usuarioNuevo->nombreUsuario) || strIsEmpty(usuarioNuevo->email) || strIsEmpty(usuarioNuevo->nombreUsuario)) {
-        mvprintw(12,15,"Cliente con datos incompletos.\n");
-        getch();
-        return;
-    }
-
-    mvprintw(0,0,"Debug: usuarioNuevo = %p", usuarioNuevo);
-    refresh();
-    mvprintw(1, 0, "usuarioNuevo: %p", usuarioNuevo);
-    mvprintw(2, 1, "ID: %d", usuarioNuevo->id_usuario);
-    mvprintw(3, 1, "Folio: %s", usuarioNuevo->folio);
-    mvprintw(4, 1, "Nombre: %s", usuarioNuevo->nombreUsuario);
-    mvprintw(5, 1, "Apellido: %s", usuarioNuevo->apellido);
-    mvprintw(6, 1, "Celular: %lld", usuarioNuevo->celular);
-    mvprintw(7, 1, "Email: %s", usuarioNuevo->email);
-    mvprintw(8, 1, "Contacto: %s", usuarioNuevo->contacto);
-    refresh();
-
-    const int opcUsr = mostrarMenu(3,".") + 1;
-
-    //char reemplazoUsuario[50]; // Buffer para almacenar entrada
-    char* reemplazoUsuario;
-    //<cleanBuffer();
-
-    switch (opcUsr) {
-        case 1:
-            clear();
-            refresh();
-            reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Nombre: ");
-            if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")) {
-                asignString(usuarioNuevo->nombreUsuario, reemplazoUsuario, sizeof(usuarioNuevo->nombreUsuario));
-                mvprintw(12,15,"Modificación realizada con éxito.\n");
-                getch();
-                break;
-            }
-            mvprintw(12,15,"Error al leer entrada.\n");
-            break;
-        case 2:
-            clear();
-            refresh();
-            reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Apellido: ");
-            if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
-                asignString(usuarioNuevo->apellido, reemplazoUsuario, sizeof(usuarioNuevo->apellido));
-                mvprintw(12,15,"Modificación realizada con éxito.\n");
-                getch();
-                break;
-            }
-            printf("Error al leer entrada.\n");
-            break;
-        case 3:
-            clear();
-            refresh();
-        usuarioNuevo->celular = leerIntSeguro(10,15,10,"Ingrese nuevo Número Celular: ");
-            if (usuarioNuevo->celular != 0) mvprintw(12,15,"Modificación realizada con éxito.\n");
-            getch();
-            break;
-        case 4:
-            clear();
-            refresh();
-            reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Email: ");
-            if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
-                asignString(usuarioNuevo->email, reemplazoUsuario, sizeof(usuarioNuevo->email));
-                mvprintw(12,15,"Modificación realizada con éxito.\n");
-                getch();
-                break;
-            };
-            mvprintw(12,15,"Error al leer entrada.\n");
-            getch();
-            break;
-        case 5:
-            clear();
-            refresh();
-            reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Contacto: ");
-            if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
-                asignString(usuarioNuevo->contacto, reemplazoUsuario, sizeof(usuarioNuevo->contacto));
-                mvprintw(12,15,"Modificación realizada con éxito.\n");
-                getch();
-                break;
-            };
-            mvprintw(12,15,"Error al leer entrada.\n");
-            getch();
-            break;
-        case 6:
-            if (mostrarMenu(7, "¿Deseas eliminar a este usuario?") == 1) usuarioNuevo->activo = 0;
-            asignString(usuarioNuevo->apellido, "0", sizeof(usuarioNuevo->apellido));
-            usuarioNuevo->celular = 0;
-            asignString(usuarioNuevo->contacto, "0", sizeof(usuarioNuevo->contacto));
-            break;
-        case 7:
-            mvprintw(2, 10, "Saliendo del menú...");  // Muestra mensaje de depuración
-            refresh();  // Asegúrate de que el mensaje se actualice
-            return;
-        default:
-            mvprintw(12,15,"Opción inválida.\n");
-            getch();
-            return;
-    }
-    clear();
-    refresh();
 }
 
-int cliente(){
-    //Funcion que crea a los clientes
-    //Agregar valores (Todo en un String A una lista)
+int obtenerIdSiExisteUsuario(){
+    const int id_usuario = leerIntSeguro(6,10,10000,"Ingrese Id Usuario: ");
+    RETURN_IF_ESC(id_usuario);
 
-    // MENU CLIENTE
-    int opcCliente = mostrarMenu(2,".") + 1;
-    char* emailUsr;
-    clear();
-    refresh();
-
-
-    if (opcCliente == 4) {
-        return 1;  // Volver al menú principal
-    }
-    if (opcCliente == 1) {
-        cleanScreen();
-        clear();
-        mvprintw(1,10,"Agregar Cliente");
-        const char* nombreUsr = leerStringSeguro(3, 0, 19,"Ingrese Nombre: ");
-        if (nombreUsr == NULL) {
-            return -1;
-        }
-        mvprintw(6, 10, "                                                 ");
-        const char* folio = generarFolio(nombreUsr);
-        const char* apellidoUsr = leerStringSeguro(6, 0, 19,"Ingrese Apellido: ");
-        if (apellidoUsr == NULL) {
-            return -1;
-        }
-        mvprintw(9, 10, "                                                 ");
-        const int celularUsr = leerIntSeguro(10, 0, 15,"Ingrese Celular: ");
-        mvprintw(12, 10, "                                                 ");
-        emailUsr = leerStringSeguro(12, 0, 49, "Ingrese Email: ");
-        if (emailUsr == NULL) {
-            return -1;
-        }
-        mvprintw(15, 10, "                                                 ");
-        const char* contactoUsr = leerStringSeguro(15, 0, 29,"Ingrese Contacto: ");
-        if (contactoUsr == NULL) {
-            return -1;
-        }
-        mvprintw(18, 10, "                                                 ");
-
-        while (!strContains(emailUsr, "@")) {
-            if (mostrarMenu(7,"Tu Email no es valido, ¿Deseas volver a ingresarlo?") == 1){
-                clear();
-                emailUsr = leerStringSeguro(11,12,49,"Ingrese Email");
-                if (emailUsr == NULL) {
-                    return -1;
-                }
-            } else {
-                mvprintw(10,13,"Registro INVÁLIDO: Email Inválido");
-                getch();
-                return 1;
-            }
-        }
-
-        const Usuario usuario = inicializarUsuario(id_UsuarioLogico, folio, nombreUsr, apellidoUsr, celularUsr, emailUsr, contactoUsr);
-        mostrarUsuario(usuario);
-        guardarUsuarioArray(usuario);
-        clear();
-        mvprintw(10,13,"Registro Correcto, Presione Enter");
+    Usuario* usuario = obtenerUsuarioByIdUsuario(id_usuario);
+    if (usuario == NULL) {
+        mvprintw(15,10,"️ Usuario no encontrado.");
         getch();
-
-    } else if (opcCliente == 2){
-        modificarCliente();
-    }else if (opcCliente == 3) {  // Listar Clientes
-        cleanScreen();
-        if (arrayUsuarios.capacidad == 0) {
-            printf("No hay clientes registrados.\n");
-        } else {
-            int y = 2;
-            for (int i = 0; i < arrayUsuarios.tamanno; i++) {
-                mvprintw(y++, 1, "ID: %d", arrayUsuarios.datos[i].id_usuario);
-                if (arrayUsuarios.datos[i].culata != NULL) {
-                    mvprintw(y++, 1, "Pieza: %s", arrayUsuarios.datos[i].culata->motor.material);
-                    //mvprintw(y++, 1, "Pieza: %s", arrayUsuarios.datos[i].motor->nombre);
-                } else {
-                    mvprintw(y++, 1, "Motor: (no asignada)");
-                }
-                mvprintw(y++, 1, "Folio: %s", arrayUsuarios.datos[i].folio);
-                mvprintw(y++, 1, "Activo?: %d", arrayUsuarios.datos[i].activo);
-                mvprintw(y++, 1, "Nombre: %s", arrayUsuarios.datos[i].nombreUsuario);
-                mvprintw(y++, 1, "Apellido: %s", arrayUsuarios.datos[i].apellido);
-                mvprintw(y++, 1, "Celular: %lld", arrayUsuarios.datos[i].celular);
-                mvprintw(y++, 1, "Email: %s", arrayUsuarios.datos[i].email);
-                mvprintw(y++, 1, "Contacto: %s", arrayUsuarios.datos[i].contacto);
-                y++; // Dejar una línea en blanco entre registros
-            }
-            getch();
-            return 1;
-        }
-        mvprintw(10, 10, "Capacidad En El arrayUsuarios: %d", arrayUsuarios.capacidad);
-        mvprintw(10, 10, "\nPresiona ENTER para continuar...");
-        getchar();  // Pausa antes de limpiar la pantalla
+        return -1;
     }
-    cleanScreen();
-    //mvprintw(10, 10, "Saliendo opcCliente");
-    return 1;
-}
-
-/**
- *
- * @deprecated
- */
-void imprimirPiezasPorUsuario(int idUsuario) {
-    printf("Piezas para el Usuario ID: %d\n", idUsuario);
-    // Recorrer todas las piezas almacenadas
-    for (int i = 0; i < arrayPiezas.tamanno; i++) {
-        Motor* pieza = arrayPiezas.datos[i];  // Obtener puntero a la pieza
-
-        // Verificar si el id_Usuario coincide
-        if (pieza->id_usuario == idUsuario) {
-            // Imprimir datos comunes de la pieza
-            printf("ID Pieza: %d, Tipo: %d, Material: %s, Desgaste: %.2f%%\n",
-                   pieza->id_pieza, pieza->tipoPieza, pieza->material, pieza->desgaste);
-
-            // Si la pieza es una Culata
-            if (pieza->tipoPieza == CULATA) {
-                Culata* culata = (Culata*)pieza;  // Hacer cast a Culata
-
-                printf("Tolerancia: %.2f,\n Medida Original: %.2f,\n Medida Actual: %.2f,\n Necesita Rectificacion: %d,\n"
-                       "Número de válvulas: %d,\n Presión de prueba: %.2f,\n Combustible: %d,\n Tiene fisuras: %d,\n",
-                       pieza->tolerancia, pieza->medidaOriginal, pieza->medidaActual, culata->numValvulas,
-                       pieza->necesitaRectificacion, culata->presionPrueba, culata->motor.tipoCombustible,
-                       culata->tieneFisuras);
-            }
-            // Si la pieza es un Monoblock
-            else if (pieza->tipoPieza == MONOBLOCK) {
-                Monoblock* monoblock = (Monoblock*)pieza;  // Hacer cast a Monoblock
-                printf("Monoblock: Número de cilindros: %d, Diámetro del cilindro: %.2f, Ovalización: %.2f, Alineación cigüeñal: %.2f\n",
-                       monoblock->numCilindros, monoblock->diametroCilindro, monoblock->ovalizacion, monoblock->alineacionCiguenal);
-            }
-            printf("\n");  // Línea en blanco entre piezas
-        }
-    }
+    return id_usuario;
 }
 
 const char* tipoCombustibleToStr(TipoCombustible tipo) {
@@ -521,3 +293,11 @@ void mostrarUsuario(Usuario usr) {
     mvprintw(10,16,"Email: %s\n", usr.email);
     mvprintw(10,17,"Contacto: %s\n", usr.contacto);
 }
+
+//Getters y setters
+void setIdUsuarioLogico(const int nuevoId){
+    id_UsuarioLogico = nuevoId;
+};
+int getIdUsuarioLogico(){
+    return id_UsuarioLogico;
+};

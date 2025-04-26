@@ -19,6 +19,8 @@ add_executable(C_Doc
         ProyectoPE/Util.h
         ProyectoPE/UserInterface.c
         ProyectoPE/UserInterface.h
+        ProyectoPE/Pago.c
+        ProyectoPE/Clientes.c
 )
 
 target_link_libraries(C_Doc ${CURSES_LIBRARIES})
