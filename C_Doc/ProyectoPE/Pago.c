@@ -12,8 +12,16 @@
 #include "LogicaNegocio.h"
 #include "UserInterface.h"
 
+/**
+ * Constantes que son los precios del taller
+ */
+const float precioRectificado = 850.0f;
+const float precioPruebaPresion = 350.0f;
+const float precioLavado = 160.0f ;
+const float iva = 0.16f;
+
 int pago(){
-    const int id_usuario = existeUsuario();
+    const int id_usuario = obtenerIdSiExisteUsuario();
     RETURN_IF_ESC(id_usuario);
 
     clear();
@@ -64,6 +72,8 @@ int pago(){
         }break;
         default:
                 mvprintw(10,10,"Opcion no valida, Intente de nuevo -> Ticket");
+            clear();
+            getch();
             break;
     }
 
@@ -85,8 +95,14 @@ int generarNota(int id_usuario){
     }
 
     if (ticket->detalles == NULL && ticket->detalles2 == NULL){
-        char* detalles = leerStringSeguro(10, 5, 255, "Ingrese detalles de la operación para OPCION NOTA -MAX 255-");
-        char* detalles2 = leerStringSeguro(13, 5, 255, "Ingrese detalles adicionales -MAX 255-");
+        char* detalles = leerStringSeguro(10, 5, 255, "Ingrese detalles de la operación para OPCION NOTA -MAX 255 & MIN 1 caracter-");
+        char* detalles2 = leerStringSeguro(13, 5, 255, "Ingrese detalles adicionales -MAX 255 & MIN 1 caracter-");
+        if (detalles == NULL || detalles2 == NULL){
+            mvprintw(10,10,"La nota no fue creada, intente de nuevo");
+            clear();
+            getch();
+            return -1;
+        };
         ticket->detalles = detalles;
         ticket->detalles2 = detalles2;
     }
@@ -104,10 +120,10 @@ int generarNota(int id_usuario){
     mvprintw(fila++, 5, "Numero de serie: %s", ticket->culata->motor.numeroSerie);
     mvprintw(fila++, 5, "Material del motor: %s", ticket->culata->motor.material);
 
-    imprimirTextoMultilinea(fila++, 5, ticket->detalles, 60);
-    fila += 5; // espacio estimado, puedes ajustarlo dinámicamente
+    imprimirTextoMultilinea(fila+=2, 5, ticket->detalles, 60);
+    fila += 4; // espacio estimado, puedes ajustarlo dinámicamente
     imprimirTextoMultilinea(fila, 5, ticket->detalles2, 60);
-    fila += 6;
+    fila += 5;
 
     mvprintw(fila++, 5, "----------------------------------------------");
     mvprintw(fila++, 10, "Presione cualquier tecla para continuar...");
@@ -145,12 +161,12 @@ int generarTicket(int id_usuario){
     }
 
     // Simulación de precios
-    float precioRectificado = motor->necesitaRectificacion ? 850.0f : 0.0f;
-    float precioPruebaPresion = (culata != NULL) ? 150.0f : 0.0f;
-    float precioLavado = 120.0f;
-    float subtotal = precioRectificado + precioPruebaPresion + precioLavado;
-    float iva = subtotal * 0.16f;
-    float total = subtotal + iva;
+    const float precioFinalRectificado = motor->necesitaRectificacion ? precioRectificado : 0.0f;
+    const float precioFinalPruebaPresion = (culata != NULL) ? precioPruebaPresion : 0.0f;
+    const float precioFinalLavado =  ticket->lavado ? precioLavado : 0.0f;
+    const float subtotal = precioFinalRectificado + precioFinalPruebaPresion + precioFinalLavado;
+    const float impuesto = subtotal * iva;
+    const float total = subtotal + impuesto;
 
     int fila = 2;
     mvprintw(fila++, 5, "==================================================");
@@ -183,9 +199,9 @@ int generarTicket(int id_usuario){
 
     fila++;
     mvprintw(fila++, 5, "----------------- RESUMEN DE COSTOS ------------------");
-    mvprintw(fila++, 5, "Rectificación:       $ %.2f", precioRectificado);
-    mvprintw(fila++, 5, "Prueba de Presión:   $ %.2f", precioPruebaPresion);
-    mvprintw(fila++, 5, "Lavado de motor:     $ %.2f", precioLavado);
+    mvprintw(fila++, 5, "Rectificación:       $ %.2f", precioFinalRectificado);
+    mvprintw(fila++, 5, "Prueba de Presión:   $ %.2f", precioFinalPruebaPresion);
+    mvprintw(fila++, 5, "Lavado de motor:     $ %.2f", precioFinalLavado);
     mvprintw(fila++, 5, "------------------------------------------------------");
     mvprintw(fila++, 5, "Subtotal:            $ %.2f", subtotal);
     mvprintw(fila++, 5, "IVA (16%%):           $ %.2f", iva);
@@ -231,12 +247,12 @@ int generarFactura(int id_usuario){
     struct tm fecha = *localtime(&t);
 
     // Simulación de precios
-    float precioRectificacion = motor->necesitaRectificacion ? 850.0f : 0.0f;
-    float precioPresion = (culata != NULL) ? 150.0f : 0.0f;
-    float precioLavado = 120.0f;
-    float subtotal = precioRectificacion + precioPresion + precioLavado;
-    float iva = subtotal * 0.16f;
-    float total = subtotal + iva;
+    const float precioFinalRectificado = motor->necesitaRectificacion ? precioRectificado : 0.0f;
+    const float precioFinalPruebaPresion = (culata != NULL) ? precioPruebaPresion : 0.0f;
+    const float precioFinalLavado =  ticket->lavado ? precioLavado : 0.0f;
+    const float subtotal = precioFinalRectificado + precioFinalPruebaPresion + precioFinalLavado;
+    const float impuesto = subtotal * iva;
+    const float total = subtotal + impuesto;
 
     int fila = 2;
     mvprintw(fila++, 5, "============================================================");
@@ -255,11 +271,10 @@ int generarFactura(int id_usuario){
     fila++;
 
     if (motor->necesitaRectificacion)
-        mvprintw(fila++, 7, "- Rectificación de pieza               $ %.2f", precioRectificacion);
+        mvprintw(fila++, 7, "- Rectificación de pieza               $ %.2f", precioFinalRectificado);
     if (culata != NULL)
-        mvprintw(fila++, 7, "- Prueba de presión en culata          $ %.2f", precioPresion);
-
-    mvprintw(fila++, 7, "- Lavado general                       $ %.2f", precioLavado);
+        mvprintw(fila++, 7, "- Prueba de presión en culata          $ %.2f", precioFinalPruebaPresion);
+    mvprintw(fila++, 7, "- Lavado general                       $ %.2f", precioFinalLavado);
     fila++;
 
     mvprintw(fila++, 5, "------------------------------------------------------------");
@@ -338,6 +353,7 @@ void imprimirDetallesTicket(int id_usuario){
             mvprintw(fila++, 2, "Medida Original: %.4f mm", motor->medidaOriginal);
             mvprintw(fila++, 2, "Medida Actual: %.4f mm", motor->medidaActual);
             mvprintw(fila++, 2, "Rectificacion: %s", motor->necesitaRectificacion ? "Si" : "No");
+            mvprintw(fila++, 2, "Lavado?: %s", arrayTickets.datos[i].lavado ? "Si" : "No");
 
             if (motor->tipoPieza == CULATA && culata != NULL) {
                 mvprintw(fila++, 4, "----------- CULATA -----------");

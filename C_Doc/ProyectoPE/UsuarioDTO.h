@@ -66,6 +66,7 @@ typedef struct {
     long long celular;
     char email[30];
     char contacto[20];
+    long long numeroContacto;
     int activo;
 }Usuario;
 
@@ -73,6 +74,7 @@ typedef struct{
     Usuario* usuario;
     Culata* culata;
     Monoblock* monoblock;
+    int lavado;
     char* detalles;
     char* detalles2;
 }Ticket;
@@ -136,6 +138,13 @@ Ticket inicializarTicket(Usuario* usuario,Culata* culata,
 Monoblock* monoblock,char* detalles, char* detalles2);
 
 extern ArrayTickets arrayTickets;  // ← accedida desde otros .c
+extern ArrayUsuarios arrayUsuarios; // ← accedida desde otros .c
+//private -> Declarada en UsuarioDTO.c
+extern int id_UsuarioLogico;
+
+//Public
+void setIdUsuarioLogico(int nuevoId);
+int getIdUsuarioLogico();
 
 int cliente();
 
@@ -158,8 +167,6 @@ Culata* inicializarCulata(Motor pieza, int numValvulas ,double presionPrueba
 //Culata* inicializarCulata(Motor pieza,int numValvulas , double presionPrueba
 //    /** int tipoCombustible */ ,int fisuras);
 
-/**@deprecated */
-void imprimirPiezasPorUsuario(int id_usuario);
 
 /**@deprecated */
 void listarUsuarios(ArrayUsuarios listaUsuarios);

@@ -22,6 +22,7 @@ int strIsEmpty(const char* str);            // Verifica si una cadena est√° vac√
 int strContains(const char* src, const char* str);
 //Metodo agregado
 void asignString(char *dst, const char *src, size_t n);
+char* enterString(int length);
 
 // ARRAYS
 /**@deprecated */
@@ -66,7 +67,6 @@ int leerIntSeguro(int y, int x, int maxLen, char* pregunta);
 float leerFloatSeguro(int y, int x, int maxLen, char* pregunta);
 char* leerStringSeguro(int y, int x, int maxLen, char* pregunta);
 void imprimirTextoMultilinea(int fila, int columna, const char* texto, int anchoMaximo);
-
 
 // Buffer
 /**@deprecated */

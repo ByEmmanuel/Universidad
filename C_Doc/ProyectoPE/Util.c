@@ -112,6 +112,11 @@ void cleanBuffer(){
     while ((c = getchar()) != '\n' && c != EOF) {}
 }
 
+/**
+ * Funcion Proxima a cambiar
+ * @param src
+ * @return
+ */
 int validarString(const char* src) {
     if (src == NULL) {
         // usuario presionó ESC o no ingresó nada
@@ -120,9 +125,21 @@ int validarString(const char* src) {
     return 1;
 }
 
+char* enterString(int length) {
+    char* buffer = (char*)malloc(length + 1); // Reservar espacio para la cadena
+    if (buffer == NULL) {
+        perror("Error al asignar memoria");
+        exit(1);
+    }
+    if (fgets(buffer, length + 1, stdin) != NULL) {
+        buffer[strcspn(buffer, "\n")] = '\0'; // Eliminar el salto de línea al final
+    }
+    return buffer;
+}
+
 // Función auxiliar para leer una cadena con ncurses
 char* leerString(int y, int x, int maxLen, char* pregunta) {
-    mvprintw(y, x, "%s: ", pregunta);
+    mvprintw(y, x, "%s  ", pregunta);
     char* buffer = (char*)malloc(maxLen + 1);
     if (!buffer) {
         mvprintw(y + 1, x, "Error: No se pudo asignar memoria.");
@@ -173,7 +190,7 @@ int* leerInt(int y, int x, int maxLen, char* pregunta, int* codigoError) {
     // Inicializar código de error a 0 (sin error)
     if (codigoError) *codigoError = 0;
 
-    mvprintw(y, x, "%s: ", pregunta);
+    mvprintw(y, x, "%s  ", pregunta);
     refresh();
 
     char buffer[maxLen + 1];
@@ -234,7 +251,7 @@ int* leerInt(int y, int x, int maxLen, char* pregunta, int* codigoError) {
 }
 
 float* leerFloat(int y, int x, int maxLen, char* pregunta) {
-    mvprintw(y, x, "%s: ", pregunta);
+    mvprintw(y, x, "%s  ", pregunta);
     if (maxLen <= 0) {
         mvprintw(y + 1, x, "Error: Longitud máxima inválida.");
         refresh();
