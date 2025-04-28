@@ -14,6 +14,22 @@ typedef enum { GASOLINA = 0, DIESEL = 1, HIBRIDO = 2 } TipoCombustible;
 //  Encapsulamiento Privado
 //  Dejar de usar Pieza como Base -> Cambiar a motor
 
+// Estructura Culata que "hereda" de Pieza
+typedef struct {
+    int numValvulas;
+    double presionPrueba;
+    //TipoCombustible tipoCombustible;// Movido a Motor
+    int tieneFisuras;
+} Culata;
+
+// Estructura Monoblock que "hereda" de Pieza
+typedef struct {
+    int numCilindros;
+    float diametroCilindro;
+    float ovalizacion;
+    float alineacionCiguenal;
+} Monoblock;
+
 typedef struct{
     int id_pieza;            // Identificador único de la pieza
     int id_usuario;         // Este id esta sujeto con una relacion al usuario
@@ -25,7 +41,8 @@ typedef struct{
     const char* numeroSerie;       // Número de serie único del motor
     TipoCombustible tipoCombustible;
 
-    TipoPieza tipoPieza;
+    Culata* culata; // Composición: Motor contiene una Culata
+    Monoblock* monoblock; // Composición: Motor contiene un monoblock
     char material[30];      // Material de la pieza (Hierro, Aluminio, etc.)
     float desgaste;         // Nivel de desgaste en porcentaje (0-100%)
     float tolerancia;       // Tolerancia máxima de desgaste permitida antes de rectificar
@@ -34,31 +51,15 @@ typedef struct{
     int necesitaRectificacion; // 1 = Sí, 0 = No (según tolerancia)
 }Motor;
 
-// Estructura Culata que "hereda" de Pieza
-typedef struct {
-    Motor motor; // Composición: Culata contiene una Pieza
-    int numValvulas;
-    double presionPrueba;
-    //TipoCombustible tipoCombustible;// Movido a Motor
-    int tieneFisuras;
-} Culata;
-
-// Estructura Monoblock que "hereda" de Pieza
-/**@deprecated Funcion en desuso*/
-typedef struct {
-    Motor motor; // Composición: Monoblock contiene una Pieza
-    int numCilindros;
-    float diametroCilindro;
-    float ovalizacion;
-    float alineacionCiguenal;
-} Monoblock;
-
 //Entidad Usuario
 typedef struct {
     //Antes
     //Pieza* pieza
-    Culata* culata;
+    /* Ahora usuario solo tendra Motor y no cada pieza por separado
+     *Culata* culata;
     Monoblock* monoblock;
+    */
+    Motor* motor;
     int id_usuario;
     char folio[12];
     char nombreUsuario[20];
@@ -72,8 +73,10 @@ typedef struct {
 
 typedef struct{
     Usuario* usuario;
-    Culata* culata;
+    /*
+     *Culata* culata;
     Monoblock* monoblock;
+    */
     int lavado;
     char* detalles;
     char* detalles2;
@@ -123,6 +126,8 @@ typedef struct {
     TipoCombustible tipoCombustible;
 
     TipoPieza tipoPieza;
+    Culata* culata;
+    Monoblock* monoblock;
     char* material;      // Material de la pieza (Hierro, Aluminio, etc.)
     float desgaste;         // Nivel de desgaste en porcentaje (0-100%)
     float tolerancia;       // Tolerancia máxima de desgaste permitida antes de rectificar
@@ -134,8 +139,7 @@ typedef struct {
 Usuario inicializarUsuario(int id_usuario, const char* folio,const char* nombreUsuario,
     const char* apellido,long long celular,const char* email,const char* contacto);
 
-Ticket inicializarTicket(Usuario* usuario,Culata* culata,
-Monoblock* monoblock,char* detalles, char* detalles2);
+Ticket inicializarTicket(Usuario* usuario,Motor* motor ,char* detalles, char* detalles2);
 
 extern ArrayTickets arrayTickets;  // ← accedida desde otros .c
 extern ArrayUsuarios arrayUsuarios; // ← accedida desde otros .c
@@ -154,14 +158,14 @@ void modificarCliente();
 
 int guardarUsuarioArray(Usuario usuario);
 
-int guardarPiezaArray(void* pieza, int id_usuario);
+int guardarPiezaArray(void* motor, int id_usuario);
 
 int guardarTicket(Ticket ticket);
 
-Motor inicializarMotor(Paramsmotor motor, int id_usuario, int id_pieza, const char* numero_serie);
+Motor* inicializarMotor(Paramsmotor motor, int id_usuario, int id_pieza,const char* numero_serie, void* tipoDePieza, int numTipoDepieza);
 
 //Culata* inicializarCulata(Paramsmotor pieza, int num_valvulas, double presion_prueba, int fisuras);
-Culata* inicializarCulata(Motor pieza, int numValvulas ,double presionPrueba
+Culata* inicializarCulata(int numValvulas ,double presionPrueba
                 /** const int tipoCombustible */,int fisuras);
 
 //Culata* inicializarCulata(Motor pieza,int numValvulas , double presionPrueba

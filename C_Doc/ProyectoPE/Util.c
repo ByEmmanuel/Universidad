@@ -370,7 +370,6 @@ char* leerStringSeguro(int y, int x, int maxLen, char* pregunta) {
 
     return valor;
 }
-
 void imprimirTextoMultilinea(int fila, int columna, const char* texto, int anchoMaximo) {
     int len = strlen(texto);
     int inicio = 0;

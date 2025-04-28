@@ -132,20 +132,20 @@ int servicio(){
                         .tipoPieza = CULATA,
                         .material = material,
                         .desgaste = desgaste,
-                        .tolerancia = tolerancia ,
+                        .tolerancia = tolerancia,
                         .medidaOriginal = medidaOriginal,
                         .medidaActual = medidaActual,
                         .necesitaRectificacion = rectificacion
                 };
-                //const Motor piezaUsuario = inicializarMotor(registro_motor, );
-                //Por agregar numero de serie
-                    Motor motor = inicializarMotor(registro_motor, id_Usuario, id_pieza_global, numeroDeSerie);
-                //Polimorfismo
-                    Culata* pzc = inicializarCulata(motor, numValvulas, presionPrueba, tieneFisuras);
-                    guardarPiezaArray(pzc, id_Usuario);  // Se guarda como puntero genérico
+                    //Polimorfismo
+                    Culata* pzc = inicializarCulata(numValvulas, presionPrueba, tieneFisuras);
+                    //const Motor piezaUsuario = inicializarMotor(registro_motor, );
+                    //Por agregar numero de serie
+                    Motor* motor = inicializarMotor(registro_motor, id_Usuario, id_pieza_global, numeroDeSerie, pzc,1);
+                    guardarPiezaArray((void*)motor, id_Usuario);  // Se guarda como puntero genérico
 
                     Usuario* usuario = obtenerUsuarioByIdUsuario(id_Usuario);
-                    asignarPiezaUsuario(usuario, pzc, NULL);
+                    asignarPiezaUsuario(usuario, motor);
                     mvprintw(8, 55, "Pieza Asignada y Guardada Correctamente");
                 id_pieza_global++;
                 getch();
@@ -166,6 +166,10 @@ int servicio(){
                 RETURN_IF_ESC(id_usuario);
                 Ticket* ticket = obtenerTicketByIdUsuario(id_usuario);
                 ticket->lavado = 1;
+                clear();
+                //barraDeCarga(/*Tiempo en ms*/ 8000)
+                mvprintw(10,10,"El motor y el carro fueron lavados!     Presione Enter");
+                getch();
             }
             break;
         case 3:
@@ -187,8 +191,6 @@ int servicio(){
 
     return 0;
 }
-
-
 
 int almacen(){
     const int opcUsr = mostrarMenu(8, ".") + 1;
@@ -255,17 +257,22 @@ void mostrarLogo(){
 
 }
 
-int asignarPiezaUsuario(Usuario* usuario, Culata* culata, Monoblock* monoblock ){
+int asignarPiezaUsuario(Usuario* usuario, Motor* motor ){
     if (usuario == NULL || usuario->activo != 1){
+        clear();
         mvprintw(10,10,"Usuario invalido o no encontrado");
         getch();
         return 0;
     }
-    if (culata != NULL) usuario->culata = culata;
-    if (culata != NULL) usuario->monoblock = monoblock;
+    if (usuario->motor != NULL){
+        clear();
+        mvprintw(10,10,"La pieza ya fue asignada anteriormente");
+        getch();
+        return 0;
+    }
+    if (motor != NULL) usuario->motor = motor;
     return 1;
 };
-
 
 void testing(int encendido) {
     if (encendido) {
@@ -321,20 +328,20 @@ void agregarPiezas() {
     //Sospechozo, le asigno 2 veces el tipo de pieza, 1 aqui y otra en inicializarCulata
     //piezaUsuario.tipoPieza = CULATA;
     const int id_usuario = 0, id_usuario_2 = 1;
-    Motor piezaUsuario = inicializarMotor(motores_registrados[0],id_usuario,0,"NUMSERIE");
-    piezaUsuario.tipoPieza = CULATA;
-    Culata* pzc = inicializarCulata(piezaUsuario, 16, .10, 2);
-    guardarPiezaArray(pzc,id_usuario);  // Se guarda como puntero genérico
+    Culata* pzc = inicializarCulata(16, .10, 2);
+    Motor* piezaUsuario = inicializarMotor(motores_registrados[0],id_usuario,0,"NUMSERIE",pzc,1);
+    //piezaUsuario.tipoPieza = CULATA;
+    guardarPiezaArray(piezaUsuario,id_usuario);  // Se guarda como puntero genérico
     Usuario* usuario1 = obtenerUsuarioByIdUsuario(id_usuario);
-    asignarPiezaUsuario(usuario1, pzc, NULL);
+    asignarPiezaUsuario(usuario1, piezaUsuario);
 
 
-    Motor piezaUsuario2 = inicializarMotor(motores_registrados[1], id_usuario_2,1,"NUMSERIE");
-    piezaUsuario2.tipoPieza = CULATA;
-    Culata* pzc2 = inicializarCulata(piezaUsuario2, 18, 0.12, 1);
-    guardarPiezaArray(pzc2, id_usuario_2);
+    Culata* pzc2 = inicializarCulata(18, 0.12, 1);
+    Motor* piezaUsuario2 = inicializarMotor(motores_registrados[1], id_usuario_2,1,"NUMSERIE",pzc2,1);
+    //piezaUsuario2.tipoPieza = CULATA;
+    guardarPiezaArray(piezaUsuario2, id_usuario_2);
     Usuario* usuario2 = obtenerUsuarioByIdUsuario(id_usuario_2);
-    asignarPiezaUsuario(usuario2, pzc2, NULL);
+    asignarPiezaUsuario(usuario2, piezaUsuario2);
 
     id_pieza_global+=2;
 
