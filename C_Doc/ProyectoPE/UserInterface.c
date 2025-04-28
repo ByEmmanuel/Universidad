@@ -88,6 +88,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     char* subMenuTres[SIZE_TRES] = {"Estado de herramientas", "Registro de mantenimiento","Asignación"};
     char* subMenuCuatro[SIZE_TRES] = {"Registro de proveedor","Historial de compras","Pedidos pendientes"};
     char* subMenuCinco[SIZE_TRES] = {"Movimientos","Piezas más usadas","Piezas inactivas"};
+    char* subMenuSeis[SIZE_CUATRO] = {"Generar Nota", "Generar Ticket" , "Generar Factura", "Listar detalles del usuario"};
 
     char** menuActual = NULL;
     int numOpciones = 0;
@@ -106,6 +107,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     case 11: menuActual = subMenuTres; numOpciones = SIZE_TRES; break;
     case 12: menuActual = subMenuCuatro; numOpciones = SIZE_TRES; break;
     case 13: menuActual = subMenuCinco; numOpciones = SIZE_TRES; break;
+    case 14: menuActual = subMenuSeis; numOpciones = SIZE_CUATRO; break;
 
     default:
         mvprintw(10, 10, "Opción no válida o ocurrió un error");

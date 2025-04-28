@@ -34,7 +34,7 @@ Usuario inicializarUsuario(const int id_usuario,const char* folio , const char* 
     asignString(usr.email, email, sizeof(usr.email));
     asignString(usr.contacto, contacto, sizeof(usr.contacto));
 
-    usr.culata = NULL;
+    usr.motor = NULL;
     usr.activo = 1;
     //Adiciona 1 al ID usuario desde aqui para que el usuario nunca tenga el mismo ID sin importar si es valido el usuario o no
     setIdUsuarioLogico(getIdUsuarioLogico() + 1);
@@ -44,42 +44,62 @@ Usuario inicializarUsuario(const int id_usuario,const char* folio , const char* 
 /**
  * Solo se pasaran commo variables estaticas
  * Las variables que no pertenecen unicamente del motor
+ * @param motor
  * @param id_usuario,
  * @param id_pieza,
  * @param numero_serie
+ * @param tipoDePieza
+ * @param numTipoDepieza
  */
-Motor inicializarMotor(Paramsmotor motor, const int id_usuario, const int id_pieza, const char* numero_serie){
-    Motor pz = {0};
+Motor* inicializarMotor(Paramsmotor motor, const int id_usuario, const int id_pieza, const char* numero_serie, void* tipoDePieza, const int numTipoDepieza){
+    Motor* pz = malloc(sizeof(Motor));
 
-    pz.tipoCombustible = motor.tipoCombustible;
-    pz.tipoPieza = motor.tipoPieza;
-    asignString(pz.material, motor.material, sizeof(pz.material));
-    pz.desgaste = motor.desgaste;
-    pz.tolerancia = motor.tolerancia;
-    pz.medidaOriginal = motor.medidaOriginal;
-    pz.medidaActual = motor.medidaActual;
-    pz.necesitaRectificacion = motor.necesitaRectificacion;
-    pz.nombre = motor.nombre;
-    pz.fabricante = motor.fabricante;
-    pz.cilindrada = motor.cilindrada;
-    pz.compresionOriginal = motor.compresionOriginal;
+    // Culata 1, Monoblock 2
+    //Si se quiere acceder a estos campos sin haberles asignado un valor, causara segfault
+    if (numTipoDepieza == 1){
+        pz->culata = (Culata*) tipoDePieza;
+    }else{
+        pz->culata = NULL;
+    }
 
-    pz.id_usuario = id_usuario;
-    pz.id_pieza = id_pieza;
-    pz.numeroSerie = numero_serie;
+    if (numTipoDepieza == 2){
+        pz->monoblock = (Monoblock*) tipoDePieza;
+    }else{
+        pz->monoblock = NULL;
+    }
+
+    pz->tipoCombustible = motor.tipoCombustible;
+    asignString(pz->material, motor.material, sizeof(pz->material));
+    pz->desgaste = motor.desgaste;
+    pz->tolerancia = motor.tolerancia;
+    pz->medidaOriginal = motor.medidaOriginal;
+    pz->medidaActual = motor.medidaActual;
+    pz->necesitaRectificacion = motor.necesitaRectificacion;
+    pz->nombre = motor.nombre;
+    pz->fabricante = motor.fabricante;
+    pz->cilindrada = motor.cilindrada;
+    pz->compresionOriginal = motor.compresionOriginal;
+
+    pz->id_usuario = id_usuario;
+    pz->id_pieza = id_pieza;
+    pz->numeroSerie = numero_serie;
 
     return pz;
 }
 
-Culata* inicializarCulata(const Motor pieza, const int numValvulas ,const double presionPrueba
+Culata* inicializarCulata(const int numValvulas ,const double presionPrueba
                 /** const int tipoCombustible */, const int fisuras){
     Culata* culata = malloc(sizeof(Culata));
     if (culata == NULL) {
     perror("Error al asignar memoria para Culata");
     exit(EXIT_FAILURE);
     }
+
+    /*
     culata->motor.tipoPieza = CULATA;  // ← ¡Necesario!
     culata->motor = pieza;
+    */
+
     culata->numValvulas = numValvulas;
     culata->presionPrueba = presionPrueba;
     //culata->base.tipoCombustible = tipoCombustible;
@@ -104,7 +124,7 @@ int guardarUsuarioArray(Usuario usuario) {
     return 1; // Retorna 1 si se guardó correctamente
 }
 
-int guardarPiezaArray(void* pieza, int id_usuario) {
+int guardarPiezaArray(void* motor, const int id_usuario) {
     if (arrayPiezas.tamanno >= arrayPiezas.capacidad) {
         // Si la capacidad está llena, redimensionamos el arreglo
         const int nuevaCapacidad = arrayPiezas.capacidad == 0 ? 1 : arrayPiezas.capacidad * 2;
@@ -116,19 +136,17 @@ int guardarPiezaArray(void* pieza, int id_usuario) {
         arrayPiezas.datos = nuevoArray;  // Asignar el nuevo arreglo redimensionado
         arrayPiezas.capacidad = nuevaCapacidad; // Actualizar la capacidad
     }
-    arrayPiezas.datos[arrayPiezas.tamanno] = pieza;  // Guardar puntero a la pieza
+    arrayPiezas.datos[arrayPiezas.tamanno] = motor;  // Guardar puntero al motor
     arrayPiezas.tamanno++;  // Incrementar el número de elementos
-    //Agregar Id Usuario generico por cada pieza
+    //Agregar Id Usuario generico por cada motor
     arrayPiezas.id_usuario = id_usuario;
     return 1;  // Éxito
 }
 
-Ticket inicializarTicket(Usuario* usuario,Culata* culata,
-Monoblock* monoblock,char* detalles, char* detalles2){
+Ticket inicializarTicket(Usuario* usuario,Motor* motor,char* detalles, char* detalles2){
     Ticket ticket = {0};
     if (usuario != NULL) ticket.usuario = usuario;
-    if (culata != NULL) ticket.culata = culata;
-    if (monoblock != NULL) ticket.monoblock = monoblock;
+    if (motor != NULL && usuario != NULL) ticket.usuario->motor = motor;
     ticket.detalles = detalles;
     ticket.detalles2 = detalles2;
 
@@ -243,13 +261,13 @@ void listarPiezas(){
         mvprintw(fila++, 2, "Medida Actual: %.4f mm", pieza->medidaActual);
         mvprintw(fila++, 2, "¿Rectificar?: %s", pieza->necesitaRectificacion ? "Sí" : "No");
 
-        if (pieza->tipoPieza == CULATA) {
+        if (pieza->culata != NULL) {
             Culata* culata = (Culata*)pieza;
             mvprintw(fila++, 4, "Tipo de Pieza: Culata");
             mvprintw(fila++, 4, "N° Válvulas: %d", culata->numValvulas);
             mvprintw(fila++, 4, "Presión Prueba: %.2f bar", culata->presionPrueba);
             mvprintw(fila++, 4, "Tiene Fisuras: %s", culata->tieneFisuras ? "Sí" : "No");
-        } else if (pieza->tipoPieza == MONOBLOCK) {
+        } else if (pieza->monoblock != NULL) {
             Monoblock* monoblock = (Monoblock*)pieza;
             mvprintw(fila++, 4, "Tipo de Pieza: Monoblock");
             mvprintw(fila++, 4, "N° Cilindros: %d", monoblock->numCilindros);

@@ -38,7 +38,7 @@ int obtenerIdSiExisteUsuario();
 
 void imprimirDetallesTicket(int id);
 
-int asignarPiezaUsuario(Usuario* usuario, Culata* culata, Monoblock* monoblock );
+int asignarPiezaUsuario(Usuario* usuario, Motor* motor);
 
 /**
  * @deprecated

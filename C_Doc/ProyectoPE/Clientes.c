@@ -191,8 +191,8 @@ int cliente(){
             int p = 2;
             for (int i = 0; i < arrayUsuarios.tamanno; i++) {
                 mvprintw(p++, 1, "ID: %d", arrayUsuarios.datos[i].id_usuario);
-                if (arrayUsuarios.datos[i].culata != NULL) {
-                    mvprintw(p++, 1, "Pieza: %s", arrayUsuarios.datos[i].culata->motor.material);
+                if (arrayUsuarios.datos[i].motor != NULL) {
+                    mvprintw(p++, 1, "Pieza: %s", arrayUsuarios.datos[i].motor->material);
                     //mvprintw(y++, 1, "Pieza: %s", arrayUsuarios.datos[i].motor->nombre);
                 } else {
                     mvprintw(p++, 1, "Motor: (no asignada)");
