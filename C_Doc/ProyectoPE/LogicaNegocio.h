@@ -32,13 +32,18 @@ int dudas();
 int salir();
 
 Usuario* obtenerUsuarioByIdUsuario(int id);
-void* obtenerPiezaByIdUsuario(int id);
+Motor* obtenerMotorPorNumeroDeSerie(const char* numeroDeSerieMotor);
 Ticket* obtenerTicketByIdUsuario(int id_usuario);
 int obtenerIdSiExisteUsuario();
 
 void imprimirDetallesTicket(int id);
+// FUNCIONES EXCLUSIVAS DE REGISTRAR MOTORES
+const int NUMERO_MOTORES_PZS = 10; // Numero de motores registrados en el sistema
 
+int registrarCulata();
 int asignarPiezaUsuario(Usuario* usuario, Motor* motor);
+int verificarSiNecesitaRectificacion(float alturaOriginal, float alturaActual, float alturaMinima);
+int verificarSiNecesitaReconstruccion(float alturaOriginal, float alturaActual, float alturaMinima);
 
 /**
  * @deprecated

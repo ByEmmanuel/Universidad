@@ -26,8 +26,8 @@ int pago(){
     RETURN_IF_ESC(id_usuario);
 
     clear();
-    void* pieza = obtenerPiezaByIdUsuario(id_usuario);
-    if (!pieza) {
+    Motor* motor = obtenerMotorByIdUsuario(id_usuario);
+    if (!motor) {
         mvprintw(10, 10, "No se encontró ninguna pieza asociada al usuario con ID %d", id_usuario);
         getch();
         return -1;
@@ -38,7 +38,7 @@ int pago(){
     Monoblock* monoblock = NULL;
     */
 
-    Motor* motorBase = (Motor*)pieza;
+    //Motor* motorBase = (Motor*)pieza;
     /**
     if (motorBase->tipoPieza == CULATA) {
         culata = (Culata*)pieza;
@@ -47,7 +47,7 @@ int pago(){
     }
     */
 
-    Ticket ticket = inicializarTicket(obtenerUsuarioByIdUsuario(id_usuario), motorBase, NULL, NULL);
+    Ticket ticket = inicializarTicket(obtenerUsuarioByIdUsuario(id_usuario), motor, NULL, NULL);
     if (obtenerTicketByIdUsuario(id_usuario) == NULL){
         if (guardarTicket(ticket) != 1){
             mvprintw(20,10,"X Error al crear los ticket's. Inténtelo de nuevo.");
@@ -190,7 +190,7 @@ int generarTicket(int id_usuario){
     fila++;
 
     mvprintw(fila++, 5, "---------------- DATOS DEL MOTOR -----------------");
-    mvprintw(fila++, 5, "Nombre: %s", motor->nombre);
+    mvprintw(fila++, 5, "Nombre: %s", motor->modelo);
     mvprintw(fila++, 5, "Fabricante: %s", motor->fabricante);
     mvprintw(fila++, 5, "Serie: %s", motor->numeroSerie);
     mvprintw(fila++, 5, "Combustible: %s", tipoCombustibleToStr(motor->tipoCombustible));
@@ -355,7 +355,7 @@ void imprimirDetallesTicket(int id_usuario){
 
             mvprintw(fila++, 2, "ID Pieza: %d", motor->id_pieza);
             mvprintw(fila++, 2, "ID Usuario: %d", motor->id_usuario);
-            mvprintw(fila++, 2, "Nombre Motor: %s", motor->nombre);
+            mvprintw(fila++, 2, "Nombre Motor: %s", motor->modelo);
             mvprintw(fila++, 2, "Fabricante: %s", motor->fabricante);
             mvprintw(fila++, 2, "Numero Serie: %s", motor->numeroSerie);
             mvprintw(fila++, 2, "Cilindrada: %.2f L", motor->cilindrada);

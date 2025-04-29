@@ -84,6 +84,21 @@ void modificarCliente(){
             clear();
             refresh();
             reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Email: ");
+
+            while (!strContains(reemplazoUsuario, "@")){
+                if (mostrarMenu(7,"Tu Email no es valido, ¿Deseas volver a ingresarlo?") == 1){
+                    clear();
+                    reemplazoUsuario = leerStringSeguro(10,5,49,"Ingrese Email");
+                    if (reemplazoUsuario == NULL) {
+                        return ;
+                    }
+                } else {
+                    mvprintw(122,10,"Registro INVÁLIDO: Email Inválido");
+                    getch();
+                    return ;
+                }
+            }
+
             if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
                 asignString(usuarioNuevo->email, reemplazoUsuario, sizeof(usuarioNuevo->email));
                 mvprintw(12,15,"Modificación realizada con éxito.\n");

@@ -12,13 +12,14 @@
 #include "UserInterface.h"
 #include "Util.h"
 //Variable encapsulada -> Private
-int id_UsuarioLogico = 0;
+int id_UsuarioGlobal = 0;
 //int id_Pieza = 0;
 // Declaración global de array's
 ArrayUsuarios arrayUsuarios = {0};
 ArrayTickets arrayTickets = {0};  // ← variable global
 ArrayList array_list;
-ArrayPiezas arrayPiezas;
+ArrayPiezas arrayMotores = {0};
+ArrayPiezas arrayPiezas = {0};
 
 
 //Funciones Importantes para la ejecucion detodo el programa y evitar la reutilizacion de codigo
@@ -44,66 +45,79 @@ Usuario inicializarUsuario(const int id_usuario,const char* folio , const char* 
 /**
  * Solo se pasaran commo variables estaticas
  * Las variables que no pertenecen unicamente del motor
- * @param motor
+ * @param params
+ * @param paramsmotor
  * @param id_usuario,
  * @param id_pieza,
  * @param numero_serie
  * @param tipoDePieza
- * @param numTipoDepieza
+ * @param tipoPieza -> MONOBLOCK = 0, CULATA = 1.
+ *
  */
-Motor* inicializarMotor(Paramsmotor motor, const int id_usuario, const int id_pieza, const char* numero_serie, void* tipoDePieza, const int numTipoDepieza){
-    Motor* pz = malloc(sizeof(Motor));
-
-    // Culata 1, Monoblock 2
-    //Si se quiere acceder a estos campos sin haberles asignado un valor, causara segfault
-    if (numTipoDepieza == 1){
-        pz->culata = (Culata*) tipoDePieza;
-    }else{
-        pz->culata = NULL;
+Motor* inicializarMotor(Paramsmotor params, const int id_usuario, const int id_pieza, const char* numero_serie, void* tipoDePieza, const int tipoPieza) {
+    Motor* pz = (Motor*)malloc(sizeof(Motor));
+    if (pz == NULL) {
+        perror("Error al asignar memoria para Motor");
+        exit(EXIT_FAILURE);
     }
 
-    if (numTipoDepieza == 2){
-        pz->monoblock = (Monoblock*) tipoDePieza;
-    }else{
-        pz->monoblock = NULL;
-    }
-
-    pz->tipoCombustible = motor.tipoCombustible;
-    asignString(pz->material, motor.material, sizeof(pz->material));
-    pz->desgaste = motor.desgaste;
-    pz->tolerancia = motor.tolerancia;
-    pz->medidaOriginal = motor.medidaOriginal;
-    pz->medidaActual = motor.medidaActual;
-    pz->necesitaRectificacion = motor.necesitaRectificacion;
-    pz->nombre = motor.nombre;
-    pz->fabricante = motor.fabricante;
-    pz->cilindrada = motor.cilindrada;
-    pz->compresionOriginal = motor.compresionOriginal;
-
+    // Inicialización básica
     pz->id_usuario = id_usuario;
     pz->id_pieza = id_pieza;
+    pz->tipoCombustible = params.tipoCombustible;
+    //Deprecated
+    //pz->tipoPieza = params.tipoPieza;
+
+    // Copiar cadenas de texto
+    asignString(pz->material, params.material, sizeof(pz->material));
+    pz->modelo = params.modelo;
+    pz->fabricante = params.fabricante;
     pz->numeroSerie = numero_serie;
+
+    // Datos técnicos
+    pz->anno = params.anno;
+    pz->cilindrada = params.cilindrada;
+    pz->compresionOriginal = params.compresionOriginal;
+    pz->desgaste = params.desgaste;
+    pz->tolerancia = params.tolerancia;
+    pz->medidaOriginal = params.medidaOriginal;
+    pz->medidaActual = params.medidaActual;
+    pz->necesitaRectificacion = params.necesitaRectificacion;
+    pz->necesitaReconstruccion = params.necesitaReconstruccion;
+
+    // Asignar Culata o Monoblock
+    if (tipoPieza == 1) {        // Culata
+        pz->culata = (Culata*)tipoDePieza;
+        pz->monoblock = NULL;
+    } else if (tipoPieza == 2) { // Monoblock
+        pz->monoblock = (Monoblock*)tipoDePieza;
+        pz->culata = NULL;
+    } else {
+        pz->culata = NULL;
+        pz->monoblock = NULL;
+    }
 
     return pz;
 }
 
-Culata* inicializarCulata(const int numValvulas ,const double presionPrueba
-                /** const int tipoCombustible */, const int fisuras){
+Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,int fisuras,
+    float alturaOriginal, float alturaActual, float alturaMinima){
+
+    //Variables que estan en Culata
     Culata* culata = malloc(sizeof(Culata));
     if (culata == NULL) {
     perror("Error al asignar memoria para Culata");
     exit(EXIT_FAILURE);
     }
-
-    /*
-    culata->motor.tipoPieza = CULATA;  // ← ¡Necesario!
-    culata->motor = pieza;
-    */
-
+    culata->id_pieza = id_pieza;
     culata->numValvulas = numValvulas;
     culata->presionPrueba = presionPrueba;
-    //culata->base.tipoCombustible = tipoCombustible;
     culata->tieneFisuras = fisuras;
+    culata->alturaOriginal = alturaOriginal;
+    culata->alturaActual = alturaActual;
+    culata->alturaMinima = alturaMinima;
+    //Sumar 1 al contador de piezas globales
+    id_piezaGlobal++;
     return culata;
 }
 
@@ -124,21 +138,39 @@ int guardarUsuarioArray(Usuario usuario) {
     return 1; // Retorna 1 si se guardó correctamente
 }
 
-int guardarPiezaArray(void* motor, const int id_usuario) {
-    if (arrayPiezas.tamanno >= arrayPiezas.capacidad) {
+int guardarMotorArray(void* motor, const int id_usuario) {
+    if (arrayMotores.tamanno >= arrayMotores.capacidad) {
         // Si la capacidad está llena, redimensionamos el arreglo
-        const int nuevaCapacidad = arrayPiezas.capacidad == 0 ? 1 : arrayPiezas.capacidad * 2;
-        void** nuevoArray = realloc(arrayPiezas.datos, nuevaCapacidad * sizeof(void*));
+        const int nuevaCapacidad = arrayMotores.capacidad == 0 ? 1 : arrayMotores.capacidad * 2;
+        //void* nuevoArray = (Motor*) realloc(arrayMotores.datos, nuevaCapacidad * sizeof(void*));
+        void* nuevoArray = realloc(arrayMotores.datos, nuevaCapacidad * sizeof(void*));
         if (nuevoArray == NULL) {
             printf("Error al redimensionar el array de Piezas.\n");
             return -1;  // Si realloc falla, retornar error
         }
-        arrayPiezas.datos = nuevoArray;  // Asignar el nuevo arreglo redimensionado
-        arrayPiezas.capacidad = nuevaCapacidad; // Actualizar la capacidad
+        arrayMotores.datos = nuevoArray;  // Asignar el nuevo arreglo redimensionado
+        arrayMotores.capacidad = nuevaCapacidad; // Actualizar la capacidad
     }
-    arrayPiezas.datos[arrayPiezas.tamanno] = motor;  // Guardar puntero al motor
-    arrayPiezas.tamanno++;  // Incrementar el número de elementos
+    arrayMotores.datos[arrayMotores.tamanno] = motor;  // Guardar puntero al motor
+    arrayMotores.tamanno++;  // Incrementar el número de elementos
     //Agregar Id Usuario generico por cada motor
+    arrayMotores.id_usuario = id_usuario;
+    return 1;  // Éxito
+}
+
+int guardarPiezaArray(void* pieza, int id_usuario) {
+    if (arrayPiezas.tamanno >= arrayPiezas.capacidad) {
+        const int nuevaCapacidad = arrayPiezas.capacidad == 0 ? 1 : arrayPiezas.capacidad * 2;
+        void** nuevoArray = realloc(arrayPiezas.datos, nuevaCapacidad * sizeof(void*));
+        if (nuevoArray == NULL) {
+            printf("Error al redimensionar el array de Piezas.\n");
+            return -1;
+        }
+        arrayPiezas.datos = nuevoArray;
+        arrayPiezas.capacidad = nuevaCapacidad;
+    }
+    arrayPiezas.datos[arrayPiezas.tamanno] = pieza;
+    arrayPiezas.tamanno++;
     arrayPiezas.id_usuario = id_usuario;
     return 1;  // Éxito
 }
@@ -168,16 +200,28 @@ Usuario* obtenerUsuarioByIdUsuario(const int id) {
     return NULL;
 }
 
-void* obtenerPiezaByIdUsuario(const int id) {
-    for (int i = 0; i < arrayPiezas.tamanno; i++) {
-        Motor* pieza = (Motor*) arrayPiezas.datos[i];  // cast seguro
-        if (pieza->id_usuario == id) {
-            return pieza;  // Retorna el puntero a la pieza
+Motor* obtenerMotorByIdUsuario(const int id) {
+    for (int i = 0; i < arrayMotores.tamanno; i++) {
+        if (arrayMotores.datos[i].id_usuario == id) {
+            return &arrayMotores.datos[i];  // Retorna el puntero a la pieza
         }
     }
 
     // Retorna NULL si el usuario no existe
+    clear();
     mvprintw(12, 10, "X Pieza no encontrada o ID de usuario inválido");
+    getch();
+    return NULL;
+}
+
+Motor* obtenerMotorPorNumeroDeSerie(const char* numeroDeSerieMotor){
+    for (int i = 0; i < NUMERO_MOTORES_PZS; i++){
+        if (arrayMotores.datos[i].numeroSerie == numeroDeSerieMotor ){
+            return &arrayMotores.datos[i];
+        }
+    }
+    clear();
+    mvprintw(12, 10, "El numero de serie ingresado no coincide con ningun numero de serie del sistema");
     getch();
     return NULL;
 }
@@ -243,12 +287,12 @@ void listarPiezas(){
     mvprintw(fila++, 15, "LISTADO DE TODAS LAS PIEZAS");
     mvprintw(fila++, 10, "==============================================");
 
-    for (size_t i = 0; i < arrayPiezas.tamanno; i++) {
-        Motor* pieza = (Motor*)arrayPiezas.datos[i];
+    for (size_t i = 0; i < arrayMotores.tamanno; i++) {
+        Motor pieza = arrayMotores.datos[i];
         fila++;
-        mvprintw(fila++, 2, "ID Pieza: %d", pieza->id_pieza);
-        mvprintw(fila++, 2, "ID Usuario: %d", pieza->id_usuario);
-        mvprintw(fila++, 2, "Nombre del Motor: %s", pieza->nombre);
+        mvprintw(fila++, 2, "ID Pieza: %d", pieza.id_pieza);
+        mvprintw(fila++, 2, "ID Usuario: %d", pieza.id_usuario);
+        mvprintw(fila++, 2, "Nombre del Motor: %s", pieza->modelo);
         mvprintw(fila++, 2, "Fabricante: %s", pieza->fabricante);
         mvprintw(fila++, 2, "Cilindrada: %.2f L", pieza->cilindrada);
         mvprintw(fila++, 2, "Compresión Original: %.2f psi", pieza->compresionOriginal);
@@ -314,8 +358,8 @@ void mostrarUsuario(Usuario usr) {
 
 //Getters y setters
 void setIdUsuarioLogico(const int nuevoId){
-    id_UsuarioLogico = nuevoId;
+    id_UsuarioGlobal = nuevoId;
 };
 int getIdUsuarioLogico(){
-    return id_UsuarioLogico;
+    return id_UsuarioGlobal;
 };

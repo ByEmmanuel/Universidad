@@ -14,42 +14,54 @@ typedef enum { GASOLINA = 0, DIESEL = 1, HIBRIDO = 2 } TipoCombustible;
 //  Encapsulamiento Privado
 //  Dejar de usar Pieza como Base -> Cambiar a motor
 
-// Estructura Culata que "hereda" de Pieza
-typedef struct {
-    int numValvulas;
-    double presionPrueba;
-    //TipoCombustible tipoCombustible;// Movido a Motor
-    int tieneFisuras;
-} Culata;
-
 // Estructura Monoblock que "hereda" de Pieza
 typedef struct {
-    int numCilindros;
-    float diametroCilindro;
-    float ovalizacion;
-    float alineacionCiguenal;
+    int id_pieza;              // IDENTIFICADOR UNICO DE LA PIEZA -> TODAS LAS PIEZAS DE UN MOTOR DEBEN CONTENER EL MISMO ID
+    int id_usuario;            // IDENTIFICADOR UNICO DE LA PIEZA POR USUARIO, ES DECIR, A QUE USUARIO PERTENECE ESTA PIEZA
+    int numValvulas;           // Número de válvulas en la culata
+    double presionPrueba;      // Presión medida en prueba hidráulica (bar)
+    int tieneFisuras;          // 1 = Sí, 0 = No (fisuras detectadas)
+    float alturaOriginal;      // Altura original de la culata (mm)
+    float alturaActual;        // Altura actual de la culata tras desgaste (mm)
+    float alturaMinima;        // Altura mínima aceptable (según fabricante) (mm)
+} Culata;
+
+typedef struct {
+    int id_pieza;              // IDENTIFICADOR UNICO DE LA PIEZA -> TODAS LAS PIEZAS DE UN MOTOR DEBEN CONTENER EL MISMO ID
+    int id_usuario;            // IDENTIFICADOR UNICO DE LA PIEZA POR USUARIO, ES DECIR, A QUE USUARIO PERTENECE ESTA PIEZA
+    int numCilindros;           // Número de cilindros en el bloque
+    float diametroCilindro;     // Diámetro nominal de los cilindros (mm)
+    float ovalizacion;          // Deformación del cilindro (mm)
+    float alineacionCiguenal;   // Desalineación del cigüeñal respecto al bloque (mm)
+    float desgasteCilindros;    // Desgaste promedio de los cilindros (mm)
 } Monoblock;
 
-typedef struct{
-    int id_pieza;            // Identificador único de la pieza
-    int id_usuario;         // Este id esta sujeto con una relacion al usuario
+typedef struct {
+    int id_pieza;              // IDENTIFICADOR UNICO DE LA PIEZA -> TODAS LAS PIEZAS DE UN MOTOR DEBEN CONTENER EL MISMO ID
+    int id_usuario;            // IDENTIFICADOR UNICO DE LA PIEZA POR USUARIO, ES DECIR, A QUE USUARIO PERTENECE ESTA PIEZA
 
-    const char* nombre;
-    const char* fabricante;
-    float cilindrada;              // Litros
-    float compresionOriginal;      // psi
-    const char* numeroSerie;       // Número de serie único del motor
-    TipoCombustible tipoCombustible;
+    const char* modelo;         // Nombre del motor (modelo).
+    const char* fabricante;     // Fabricante del motor
+    int anno;                    // Año del motor
+    char* carroAsociado;
+    float cilindrada;           // Cilindrada total (litros)
+    float compresionOriginal;   // Compresión de fábrica (psi)
+    const char* numeroSerie;    // Número de serie del motor
+    TipoCombustible tipoCombustible; // Tipo de combustible (enum GASOLINA, DIESEL, etc.)
 
-    Culata* culata; // Composición: Motor contiene una Culata
-    Monoblock* monoblock; // Composición: Motor contiene un monoblock
-    char material[30];      // Material de la pieza (Hierro, Aluminio, etc.)
-    float desgaste;         // Nivel de desgaste en porcentaje (0-100%)
-    float tolerancia;       // Tolerancia máxima de desgaste permitida antes de rectificar
-    float medidaOriginal;   // Medida original de la pieza -> mm
-    float medidaActual;     // Medida actual después del desgaste -> mm
-    int necesitaRectificacion; // 1 = Sí, 0 = No (según tolerancia)
-}Motor;
+    Culata* culata;             // Culata asociada
+    Monoblock* monoblock;       // Monoblock asociado
+
+    char material[30];          // Material del bloque/cabeza (Aluminio, Hierro, etc.)
+    float desgaste;             // Nivel de desgaste general (0-100%)
+    float tolerancia;           // Tolerancia máxima permitida de desgaste (mm)
+
+    float medidaOriginal;       // Medida original de referencia (por ejemplo, diámetro cilindros) (mm)
+    float medidaActual;         // Medida actual tras desgaste (mm)
+
+    int necesitaRectificacion;  // 1 = Sí, 0 = No (dentro de tolerancia)
+    int necesitaReconstruccion; // 1 = Sí, 0 = No (fuera de tolerancia: hay que agregar material)
+} Motor;
 
 //Entidad Usuario
 typedef struct {
@@ -119,22 +131,28 @@ ArrayPiezas arrayPiezas;
 */
 
 typedef struct {
-    const char* nombre;
-    const char* fabricante;
-    float cilindrada;              // Litros
-    float compresionOriginal;      // psi
-    TipoCombustible tipoCombustible;
+    const char* modelo;             // Modelo específico del motor
+    const char* fabricante;         // Marca o fabricante (Ford, Toyota, etc.)
+    int anno;                        // Año de fabricación del motor
+    float cilindrada;               // Cilindrada total en litros
+    float compresionOriginal;       // Compresión de fábrica en psi
+    const char* numeroSerie;        // Número de serie único del motor
+    TipoCombustible tipoCombustible;// Tipo de combustible (GASOLINA, DIESEL, etc.)
 
-    TipoPieza tipoPieza;
-    Culata* culata;
-    Monoblock* monoblock;
-    char* material;      // Material de la pieza (Hierro, Aluminio, etc.)
-    float desgaste;         // Nivel de desgaste en porcentaje (0-100%)
-    float tolerancia;       // Tolerancia máxima de desgaste permitida antes de rectificar
-    float medidaOriginal;   // Medida original de la pieza -> mm
-    float medidaActual;     // Medida actual después del desgaste -> mm
-    int necesitaRectificacion; // 1 = Sí, 0 = No (según tolerancia)
-}Paramsmotor;
+    //TipoPieza tipoPieza;            // Tipo de pieza: CULATA, MONOBLOCK, etc.
+    //Culata* culata;                 // Puntero a Culata asociada
+    //Monoblock* monoblock;           // Puntero a Monoblock asociada
+
+    char* material;              // Material principal del motor (Hierro, Aluminio, etc.)
+
+    float desgaste;                 // Porcentaje de desgaste (0-100%)
+    float tolerancia;               // Margen máximo de desgaste permitido (mm)
+    float medidaOriginal;           // Medida nominal de fábrica (mm)
+    float medidaActual;             // Medida actual después de desgaste (mm)
+
+    int necesitaRectificacion;      // 1 = Sí (rectifica) / 0 = No
+    int necesitaReconstruccion;     // 1 = Sí (reconstruir por daño grave) / 0 = No
+} Paramsmotor;
 
 Usuario inicializarUsuario(int id_usuario, const char* folio,const char* nombreUsuario,
     const char* apellido,long long celular,const char* email,const char* contacto);
@@ -143,8 +161,11 @@ Ticket inicializarTicket(Usuario* usuario,Motor* motor ,char* detalles, char* de
 
 extern ArrayTickets arrayTickets;  // ← accedida desde otros .c
 extern ArrayUsuarios arrayUsuarios; // ← accedida desde otros .c
+extern ArrayPiezas arrayMotores;
+extern ArrayPiezas arrayPiezas;
 //private -> Declarada en UsuarioDTO.c
-extern int id_UsuarioLogico;
+extern int id_UsuarioGlobal;
+extern int id_piezaGlobal;
 
 //Public
 void setIdUsuarioLogico(int nuevoId);
@@ -158,15 +179,18 @@ void modificarCliente();
 
 int guardarUsuarioArray(Usuario usuario);
 
-int guardarPiezaArray(void* motor, int id_usuario);
+int guardarMotorArray(Motor motor, int id_usuario);
+
+int guardarPiezaArray(void* pieza, int id_usuario);
 
 int guardarTicket(Ticket ticket);
 
-Motor* inicializarMotor(Paramsmotor motor, int id_usuario, int id_pieza,const char* numero_serie, void* tipoDePieza, int numTipoDepieza);
+Motor* inicializarMotor(Paramsmotor paramsmotor, int id_usuario, int id_pieza,const char* numero_serie, void* tipoDePieza, int numTipoDepieza);
 
-//Culata* inicializarCulata(Paramsmotor pieza, int num_valvulas, double presion_prueba, int fisuras);
-Culata* inicializarCulata(int numValvulas ,double presionPrueba
-                /** const int tipoCombustible */,int fisuras);
+Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,int fisuras,
+    float alturaOriginal, float alturaActual, float alturaMinima);
+
+
 
 //Culata* inicializarCulata(Motor pieza,int numValvulas , double presionPrueba
 //    /** int tipoCombustible */ ,int fisuras);
