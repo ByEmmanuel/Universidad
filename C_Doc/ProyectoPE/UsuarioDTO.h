@@ -131,8 +131,11 @@ ArrayPiezas arrayPiezas;
 */
 
 typedef struct {
+    int id_pieza;
+    int id_usuario;
     const char* modelo;             // Modelo específico del motor
     const char* fabricante;         // Marca o fabricante (Ford, Toyota, etc.)
+    char* carroAsociado;
     int anno;                        // Año de fabricación del motor
     float cilindrada;               // Cilindrada total en litros
     float compresionOriginal;       // Compresión de fábrica en psi
@@ -175,20 +178,20 @@ int cliente();
 
 void mostrarUsuario(Usuario usr);
 
-void modificarCliente();
+int modificarCliente();
 
 int guardarUsuarioArray(Usuario usuario);
 
-int guardarMotorArray(Motor motor, int id_usuario);
+int guardarMotorArray(void* motor, int id_usuario);
 
 int guardarPiezaArray(void* pieza, int id_usuario);
 
 int guardarTicket(Ticket ticket);
 
-Motor* inicializarMotor(Paramsmotor paramsmotor, int id_usuario, int id_pieza,const char* numero_serie, void* tipoDePieza, int numTipoDepieza);
+Motor* inicializarMotor(Paramsmotor paramsmotor, int id_usuario, int id_pieza, void* tipoDePieza, int numTipoDepieza);
 
 Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,int fisuras,
-    float alturaOriginal, float alturaActual, float alturaMinima);
+    float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario);
 
 
 

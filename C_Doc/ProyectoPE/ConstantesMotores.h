@@ -8,7 +8,7 @@
 #include "LogicaNegocio.h"
 #include "UsuarioDTO.h"
 
-Culata culatasExistentes[NUMERO_MOTORES_PZS] = {
+Culata culatasExistentes[10] = {
     { .id_pieza = 0, .numValvulas = 16, .presionPrueba = 25.0, .tieneFisuras = 0, .alturaOriginal = 130.0, .alturaActual = 129.8, .alturaMinima = 129.0 }, // Duratec 2.0 (4 cil, 4 válvulas/cil)
     { .id_pieza = 1, .numValvulas = 16, .presionPrueba = 20.0, .tieneFisuras = 0, .alturaOriginal = 135.0, .alturaActual = 134.8, .alturaMinima = 134.0 }, // Vortec 5300 (V8, 2 válvulas/cil)
     { .id_pieza = 2, .numValvulas = 12, .presionPrueba = 22.0, .tieneFisuras = 0, .alturaOriginal = 125.0, .alturaActual = 124.9, .alturaMinima = 124.5 }, // EcoBoost 1.5 (3 cil, 4 válvulas/cil)
@@ -21,7 +21,7 @@ Culata culatasExistentes[NUMERO_MOTORES_PZS] = {
     { .id_pieza = 9, .numValvulas = 16, .presionPrueba = 23.0, .tieneFisuras = 0, .alturaOriginal = 124.0, .alturaActual = 123.9, .alturaMinima = 123.5 }  // F20C (4 cil, 4 válvulas/cil)
 };
 
-Monoblock monoblocksExistentes[NUMERO_MOTORES_PZS] = {
+Monoblock monoblocksExistentes[10] = {
     { .id_pieza = 0, .numCilindros = 4, .diametroCilindro = 87.5, .ovalizacion = 0.03, .alineacionCiguenal = 0.04, .desgasteCilindros = 0.1 },  // Duratec 2.0
     { .id_pieza = 1, .numCilindros = 8, .diametroCilindro = 96.0, .ovalizacion = 0.02, .alineacionCiguenal = 0.03, .desgasteCilindros = 0.08 }, // Vortec 5300
     { .id_pieza = 2, .numCilindros = 3, .diametroCilindro = 79.0, .ovalizacion = 0.015, .alineacionCiguenal = 0.02, .desgasteCilindros = 0.05 }, // EcoBoost 1.5
@@ -34,7 +34,7 @@ Monoblock monoblocksExistentes[NUMERO_MOTORES_PZS] = {
     { .id_pieza = 9, .numCilindros = 4, .diametroCilindro = 87.0, .ovalizacion = 0.015, .alineacionCiguenal = 0.02, .desgasteCilindros = 0.05 }  // F20C
 };
 
-const Motor motoresExistentes[NUMERO_MOTORES_PZS] = {
+Motor motoresExistentes[10] = {
     {
         .modelo = "Duratec 2.0",
         .fabricante = "Ford",

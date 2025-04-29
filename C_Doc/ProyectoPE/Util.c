@@ -356,7 +356,7 @@ char* leerStringSeguro(int y, int x, int maxLen, char* pregunta) {
     do {
         valor = leerString(y, x, maxLen, pregunta);
         if (valor == NULL) {
-            mvprintw(y + 1, x, "Entrada inválida o cancelada con (ESC). Inténtalo de nuevo.");
+            mvprintw(y + 1, x, "Entrada inválida o cancelada con (ESC). Presione ESC de nuevo.");
             refresh();
             int ch = getch();
             if (ch == 27) return NULL;  // salir si presiona ESC

@@ -75,7 +75,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     char* menuUno[SIZE_SIETE] = {"Clientes", "Servicio", "Pago", "Almacen", "Otros", "Dudas", "Salir"};
     char* menuDos[SIZE_CUATRO] = {"Agregar", "Editar", "Listar", "Menu Principal"};
     char* menuTres[SIZE_SIETE] = {"Nombre", "Apellido", "Num Celular", "Email", "Contacto", "Eliminar","Salir"};
-    char* menuCuatro[SIZE_CINCO] = {"Ingreso / Medidas", "Lavado",  "Rectificar", "Ensamble", "Salir"};
+    char* menuCuatro[SIZE_SEIS] = {"Ingreso caracteristicas motor", "Medidas", "Lavado",  "Rectificar", "Ensamble", "Salir"};
     char* menuCinco[SIZE_TRES] = {"CULATA", "MONOBLOCK", "Listar Piezas"};
     char* menuSeis[SIZE_TRES] = {"1 : Gasolina","2: Diesel","3: Electrico"};
     char* menuSiete[SIZE_DOS] = {"NO","SI"};
@@ -95,7 +95,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     case 1: menuActual = menuUno; numOpciones = SIZE_SIETE; break;
     case 2: menuActual = menuDos; numOpciones = SIZE_CUATRO; break;
     case 3: menuActual = menuTres; numOpciones = SIZE_SIETE; break;
-    case 4: menuActual = menuCuatro; numOpciones = SIZE_CINCO; break;
+    case 4: menuActual = menuCuatro; numOpciones = SIZE_SEIS; break;
     case 5: menuActual = menuCinco; numOpciones = SIZE_TRES; break;
     case 6: menuActual = menuSeis; numOpciones = SIZE_TRES; break;
     case 7: menuActual = menuSiete; numOpciones = SIZE_DOS; break;
@@ -136,3 +136,8 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     }
 }
 
+void imprimirMensaje(int y, int x, char* pregunta){
+    clear();
+    mvprintw(y,x,"%s",pregunta);
+    getch();
+}

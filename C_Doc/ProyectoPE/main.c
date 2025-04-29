@@ -34,7 +34,13 @@ volatile int running = 1;
 
 int main(){
     // Inicio del programa
-    testing(1);
+    /** TESTING MODE
+     *  0 = no testing mode
+     *  1 = solo agregar usuarios
+     *  2 = solo agregar piezas
+     *  3 = agregar usuarios y piezas
+     */
+    testing(3);
     system("reset");
     clear();
     refresh();

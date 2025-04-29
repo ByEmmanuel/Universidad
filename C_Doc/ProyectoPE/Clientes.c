@@ -9,25 +9,26 @@
 #include "UserInterface.h"
 #include "Util.h"
 
-void modificarCliente(){
+int modificarCliente(){
     cleanScreen();
     clear();
     int id_Cliente = leerIntSeguro(11, 15, 2,"Ingrese ID, Folio o Numero de Cliente: ");
+    RETURN_IF_ESC(id_Cliente);
 
     //Esta funcion puede ser contraproducente ya que si algun campo del objeto Usuario, esta vacio,
     //esta opcion nunca va a funcionar
     cleanScreen();
     Usuario* usuarioNuevo = obtenerUsuarioByIdUsuario(id_Cliente);
     if (usuarioNuevo == NULL) {
-        mvprintw(12,15,"Cliente no encontrado.\n");
+        mvprintw(13,15,"Cliente no encontrado.\n");
         getch();
-        return;
+        return -1;
     }
 
     if (strIsEmpty(usuarioNuevo->nombreUsuario) || strIsEmpty(usuarioNuevo->email) || strIsEmpty(usuarioNuevo->nombreUsuario)) {
         mvprintw(12,15,"Cliente con datos incompletos.\n");
         getch();
-        return;
+        return -1;
     }
 
     mvprintw(0,0,"Debug: usuarioNuevo = %p", usuarioNuevo);
@@ -90,12 +91,12 @@ void modificarCliente(){
                     clear();
                     reemplazoUsuario = leerStringSeguro(10,5,49,"Ingrese Email");
                     if (reemplazoUsuario == NULL) {
-                        return ;
+                        return 0;
                     }
                 } else {
                     mvprintw(122,10,"Registro INVÁLIDO: Email Inválido");
                     getch();
-                    return ;
+                    return 0;
                 }
             }
 
@@ -130,14 +131,15 @@ void modificarCliente(){
         case 7:
             mvprintw(2, 10, "Saliendo del menú...");  // Muestra mensaje de depuración
             refresh();  // Asegúrate de que el mensaje se actualice
-            return;
+            return 0;
         default:
             mvprintw(12,15,"Opción inválida.\n");
             getch();
-            return;
+            return -1;
     }
     clear();
     refresh();
+    return 0;
 }
 
 int cliente(){
