@@ -17,12 +17,22 @@
  * Constantes que son los precios del taller
  */
 const float precioRectificado = 850.0f;
+const float precioReconstruccion = 1200.f;
 const float precioPruebaPresion = 350.0f;
 const float precioLavado = 160.0f ;
 const float iva = 0.16f;
 
+
+/**
+ * ANTES DE ASIGNAR UN TICKET AL USUARIO, ASEGURATE DE QUE TENGA UNA CULATA ASIGNADA,
+ * ASI VERIFICAS QUE SE HIZO ALGUN TRABAJO EN EL TALLER Y PODRAS COBRAR
+ * if (motor->culata == NULL){
+        imprimirMensaje(10,10,"ESTE MOTOR NO TIENE ASIGNADO UNA CULATA");
+    }
+ * @return
+ */
 int pago(){
-    const int id_usuario = obtenerIdSiExisteUsuario();
+    const int id_usuario = obtenerIdSiExisteUsuario(10,10);
     RETURN_IF_ESC(id_usuario);
 
     clear();
@@ -32,6 +42,15 @@ int pago(){
         getch();
         return -1;
     }
+    if (motor->culata == NULL){
+        imprimirMensaje(10,10,"ESTE MOTOR NO TIENE ASIGNADO UNA CULATA -> No puedes crear tickets");
+        return -1;
+    }
+    /*if (motor->monoblock == NULL){
+        imprimirMensaje(10,10,"ESTE MOTOR NO TIENE ASIGNADO UN MONOBLOCK -> No puedes crear tickets");
+        getch();
+        return -1;
+    }*/
 
     /**
     Culata* culata = NULL;
@@ -170,10 +189,16 @@ int generarTicket(int id_usuario){
     }
 
     // Simulación de precios
-    const float precioFinalRectificado = motor->necesitaRectificacion ? precioRectificado : 0.0f;
+
+    float precioFinalEstadoPieza = 0;
+    if (motor->culata->estadoPieza == 1){
+        precioFinalEstadoPieza = precioRectificado;
+    }else if (motor->culata->estadoPieza == 2){
+        precioFinalEstadoPieza = precioReconstruccion;
+    }
     const float precioFinalPruebaPresion = (motor->culata != NULL) ? precioPruebaPresion : 0.0f;
     const float precioFinalLavado =  ticket->lavado ? precioLavado : 0.0f;
-    const float subtotal = precioFinalRectificado + precioFinalPruebaPresion + precioFinalLavado;
+    const float subtotal = precioFinalEstadoPieza + precioFinalPruebaPresion + precioFinalLavado;
     const float impuesto = subtotal * iva;
     const float total = subtotal + impuesto;
 
@@ -198,7 +223,7 @@ int generarTicket(int id_usuario){
     mvprintw(fila++, 5, "Material: %s", motor->material);
     mvprintw(fila++, 5, "Medida Original: %.2f mm", motor->medidaOriginal);
     mvprintw(fila++, 5, "Medida Actual: %.2f mm", motor->medidaActual);
-    mvprintw(fila++, 5, "Rectificar: %s", motor->necesitaRectificacion ? "Sí" : "No");
+    mvprintw(fila++, 5, "Estado de la Pieza: %s", estadoPiezaTexto(motor->culata->estadoPieza));
 
     if (motor->culata != NULL) {
         mvprintw(fila++, 5, "N° Válvulas: %d", motor->culata->numValvulas);
@@ -206,9 +231,13 @@ int generarTicket(int id_usuario){
         mvprintw(fila++, 5, "Fisuras: %s", motor->culata->tieneFisuras ? "Sí" : "No");
     }
 
+    //Agregar monoblock
+
     fila++;
     mvprintw(fila++, 5, "----------------- RESUMEN DE COSTOS ------------------");
-    mvprintw(fila++, 5, "Rectificación:       $ %.2f", precioFinalRectificado);
+    mvprintw(fila++, 5, "Estado de la Pieza: %s", estadoPiezaTexto(motor->culata->estadoPieza));
+    const char* estado = estadoPiezaTexto(motor->culata->estadoPieza);
+    mvprintw(fila++, 5, "Trabajo requerido - %s: $ %.2f", estado, precioFinalEstadoPieza);
     mvprintw(fila++, 5, "Prueba de Presión:   $ %.2f", precioFinalPruebaPresion);
     mvprintw(fila++, 5, "Lavado de motor:     $ %.2f", precioFinalLavado);
     mvprintw(fila++, 5, "------------------------------------------------------");
@@ -249,8 +278,7 @@ int generarFactura(int id_usuario){
 
 
     if (motor == NULL){
-        mvprintw(13, 10, "Motor no asignado al usuario. No se puede facturar.");
-        getch();
+        imprimirMensaje(13,10,"Motor no asignado al usuario. No se puede facturar.");
         return -1;
     }
 
@@ -259,10 +287,15 @@ int generarFactura(int id_usuario){
     struct tm fecha = *localtime(&t);
 
     // Simulación de precios
-    const float precioFinalRectificado = motor->necesitaRectificacion ? precioRectificado : 0.0f;
+    float precioFinalEstadoPieza = 0;
+    if (motor->culata->estadoPieza == 1){
+        precioFinalEstadoPieza = precioRectificado;
+    }else if (motor->culata->estadoPieza == 2){
+        precioFinalEstadoPieza = precioReconstruccion;
+    }
     const float precioFinalPruebaPresion = (motor->culata != NULL) ? precioPruebaPresion : 0.0f;
     const float precioFinalLavado =  ticket->lavado ? precioLavado : 0.0f;
-    const float subtotal = precioFinalRectificado + precioFinalPruebaPresion + precioFinalLavado;
+    const float subtotal = precioFinalEstadoPieza + precioFinalPruebaPresion + precioFinalLavado;
     const float impuesto = subtotal * iva;
     const float total = subtotal + impuesto;
 
@@ -282,12 +315,15 @@ int generarFactura(int id_usuario){
     mvprintw(fila++, 5, "Descripción del Servicio:");
     fila++;
 
-    if (motor->necesitaRectificacion)
-        mvprintw(fila++, 7, "- Rectificación de pieza               $ %.2f", precioFinalRectificado);
+    if (motor->culata->estadoPieza == 1)
+        mvprintw(fila++, 7, "- Rectificación de pieza               $ %.2f", precioFinalEstadoPieza);
+    if (motor->culata->estadoPieza == 2)
+        mvprintw(fila++, 7, "- Reconstruccion de pieza               $ %.2f", precioFinalEstadoPieza);
     if (motor->culata != NULL)
         mvprintw(fila++, 7, "- Prueba de presión en culata          $ %.2f", precioFinalPruebaPresion);
     mvprintw(fila++, 7, "- Lavado general                       $ %.2f", precioFinalLavado);
     fila++;
+    //Agregar monoblock
 
     mvprintw(fila++, 5, "------------------------------------------------------------");
     mvprintw(fila++, 5, "Subtotal:                              $ %.2f", subtotal);
@@ -349,24 +385,9 @@ void imprimirDetallesTicket(int id_usuario){
                 return;
             }
 
-            mvprintw(fila++, 4, "==============================================");
-            mvprintw(fila++, 10, "INFORMACION DE LA PIEZA / MOTOR");
-            mvprintw(fila++, 4, "==============================================");
+            imprimirDetallesMotor(motor);
 
-            mvprintw(fila++, 2, "ID Pieza: %d", motor->id_pieza);
-            mvprintw(fila++, 2, "ID Usuario: %d", motor->id_usuario);
-            mvprintw(fila++, 2, "Nombre Motor: %s", motor->modelo);
-            mvprintw(fila++, 2, "Fabricante: %s", motor->fabricante);
-            mvprintw(fila++, 2, "Numero Serie: %s", motor->numeroSerie);
-            mvprintw(fila++, 2, "Cilindrada: %.2f L", motor->cilindrada);
-            mvprintw(fila++, 2, "Compresion Original: %.2f psi", motor->compresionOriginal);
-            mvprintw(fila++, 2, "Combustible: %s", tipoCombustibleToStr(motor->tipoCombustible));
-            mvprintw(fila++, 2, "Material: %s", motor->material);
-            mvprintw(fila++, 2, "Desgaste: %.2f%%", motor->desgaste * 100);
-            mvprintw(fila++, 2, "Tolerancia: %.4f mm", motor->tolerancia);
-            mvprintw(fila++, 2, "Medida Original: %.4f mm", motor->medidaOriginal);
-            mvprintw(fila++, 2, "Medida Actual: %.4f mm", motor->medidaActual);
-            mvprintw(fila++, 2, "Rectificacion: %s", motor->necesitaRectificacion ? "Si" : "No");
+            //mvprintw(fila++, 2, "Rectificacion: %s", motor->necesitaRectificacion ? "Si" : "No");
             mvprintw(fila++, 2, "Lavado?: %s", arrayTickets.datos[i].lavado ? "Si" : "No");
 
             if (motor->culata != NULL) {
@@ -374,12 +395,14 @@ void imprimirDetallesTicket(int id_usuario){
                 mvprintw(fila++, 4, "Numero Valvulas: %d", culata->numValvulas);
                 mvprintw(fila++, 4, "Presion de Prueba: %.2f bar", culata->presionPrueba);
                 mvprintw(fila++, 4, "Fisuras: %s", culata->tieneFisuras ? "Si" : "No");
+                mvprintw(fila++, 2, "Estado de la Pieza: %s", estadoPiezaTexto(culata->estadoPieza));
             } else if (motor->monoblock != NULL) {
                 mvprintw(fila++, 4, "---------- MONOBLOCK ---------");
                 mvprintw(fila++, 4, "Numero Cilindros: %d", monoblock->numCilindros);
                 mvprintw(fila++, 4, "Diametro: %.2f mm", monoblock->diametroCilindro);
                 mvprintw(fila++, 4, "Ovalizacion: %.2f mm", monoblock->ovalizacion);
                 mvprintw(fila++, 4, "Alineacion Ciguenal: %.2f mm", monoblock->alineacionCiguenal);
+                mvprintw(fila++, 2, "Estado de la Pieza: %s", estadoPiezaTexto(monoblock->estadoPieza));
             }
 
             mvprintw(fila++, 4, "==============================================");
@@ -387,5 +410,16 @@ void imprimirDetallesTicket(int id_usuario){
             getch();
             return;
         }
+    }
+}
+
+// 0 = Verificación (no se requiere nada)
+// 1 = Rectificación
+// 2 = Reconstrucción
+const char* estadoPiezaTexto(int estadoPieza) {
+    switch (estadoPieza) {
+    case 1: return "Rectificación";
+    case 2: return "Reconstrucción";
+    default: return "Verificación";
     }
 }

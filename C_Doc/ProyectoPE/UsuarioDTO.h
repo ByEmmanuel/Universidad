@@ -21,19 +21,39 @@ typedef struct {
     int numValvulas;           // Número de válvulas en la culata
     double presionPrueba;      // Presión medida en prueba hidráulica (bar)
     int tieneFisuras;          // 1 = Sí, 0 = No (fisuras detectadas)
+
+    float desgaste;      // Desgaste en altura de culata (mm o %)
+    float tolerancia;    // Tolerancia de rectificado (mm)
+
     float alturaOriginal;      // Altura original de la culata (mm)
     float alturaActual;        // Altura actual de la culata tras desgaste (mm)
     float alturaMinima;        // Altura mínima aceptable (según fabricante) (mm)
+
+    /* 0 = No intervención
+     * 1 = Rectificación
+     * 2 = Reconstrucción
+     */
+    int estadoPieza;
 } Culata;
 
 typedef struct {
     int id_pieza;              // IDENTIFICADOR UNICO DE LA PIEZA -> TODAS LAS PIEZAS DE UN MOTOR DEBEN CONTENER EL MISMO ID
     int id_usuario;            // IDENTIFICADOR UNICO DE LA PIEZA POR USUARIO, ES DECIR, A QUE USUARIO PERTENECE ESTA PIEZA
     int numCilindros;           // Número de cilindros en el bloque
+
     float diametroCilindro;     // Diámetro nominal de los cilindros (mm)
     float ovalizacion;          // Deformación del cilindro (mm)
     float alineacionCiguenal;   // Desalineación del cigüeñal respecto al bloque (mm)
     float desgasteCilindros;    // Desgaste promedio de los cilindros (mm)
+
+    float desgaste;      // Desgaste en altura de culata (mm o %)
+    float tolerancia;    // Tolerancia de rectificado (mm)
+
+    /* 0 = No intervención
+     * 1 = Rectificación
+     * 2 = Reconstrucción
+     */
+    int estadoPieza;
 } Monoblock;
 
 typedef struct {
@@ -53,14 +73,18 @@ typedef struct {
     Monoblock* monoblock;       // Monoblock asociado
 
     char material[30];          // Material del bloque/cabeza (Aluminio, Hierro, etc.)
+    /** Movido a culata y monoblock
     float desgaste;             // Nivel de desgaste general (0-100%)
     float tolerancia;           // Tolerancia máxima permitida de desgaste (mm)
+     */
 
     float medidaOriginal;       // Medida original de referencia (por ejemplo, diámetro cilindros) (mm)
     float medidaActual;         // Medida actual tras desgaste (mm)
 
+    /** Movido a culata y monoblock
     int necesitaRectificacion;  // 1 = Sí, 0 = No (dentro de tolerancia)
     int necesitaReconstruccion; // 1 = Sí, 0 = No (fuera de tolerancia: hay que agregar material)
+    */
 } Motor;
 
 //Entidad Usuario
@@ -147,14 +171,18 @@ typedef struct {
     //Monoblock* monoblock;           // Puntero a Monoblock asociada
 
     char* material;              // Material principal del motor (Hierro, Aluminio, etc.)
-
+    /*
     float desgaste;                 // Porcentaje de desgaste (0-100%)
     float tolerancia;               // Margen máximo de desgaste permitido (mm)
+    */
     float medidaOriginal;           // Medida nominal de fábrica (mm)
     float medidaActual;             // Medida actual después de desgaste (mm)
 
+    /** movidos a culata y monoblock
     int necesitaRectificacion;      // 1 = Sí (rectifica) / 0 = No
     int necesitaReconstruccion;     // 1 = Sí (reconstruir por daño grave) / 0 = No
+    */
+
 } Paramsmotor;
 
 Usuario inicializarUsuario(int id_usuario, const char* folio,const char* nombreUsuario,
@@ -164,7 +192,8 @@ Ticket inicializarTicket(Usuario* usuario,Motor* motor ,char* detalles, char* de
 
 extern ArrayTickets arrayTickets;  // ← accedida desde otros .c
 extern ArrayUsuarios arrayUsuarios; // ← accedida desde otros .c
-extern ArrayPiezas arrayMotores;
+extern ArrayPiezas arrayMotoresUsuarios;
+extern ArrayPiezas arrayMotoresPrecargados;
 extern ArrayPiezas arrayPiezas;
 //private -> Declarada en UsuarioDTO.c
 extern int id_UsuarioGlobal;
@@ -191,7 +220,7 @@ int guardarTicket(Ticket ticket);
 Motor* inicializarMotor(Paramsmotor paramsmotor, int id_usuario, int id_pieza, void* tipoDePieza, int numTipoDepieza);
 
 Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,int fisuras,
-    float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario);
+    float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario, int estadoPieza);
 
 
 
@@ -203,6 +232,7 @@ Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,i
 void listarUsuarios(ArrayUsuarios listaUsuarios);
 
 void listarFoliosUsuarios();
+void listarNumerosDeSerieMotores();
 
 void listarPiezas();
 

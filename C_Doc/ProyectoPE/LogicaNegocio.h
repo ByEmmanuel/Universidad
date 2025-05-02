@@ -32,19 +32,21 @@ int dudas();
 int salir();
 
 Usuario* obtenerUsuarioByIdUsuario(int id);
-Motor* obtenerMotorPorNumeroDeSerie(const char* numeroDeSerieMotor);
+Motor* obtenerMotorPorNumeroDeSerie(const ArrayPiezas* array, const char* numeroDeSerieMotor) ;
 Motor* obtenerMotorByIdUsuario(int id);
 Ticket* obtenerTicketByIdUsuario(int id_usuario);
-int obtenerIdSiExisteUsuario();
+int obtenerIdSiExisteUsuario(int POS_Y, int POS_X);
 
-void imprimirDetallesTicket(int id);
 // FUNCIONES EXCLUSIVAS DE REGISTRAR MOTORES
 
+int registrarMotor();
 int registrarCulata();
+int registrarMonoblock();
 int asignarMotorUsuario(Usuario* usuario, Motor* motor);
 int asignarPiezaMotor(Usuario* usuario, void* pieza, int tipoDePieza);
-int verificarSiNecesitaRectificacion(float alturaOriginal, float alturaActual, float alturaMinima);
-int verificarSiNecesitaReconstruccion(float alturaOriginal, float alturaActual, float alturaMinima);
+int evaluarEstadoCulata(float alturaOriginal, float alturaActual, float alturaMinima, float tolerancia);
+const char* estadoPiezaTexto(int estadoPieza);
+void imprimirDetallesMotor(Motor* motor);
 
 /**
  * @deprecated
@@ -58,11 +60,8 @@ const char* tipoCombustibleToStr(TipoCombustible tipo);
 int generarNota(int id);
 int generarTicket(int id);
 int generarFactura(int id);
+void imprimirDetallesTicket(int id);
 
-//FUNCIONEs DE TESTEO, NO TENER EN PRODUCCION
-void testing(int encendido);
-void agregarUsuarios();
-void agregarPiezas();
 
 
 

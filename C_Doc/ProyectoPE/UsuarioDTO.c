@@ -20,7 +20,8 @@ int id_piezaGlobal = 0;
 ArrayUsuarios arrayUsuarios = {0};
 ArrayTickets arrayTickets = {0};  // ← variable global
 ArrayList array_list;
-ArrayPiezas arrayMotores = {0};
+ArrayPiezas arrayMotoresPrecargados = {0};
+ArrayPiezas arrayMotoresUsuarios = {0};
 ArrayPiezas arrayPiezas = {0};
 
 
@@ -74,41 +75,29 @@ Motor* inicializarMotor(Paramsmotor params, const int id_usuario, const int id_p
     asignString(pz->material, params.material, sizeof(pz->material));
     pz->modelo = params.modelo;
     pz->fabricante = params.fabricante;
-
+    pz->carroAsociado = params.carroAsociado;
     pz->numeroSerie = params.numeroSerie;
     // Datos técnicos
     pz->anno = params.anno;
     pz->cilindrada = params.cilindrada;
     pz->compresionOriginal = params.compresionOriginal;
+    /*
     pz->desgaste = params.desgaste;
     pz->tolerancia = params.tolerancia;
+    */
     pz->medidaOriginal = params.medidaOriginal;
     pz->medidaActual = params.medidaActual;
-    pz->necesitaRectificacion = params.necesitaRectificacion;
-    pz->necesitaReconstruccion = params.necesitaReconstruccion;
+
 
     pz->culata = NULL;
     pz->monoblock = NULL;
 
-    // Asignar Culata o Monoblock
-    /*
-     *if (tipoPieza == 1) {        // Culata
-        pz->culata = (Culata*)tipoDePieza;
-        pz->monoblock = NULL;
-    } else if (tipoPieza == 2) { // Monoblock
-        pz->monoblock = (Monoblock*)tipoDePieza;
-        pz->culata = NULL;
-    } else {
-        pz->culata = NULL;
-        pz->monoblock = NULL;
-    }
-    */
 
     return pz;
 }
 
 Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,int fisuras,
-    float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario){
+    float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario, int estadoPieza){
 
     //Variables que estan en Culata
     Culata* culata = malloc(sizeof(Culata));
@@ -124,6 +113,7 @@ Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,i
     culata->alturaOriginal = alturaOriginal;
     culata->alturaActual = alturaActual;
     culata->alturaMinima = alturaMinima;
+    culata->estadoPieza = estadoPieza;
     //Sumar 1 al contador de piezas globales
     id_piezaGlobal++;
     return culata;
@@ -147,22 +137,22 @@ int guardarUsuarioArray(Usuario usuario) {
 }
 
 int guardarMotorArray(void* motor, const int id_usuario) {
-    if (arrayMotores.tamanno >= arrayMotores.capacidad) {
+    if (arrayMotoresUsuarios.tamanno >= arrayMotoresUsuarios.capacidad) {
         // Si la capacidad está llena, redimensionamos el arreglo
-        const int nuevaCapacidad = arrayMotores.capacidad == 0 ? 1 : arrayMotores.capacidad * 2;
+        const int nuevaCapacidad = arrayMotoresUsuarios.capacidad == 0 ? 1 : arrayMotoresUsuarios.capacidad * 2;
         //void* nuevoArray = (Motor*) realloc(arrayMotores.datos, nuevaCapacidad * sizeof(void*));
-        void* nuevoArray = realloc(arrayMotores.datos, nuevaCapacidad * sizeof(void*));
+        void* nuevoArray = realloc(arrayMotoresUsuarios.datos, nuevaCapacidad * sizeof(void*));
         if (nuevoArray == NULL) {
             printf("Error al redimensionar el array de Piezas.\n");
             return -1;  // Si realloc falla, retornar error
         }
-        arrayMotores.datos = nuevoArray;  // Asignar el nuevo arreglo redimensionado
-        arrayMotores.capacidad = nuevaCapacidad; // Actualizar la capacidad
+        arrayMotoresUsuarios.datos = nuevoArray;  // Asignar el nuevo arreglo redimensionado
+        arrayMotoresUsuarios.capacidad = nuevaCapacidad; // Actualizar la capacidad
     }
-    arrayMotores.datos[arrayMotores.tamanno] = motor;  // Guardar puntero al motor
-    arrayMotores.tamanno++;  // Incrementar el número de elementos
+    arrayMotoresUsuarios.datos[arrayMotoresUsuarios.tamanno] = motor;  // Guardar puntero al motor
+    arrayMotoresUsuarios.tamanno++;  // Incrementar el número de elementos
     //Agregar Id Usuario generico por cada motor
-    arrayMotores.id_usuario = id_usuario;
+    arrayMotoresUsuarios.id_usuario = id_usuario;
     return 1;  // Éxito
 }
 
@@ -209,8 +199,8 @@ Usuario* obtenerUsuarioByIdUsuario(const int id) {
 }
 
 Motor* obtenerMotorByIdUsuario(const int id) {
-    for (int i = 0; i < arrayMotores.tamanno; i++) {
-        Motor* motor = (Motor*)arrayMotores.datos[i]; // <-- Convertir el void* a Motor* CORRECTAMENTE
+    for (int i = 0; i < arrayMotoresUsuarios.tamanno; i++) {
+        Motor* motor = (Motor*)arrayMotoresUsuarios.datos[i]; // <-- Convertir el void* a Motor* CORRECTAMENTE
         if (motor->id_usuario == id) {
             return motor;  // Ya es un puntero, no necesitas &
         }
@@ -221,16 +211,16 @@ Motor* obtenerMotorByIdUsuario(const int id) {
     getch();
     return NULL;
 }
-//Sin usos
-Motor* obtenerMotorPorNumeroDeSerie(const char* numeroDeSerieMotor){
-    for (int i = 0; i < arrayMotores.tamanno; i++){
-        Motor* motor = (Motor*)arrayMotores.datos[i];
-        if (motor->numeroSerie == numeroDeSerieMotor){
+
+Motor* obtenerMotorPorNumeroDeSerie(const ArrayPiezas* array, const char* numeroDeSerieMotor) {
+    for (int i = 0; i < array->tamanno; i++) {
+        Motor* motor = (Motor*) array->datos[i];
+        if (strEquals(motor->numeroSerie, numeroDeSerieMotor)){
             return motor;
         }
     }
     clear();
-    mvprintw(12, 10, "El numero de serie ingresado no coincide con ningun numero de serie del sistema");
+    mvprintw(12, 10, "El número de serie ingresado no coincide con ningún registro.");
     getch();
     return NULL;
 }
@@ -263,8 +253,8 @@ Ticket* obtenerTicketByIdUsuario(int id_usuario){
 
 }
 
-int obtenerIdSiExisteUsuario(){
-    const int id_usuario = leerIntSeguro(6,10,10000,"Ingrese Id Usuario: ");
+int obtenerIdSiExisteUsuario(const int POS_Y, const int POS_X){
+    const int id_usuario = leerIntSeguro(POS_Y,POS_X,10000,"Ingrese Id Usuario: ");
     RETURN_IF_ESC(id_usuario);
     const Usuario* usuario = obtenerUsuarioByIdUsuario(id_usuario);
     if (usuario == NULL) {
@@ -297,8 +287,8 @@ void listarPiezas(){
     mvprintw(fila++, 15, "LISTADO DE TODAS LAS PIEZAS");
     mvprintw(fila++, 10, "==============================================");
 
-    for (size_t i = 0; i < arrayMotores.tamanno; i++) {
-        Motor* pieza = (Motor*) arrayMotores.datos[i];
+    for (size_t i = 0; i < arrayMotoresUsuarios.tamanno; i++) {
+        Motor* pieza = (Motor*) arrayMotoresUsuarios.datos[i];
         fila++;
         mvprintw(fila++, 2, "ID Pieza: %d", pieza->id_pieza);
         mvprintw(fila++, 2, "ID Usuario: %d", pieza->id_usuario);
@@ -309,24 +299,27 @@ void listarPiezas(){
         mvprintw(fila++, 2, "Número de Serie: %s", pieza->numeroSerie);
         mvprintw(fila++, 2, "Tipo de Combustible: %s", tipoCombustibleToStr(pieza->tipoCombustible));
         mvprintw(fila++, 2, "Material: %s", pieza->material);
+        /*
         mvprintw(fila++, 2, "Desgaste: %.2f%%", pieza->desgaste * 100.0f);
         mvprintw(fila++, 2, "Tolerancia: %.4f mm", pieza->tolerancia);
+        */
         mvprintw(fila++, 2, "Medida Original: %.4f mm", pieza->medidaOriginal);
         mvprintw(fila++, 2, "Medida Actual: %.4f mm", pieza->medidaActual);
-        mvprintw(fila++, 2, "¿Rectificar?: %s", pieza->necesitaRectificacion ? "Sí" : "No");
+
 
         if (pieza->culata != NULL) {
-            Culata* culata = (Culata*)pieza;
             mvprintw(fila++, 4, "Tipo de Pieza: Culata");
-            mvprintw(fila++, 4, "N° Válvulas: %d", culata->numValvulas);
-            mvprintw(fila++, 4, "Presión Prueba: %.2f bar", culata->presionPrueba);
-            mvprintw(fila++, 4, "Tiene Fisuras: %s", culata->tieneFisuras ? "Sí" : "No");
+            mvprintw(fila++, 4, "N° Válvulas: %d", pieza->culata->numValvulas);
+            mvprintw(fila++, 4, "Presión Prueba: %.2f bar", pieza->culata->presionPrueba);
+            mvprintw(fila++, 4, "Tiene Fisuras: %s", pieza->culata->tieneFisuras ? "Sí" : "No");
+            mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(pieza->culata->estadoPieza));
         } else if (pieza->monoblock != NULL) {
             Monoblock* monoblock = (Monoblock*)pieza;
             mvprintw(fila++, 4, "Tipo de Pieza: Monoblock");
             mvprintw(fila++, 4, "N° Cilindros: %d", monoblock->numCilindros);
             mvprintw(fila++, 4, "Diámetro Cilindros: %.2f mm", monoblock->diametroCilindro);
             mvprintw(fila++, 4, "Alineación Cigüeñal: %.2f mm", monoblock->alineacionCiguenal);
+            mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(monoblock->estadoPieza));
         }
 
         mvprintw(fila++, 10, "----------------------------------------------");

@@ -394,6 +394,16 @@ void imprimirTextoMultilinea(int fila, int columna, const char* texto, int ancho
     }
 }
 
+int arrayPiezasSize(ArrayPiezas* list) {
+    int tamanno = 0;
+    for (int i = 0; i < list->tamanno; i++) {
+        if (list->datos[i] != NULL) {
+            tamanno++;
+        }
+    }
+    return tamanno;
+}
+
 void cleanScreen(){
     //clear();
     printf("\033[2J\033[H");

@@ -16,13 +16,12 @@
 #include <stdlib.h>
 #include <time.h>
 #include "LogicaNegocio.h"
-#include "UsuarioDTO.h"
 #include "UserInterface.h"
 #include <pthread.h>
 #include <string.h>
 #include <unistd.h>
-#include "Util.h"
 
+#include "Testing.h"
 
 // Simulación de base de datos de usuarios y contraseñas
 
@@ -35,12 +34,18 @@ volatile int running = 1;
 int main(){
     // Inicio del programa
     /** TESTING MODE
+     *  motoresDB = CANTIDAD DE MOTORES QUE TIENE EN EL SISTEMA (Precargando su informacion total) USANDO NUMERO DE SERIE
+     *  variable donde se guardanLosMotoresPrecargados : (arrayMotoresPrecargados);
+     *  Funcion donde se precargan los motores (precargarMotoresDB(););
      *  0 = no testing mode
-     *  1 = solo agregar usuarios
-     *  2 = solo agregar piezas
-     *  3 = agregar usuarios y piezas
+     *  1 = agregar usuarios
+     *  2 = agregar motores y piezas -> Estos pertenecen a un usuario --> ¿Porque agregarias motores sin un usuario?
+     *  3 = agregar usuarios y (motores y piezas) -> Estos pertenecen a un usuario
+     *  4 = agregar usuarios con motoresDB precargados
+     *  5 = agregar usuarios, (motores y piezas) y agregar MotoresPrecargados;
+     *  6 = solo precargar motores (arrayMotoresPrecargados)
      */
-    testing(3);
+    testing(1);
     system("reset");
     clear();
     refresh();
@@ -49,12 +54,9 @@ int main(){
 
     //sleep(1);
     if (loginUsuario() == 1){
-        //imprimirMenuPrincipal();
-        //mostrarVentana(1);
         menuPrincipal();
     }
     //imprimirPiezasPorUsuario(0);
-
 
     return 0;
 }

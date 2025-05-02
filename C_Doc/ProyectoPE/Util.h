@@ -33,7 +33,7 @@ ArrayList* arrayListNew(size_t capacidadInicial);
  */
 void arrayListAdd(ArrayList* list, void* element);
 void* arrayListGet(ArrayList* list, size_t index);
-size_t arrayListSize(ArrayList* list);
+int arrayPiezasSize(ArrayPiezas* list);
 void arrayListFree(ArrayList* list);
 void arrayListClear(ArrayList* list);
 //int arrayListContains(ArrayList* list, void* element, bool (*equals)(void*, void*)); // Verifica si contiene un elemento

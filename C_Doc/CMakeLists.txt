@@ -23,6 +23,8 @@ add_executable(C_Doc
         ProyectoPE/Clientes.c
         ProyectoPE/ConstantesMotores.h
         ProyectoPE/RegistrarMotor.c
+        ProyectoPE/Testing.c
+        ProyectoPE/Testing.h
 )
 
 target_link_libraries(C_Doc ${CURSES_LIBRARIES})

@@ -20,14 +20,12 @@ int modificarCliente(){
     cleanScreen();
     Usuario* usuarioNuevo = obtenerUsuarioByIdUsuario(id_Cliente);
     if (usuarioNuevo == NULL) {
-        mvprintw(13,15,"Cliente no encontrado.\n");
-        getch();
+        imprimirMensaje(13,15,"Cliente no encontrado");
         return -1;
     }
 
     if (strIsEmpty(usuarioNuevo->nombreUsuario) || strIsEmpty(usuarioNuevo->email) || strIsEmpty(usuarioNuevo->nombreUsuario)) {
-        mvprintw(12,15,"Cliente con datos incompletos.\n");
-        getch();
+        imprimirMensaje(12,15,"Cliente con datos incompletos");
         return -1;
     }
 
@@ -68,8 +66,7 @@ int modificarCliente(){
             reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Apellido: ");
             if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
                 asignString(usuarioNuevo->apellido, reemplazoUsuario, sizeof(usuarioNuevo->apellido));
-                mvprintw(12,15,"Modificación realizada con éxito.\n");
-                getch();
+                imprimirMensaje(12,15,"Modificación realizada con éxito");
                 break;
             }
             printf("Error al leer entrada.\n");
@@ -78,7 +75,7 @@ int modificarCliente(){
             clear();
             refresh();
         usuarioNuevo->celular = leerIntSeguro(10,15,10,"Ingrese nuevo Número Celular: ");
-            if (usuarioNuevo->celular != 0) mvprintw(12,15,"Modificación realizada con éxito.\n");
+            if (usuarioNuevo->celular != 0) imprimirMensaje(12,15,"Modificación realizada con éxito");
             getch();
             break;
         case 4:
@@ -194,9 +191,7 @@ int cliente(){
         const Usuario usuario = inicializarUsuario(getIdUsuarioLogico(), folio, nombreUsr, apellidoUsr, celularUsr, emailUsr, contactoUsr);
         mostrarUsuario(usuario);
         guardarUsuarioArray(usuario);
-        clear();
-        mvprintw(10,13,"Registro Correcto, Presione Enter");
-        getch();
+        imprimirMensaje(10,13,"Registro Correcto, Presione Enter");
 
     } else if (opcCliente == 2){
         modificarCliente();
