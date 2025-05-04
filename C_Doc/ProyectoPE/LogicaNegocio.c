@@ -77,7 +77,7 @@ int servicio(){
     char* menuCinco[SIZE_TRES] = {"CULATA", "MONOBLOCK", "Listar Piezas"};
     */
 
-    int opc = mostrarMenu(4,".");
+    int opc = mostrarMenu(4," ");
     RETURN_IF_ESC(opc);
     int opcusrParteMotor;
     switch (opc){
@@ -89,7 +89,7 @@ int servicio(){
         case 1:
             //Ingreso culata o monoblock
             clear();
-            opcusrParteMotor = mostrarMenu(5,".");
+            opcusrParteMotor = mostrarMenu(5," ");
             RETURN_IF_ESC(opcusrParteMotor);
             listarFoliosUsuarios();
             if (opcusrParteMotor == 0){
@@ -122,9 +122,16 @@ int servicio(){
                 getch();
             }
             break;
-        case 3:
-            //Rectificar
-
+        case 3:{
+                //Rectificar
+                clear();
+                int id_usuario = obtenerIdSiExisteUsuario(10,10);
+                Motor* motorUsr = obtenerMotorByIdUsuario(id_usuario);
+                if (motorUsr != NULL && motorUsr->culata != NULL){
+                    rectificarCulata(motorUsr->culata, id_usuario);
+                    imprimirBarraDeCarga(150,"Rectificando culata");
+                }
+            }
             break;
         case 4:
             //Ensamble
@@ -146,7 +153,7 @@ int servicio(){
 }
 
 int almacen(){
-    const int opcUsr = mostrarMenu(8, ".") + 1;
+    const int opcUsr = mostrarMenu(8, " ") + 1;
     RETURN_IF_ESC(opcUsr);
     switch (opcUsr){
     case 1:
@@ -241,6 +248,24 @@ int asignarPiezaMotor(Usuario* usuario, void* pieza, int tipoDePieza){
  * 0 = No intervención
  * 1 = Rectificación
  * 2 = Reconstrucción
+ */
+
+/**
+ *RECTIFICACION
+alturaOriginal = 130.0;
+alturaActual   = 128.9;
+alturaMinima   = 128.5;
+tolerancia     = 1.5;
+// desgaste = 1.1 → válido
+ */
+
+/**
+ *RECONSTRUCCION
+alturaOriginal = 130.0;
+alturaActual   = 127.0;
+alturaMinima   = 127.5;
+tolerancia     = 2.0;
+alturaActual < alturaMinima → reconstrucción
  */
 int evaluarEstadoCulata(const float alturaOriginal, const float alturaActual, const float alturaMinima, const float tolerancia) {
     const float desgaste = alturaOriginal - alturaActual;

@@ -141,7 +141,7 @@ void agregarPiezas() {
     //piezaUsuario.tipoPieza = CULATA;
     const int id_usuario = 0, id_usuario_2 = 1;
     Motor* motorUsuario_1 = inicializarMotor(motores_registrados[0],id_usuario,0,0,0);
-    Culata* pzc = inicializarCulata(16, 10, 2,2,.124f,.123f,.120f, id_usuario,1);
+    Culata* pzc = inicializarCulata(16, 10, 2,2,.124f,.123f,.120f, id_usuario);
     //piezaUsuario.tipoPieza = CULATA;
     guardarMotorArray(motorUsuario_1,id_usuario);  // Se guarda como puntero genérico
     guardarPiezaArray(pzc,id_usuario);
@@ -151,7 +151,7 @@ void agregarPiezas() {
 
 
     Motor* motorUsuario_2 = inicializarMotor(motores_registrados[1], id_usuario_2,1,0,0);
-    Culata* pzc2 = inicializarCulata(18, 12, 1,14,.340f,.338f,.339f, id_usuario_2,2);
+    Culata* pzc2 = inicializarCulata(18, 12, 1,14,.340f,.338f,.339f, id_usuario_2);
     //piezaUsuario2.tipoPieza = CULATA;
     guardarMotorArray(motorUsuario_2, id_usuario_2);
     guardarPiezaArray(pzc2, id_usuario_2);

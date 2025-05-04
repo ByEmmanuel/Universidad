@@ -42,6 +42,7 @@ int obtenerIdSiExisteUsuario(int POS_Y, int POS_X);
 int registrarMotor();
 int registrarCulata();
 int registrarMonoblock();
+void rectificarCulata(Culata* culata, int id_usuario);
 int asignarMotorUsuario(Usuario* usuario, Motor* motor);
 int asignarPiezaMotor(Usuario* usuario, void* pieza, int tipoDePieza);
 int evaluarEstadoCulata(float alturaOriginal, float alturaActual, float alturaMinima, float tolerancia);

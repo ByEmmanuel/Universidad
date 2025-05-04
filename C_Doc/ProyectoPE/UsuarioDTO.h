@@ -220,7 +220,7 @@ int guardarTicket(Ticket ticket);
 Motor* inicializarMotor(Paramsmotor paramsmotor, int id_usuario, int id_pieza, void* tipoDePieza, int numTipoDepieza);
 
 Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,int fisuras,
-    float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario, int estadoPieza);
+    float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario);
 
 
 

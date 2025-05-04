@@ -97,7 +97,7 @@ Motor* inicializarMotor(Paramsmotor params, const int id_usuario, const int id_p
 }
 
 Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,int fisuras,
-    float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario, int estadoPieza){
+    float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario){
 
     //Variables que estan en Culata
     Culata* culata = malloc(sizeof(Culata));
@@ -113,7 +113,7 @@ Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,i
     culata->alturaOriginal = alturaOriginal;
     culata->alturaActual = alturaActual;
     culata->alturaMinima = alturaMinima;
-    culata->estadoPieza = estadoPieza;
+    culata->estadoPieza = -1;
     //Sumar 1 al contador de piezas globales
     id_piezaGlobal++;
     return culata;
@@ -313,13 +313,18 @@ void listarPiezas(){
             mvprintw(fila++, 4, "Presión Prueba: %.2f bar", pieza->culata->presionPrueba);
             mvprintw(fila++, 4, "Tiene Fisuras: %s", pieza->culata->tieneFisuras ? "Sí" : "No");
             mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(pieza->culata->estadoPieza));
-        } else if (pieza->monoblock != NULL) {
+        }else{
+            mvprintw(fila++, 4, "Culata : (NO Asignada)");
+        }
+        if (pieza->monoblock != NULL) {
             Monoblock* monoblock = (Monoblock*)pieza;
             mvprintw(fila++, 4, "Tipo de Pieza: Monoblock");
             mvprintw(fila++, 4, "N° Cilindros: %d", monoblock->numCilindros);
             mvprintw(fila++, 4, "Diámetro Cilindros: %.2f mm", monoblock->diametroCilindro);
             mvprintw(fila++, 4, "Alineación Cigüeñal: %.2f mm", monoblock->alineacionCiguenal);
             mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(monoblock->estadoPieza));
+        }else{
+            mvprintw(fila++, 4, "Monoblock : (NO Asignada)");
         }
 
         mvprintw(fila++, 10, "----------------------------------------------");
@@ -339,10 +344,24 @@ void listarPiezas(){
 void listarFoliosUsuarios(){
     int y = 3;
     for (int i = 0; i < arrayUsuarios.tamanno; i++) {
-        mvprintw(y, 40, "Activo?: %s", arrayUsuarios.datos[i].activo ? "True" : "False");
-        mvprintw(y, 60, "ID: %d", arrayUsuarios.datos[i].id_usuario);
-        mvprintw(y, 70, "Nombre: %s", arrayUsuarios.datos[i].nombreUsuario);
-        mvprintw(y, 90, "Folio: %s", arrayUsuarios.datos[i].folio);
+        Usuario usuario = arrayUsuarios.datos[i];
+
+        mvprintw(y, 40, "Activo?: %s", usuario.activo ? "True" : "False");
+        mvprintw(y, 60, "ID: %d", usuario.id_usuario);
+        mvprintw(y, 70, "Nombre: %s", usuario.nombreUsuario);
+        mvprintw(y, 90, "Folio: %s", usuario.folio);
+
+        if (usuario.motor != NULL) {
+            mvprintw(y, 110, "Numero de serie del motor: %s", usuario.motor->numeroSerie);
+
+            if (usuario.motor->culata != NULL) {
+                mvprintw(y, 180, "(Culata asignada)");
+            } else {
+                mvprintw(y, 180, "(Culata no asignada)");
+            }
+        } else {
+            mvprintw(y, 105, "Motor no asignado");
+        }
 
         y++; // Dejar una línea en blanco entre registros
     }

@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <ncurses.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #define ESC 27
 #define SIZE_DOS 2
@@ -16,6 +17,11 @@
 #define SIZE_SEIS 6
 #define SIZE_SIETE 7
 int numOpciones = 0;
+
+//Define para la barra de carga
+#define BAR_WIDTH 50      // Longitud de la barra de carga
+#define DELAY 100000       // Microsegundos entre cada avance
+#define BAR_WIDTH 50  // Ancho de la barra de carga
 
 
 int (*funcionesInt[SIZE_SIETE])() = {
@@ -136,8 +142,38 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     }
 }
 
-void imprimirMensaje(int y, int x, char* pregunta){
+void imprimirMensaje(const int POS_Y, const int POS_X, char* pregunta){
     clear();
-    mvprintw(y,x,"%s",pregunta);
+    mvprintw(POS_Y,POS_X,"%s",pregunta);
     getch();
+}
+
+void imprimirBarraDeCarga(const int delay_ms, const char* mensaje) {
+    noecho();
+    curs_set(FALSE);
+    clear();
+
+
+    int fila = LINES / 2;
+    int columna = (COLS - BAR_WIDTH) / 2;
+    mvprintw(fila-2, columna, mensaje);
+
+    // Dibujar límites de la barra
+    mvprintw(fila, columna, "[");
+    mvprintw(fila, columna + BAR_WIDTH + 1, "]");
+
+    for (int i = 0; i <= BAR_WIDTH; i++) {
+        mvprintw(fila, columna + 1 + i, "=");
+
+        // Mostrar porcentaje
+        mvprintw(fila + 2, columna, "Progreso: %d%%", (i * 100) / BAR_WIDTH);
+        refresh();
+        usleep(delay_ms * 1000);  // Convertir milisegundos a microsegundos
+    }
+
+    // Mostrar mensaje final
+    mvprintw(fila + 4, columna, "Carga completada. Presiona una tecla para salir.");
+    refresh();
+    getch();    // Esperar tecla
+
 }

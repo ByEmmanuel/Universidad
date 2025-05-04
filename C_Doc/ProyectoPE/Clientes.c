@@ -41,7 +41,7 @@ int modificarCliente(){
     mvprintw(8, 1, "Contacto: %s", usuarioNuevo->contacto);
     refresh();
 
-    const int opcUsr = mostrarMenu(3,".") + 1;
+    const int opcUsr = mostrarMenu(3," ") + 1;
 
     //char reemplazoUsuario[50]; // Buffer para almacenar entrada
     char* reemplazoUsuario;
@@ -144,7 +144,7 @@ int cliente(){
     //Agregar valores (Todo en un String A una lista)
 
     // MENU CLIENTE
-    int opcCliente = mostrarMenu(2,".") + 1;
+    int opcCliente = mostrarMenu(2," ") + 1;
     char* emailUsr;
     clear();
     refresh();

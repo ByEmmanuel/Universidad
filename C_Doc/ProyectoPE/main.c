@@ -45,7 +45,7 @@ int main(){
      *  5 = agregar usuarios, (motores y piezas) y agregar MotoresPrecargados;
      *  6 = solo precargar motores (arrayMotoresPrecargados)
      */
-    testing(1);
+    testing(0);
     system("reset");
     clear();
     refresh();
@@ -64,7 +64,7 @@ int main(){
 void menuPrincipal(){
     initscr();
     while (bandera){
-        const int opc = mostrarMenu(1,".");
+        const int opc = mostrarMenu(1," ");
         ejecutarOpcion(opc);
     }
 

@@ -130,15 +130,15 @@ int registrarCulata(){
 
     //Esto debe ser el folio, pero esta agregado asi por temas de testeo
     //if (mostrarMenu(7, "¿Tienes el numero de serie del motor?") == 1){
-    char* numeroDeSerieUsr = leerStringSeguro(10,10,25,"Ingrese numero de serie:");
+    char* numeroDeSerieUsr = leerStringSeguro(10,10,25,"Ingrese numero de serie del motor asignado al cliente:");
     if (obtenerMotorPorNumeroDeSerie(&arrayMotoresUsuarios, numeroDeSerieUsr)  != NULL){
-    clear();
-    const int id_usuario = obtenerIdSiExisteUsuario(10,10);
+    //clear();
+    const int id_usuario = obtenerIdSiExisteUsuario(13,10);
     RETURN_IF_ESC(id_usuario);
     //Esta linea impide que si el usuario no existe no se hara nada
 
         if (obtenerUsuarioByIdUsuario(id_usuario) == NULL) return -1;
-        imprimirMensaje(10,10, numeroDeSerieUsr);
+        //imprimirMensaje(10,10, numeroDeSerieUsr);
         Motor* motorUsuario = obtenerMotorPorNumeroDeSerie(&arrayMotoresPrecargados,numeroDeSerieUsr);
         if (motorUsuario == NULL){
             imprimirMensaje(10,10,"El numero de serie es incorrecto o no coincide con ningun motor en la lista");
@@ -165,12 +165,33 @@ int registrarCulata(){
 
             //EstadoPieza evaluarEstadoPieza(float medidaOriginal, float medidaActual, float toleranciaMax) {
             int estadoPieza = evaluarEstadoCulata(alturaOriginal, alturaActual, alturaMinima,  tolerancia);
+
+            /**
+             *RECTIFICACION
+            alturaOriginal = 130.0;
+            alturaActual   = 128.9;
+            alturaMinima   = 128.5;
+            tolerancia     = 1.5;
+            // desgaste = 1.1 → válido
+
+            alturaOriginal = 130.0;
+            alturaActual   = 127.0;
+            alturaMinima   = 127.5;
+            tolerancia     = 2.0;
+            alturaActual < alturaMinima → reconstrucción
+             */
+            if (estadoPieza == 1){
+                imprimirMensaje(10,10,"La pieza necesita Rectificacion, porfavor ve al apartado de rectificacion");
+            }else{
+                imprimirMensaje(10,10,"La pieza necesita Reeconstruccion, porfavor ve al apartado de rectificacion");
+
+            }
             //Hacer operaciones aritmeticas para ver si necesita una rectificacion
 
             mvprintw(y +=2, 55, "Tiene Fisuras?: %d", tieneFisuras);
             //mvprintw(y++, 55, "Tipo Combustible: %d", tipo_combustible);
             getch();
-            Culata* pzc = inicializarCulata(id_piezaGlobal, numValvulas, presionPrueba, tieneFisuras, alturaOriginal,alturaActual, alturaMinima,id_usuario,estadoPieza);
+            Culata* pzc = inicializarCulata(id_piezaGlobal, numValvulas, presionPrueba, tieneFisuras, alturaOriginal,alturaActual, alturaMinima,id_usuario);
             guardarPiezaArray(pzc,id_usuario);
             motorUsuario->culata = pzc;
             id_piezaGlobal++;
@@ -250,4 +271,10 @@ void imprimirDetallesMotor(Motor* motor){
 
 
     getch();
+}
+
+void rectificarCulata(Culata* culata, int id_usuario){
+    if (culata != NULL && culata->id_usuario == id_usuario){
+        culata->estadoPieza = 1;
+    }
 }

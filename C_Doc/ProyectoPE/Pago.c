@@ -418,6 +418,7 @@ void imprimirDetallesTicket(int id_usuario){
 // 2 = Reconstrucción
 const char* estadoPiezaTexto(int estadoPieza) {
     switch (estadoPieza) {
+    case -1: return "Falta trabajo en la pieza, si la pieza pide rectificacion ve al apartado de rectificacion";
     case 1: return "Rectificación";
     case 2: return "Reconstrucción";
     default: return "Verificación";
