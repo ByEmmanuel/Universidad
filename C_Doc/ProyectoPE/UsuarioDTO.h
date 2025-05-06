@@ -33,7 +33,18 @@ typedef struct {
      * 1 = Rectificación
      * 2 = Reconstrucción
      */
-    int estadoPieza;
+    int estadoTemporalPieza;
+
+    /*    Operaciones Realizadas con el motor
+     *  0 : No se han realizado operaciones con el motor
+     *  1 : Desmote del motor
+     *  2 : Lavado inicial
+     *  3 : Rectificacion o Reconstruccion
+     *  4 : Lavado final
+     *  5 : Pruebas Unitarias
+     *  6 : Montado del motor
+     */
+    int operacionesMotor;
 } Culata;
 
 typedef struct {
@@ -81,10 +92,6 @@ typedef struct {
     float medidaOriginal;       // Medida original de referencia (por ejemplo, diámetro cilindros) (mm)
     float medidaActual;         // Medida actual tras desgaste (mm)
 
-    /** Movido a culata y monoblock
-    int necesitaRectificacion;  // 1 = Sí, 0 = No (dentro de tolerancia)
-    int necesitaReconstruccion; // 1 = Sí, 0 = No (fuera de tolerancia: hay que agregar material)
-    */
 } Motor;
 
 //Entidad Usuario
@@ -220,7 +227,7 @@ int guardarTicket(Ticket ticket);
 Motor* inicializarMotor(Paramsmotor paramsmotor, int id_usuario, int id_pieza, void* tipoDePieza, int numTipoDepieza);
 
 Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,int fisuras,
-    float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario);
+    float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario, int estadoPieza);
 
 
 

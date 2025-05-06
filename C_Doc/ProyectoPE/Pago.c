@@ -191,9 +191,9 @@ int generarTicket(int id_usuario){
     // Simulación de precios
 
     float precioFinalEstadoPieza = 0;
-    if (motor->culata->estadoPieza == 1){
+    if (motor->culata->operacionesMotor == 1){
         precioFinalEstadoPieza = precioRectificado;
-    }else if (motor->culata->estadoPieza == 2){
+    }else if (motor->culata->operacionesMotor == 2){
         precioFinalEstadoPieza = precioReconstruccion;
     }
     const float precioFinalPruebaPresion = (motor->culata != NULL) ? precioPruebaPresion : 0.0f;
@@ -223,7 +223,7 @@ int generarTicket(int id_usuario){
     mvprintw(fila++, 5, "Material: %s", motor->material);
     mvprintw(fila++, 5, "Medida Original: %.2f mm", motor->medidaOriginal);
     mvprintw(fila++, 5, "Medida Actual: %.2f mm", motor->medidaActual);
-    mvprintw(fila++, 5, "Estado de la Pieza: %s", estadoPiezaTexto(motor->culata->estadoPieza));
+    mvprintw(fila++, 5, "Estado de la Pieza: %s", estadoPiezaTexto(motor->culata->operacionesMotor));
 
     if (motor->culata != NULL) {
         mvprintw(fila++, 5, "N° Válvulas: %d", motor->culata->numValvulas);
@@ -235,8 +235,8 @@ int generarTicket(int id_usuario){
 
     fila++;
     mvprintw(fila++, 5, "----------------- RESUMEN DE COSTOS ------------------");
-    mvprintw(fila++, 5, "Estado de la Pieza: %s", estadoPiezaTexto(motor->culata->estadoPieza));
-    const char* estado = estadoPiezaTexto(motor->culata->estadoPieza);
+    mvprintw(fila++, 5, "Estado de la Pieza: %s", estadoPiezaTexto(motor->culata->operacionesMotor));
+    const char* estado = estadoPiezaTexto(motor->culata->operacionesMotor);
     mvprintw(fila++, 5, "Trabajo requerido - %s: $ %.2f", estado, precioFinalEstadoPieza);
     mvprintw(fila++, 5, "Prueba de Presión:   $ %.2f", precioFinalPruebaPresion);
     mvprintw(fila++, 5, "Lavado de motor:     $ %.2f", precioFinalLavado);
@@ -288,9 +288,9 @@ int generarFactura(int id_usuario){
 
     // Simulación de precios
     float precioFinalEstadoPieza = 0;
-    if (motor->culata->estadoPieza == 1){
+    if (motor->culata->operacionesMotor == 1){
         precioFinalEstadoPieza = precioRectificado;
-    }else if (motor->culata->estadoPieza == 2){
+    }else if (motor->culata->operacionesMotor == 2){
         precioFinalEstadoPieza = precioReconstruccion;
     }
     const float precioFinalPruebaPresion = (motor->culata != NULL) ? precioPruebaPresion : 0.0f;
@@ -315,9 +315,9 @@ int generarFactura(int id_usuario){
     mvprintw(fila++, 5, "Descripción del Servicio:");
     fila++;
 
-    if (motor->culata->estadoPieza == 1)
+    if (motor->culata->operacionesMotor == 1)
         mvprintw(fila++, 7, "- Rectificación de pieza               $ %.2f", precioFinalEstadoPieza);
-    if (motor->culata->estadoPieza == 2)
+    if (motor->culata->operacionesMotor == 2)
         mvprintw(fila++, 7, "- Reconstruccion de pieza               $ %.2f", precioFinalEstadoPieza);
     if (motor->culata != NULL)
         mvprintw(fila++, 7, "- Prueba de presión en culata          $ %.2f", precioFinalPruebaPresion);
@@ -395,7 +395,7 @@ void imprimirDetallesTicket(int id_usuario){
                 mvprintw(fila++, 4, "Numero Valvulas: %d", culata->numValvulas);
                 mvprintw(fila++, 4, "Presion de Prueba: %.2f bar", culata->presionPrueba);
                 mvprintw(fila++, 4, "Fisuras: %s", culata->tieneFisuras ? "Si" : "No");
-                mvprintw(fila++, 2, "Estado de la Pieza: %s", estadoPiezaTexto(culata->estadoPieza));
+                mvprintw(fila++, 2, "Estado de la Pieza: %s", estadoPiezaTexto(culata->operacionesMotor));
             } else if (motor->monoblock != NULL) {
                 mvprintw(fila++, 4, "---------- MONOBLOCK ---------");
                 mvprintw(fila++, 4, "Numero Cilindros: %d", monoblock->numCilindros);
@@ -418,7 +418,8 @@ void imprimirDetallesTicket(int id_usuario){
 // 2 = Reconstrucción
 const char* estadoPiezaTexto(int estadoPieza) {
     switch (estadoPieza) {
-    case -1: return "Falta trabajo en la pieza, si la pieza pide rectificacion ve al apartado de rectificacion";
+    case -2: return "Falta trabajo en la pieza, (Reconstruccion) ve al apartado de Servicio-Operaciones";
+    case -1: return "Falta trabajo en la pieza, (Rectificacion) ve al apartado de Servicio-Operaciones";
     case 1: return "Rectificación";
     case 2: return "Reconstrucción";
     default: return "Verificación";

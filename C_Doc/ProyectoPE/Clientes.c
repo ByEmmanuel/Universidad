@@ -43,7 +43,6 @@ int modificarCliente(){
 
     const int opcUsr = mostrarMenu(3," ") + 1;
 
-    //char reemplazoUsuario[50]; // Buffer para almacenar entrada
     char* reemplazoUsuario;
     //<cleanBuffer();
 

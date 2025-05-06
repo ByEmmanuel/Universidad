@@ -45,7 +45,7 @@ int main(){
      *  5 = agregar usuarios, (motores y piezas) y agregar MotoresPrecargados;
      *  6 = solo precargar motores (arrayMotoresPrecargados)
      */
-    testing(0);
+    testing(4);
     system("reset");
     clear();
     refresh();

@@ -38,6 +38,8 @@ int registrarMotor(){
                 RETURN_IF_ESC(id_usuario);
                 Usuario* usuario = obtenerUsuarioByIdUsuario(id_usuario);
                 asignarMotorUsuario(usuario, motorUsr);
+                //Esta re asignacion se tiene que hacer para agregar correctamente el motor al usuario por medio de indices
+                motorUsr->id_usuario = usuario->id_usuario;
                 guardarMotorArray(motorUsr,id_usuario);
                 clear();
                 mvprintw(10,10,"Motor asignado correctamente al usuario con id %d", id_usuario);
@@ -180,18 +182,17 @@ int registrarCulata(){
             tolerancia     = 2.0;
             alturaActual < alturaMinima → reconstrucción
              */
-            if (estadoPieza == 1){
-                imprimirMensaje(10,10,"La pieza necesita Rectificacion, porfavor ve al apartado de rectificacion");
-            }else{
-                imprimirMensaje(10,10,"La pieza necesita Reeconstruccion, porfavor ve al apartado de rectificacion");
-
+            if (estadoPieza == -1){
+                imprimirMensaje(10,10,"La pieza necesita Rectificacion, porfavor ve al apartado de Servicio-Operaciones");
+            }else if (estadoPieza == -2){
+                imprimirMensaje(10,10,"La pieza necesita Reeconstruccion, porfavor ve al apartado de Servicio-Operaciones");
             }
             //Hacer operaciones aritmeticas para ver si necesita una rectificacion
 
             mvprintw(y +=2, 55, "Tiene Fisuras?: %d", tieneFisuras);
             //mvprintw(y++, 55, "Tipo Combustible: %d", tipo_combustible);
             getch();
-            Culata* pzc = inicializarCulata(id_piezaGlobal, numValvulas, presionPrueba, tieneFisuras, alturaOriginal,alturaActual, alturaMinima,id_usuario);
+            Culata* pzc = inicializarCulata(id_piezaGlobal, numValvulas, presionPrueba, tieneFisuras, alturaOriginal,alturaActual, alturaMinima,id_usuario, estadoPieza);
             guardarPiezaArray(pzc,id_usuario);
             motorUsuario->culata = pzc;
             id_piezaGlobal++;
@@ -275,6 +276,6 @@ void imprimirDetallesMotor(Motor* motor){
 
 void rectificarCulata(Culata* culata, int id_usuario){
     if (culata != NULL && culata->id_usuario == id_usuario){
-        culata->estadoPieza = 1;
+        culata->operacionesMotor = 1;
     }
 }

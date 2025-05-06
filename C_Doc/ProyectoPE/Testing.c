@@ -14,41 +14,43 @@
 #include "UsuarioDTO.h"
 
 void testing(int tipoDeTesting) {
-    //usleep(200);
-    int cantidadMotores = sizeof(motoresExistentesSINCulatasAsignadas) / sizeof(Motor);
+    if (tipoDeTesting){
+        //usleep(200);
+        int cantidadMotores = sizeof(motoresExistentesSINCulatasAsignadas) / sizeof(Motor);
 
-    precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
-
-    printf("\n------TESTING MODE ON------");
-    switch (tipoDeTesting){
-    case 1:
-        agregarUsuarios();
-        break;
-    case 2:
-        agregarPiezas();
-        break;
-    case 3:
-        agregarUsuarios();
-        agregarPiezas();
-        break;
-    case 4:
-        agregarUsuarios();
-
-        inicializarArrayMotoresPrecargados();
         precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
-        break;
-    case 5:
-        agregarUsuarios();
-        agregarPiezas();
 
-        inicializarArrayMotoresPrecargados();
-        precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
-        break;
-    case 6:
-        inicializarArrayMotoresPrecargados();
-        precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
-        break;
-    default: break;
+        printf("\n------TESTING MODE ON------ %d ", tipoDeTesting);
+        switch (tipoDeTesting){
+        case 1:
+            agregarUsuarios();
+            break;
+        case 2:
+            agregarPiezas();
+            break;
+        case 3:
+            agregarUsuarios();
+            agregarPiezas();
+            break;
+        case 4:
+            agregarUsuarios();
+
+            inicializarArrayMotoresPrecargados();
+            precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
+            break;
+        case 5:
+            agregarUsuarios();
+            agregarPiezas();
+
+            inicializarArrayMotoresPrecargados();
+            precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
+            break;
+        case 6:
+            inicializarArrayMotoresPrecargados();
+            precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
+            break;
+        default: break;
+        }
     }
 }
 
@@ -141,7 +143,7 @@ void agregarPiezas() {
     //piezaUsuario.tipoPieza = CULATA;
     const int id_usuario = 0, id_usuario_2 = 1;
     Motor* motorUsuario_1 = inicializarMotor(motores_registrados[0],id_usuario,0,0,0);
-    Culata* pzc = inicializarCulata(16, 10, 2,2,.124f,.123f,.120f, id_usuario);
+    Culata* pzc = inicializarCulata(16, 10, 2,2,.124f,.123f,.120f, id_usuario,-1);
     //piezaUsuario.tipoPieza = CULATA;
     guardarMotorArray(motorUsuario_1,id_usuario);  // Se guarda como puntero genérico
     guardarPiezaArray(pzc,id_usuario);
@@ -151,7 +153,7 @@ void agregarPiezas() {
 
 
     Motor* motorUsuario_2 = inicializarMotor(motores_registrados[1], id_usuario_2,1,0,0);
-    Culata* pzc2 = inicializarCulata(18, 12, 1,14,.340f,.338f,.339f, id_usuario_2);
+    Culata* pzc2 = inicializarCulata(18, 12, 1,14,.340f,.338f,.339f, id_usuario_2,-2);
     //piezaUsuario2.tipoPieza = CULATA;
     guardarMotorArray(motorUsuario_2, id_usuario_2);
     guardarPiezaArray(pzc2, id_usuario_2);

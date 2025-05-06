@@ -68,10 +68,6 @@ Motor* inicializarMotor(Paramsmotor params, const int id_usuario, const int id_p
     pz->id_usuario = id_usuario;
     pz->id_pieza = id_pieza;
     pz->tipoCombustible = params.tipoCombustible;
-    //Deprecated
-    //pz->tipoPieza = params.tipoPieza;
-
-    // Copiar cadenas de texto
     asignString(pz->material, params.material, sizeof(pz->material));
     pz->modelo = params.modelo;
     pz->fabricante = params.fabricante;
@@ -81,23 +77,17 @@ Motor* inicializarMotor(Paramsmotor params, const int id_usuario, const int id_p
     pz->anno = params.anno;
     pz->cilindrada = params.cilindrada;
     pz->compresionOriginal = params.compresionOriginal;
-    /*
-    pz->desgaste = params.desgaste;
-    pz->tolerancia = params.tolerancia;
-    */
     pz->medidaOriginal = params.medidaOriginal;
     pz->medidaActual = params.medidaActual;
 
-
     pz->culata = NULL;
     pz->monoblock = NULL;
-
 
     return pz;
 }
 
 Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,int fisuras,
-    float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario){
+    float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario, int estadoPieza){
 
     //Variables que estan en Culata
     Culata* culata = malloc(sizeof(Culata));
@@ -113,7 +103,8 @@ Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,i
     culata->alturaOriginal = alturaOriginal;
     culata->alturaActual = alturaActual;
     culata->alturaMinima = alturaMinima;
-    culata->estadoPieza = -1;
+    culata->operacionesMotor = -1;
+    culata->operacionesMotor = estadoPieza;
     //Sumar 1 al contador de piezas globales
     id_piezaGlobal++;
     return culata;
@@ -140,7 +131,6 @@ int guardarMotorArray(void* motor, const int id_usuario) {
     if (arrayMotoresUsuarios.tamanno >= arrayMotoresUsuarios.capacidad) {
         // Si la capacidad está llena, redimensionamos el arreglo
         const int nuevaCapacidad = arrayMotoresUsuarios.capacidad == 0 ? 1 : arrayMotoresUsuarios.capacidad * 2;
-        //void* nuevoArray = (Motor*) realloc(arrayMotores.datos, nuevaCapacidad * sizeof(void*));
         void* nuevoArray = realloc(arrayMotoresUsuarios.datos, nuevaCapacidad * sizeof(void*));
         if (nuevoArray == NULL) {
             printf("Error al redimensionar el array de Piezas.\n");
@@ -173,6 +163,22 @@ int guardarPiezaArray(void* pieza, int id_usuario) {
     return 1;  // Éxito
 }
 
+int guardarTicket(Ticket ticket){
+    if (arrayTickets.tamanno >= arrayTickets.capacidad){
+        const int nuevaCapacidad = arrayTickets.capacidad == 0 ? 1 : arrayTickets.capacidad * 2;
+        Ticket* nuevoArray = realloc(arrayTickets.datos, nuevaCapacidad * sizeof(Ticket));
+        if (nuevoArray == NULL) {
+            printf("Error al redimensionar el array de tickets.\n");
+            return -1;
+        }
+        arrayTickets.datos = nuevoArray;
+        arrayTickets.capacidad = nuevaCapacidad;
+    }
+    arrayTickets.datos[arrayTickets.tamanno] = ticket;
+    arrayTickets.tamanno++;
+    return 1;
+}
+
 Ticket inicializarTicket(Usuario* usuario,Motor* motor,char* detalles, char* detalles2){
     Ticket ticket = {0};
     if (usuario != NULL) ticket.usuario = usuario;
@@ -183,12 +189,10 @@ Ticket inicializarTicket(Usuario* usuario,Motor* motor,char* detalles, char* det
     return ticket;
 }
 
-
 // Función para obtener un usuario por ID
 Usuario* obtenerUsuarioByIdUsuario(const int id) {
     for (int i = 0; i < arrayUsuarios.tamanno; i++) {
         if (arrayUsuarios.datos[i].id_usuario == id) {
-            //mostrarUsuario(arrayUsuarios.datos[i]);
             return &arrayUsuarios.datos[i];
         }
     }
@@ -202,7 +206,7 @@ Motor* obtenerMotorByIdUsuario(const int id) {
     for (int i = 0; i < arrayMotoresUsuarios.tamanno; i++) {
         Motor* motor = (Motor*)arrayMotoresUsuarios.datos[i]; // <-- Convertir el void* a Motor* CORRECTAMENTE
         if (motor->id_usuario == id) {
-            return motor;  // Ya es un puntero, no necesitas &
+            return motor;  // Ya es un puntero, no necesito &
         }
     }
     // Retorna NULL si no encuentra
@@ -225,21 +229,6 @@ Motor* obtenerMotorPorNumeroDeSerie(const ArrayPiezas* array, const char* numero
     return NULL;
 }
 
-int guardarTicket(Ticket ticket){
-    if (arrayTickets.tamanno >= arrayTickets.capacidad){
-        const int nuevaCapacidad = arrayTickets.capacidad == 0 ? 1 : arrayTickets.capacidad * 2;
-        Ticket* nuevoArray = realloc(arrayTickets.datos, nuevaCapacidad * sizeof(Ticket));
-        if (nuevoArray == NULL) {
-            printf("Error al redimensionar el array de tickets.\n");
-            return -1;
-        }
-        arrayTickets.datos = nuevoArray;
-        arrayTickets.capacidad = nuevaCapacidad;
-    }
-    arrayTickets.datos[arrayTickets.tamanno] = ticket;
-    arrayTickets.tamanno++;
-    return 1;
-}
 
 Ticket* obtenerTicketByIdUsuario(int id_usuario){
     for (int i = 0; i < arrayTickets.tamanno; i++) {
@@ -258,10 +247,6 @@ int obtenerIdSiExisteUsuario(const int POS_Y, const int POS_X){
     RETURN_IF_ESC(id_usuario);
     const Usuario* usuario = obtenerUsuarioByIdUsuario(id_usuario);
     if (usuario == NULL) {
-        /*
-         *mvprintw(15,10,"Usuario no encontrado con el ID %d", id_usuario);
-        getch();
-        */
         return -1;
     }
     return id_usuario;
@@ -312,7 +297,7 @@ void listarPiezas(){
             mvprintw(fila++, 4, "N° Válvulas: %d", pieza->culata->numValvulas);
             mvprintw(fila++, 4, "Presión Prueba: %.2f bar", pieza->culata->presionPrueba);
             mvprintw(fila++, 4, "Tiene Fisuras: %s", pieza->culata->tieneFisuras ? "Sí" : "No");
-            mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(pieza->culata->estadoPieza));
+            mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(pieza->culata->operacionesMotor));
         }else{
             mvprintw(fila++, 4, "Culata : (NO Asignada)");
         }
