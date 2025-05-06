@@ -137,41 +137,44 @@ int servicio(){
                     imprimirMensaje(10, 10, "El motor no pertenece a ese ID o el motor no tiene culata");
                     return -1;
                 }
-                clear();
-                mvprintw(20,20,"Estado de la pieza %d: ", motor_usr->culata->operacionesMotor);
-                getch();
                 int operacionesLogicas = motor_usr->culata->operacionesMotor;
                 // cada vez que entro a esta funcion, se reinicia el "trabajo"
                 motor_usr->culata->estadoTemporalPieza = 0;
                 while (bandera == 1){
                     //Desmontado", "Lavado Inicial", "Rectificacion", "Pruebas Unitarias", "Lavado Secundario", "Montar Motor", "Salir"
-                    imprimirOperacionesCulata(motor_usr->culata->operacionesMotor);
                     int opcUsr = mostrarMenu(15,"Selecione operacion a realizar");
+                    imprimirOperacionesCulata(motor_usr->culata->operacionesMotor);
                     RETURN_IF_ESC(opcUsr);
                     switch (opcUsr){
                     case 0:
-                        if (motor_usr->culata->estadoTemporalPieza == 0 ){
+                        if (motor_usr->culata->estadoTemporalPieza <= 0 ){
                             imprimirBarraDeCarga(50,"Desmontando pieza");
                             //Solo se hace una vez
                             motor_usr->culata->estadoTemporalPieza++;
                             break;
                         }
-                        if (motor_usr->culata->estadoTemporalPieza >= 1){
+                        if (motor_usr->culata->estadoTemporalPieza > 0){
                             imprimirMensaje(10,10,"Esta pieza ya fue Desmontada");
                             break;
                         }
-                        imprimirMensaje(10,10,"Esta opcion ya fue hecha");
+                        clear();
+                        mvprintw(20,20,"Estado de la pieza %s: ", imprimirOperacionesCulata(motor_usr->culata->estadoTemporalPieza));
+                        getch();
                         break;
+
                     case 1:
                         if (motor_usr->culata->estadoTemporalPieza == 1){
                             imprimirBarraDeCarga(25,"Lavando Pieza");
                             //Solo se hace una vez
                             motor_usr->culata->estadoTemporalPieza++;
                             break;
-                        }if (motor_usr->culata->estadoTemporalPieza >= 2){
+                        }if (motor_usr->culata->estadoTemporalPieza > 1){
                             imprimirMensaje(10,10,"Esta pieza ya fue Lavada");
                             break;
                         }
+                        clear();
+                        mvprintw(20,20,"Estado de la pieza %s: ", imprimirOperacionesCulata(motor_usr->culata->estadoTemporalPieza));
+                        getch();
                         break;
                     case 2:
                         /**
@@ -189,10 +192,13 @@ int servicio(){
                             motor_usr->culata->estadoTemporalPieza++;
                             motor_usr->culata->operacionesMotor = 2;
                             break;
-                        }if (motor_usr->culata->estadoTemporalPieza >=3){
+                        }if (motor_usr->culata->estadoTemporalPieza > 2){
                             imprimirMensaje(10,10,"Esta pieza ya fue Rectificada / Reconstruida");
                             break;
                         }
+                        clear();
+                        mvprintw(20,20,"Estado de la pieza %s: ", imprimirOperacionesCulata(motor_usr->culata->estadoTemporalPieza));
+                        getch();
                         break;
                     case 3:
                         if (motor_usr->culata->estadoTemporalPieza == 3){
@@ -200,10 +206,13 @@ int servicio(){
                             motor_usr->culata->estadoTemporalPieza++;
                             break;
                         }
-                        if (motor_usr->culata->estadoTemporalPieza >=4){
+                        if (motor_usr->culata->estadoTemporalPieza > 3){
                             imprimirMensaje(10,10,"Esta pieza ya fue lavada anteriormente");
                             break;
                         }
+                        clear();
+                        mvprintw(20,20,"Estado de la pieza %s: ", imprimirOperacionesCulata(motor_usr->culata->estadoTemporalPieza));
+                        getch();
                         break;
                     case 4:
                         if (motor_usr->culata->estadoTemporalPieza == 4){
@@ -211,10 +220,13 @@ int servicio(){
                             motor_usr->culata->estadoTemporalPieza++;
                             break;
                         }
-                        if (motor_usr->culata->estadoTemporalPieza >=5){
+                        if (motor_usr->culata->estadoTemporalPieza > 4){
                             imprimirMensaje(10,10,"A Esta pieza ya se le hicieron las pruebas unitarias");
                             break;
                         }
+                        clear();
+                        mvprintw(20,20,"Estado de la pieza %s: ", imprimirOperacionesCulata(motor_usr->culata->estadoTemporalPieza));
+                        getch();
                         break;
                     case 5:
                         if (motor_usr->culata->estadoTemporalPieza == 5){
@@ -222,10 +234,13 @@ int servicio(){
                             motor_usr->culata->estadoTemporalPieza++;
                             break;
                         }
-                        if (motor_usr->culata->estadoTemporalPieza >=6){
+                        if (motor_usr->culata->estadoTemporalPieza > 5){
                             imprimirMensaje(10,10,"El trabajo de esta pieza ya fue hecho por completo");
                             break;
                         }
+                        clear();
+                        mvprintw(20,20,"Estado de la pieza %s: ", imprimirOperacionesCulata(motor_usr->culata->estadoTemporalPieza));
+                        getch();
                         break;
                     case 6:
                         return -1;
@@ -417,27 +432,36 @@ int evaluarEstadoCulata(const float alturaOriginal, const float alturaActual, co
 
 }
 
-void imprimirOperacionesCulata(int estado){
+char* imprimirOperacionesCulata(int estado){
     switch (estado){
     case 1:
-        mvprintw(50,30,"El estado actual de la culata es Desmontado");
+        //mvprintw(50,30,"El estado actual de la culata es Desmontado");
+            return "El estado actual de la culata es Desmontado";
         break;
     case 2:
-        mvprintw(50,30,"El estado actual de la culata es Lavado incial");
+        //mvprintw(50,30,"El estado actual de la culata es Lavado incial");
+        return "El estado actual de la culata es Lavado incial";
         break;
     case 3:
-        mvprintw(50,30,"El estado actual de la culata es Rectificacion/Reconstruccion");
+        //mvprintw(50,30,"El estado actual de la culata es Rectificacion/Reconstruccion");
+            return "El estado actual de la culata es Rectificacion/Reconstruccion";
         break;
     case 4:
-        mvprintw(50,30,"El estado actual de la culata es Pruebas Unitarias");
+        //mvprintw(50,30,"El estado actual de la culata es Pruebas Unitarias");
+        return "El estado actual de la culata es Pruebas Unitarias";
         break;
     case 5:
-        mvprintw(50,30,"El estado actual de la culata es Lavado Posterior");
+        //mvprintw(50,30,"El estado actual de la culata es Lavado Posterior");
+        return "El estado actual de la culata es Lavado Posterior";
         break;
     case 6:
-        mvprintw(50,30,"El estado actual de la culata es Montado, la pieza ya no necesita mas operaciones");
+        //mvprintw(50,30,"El estado actual de la culata es Montado, la pieza ya no necesita mas operaciones");
+            return "El estado actual de la culata es Montado, la pieza ya no necesita mas operaciones";
         break;
 
-        default: break;
+        default:
+            return "Ocurrio un error al obtener el esdado de la pieza";
+            break;
     }
+
 }

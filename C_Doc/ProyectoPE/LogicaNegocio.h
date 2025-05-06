@@ -48,7 +48,7 @@ int asignarPiezaMotor(Usuario* usuario, void* pieza, int tipoDePieza);
 int evaluarEstadoCulata(float alturaOriginal, float alturaActual, float alturaMinima, float tolerancia);
 const char* estadoPiezaTexto(int estadoPieza);
 void imprimirDetallesMotor(Motor* motor);
-void imprimirOperacionesCulata(int operacion);
+char* imprimirOperacionesCulata(int operacion);
 
 /**
  * @deprecated
