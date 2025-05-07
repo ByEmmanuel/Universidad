@@ -404,6 +404,26 @@ int arrayPiezasSize(ArrayPiezas* list) {
     return tamanno;
 }
 
+const char* tipoCombustibleToStr(TipoCombustible tipo) {
+    switch (tipo) {
+    case GASOLINA: return "Gasolina";
+    case DIESEL:   return "Diesel";
+    case HIBRIDO:  return "Híbrido";
+    default:       return "Desconocido";
+    }
+}
+
+void mostrarUsuario(Usuario usr) {
+    mvprintw(10,10,"ID Usuario: %d\n", usr.id_usuario);
+    mvprintw(10,11,"Folio Usuario: %s\n", usr.folio);
+    mvprintw(10,12, "Activo?: %d", usr.activo);
+    mvprintw(10,13,"Nombre: %s\n", usr.nombreUsuario);
+    mvprintw(10,14,"Apellido: %s\n", usr.apellido);
+    mvprintw(10,15,"Celular: %lld\n", usr.celular);
+    mvprintw(10,16,"Email: %s\n", usr.email);
+    mvprintw(10,17,"Contacto: %s\n", usr.contacto);
+}
+
 void cleanScreen(){
     //clear();
     printf("\033[2J\033[H");

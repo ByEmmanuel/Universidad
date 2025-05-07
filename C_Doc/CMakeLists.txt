@@ -26,7 +26,7 @@ add_executable(C_Doc
         ProyectoPE/Testing.c
         ProyectoPE/Testing.h
         ProyectoPE/ApartadoDudas.c
-        ProyectoPE/ApartadoOtros.cpp
+        ProyectoPE/ApartadoOtros.c
         ProyectoPE/Almacen.c
 )
 

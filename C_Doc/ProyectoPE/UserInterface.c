@@ -25,7 +25,7 @@ int numOpciones = 0;
 
 
 int (*funcionesInt[SIZE_SIETE])() = {
-    cliente, servicio,pago , almacen, NULL, NULL, salir // Solo "Clientes" está implementado
+    cliente, servicio,pago , almacen, otro, dudas, salir // Solo "Clientes" está implementado
 };
 
 void ejecutarOpcion(int opcion) {
@@ -92,26 +92,32 @@ int mostrarMenu(int menuventana, const char* pregunta) {
 
      */
     int ch, highlight = 0;
+    //Menu Principal
     char* menuUno[SIZE_SIETE] = {"Clientes", "Servicio", "Pago", "Almacen", "Otros", "Dudas", "Salir"};
+    //Clientes
     char* menuDos[SIZE_CUATRO] = {"Agregar", "Editar", "Listar", "Menu Principal"};
     char* menuTres[SIZE_SIETE] = {"Nombre", "Apellido", "Num Celular", "Email", "Contacto", "Eliminar","Salir"};
+    //Servicio
     char* menuCuatro[SIZE_CINCO] = {"Ingreso caracteristicas motor", "Medidas", "Operaciones", "Listar Motores Precargados","Salir"};
 
     char* menuCinco[SIZE_TRES] = {"CULATA", "MONOBLOCK", "Listar Piezas"};
     char* menuSeis[SIZE_TRES] = {"1 : Gasolina","2: Diesel","3: Electrico"};
     char* menuSiete[SIZE_DOS] = {"NO","SI"};
+    //Almacen
     char* menuOcho[SIZE_CUATRO] = {"Inventario General / Stock","Herramientas y Equipos","Proveedores y Compras","Reportes"};
-
 
     char* subMenuUno[SIZE_TRES] = {"Ver piezas", "Buscar / Filtrar","Agregar / Editar / Eliminar"};
     char* subMenuDos[SIZE_TRES] = {"Entradas / Salidas","Alertas de stock mínimo","Historial de movimientos"};
     char* subMenuTres[SIZE_TRES] = {"Estado de herramientas", "Registro de mantenimiento","Asignación"};
     char* subMenuCuatro[SIZE_TRES] = {"Registro de proveedor","Historial de compras","Pedidos pendientes"};
     char* subMenuCinco[SIZE_TRES] = {"Movimientos","Piezas más usadas","Piezas inactivas"};
+    //Pago
     char* subMenuSeis[SIZE_CUATRO] = {"Generar Nota", "Generar Ticket" , "Generar Factura", "Listar detalles del usuario"};
     char* subMenuSiete[SIZE_SIETE] = {"Desmontado", "Lavado Inicial", "Rectificacion", "Pruebas Unitarias", "Lavado Secundario", "Montar Motor", "Salir"};
-    char* subMenuOcho[SIZE_CINCO] = {"Reportar Bug", "Solicitar Mejora", "Ver Historial de tickets", "Limpieza de cache - Reinicio local del sistema", "Enviar Logs del sistema"};
-    char* subMenuNueve[] = {"Consulta Tecnica", "Consultar Version", "Manual de usuario", "Documentacion"};
+    //Otros
+    char* subMenuOcho[SIZE_SEIS] = {"Reportar Bug", "Solicitar Mejora", "Ver Historial de tickets", "Limpieza de cache - Reinicio local del sistema", "Enviar Logs del sistema", "Salir"};
+    //Dudas
+    char* subMenuNueve[SIZE_CINCO] = {"Consulta Tecnica", "Consultar Version", "Manual de usuario", "Documentacion", "Salir"};
 
     char** menuActual = NULL;
     int numOpciones = 0;
@@ -132,6 +138,8 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     case 13: menuActual = subMenuCinco; numOpciones = SIZE_TRES; break;
     case 14: menuActual = subMenuSeis; numOpciones = SIZE_CUATRO; break;
     case 15: menuActual = subMenuSiete; numOpciones = SIZE_SIETE; break;
+    case 16: menuActual = subMenuOcho; numOpciones = SIZE_SEIS; break;
+    case 17: menuActual = subMenuNueve; numOpciones = SIZE_CINCO; break;
 
     default:
         mvprintw(10, 10, "Opción no válida o ocurrió un error");

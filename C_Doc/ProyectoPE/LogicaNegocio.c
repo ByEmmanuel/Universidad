@@ -134,14 +134,67 @@ int almacen(){
     }
     return 0;
 }
-
+/**
+*
+* Otros {"Reportar Bug", "Solicitar Mejora", "Ver Historial de tickets", "Limpieza de cache - Reinicio local del sistema", "Enviar Logs del sistema", "Salir"};
+    //Dudas
+    {"Consulta Tecnica", "Consultar Version", "Manual de usuario", "Documentacion", "Salir"};
+ */
 int otro(){
-    printf("Opcion otro");
+    int opcUsr = mostrarMenu(16, " ");
+    switch (opcUsr) {
+        case 0:
+            imprimirMensaje(10,10,"Reportar Bug");
+            //reportarBug();
+            break;
+        case 1:
+            imprimirMensaje(10,10,"Solicitar Mejora");
+            //solicitarFeature();
+            break;
+        case 2:
+            imprimirMensaje(10,10,"Ver Historial de tickets");
+            //historialTickets();
+        break;
+        case 3:
+            imprimirMensaje(10,10,"Limpieza de cache - Reinicio local del sistema");
+            //limpiezaCache();
+        break;
+        case 4:
+            imprimirMensaje(10,10,"Enviar Logs del sistema");
+            //enviarLogsSistema();
+        break;
+        case 5:
+            //imprimirMensaje(10,10,"Salir");
+            return -1;
+        default: break;
+    }
     return 0;
 }
-
+//Dudas
+// {"Consulta Tecnica", "Consultar Version", "Manual de usuario", "Documentacion", "Salir"};
 int dudas(){
-    printf("Opcion Dudas");
+    int opcUsr = mostrarMenu(17, " ");
+    switch (opcUsr) {
+        case 0:
+            imprimirMensaje(10,10,"Consulta Tecnica");
+            //consultaTecnica();
+        break;
+        case 1:
+            imprimirMensaje(10,10,"Consultar Version");
+            //imprimirVersion(versionSoftware);
+        break;
+        case 2:
+            imprimirMensaje(10,10,"Manual de usuario");
+            //manualUsuario();
+        break;
+        case 3:
+            imprimirMensaje(10,10,"Documentacion");
+            //documentacion();-> Redireccionamiento al navegador
+        break;
+        case 4:
+            return -1;
+        default: break;
+    }
     return 0;
 }
 // AQUI VAN LAS FUNCIONES QUE QUIERES QUE SE EJECUTEN ANTES DE QUE TERMINE EL PROGRAMA
