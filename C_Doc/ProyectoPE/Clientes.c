@@ -9,135 +9,6 @@
 #include "UserInterface.h"
 #include "Util.h"
 
-int modificarCliente(){
-    cleanScreen();
-    clear();
-    int id_Cliente = leerIntSeguro(11, 15, 2,"Ingrese ID, Folio o Numero de Cliente: ");
-    RETURN_IF_ESC(id_Cliente);
-
-    //Esta funcion puede ser contraproducente ya que si algun campo del objeto Usuario, esta vacio,
-    //esta opcion nunca va a funcionar
-    cleanScreen();
-    Usuario* usuarioNuevo = obtenerUsuarioByIdUsuario(id_Cliente);
-    if (usuarioNuevo == NULL) {
-        imprimirMensaje(13,15,"Cliente no encontrado");
-        return -1;
-    }
-
-    if (strIsEmpty(usuarioNuevo->nombreUsuario) || strIsEmpty(usuarioNuevo->email) || strIsEmpty(usuarioNuevo->nombreUsuario)) {
-        imprimirMensaje(12,15,"Cliente con datos incompletos");
-        return -1;
-    }
-
-    mvprintw(0,0,"Debug: usuarioNuevo = %p", usuarioNuevo);
-    refresh();
-    mvprintw(1, 0, "usuarioNuevo: %p", usuarioNuevo);
-    mvprintw(2, 1, "ID: %d", usuarioNuevo->id_usuario);
-    mvprintw(3, 1, "Folio: %s", usuarioNuevo->folio);
-    mvprintw(4, 1, "Nombre: %s", usuarioNuevo->nombreUsuario);
-    mvprintw(5, 1, "Apellido: %s", usuarioNuevo->apellido);
-    mvprintw(6, 1, "Celular: %lld", usuarioNuevo->celular);
-    mvprintw(7, 1, "Email: %s", usuarioNuevo->email);
-    mvprintw(8, 1, "Contacto: %s", usuarioNuevo->contacto);
-    refresh();
-
-    const int opcUsr = mostrarMenu(3," ") + 1;
-
-    char* reemplazoUsuario;
-    //<cleanBuffer();
-
-    switch (opcUsr) {
-        case 1:
-            clear();
-            refresh();
-            reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Nombre: ");
-            if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")) {
-                asignString(usuarioNuevo->nombreUsuario, reemplazoUsuario, sizeof(usuarioNuevo->nombreUsuario));
-                mvprintw(12,15,"Modificación realizada con éxito.\n");
-                getch();
-                break;
-            }
-            mvprintw(12,15,"Error al leer entrada.\n");
-            break;
-        case 2:
-            clear();
-            refresh();
-            reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Apellido: ");
-            if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
-                asignString(usuarioNuevo->apellido, reemplazoUsuario, sizeof(usuarioNuevo->apellido));
-                imprimirMensaje(12,15,"Modificación realizada con éxito");
-                break;
-            }
-            printf("Error al leer entrada.\n");
-            break;
-        case 3:
-            clear();
-            refresh();
-        usuarioNuevo->celular = leerIntSeguro(10,15,10,"Ingrese nuevo Número Celular: ");
-            if (usuarioNuevo->celular != 0) imprimirMensaje(12,15,"Modificación realizada con éxito");
-            getch();
-            break;
-        case 4:
-            clear();
-            refresh();
-            reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Email: ");
-
-            while (!strContains(reemplazoUsuario, "@")){
-                if (mostrarMenu(7,"Tu Email no es valido, ¿Deseas volver a ingresarlo?") == 1){
-                    clear();
-                    reemplazoUsuario = leerStringSeguro(10,5,49,"Ingrese Email");
-                    if (reemplazoUsuario == NULL) {
-                        return 0;
-                    }
-                } else {
-                    mvprintw(122,10,"Registro INVÁLIDO: Email Inválido");
-                    getch();
-                    return 0;
-                }
-            }
-
-            if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
-                asignString(usuarioNuevo->email, reemplazoUsuario, sizeof(usuarioNuevo->email));
-                mvprintw(12,15,"Modificación realizada con éxito.\n");
-                getch();
-                break;
-            };
-            mvprintw(12,15,"Error al leer entrada.\n");
-            getch();
-            break;
-        case 5:
-            clear();
-            refresh();
-            reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Contacto: ");
-            if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
-                asignString(usuarioNuevo->contacto, reemplazoUsuario, sizeof(usuarioNuevo->contacto));
-                mvprintw(12,15,"Modificación realizada con éxito.\n");
-                getch();
-                break;
-            };
-            mvprintw(12,15,"Error al leer entrada.\n");
-            getch();
-            break;
-        case 6:
-            if (mostrarMenu(7, "¿Deseas eliminar a este usuario?") == 1) usuarioNuevo->activo = 0;
-            asignString(usuarioNuevo->apellido, "0", sizeof(usuarioNuevo->apellido));
-            usuarioNuevo->celular = 0;
-            asignString(usuarioNuevo->contacto, "0", sizeof(usuarioNuevo->contacto));
-            break;
-        case 7:
-            mvprintw(2, 10, "Saliendo del menú...");  // Muestra mensaje de depuración
-            refresh();  // Asegúrate de que el mensaje se actualice
-            return 0;
-        default:
-            mvprintw(12,15,"Opción inválida.\n");
-            getch();
-            return -1;
-    }
-    clear();
-    refresh();
-    return 0;
-}
-
 int cliente(){
     //Funcion que crea a los clientes
     //Agregar valores (Todo en un String A una lista)
@@ -225,8 +96,136 @@ int cliente(){
         getchar();  // Pausa antes de limpiar la pantalla
     }
     cleanScreen();
-    //mvprintw(10, 10, "Saliendo opcCliente");
     return 1;
+}
+
+int modificarCliente(){
+    cleanScreen();
+    clear();
+    int id_Cliente = leerIntSeguro(11, 15, 2,"Ingrese ID, Folio o Numero de Cliente: ");
+    RETURN_IF_ESC(id_Cliente);
+
+    //Esta funcion puede ser contraproducente ya que si algun campo del objeto Usuario, esta vacio,
+    //esta opcion nunca va a funcionar
+    cleanScreen();
+    Usuario* usuarioNuevo = obtenerUsuarioByIdUsuario(id_Cliente);
+    if (usuarioNuevo == NULL) {
+        imprimirMensaje(13,15,"Cliente no encontrado");
+        return -1;
+    }
+
+    if (strIsEmpty(usuarioNuevo->nombreUsuario) || strIsEmpty(usuarioNuevo->email) || strIsEmpty(usuarioNuevo->nombreUsuario)) {
+        imprimirMensaje(12,15,"Cliente con datos incompletos");
+        return -1;
+    }
+
+    mvprintw(0,0,"Debug: usuarioNuevo = %p", usuarioNuevo);
+    refresh();
+    mvprintw(1, 0, "usuarioNuevo: %p", usuarioNuevo);
+    mvprintw(2, 1, "ID: %d", usuarioNuevo->id_usuario);
+    mvprintw(3, 1, "Folio: %s", usuarioNuevo->folio);
+    mvprintw(4, 1, "Nombre: %s", usuarioNuevo->nombreUsuario);
+    mvprintw(5, 1, "Apellido: %s", usuarioNuevo->apellido);
+    mvprintw(6, 1, "Celular: %lld", usuarioNuevo->celular);
+    mvprintw(7, 1, "Email: %s", usuarioNuevo->email);
+    mvprintw(8, 1, "Contacto: %s", usuarioNuevo->contacto);
+    refresh();
+
+    const int opcUsr = mostrarMenu(3," ") + 1;
+
+    char* reemplazoUsuario;
+    //<cleanBuffer();
+
+    switch (opcUsr) {
+    case 1:
+        clear();
+        refresh();
+        reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Nombre: ");
+        if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")) {
+            asignString(usuarioNuevo->nombreUsuario, reemplazoUsuario, sizeof(usuarioNuevo->nombreUsuario));
+            mvprintw(12,15,"Modificación realizada con éxito.\n");
+            getch();
+            break;
+        }
+        mvprintw(12,15,"Error al leer entrada.\n");
+        break;
+    case 2:
+        clear();
+        refresh();
+        reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Apellido: ");
+        if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
+            asignString(usuarioNuevo->apellido, reemplazoUsuario, sizeof(usuarioNuevo->apellido));
+            imprimirMensaje(12,15,"Modificación realizada con éxito");
+            break;
+        }
+        printf("Error al leer entrada.\n");
+        break;
+    case 3:
+        clear();
+        refresh();
+        usuarioNuevo->celular = leerIntSeguro(10,15,10,"Ingrese nuevo Número Celular: ");
+        if (usuarioNuevo->celular != 0) imprimirMensaje(12,15,"Modificación realizada con éxito");
+        getch();
+        break;
+    case 4:
+        clear();
+        refresh();
+        reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Email: ");
+
+        while (!strContains(reemplazoUsuario, "@")){
+            if (mostrarMenu(7,"Tu Email no es valido, ¿Deseas volver a ingresarlo?") == 1){
+                clear();
+                reemplazoUsuario = leerStringSeguro(10,5,49,"Ingrese Email");
+                if (reemplazoUsuario == NULL) {
+                    return 0;
+                }
+            } else {
+                mvprintw(122,10,"Registro INVÁLIDO: Email Inválido");
+                getch();
+                return 0;
+            }
+        }
+
+        if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
+            asignString(usuarioNuevo->email, reemplazoUsuario, sizeof(usuarioNuevo->email));
+            mvprintw(12,15,"Modificación realizada con éxito.\n");
+            getch();
+            break;
+        };
+        mvprintw(12,15,"Error al leer entrada.\n");
+        getch();
+        break;
+    case 5:
+        clear();
+        refresh();
+        reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Contacto: ");
+        if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
+            asignString(usuarioNuevo->contacto, reemplazoUsuario, sizeof(usuarioNuevo->contacto));
+            mvprintw(12,15,"Modificación realizada con éxito.\n");
+            getch();
+            break;
+        };
+        mvprintw(12,15,"Error al leer entrada.\n");
+        getch();
+        break;
+    case 6:
+        if (mostrarMenu(7, "¿Deseas eliminar a este usuario?") == 1) usuarioNuevo->activo = 0;
+        asignString(usuarioNuevo->apellido, "0", sizeof(usuarioNuevo->apellido));
+        usuarioNuevo->celular = 0;
+        asignString(usuarioNuevo->contacto, "0", sizeof(usuarioNuevo->contacto));
+        break;
+    case 7:
+        mvprintw(2, 10, "Saliendo del menú...");  // Muestra mensaje de depuración
+        refresh();  // Asegúrate de que el mensaje se actualice
+        return 0;
+    default:
+        mvprintw(12,15,"Opción inválida.\n");
+        getch();
+        return -1;
+    }
+    clear();
+    refresh();
+    return 0;
 }
 
 /**

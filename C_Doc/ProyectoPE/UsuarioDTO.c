@@ -103,7 +103,8 @@ Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,i
     culata->alturaOriginal = alturaOriginal;
     culata->alturaActual = alturaActual;
     culata->alturaMinima = alturaMinima;
-    culata->operacionesMotor = -1;
+    culata->estadoTemporalPieza = -1;
+    // 0 = No valido, -1 = Rectificacion, -2 = Reconstruccion
     culata->operacionesMotor = estadoPieza;
     //Sumar 1 al contador de piezas globales
     id_piezaGlobal++;
@@ -197,7 +198,7 @@ Usuario* obtenerUsuarioByIdUsuario(const int id) {
         }
     }
     // Retorna NULL si el usuario no existe
-    mvprintw(12, 10, "Usuario no encontrado o no corresponde a un numero de ID");
+    mvprintw(12, 5, "Usuario no encontrado, no corresponde a un numero de ID, o Esta Eliminado");
     getch();
     return NULL;
 }
@@ -246,7 +247,7 @@ int obtenerIdSiExisteUsuario(const int POS_Y, const int POS_X){
     const int id_usuario = leerIntSeguro(POS_Y,POS_X,10000,"Ingrese Id Usuario: ");
     RETURN_IF_ESC(id_usuario);
     const Usuario* usuario = obtenerUsuarioByIdUsuario(id_usuario);
-    if (usuario == NULL) {
+    if (usuario == NULL || usuario->activo == 0) {
         return -1;
     }
     return id_usuario;

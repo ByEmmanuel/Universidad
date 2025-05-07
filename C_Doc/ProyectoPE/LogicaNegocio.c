@@ -62,7 +62,6 @@ int loginUsuario(){
     printf("Se agotaron los intentos.\n");
     return 0;
 }
-//Aqui iría va la funcion cliente pero esta puesta en DTO USUARIO
 
 int servicio() {
     int opc = mostrarMenu(4, " ");
@@ -76,6 +75,7 @@ int servicio() {
             break;
 
         case 1:
+            //Registrar Culata
             clear();
             opcusrParteMotor = mostrarMenu(5, " ");
             RETURN_IF_ESC(opcusrParteMotor);
@@ -90,57 +90,12 @@ int servicio() {
             break;
 
         case 2: {
-            clear();
-            int id_usuario = obtenerIdSiExisteUsuario(5, 5);
-            RETURN_IF_ESC(id_usuario);
-
-            Motor* motor_usr = obtenerMotorByIdUsuario(id_usuario);
-            if (motor_usr == NULL || motor_usr->culata == NULL) {
-                imprimirMensaje(10, 10, "Motor inválido o sin culata");
-                return -1;
+                //LogicaNegocio
+            realizarOperacionesMotor();
             }
-
-            int* estado = &motor_usr->culata->estadoTemporalPieza;
-            int operacionesLogicas = motor_usr->culata->operacionesMotor;
-            motor_usr->culata->estadoTemporalPieza = 0;
-
-            const char* mensajes[] = {
-                "Desmontando pieza", "Lavando Pieza",
-                (operacionesLogicas == -1) ? "Rectificando Culata" : "Reconstruyendo Culata",
-                "Haciendo Pruebas unitarias", "Haciendo una lavada final",
-                "Montando motor"
-            };
-
-            const int tiempos[] = { 50, 25, (operacionesLogicas == -1) ? 80 : 70, 10, 30, 50 };
-
-            while (1) {
-                int opcUsr = mostrarMenu(15, "Seleccione operación a realizar");
-                RETURN_IF_ESC(opcUsr);
-                if (opcUsr == 6) return -1;
-                if (opcUsr < 0 || opcUsr > 5) continue;
-
-                if (opcUsr == *estado) {
-                    imprimirBarraDeCarga(tiempos[opcUsr], mensajes[opcUsr]);
-                    (*estado)++;
-                    if (opcUsr == 2)
-                        motor_usr->culata->operacionesMotor = (operacionesLogicas == -1) ? 1 : 2;
-                } else if (opcUsr < *estado) {
-                    imprimirMensaje(10, 10, "Operación ya realizada.");
-                } else {
-                    clear();
-                    mvprintw(20, 20, "Estado de la pieza %s: ", imprimirOperacionesCulata(*estado));
-                    getch();
-                }
-
-                if (motor_usr->culata->estadoTemporalPieza > 5) {
-                    imprimirTextoMultilinea(10, 10,
-                        "El motor ya no tiene operaciones por realizar, puedes ir a generar las ordenes de pago", 50);
-                    break;
-                }
-            }
-            break;
-        }
+        break;
         case 3:
+            //Testing
             listarMotoresPrecargados();
             break;
 
@@ -312,4 +267,59 @@ char* imprimirOperacionesCulata(int estado){
             return "Ocurrio un error al obtener el esdado de la pieza - Ve al siguiente apartado";
             break;
     }
+}
+int realizarOperacionesMotor(){
+    clear();
+    int id_usuario = obtenerIdSiExisteUsuario(5, 5);
+    RETURN_IF_ESC(id_usuario);
+
+    Motor* motor_usr = obtenerMotorByIdUsuario(id_usuario);
+    if (motor_usr == NULL || motor_usr->culata == NULL){
+        imprimirMensaje(10, 10, "Motor inválido o sin culata");
+        return -1;
+    }
+
+    int* estado = &motor_usr->culata->estadoTemporalPieza;
+    int operacionesLogicas = motor_usr->culata->operacionesMotor;
+    if (motor_usr->culata->estadoTemporalPieza < 0 || motor_usr->culata->estadoTemporalPieza > 5)
+        motor_usr->culata->estadoTemporalPieza = 0;
+
+    const char* mensajes[] = {
+        "Desmontando pieza", "Lavando Pieza",
+        (operacionesLogicas == -1) ? "Rectificando Culata" : "Reconstruyendo Culata",
+        "Haciendo Pruebas unitarias", "Haciendo una lavada final",
+        "Montando motor"
+    };
+
+    const int tiempos[] = {50, 25, (operacionesLogicas == -1) ? 80 : 70, 10, 30, 50};
+
+    while (1){
+        int opcUsr = mostrarMenu(15, "Seleccione operación a realizar");
+        RETURN_IF_ESC(opcUsr);
+        if (opcUsr == 6) return -1;
+        if (opcUsr < 0 || opcUsr > 5) continue;
+
+        if (opcUsr == *estado && *estado < 6){
+            imprimirBarraDeCarga(tiempos[opcUsr], mensajes[opcUsr]);
+            (*estado)++;
+            if (opcUsr == 2)
+                motor_usr->culata->operacionesMotor = (operacionesLogicas == -1) ? 1 : 2;
+        }
+        else if (opcUsr < *estado){
+            imprimirMensaje(10, 10, "Operación ya realizada.");
+        }
+        else{
+            clear();
+            mvprintw(20, 20, "Estado de la pieza %s: ", imprimirOperacionesCulata(*estado));
+            getch();
+        }
+
+        if (motor_usr->culata->estadoTemporalPieza > 5){
+            imprimirTextoMultilinea(10, 10,
+                                    "El motor ya no tiene operaciones por realizar, puedes ir a generar las ordenes de pago",
+                                    50);
+            break;
+        }
+    }
+    return 0;
 }

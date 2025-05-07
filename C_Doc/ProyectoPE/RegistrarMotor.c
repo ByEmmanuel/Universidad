@@ -186,6 +186,8 @@ int registrarCulata(){
                 imprimirMensaje(10,10,"La pieza necesita Rectificacion, porfavor ve al apartado de Servicio-Operaciones");
             }else if (estadoPieza == -2){
                 imprimirMensaje(10,10,"La pieza necesita Reeconstruccion, porfavor ve al apartado de Servicio-Operaciones");
+            }else {
+                imprimirMensaje(10,10,"Se introdujeron datos erroneos, porfavor Introduce datos validos");
             }
             //Hacer operaciones aritmeticas para ver si necesita una rectificacion
 

@@ -30,16 +30,18 @@ ArrayList* arrayListNew(size_t capacidadInicial);
 
 /**@deprecated
  * Grupo de funciones en desuso
- */
 void arrayListAdd(ArrayList* list, void* element);
 void* arrayListGet(ArrayList* list, size_t index);
-int arrayPiezasSize(ArrayPiezas* list);
 void arrayListFree(ArrayList* list);
 void arrayListClear(ArrayList* list);
 //int arrayListContains(ArrayList* list, void* element, bool (*equals)(void*, void*)); // Verifica si contiene un elemento
 void arrayListRemove(ArrayList* list, size_t index); // Elimina elemento por índice
+ */
+//Solo se usa esta
+int arrayPiezasSize(ArrayPiezas* list);
 
 // FECHA
+/**@deprecated */
 typedef struct {
     int year;
     int month;
@@ -51,11 +53,10 @@ typedef struct {
 
 /**@deprecated
  * Grupo de funciones en desuso
- */
 SimpleDate* dateNow();                       // Obtiene la fecha y hora actual
 char* dateToString(SimpleDate* date);        // Convierte a cadena legible
 int dateCompare(SimpleDate* d1, SimpleDate* d2); // Compara dos fechas
-
+ */
 char* generarFolio(const char *nombre);
 
 // Estas funciones son para ncurses

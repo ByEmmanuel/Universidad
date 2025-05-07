@@ -110,6 +110,8 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     char* subMenuCinco[SIZE_TRES] = {"Movimientos","Piezas más usadas","Piezas inactivas"};
     char* subMenuSeis[SIZE_CUATRO] = {"Generar Nota", "Generar Ticket" , "Generar Factura", "Listar detalles del usuario"};
     char* subMenuSiete[SIZE_SIETE] = {"Desmontado", "Lavado Inicial", "Rectificacion", "Pruebas Unitarias", "Lavado Secundario", "Montar Motor", "Salir"};
+    char* subMenuOcho[SIZE_CINCO] = {"Reportar Bug", "Solicitar Mejora", "Ver Historial de tickets", "Limpieza de cache - Reinicio local del sistema", "Enviar Logs del sistema"};
+    char* subMenuNueve[] = {"Consulta Tecnica", "Consultar Version", "Manual de usuario", "Documentacion"};
 
     char** menuActual = NULL;
     int numOpciones = 0;

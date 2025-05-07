@@ -49,6 +49,7 @@ int evaluarEstadoCulata(float alturaOriginal, float alturaActual, float alturaMi
 const char* estadoPiezaTexto(int estadoPieza);
 void imprimirDetallesMotor(Motor* motor);
 char* imprimirOperacionesCulata(int operacion);
+int realizarOperacionesMotor();
 
 /**
  * @deprecated

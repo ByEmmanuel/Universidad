@@ -25,6 +25,9 @@ add_executable(C_Doc
         ProyectoPE/RegistrarMotor.c
         ProyectoPE/Testing.c
         ProyectoPE/Testing.h
+        ProyectoPE/ApartadoDudas.c
+        ProyectoPE/ApartadoOtros.cpp
+        ProyectoPE/Almacen.c
 )
 
 target_link_libraries(C_Doc ${CURSES_LIBRARIES})
