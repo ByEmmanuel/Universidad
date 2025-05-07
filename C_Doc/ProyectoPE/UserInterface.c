@@ -77,6 +77,20 @@ int mostrarMenu(int menuventana, const char* pregunta) {
         ├── Piezas más usadas
         └── Piezas inactivas
  */
+    /*
+    *Otros -> Seccion de varios menus
+        Reportar Bug
+        Solicitar Mejora/Feature
+        Ver historial de tickets
+        Limpieza de caché / reinicio local del sistema
+        Enviar logs del sistema
+
+    Dudas
+        Consulta tecnica
+        Preguntas Frecuentes
+        Manual de usuario
+
+     */
     int ch, highlight = 0;
     char* menuUno[SIZE_SIETE] = {"Clientes", "Servicio", "Pago", "Almacen", "Otros", "Dudas", "Salir"};
     char* menuDos[SIZE_CUATRO] = {"Agregar", "Editar", "Listar", "Menu Principal"};
