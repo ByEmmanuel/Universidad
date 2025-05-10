@@ -19,6 +19,8 @@ int loginUsuario();
 
 int preguntaSalida();
 
+int cliente();
+
 int servicio();
 
 int pago();

@@ -68,11 +68,14 @@ Motor* inicializarMotor(Paramsmotor params, const int id_usuario, const int id_p
     pz->id_usuario = id_usuario;
     pz->id_pieza = id_pieza;
     pz->tipoCombustible = params.tipoCombustible;
+
+    // Copia profunda de material
     asignString(pz->material, params.material, sizeof(pz->material));
     pz->modelo = params.modelo;
     pz->fabricante = params.fabricante;
     pz->carroAsociado = params.carroAsociado;
     pz->numeroSerie = params.numeroSerie;
+
     // Datos técnicos
     pz->anno = params.anno;
     pz->cilindrada = params.cilindrada;
@@ -80,6 +83,7 @@ Motor* inicializarMotor(Paramsmotor params, const int id_usuario, const int id_p
     pz->medidaOriginal = params.medidaOriginal;
     pz->medidaActual = params.medidaActual;
 
+    // Relaciones
     pz->culata = NULL;
     pz->monoblock = NULL;
 
@@ -111,238 +115,6 @@ Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,i
     return culata;
 }
 
-// Función para agregar un usuario a la lista
-int guardarUsuarioArray(Usuario usuario) {
-    if (arrayUsuarios.tamanno >= arrayUsuarios.capacidad) {
-        const int nuevaCapacidad = arrayUsuarios.capacidad == 0 ? 1 : arrayUsuarios.capacidad * 2;
-        Usuario* nuevoArray = realloc(arrayUsuarios.datos, nuevaCapacidad * sizeof(Usuario));
-        if (nuevoArray == NULL) {
-            printf("Error al redimensionar el array de usuarios.\n");
-            return -1;
-        }
-        arrayUsuarios.datos = nuevoArray;
-        arrayUsuarios.capacidad = nuevaCapacidad;
-    }
-    arrayUsuarios.datos[arrayUsuarios.tamanno] = usuario;
-    arrayUsuarios.tamanno++;
-    return 1; // Retorna 1 si se guardó correctamente
-}
-
-int guardarMotorArray(void* motor, const int id_usuario) {
-    if (arrayMotoresUsuarios.tamanno >= arrayMotoresUsuarios.capacidad) {
-        // Si la capacidad está llena, redimensionamos el arreglo
-        const int nuevaCapacidad = arrayMotoresUsuarios.capacidad == 0 ? 1 : arrayMotoresUsuarios.capacidad * 2;
-        void* nuevoArray = realloc(arrayMotoresUsuarios.datos, nuevaCapacidad * sizeof(void*));
-        if (nuevoArray == NULL) {
-            printf("Error al redimensionar el array de Piezas.\n");
-            return -1;  // Si realloc falla, retornar error
-        }
-        arrayMotoresUsuarios.datos = nuevoArray;  // Asignar el nuevo arreglo redimensionado
-        arrayMotoresUsuarios.capacidad = nuevaCapacidad; // Actualizar la capacidad
-    }
-    arrayMotoresUsuarios.datos[arrayMotoresUsuarios.tamanno] = motor;  // Guardar puntero al motor
-    arrayMotoresUsuarios.tamanno++;  // Incrementar el número de elementos
-    //Agregar Id Usuario generico por cada motor
-    arrayMotoresUsuarios.id_usuario = id_usuario;
-    return 1;  // Éxito
-}
-
-int guardarPiezaArray(void* pieza, int id_usuario) {
-    if (arrayPiezas.tamanno >= arrayPiezas.capacidad) {
-        const int nuevaCapacidad = arrayPiezas.capacidad == 0 ? 1 : arrayPiezas.capacidad * 2;
-        void** nuevoArray = realloc(arrayPiezas.datos, nuevaCapacidad * sizeof(void*));
-        if (nuevoArray == NULL) {
-            printf("Error al redimensionar el array de Piezas.\n");
-            return -1;
-        }
-        arrayPiezas.datos = nuevoArray;
-        arrayPiezas.capacidad = nuevaCapacidad;
-    }
-    arrayPiezas.datos[arrayPiezas.tamanno] = pieza;
-    arrayPiezas.tamanno++;
-    arrayPiezas.id_usuario = id_usuario;
-    return 1;  // Éxito
-}
-
-int guardarTicket(Ticket ticket){
-    if (arrayTickets.tamanno >= arrayTickets.capacidad){
-        const int nuevaCapacidad = arrayTickets.capacidad == 0 ? 1 : arrayTickets.capacidad * 2;
-        Ticket* nuevoArray = realloc(arrayTickets.datos, nuevaCapacidad * sizeof(Ticket));
-        if (nuevoArray == NULL) {
-            printf("Error al redimensionar el array de tickets.\n");
-            return -1;
-        }
-        arrayTickets.datos = nuevoArray;
-        arrayTickets.capacidad = nuevaCapacidad;
-    }
-    arrayTickets.datos[arrayTickets.tamanno] = ticket;
-    arrayTickets.tamanno++;
-    return 1;
-}
-
-Ticket inicializarTicket(Usuario* usuario,Motor* motor,char* detalles, char* detalles2){
-    Ticket ticket = {0};
-    if (usuario != NULL) ticket.usuario = usuario;
-    if (motor != NULL && usuario != NULL) ticket.usuario->motor = motor;
-    ticket.detalles = detalles;
-    ticket.detalles2 = detalles2;
-
-    return ticket;
-}
-
-// Función para obtener un usuario por ID
-Usuario* obtenerUsuarioByIdUsuario(const int id) {
-    for (int i = 0; i < arrayUsuarios.tamanno; i++) {
-        if (arrayUsuarios.datos[i].id_usuario == id) {
-            return &arrayUsuarios.datos[i];
-        }
-    }
-    // Retorna NULL si el usuario no existe
-    mvprintw(12, 5, "Usuario no encontrado, no corresponde a un numero de ID, o Esta Eliminado");
-    getch();
-    return NULL;
-}
-
-Motor* obtenerMotorByIdUsuario(const int id) {
-    for (int i = 0; i < arrayMotoresUsuarios.tamanno; i++) {
-        Motor* motor = (Motor*)arrayMotoresUsuarios.datos[i]; // <-- Convertir el void* a Motor* CORRECTAMENTE
-        if (motor->id_usuario == id) {
-            return motor;  // Ya es un puntero, no necesito &
-        }
-    }
-    // Retorna NULL si no encuentra
-    clear();
-    mvprintw(12, 10, "X Motor no encontrado o ID de usuario inválido");
-    getch();
-    return NULL;
-}
-
-Motor* obtenerMotorPorNumeroDeSerie(const ArrayPiezas* array, const char* numeroDeSerieMotor) {
-    for (int i = 0; i < array->tamanno; i++) {
-        Motor* motor = (Motor*) array->datos[i];
-        if (strEquals(motor->numeroSerie, numeroDeSerieMotor)){
-            return motor;
-        }
-    }
-    clear();
-    mvprintw(12, 10, "El número de serie ingresado no coincide con ningún registro.");
-    getch();
-    return NULL;
-}
-
-
-Ticket* obtenerTicketByIdUsuario(int id_usuario){
-    for (int i = 0; i < arrayTickets.tamanno; i++) {
-        if (arrayTickets.datos[i].usuario->id_usuario == id_usuario) {
-            //mostrarUsuario(arrayUsuarios.datos[i]);
-            return &arrayTickets.datos[i];
-        }
-    }
-    // Retorna NULL si el usuario no existe
-    return NULL;
-
-}
-
-int obtenerIdSiExisteUsuario(const int POS_Y, const int POS_X){
-    const int id_usuario = leerIntSeguro(POS_Y,POS_X,10000,"Ingrese Id Usuario: ");
-    RETURN_IF_ESC(id_usuario);
-    const Usuario* usuario = obtenerUsuarioByIdUsuario(id_usuario);
-    if (usuario == NULL || usuario->activo == 0) {
-        return -1;
-    }
-    return id_usuario;
-}
-
-void listarPiezas(){
-    clear();
-    noecho();
-    cbreak();
-    keypad(stdscr, TRUE);
-
-    int fila = 1;
-    mvprintw(fila++, 10, "==============================================");
-    mvprintw(fila++, 15, "LISTADO DE TODAS LAS PIEZAS");
-    mvprintw(fila++, 10, "==============================================");
-
-    for (size_t i = 0; i < arrayMotoresUsuarios.tamanno; i++) {
-        Motor* pieza = (Motor*) arrayMotoresUsuarios.datos[i];
-        fila++;
-        mvprintw(fila++, 2, "ID Pieza: %d", pieza->id_pieza);
-        mvprintw(fila++, 2, "ID Usuario: %d", pieza->id_usuario);
-        mvprintw(fila++, 2, "Nombre del Motor: %s", pieza->modelo);
-        mvprintw(fila++, 2, "Fabricante: %s", pieza->fabricante);
-        mvprintw(fila++, 2, "Cilindrada: %.2f L", pieza->cilindrada);
-        mvprintw(fila++, 2, "Compresión Original: %.2f psi", pieza->compresionOriginal);
-        mvprintw(fila++, 2, "Número de Serie: %s", pieza->numeroSerie);
-        mvprintw(fila++, 2, "Tipo de Combustible: %s", tipoCombustibleToStr(pieza->tipoCombustible));
-        mvprintw(fila++, 2, "Material: %s", pieza->material);
-        /*
-        mvprintw(fila++, 2, "Desgaste: %.2f%%", pieza->desgaste * 100.0f);
-        mvprintw(fila++, 2, "Tolerancia: %.4f mm", pieza->tolerancia);
-        */
-        mvprintw(fila++, 2, "Medida Original: %.4f mm", pieza->medidaOriginal);
-        mvprintw(fila++, 2, "Medida Actual: %.4f mm", pieza->medidaActual);
-
-
-        if (pieza->culata != NULL) {
-            mvprintw(fila++, 4, "Tipo de Pieza: Culata");
-            mvprintw(fila++, 4, "N° Válvulas: %d", pieza->culata->numValvulas);
-            mvprintw(fila++, 4, "Presión Prueba: %.2f bar", pieza->culata->presionPrueba);
-            mvprintw(fila++, 4, "Tiene Fisuras: %s", pieza->culata->tieneFisuras ? "Sí" : "No");
-            mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(pieza->culata->operacionesMotor));
-        }else{
-            mvprintw(fila++, 4, "Culata : (NO Asignada)");
-        }
-        if (pieza->monoblock != NULL) {
-            Monoblock* monoblock = (Monoblock*)pieza;
-            mvprintw(fila++, 4, "Tipo de Pieza: Monoblock");
-            mvprintw(fila++, 4, "N° Cilindros: %d", monoblock->numCilindros);
-            mvprintw(fila++, 4, "Diámetro Cilindros: %.2f mm", monoblock->diametroCilindro);
-            mvprintw(fila++, 4, "Alineación Cigüeñal: %.2f mm", monoblock->alineacionCiguenal);
-            mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(monoblock->estadoPieza));
-        }else{
-            mvprintw(fila++, 4, "Monoblock : (NO Asignada)");
-        }
-
-        mvprintw(fila++, 10, "----------------------------------------------");
-
-        if (fila >= LINES - 5) {
-            mvprintw(fila++, 10, "Presiona cualquier tecla para continuar...");
-            getch();
-            clear();
-            fila = 1;
-        }
-    }
-
-    mvprintw(fila++, 10, "Fin del listado...");
-    getch();
-}
-
-void listarFoliosUsuarios(){
-    int y = 3;
-    for (int i = 0; i < arrayUsuarios.tamanno; i++) {
-        Usuario usuario = arrayUsuarios.datos[i];
-
-        mvprintw(y, 40, "Activo?: %s", usuario.activo ? "True" : "False");
-        mvprintw(y, 60, "ID: %d", usuario.id_usuario);
-        mvprintw(y, 70, "Nombre: %s", usuario.nombreUsuario);
-        mvprintw(y, 90, "Folio: %s", usuario.folio);
-
-        if (usuario.motor != NULL) {
-            mvprintw(y, 110, "Numero de serie del motor: %s", usuario.motor->numeroSerie);
-
-            if (usuario.motor->culata != NULL) {
-                mvprintw(y, 180, "(Culata asignada)");
-            } else {
-                mvprintw(y, 180, "(Culata no asignada)");
-            }
-        } else {
-            mvprintw(y, 105, "Motor no asignado");
-        }
-
-        y++; // Dejar una línea en blanco entre registros
-    }
-}
 
 //Getters y setters
 void setIdUsuarioLogico(const int nuevoId){
@@ -351,3 +123,29 @@ void setIdUsuarioLogico(const int nuevoId){
 int getIdUsuarioLogico(){
     return id_UsuarioGlobal;
 };
+
+//Funcion para clonar el contenido de una variable a otra nueva variable
+//-> Esto no pasaria con POO ya que cada nuevo objeto es una nueva direccion en memoria, y si quiero asignar, se asignan los valores de esa direccion PROPIA
+Motor* clonarMotor(Motor* original, int nuevoIdUsuario){
+    if (original == NULL) return NULL;
+
+    Motor* copia = malloc(sizeof(Motor));
+    if (!copia) return NULL;
+
+    *copia = *original; // copia los valores primitivos
+
+    // Copiar strings dinámicamente (si no son constantes)
+    copia->modelo = strdup(original->modelo);
+    copia->fabricante = strdup(original->fabricante);
+    copia->carroAsociado = strdup(original->carroAsociado);
+
+    //copia->material = strdup(original->material);
+    imprimirMensaje(5,5,"Depuracion FUN CLONAR MOTOR usuarioDTO.c");
+    asignString(copia->material, original->material, sizeof(copia->material));
+    copia->numeroSerie = strdup(original->numeroSerie);
+
+    copia->id_usuario = nuevoIdUsuario;
+    copia->culata = NULL; // No copiamos la culata aquí, puede hacerse por separado
+
+    return copia;
+}

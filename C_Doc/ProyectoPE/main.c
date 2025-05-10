@@ -25,7 +25,6 @@
 
 // Simulación de base de datos de usuarios y contraseñas
 
-int bandera = 1;
 int id_Usuario;
 
 // Variable global para controlar el hilo del reloj
@@ -44,8 +43,9 @@ int main(){
      *  4 = agregar usuarios con motoresDB precargados
      *  5 = agregar usuarios, (motores y piezas) y agregar MotoresPrecargados;
      *  6 = solo precargar motores (arrayMotoresPrecargados)
+    precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
      */
-    testing(4);
+    testing(1);
     system("reset");
     clear();
     refresh();
@@ -63,9 +63,11 @@ int main(){
 
 void menuPrincipal(){
     initscr();
-    while (bandera){
+    while (1){
         const int opc = mostrarMenu(1," ");
-        ejecutarOpcion(opc);
+        if (opc != -1) {
+            ejecutarOpcion(opc);
+        }
     }
 
 };

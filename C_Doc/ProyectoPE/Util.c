@@ -72,7 +72,11 @@ int strContains(const char* src, const char* str) {
 // Copiamos las cadenas asegurándonos de que terminen en '\0'
 // Funcion que Asigna una cadena a otra Es decir algo como
 // var1 = "idk" var2 = var1 sin paso por referencia y borra el ultimo caracter que deja fgets
-void asignString(char *dst, const char *src, const size_t n){
+void asignString(char *dst, const char *src, const size_t n) {
+    if (src == NULL) {
+        dst[0] = '\0'; // O dejar una cadena vacía si src no es válido
+        return;
+    }
     strncpy(dst, src, n - 1);
     dst[n - 1] = '\0';
 }

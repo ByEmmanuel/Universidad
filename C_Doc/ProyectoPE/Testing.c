@@ -18,7 +18,16 @@ void testing(int tipoDeTesting) {
         //usleep(200);
         int cantidadMotores = sizeof(motoresExistentesSINCulatasAsignadas) / sizeof(Motor);
 
-        precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
+        /**
+        * *  0 = no testing mode
+     *  1 = agregar usuarios
+     *  2 = agregar motores y piezas -> Estos pertenecen a un usuario --> ¿Porque agregarias motores sin un usuario?
+     *  3 = agregar usuarios y (motores y piezas) -> Estos pertenecen a un usuario
+     *  4 = agregar usuarios con motoresDB precargados
+     *  5 = agregar usuarios, (motores y piezas) y agregar MotoresPrecargados;
+     *  6 = solo precargar motores (arrayMotoresPrecargados)
+    precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
+         */
 
         printf("\n------TESTING MODE ON------ %d ", tipoDeTesting);
         switch (tipoDeTesting){
@@ -26,7 +35,10 @@ void testing(int tipoDeTesting) {
             agregarUsuarios();
             break;
         case 2:
-            agregarPiezas();
+            //Add
+             //agregarUsuarios();
+             // crashea porque no hay usuarios a los que se les añada la pieza
+            //agregarPiezas();
             break;
         case 3:
             agregarUsuarios();
@@ -59,6 +71,8 @@ void agregarUsuarios() {
     guardarUsuarioArray(usuario1);
     const Usuario usuario2 = inicializarUsuario(1,"00002", "Usuario2", "Apellido 2", 1987654321, "EmailPrueba2@2", "Contacto2");
     guardarUsuarioArray(usuario2);
+    const Usuario usuario3 = inicializarUsuario(2,"00003","Usuario3","Apellido 3",2746297201,"emailPrueba3@3","Contacto3");
+    guardarUsuarioArray(usuario3);
 }
 
 void inicializarArrayMotoresPrecargados() {

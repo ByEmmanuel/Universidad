@@ -15,54 +15,6 @@
 #include "ConstantesMotores.h"
 #include "Testing.h"
 
-#define MAX_USUARIOS 6
-#define MAX_LONGITUD 50
-
-char usuariosRegistrados[MAX_USUARIOS][MAX_LONGITUD] =  {"David","Jose","Admin","Pepe","Luis",""};
-char contraseñasUsuarios[MAX_USUARIOS][MAX_LONGITUD] = {"123456789","987654321","01","24680",""};
-char* empleado;
-
-
-int loginUsuario(){
-    int intentosUsuario = 0;
-
-    do {
-        printf("Ingrese Usuario: ");
-        // Función para leer cadenas de manera segura
-        char* usuarioID = enterString(MAX_LONGITUD);
-        // Buscar el usuario en la lista
-        int usuarioIndex = -1;
-        for (int i = 0; i < MAX_USUARIOS; i++) {
-            if (strcmp(usuarioID, usuariosRegistrados[i]) == 0) {
-                usuarioIndex = i;
-                break;
-            }
-        }
-
-        if (usuarioIndex != -1) {
-            //char passwUsuario[MAX_LONGITUD];
-            printf("Ingrese Contraseña: ");
-            char* passwUsuario = enterString(MAX_LONGITUD);
-            // Si se encontró el usuario
-            //scanf("%s", passwUsuario);
-
-            // Verificar contraseña
-            if (strEquals(passwUsuario, contraseñasUsuarios[usuarioIndex])) {
-                empleado = usuarioID;
-                printf("Inicio de sesión exitoso.\n");
-                return 1;
-            }
-            printf("Contraseña incorrecta.\n");
-        } else {
-            printf("Usuario no encontrado.\n");
-        }
-        intentosUsuario++;
-    } while (intentosUsuario < 3);  // Permitir 3 intentos
-
-    printf("Se agotaron los intentos.\n");
-    return 0;
-}
-
 int servicio() {
     int opc = mostrarMenu(4, " ");
     RETURN_IF_ESC(opc);
@@ -287,39 +239,32 @@ int evaluarEstadoCulata(const float alturaOriginal, const float alturaActual, co
 
 }
 
-char* imprimirOperacionesCulata(int estado){
-    switch (estado){
-    case 0:
-        return "El estaddo actual de la pieza es Montado";
-    break;
-    case 1:
-        //mvprintw(50,30,"El estado actual de la culata es Desmontado");
-        return "El estado actual de la culata es Desmontado - Ve al siguiente apartado";
-        break;
-    case 2:
-        //mvprintw(50,30,"El estado actual de la culata es Lavado incial");
-        return "El estado actual de la culata es Lavado incial - Ve al siguiente apartado";
-        break;
-    case 3:
-        //mvprintw(50,30,"El estado actual de la culata es Rectificacion/Reconstruccion");
-        return "El estado actual de la culata es Rectificacion/Reconstruccion - Ve al siguiente apartado";
-        break;
-    case 4:
-        //mvprintw(50,30,"El estado actual de la culata es Pruebas Unitarias");
-        return "El estado actual de la culata es Pruebas Unitarias - Ve al siguiente apartado";
-        break;
-    case 5:
-        //mvprintw(50,30,"El estado actual de la culata es Lavado Posterior");
-        return "El estado actual de la culata es Lavado Posterior - Ve al siguiente apartado";
-        break;
-    case 6:
-        //mvprintw(50,30,"El estado actual de la culata es Montado, la pieza ya no necesita mas operaciones");
-            return "El estado actual de la culata es Montado, la pieza ya no necesita mas operaciones - Ve al siguiente apartado";
-        break;
-        default:
-            return "Ocurrio un error al obtener el esdado de la pieza - Ve al siguiente apartado";
-            break;
+char* imprimirOperacionesCulata(int estado) {
+    const char* mensajes[7] = {
+        "Montado inicial", "Desmontado", "Lavado inicial", "Rectificación/Reconstrucción",
+        "Pruebas Unitarias", "Lavado posterior", "Montado final"
+    };
+
+    if (estado < 0 || estado > 6) {
+        return strdup("Ocurrió un error al obtener el estado de la pieza - Ve al siguiente apartado");
     }
+
+    const char* base = "El estado actual de la culata es: ";
+    const char* adicional = " - Ve al siguiente apartado";
+
+    size_t tam = strlen(base) + strlen(mensajes[estado]) + strlen(adicional) + 1;
+
+    char* resultado = (char*)malloc(tam);
+    if (!resultado) {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
+    strcpy(resultado, base);
+    strcat(resultado, mensajes[estado]);
+    strcat(resultado, adicional);
+
+    return resultado;
 }
 int realizarOperacionesMotor(){
     clear();

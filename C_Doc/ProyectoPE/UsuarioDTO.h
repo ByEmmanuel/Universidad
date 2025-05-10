@@ -196,6 +196,10 @@ Usuario inicializarUsuario(int id_usuario, const char* folio,const char* nombreU
     const char* apellido,long long celular,const char* email,const char* contacto);
 
 Ticket inicializarTicket(Usuario* usuario,Motor* motor ,char* detalles, char* detalles2);
+Motor* inicializarMotor(Paramsmotor paramsmotor, int id_usuario, int id_pieza, void* tipoDePieza, int numTipoDepieza);
+
+Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,int fisuras,
+                          float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario, int estadoPieza);
 
 extern ArrayTickets arrayTickets;  // ← accedida desde otros .c
 extern ArrayUsuarios arrayUsuarios; // ← accedida desde otros .c
@@ -210,30 +214,16 @@ extern int id_piezaGlobal;
 void setIdUsuarioLogico(int nuevoId);
 int getIdUsuarioLogico();
 
-int cliente();
-
 void mostrarUsuario(Usuario usr);
 
 int modificarCliente();
-
 int guardarUsuarioArray(Usuario usuario);
-
 int guardarMotorArray(void* motor, int id_usuario);
-
 int guardarPiezaArray(void* pieza, int id_usuario);
-
 int guardarTicket(Ticket ticket);
-
-Motor* inicializarMotor(Paramsmotor paramsmotor, int id_usuario, int id_pieza, void* tipoDePieza, int numTipoDepieza);
-
-Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,int fisuras,
-    float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario, int estadoPieza);
-
-
 
 //Culata* inicializarCulata(Motor pieza,int numValvulas , double presionPrueba
 //    /** int tipoCombustible */ ,int fisuras);
-
 
 /**@deprecated */
 void listarUsuarios(ArrayUsuarios listaUsuarios);
@@ -242,5 +232,10 @@ void listarFoliosUsuarios();
 void listarNumerosDeSerieMotores();
 
 void listarPiezas();
+
+Motor* clonarMotor(Motor* original, int nuevoIdUsuario);
+void liberarMotor(Motor* pz);
+
+extern char* empleado;
 
 #endif //NEGOCIODTO_H

@@ -4,10 +4,18 @@
 
 
 #include <ncurses.h>
+#include <string.h>
 
 #include "LogicaNegocio.h"
 #include "UserInterface.h"
 #include "Util.h"
+#define MAX_USUARIOS 6
+#define MAX_LONGITUD 50
+
+char usuariosRegistrados[MAX_USUARIOS][MAX_LONGITUD] =  {"David","Jose","Admin","Pepe","Luis",""};
+char contraseñasUsuarios[MAX_USUARIOS][MAX_LONGITUD] = {"123456789","987654321","01","24680",""};
+
+char* empleado = 0;
 
 int cliente(){
     //Funcion que crea a los clientes
@@ -228,8 +236,137 @@ int modificarCliente(){
     return 0;
 }
 
+int loginUsuario(){
+    int intentosUsuario = 0;
+
+    do {
+        printf("Ingrese Usuario: ");
+        // Función para leer cadenas de manera segura
+        char* usuarioID = enterString(MAX_LONGITUD);
+        // Buscar el usuario en la lista
+        int usuarioIndex = -1;
+        for (int i = 0; i < MAX_USUARIOS; i++) {
+            if (strcmp(usuarioID, usuariosRegistrados[i]) == 0) {
+                usuarioIndex = i;
+                break;
+            }
+        }
+
+        if (usuarioIndex != -1) {
+            //char passwUsuario[MAX_LONGITUD];
+            printf("Ingrese Contraseña: ");
+            char* passwUsuario = enterString(MAX_LONGITUD);
+            // Si se encontró el usuario
+            //scanf("%s", passwUsuario);
+
+            // Verificar contraseña
+            if (strEquals(passwUsuario, contraseñasUsuarios[usuarioIndex])) {
+                empleado = usuarioID;
+                printf("Inicio de sesión exitoso.\n");
+                return 1;
+            }
+            printf("Contraseña incorrecta.\n");
+        } else {
+            printf("Usuario no encontrado.\n");
+        }
+        intentosUsuario++;
+    } while (intentosUsuario < 3);  // Permitir 3 intentos
+
+    printf("Se agotaron los intentos.\n");
+    return 0;
+}
+
 /**
  * En las opciones de servicio
  * Rectificar -> Si la pieza necesita rectificacion se imprimira por pantalla una barra que simulara que se estara rectificanto
  * Ensamble -> Despues de rectificar la pieza hay que reensamblarla
  */
+void listarPiezas(){
+    clear();
+    noecho();
+    cbreak();
+    keypad(stdscr, TRUE);
+
+    int fila = 1;
+    mvprintw(fila++, 10, "==============================================");
+    mvprintw(fila++, 15, "LISTADO DE TODAS LAS PIEZAS");
+    mvprintw(fila++, 10, "==============================================");
+
+    for (size_t i = 0; i < arrayMotoresUsuarios.tamanno; i++) {
+        Motor* pieza = (Motor*) arrayMotoresUsuarios.datos[i];
+        fila++;
+        mvprintw(fila++, 2, "ID Pieza: %d", pieza->id_pieza);
+        mvprintw(fila++, 2, "ID Usuario: %d", pieza->id_usuario);
+        mvprintw(fila++, 2, "Nombre del Motor: %s", pieza->modelo);
+        mvprintw(fila++, 2, "Fabricante: %s", pieza->fabricante);
+        mvprintw(fila++, 2, "Cilindrada: %.2f L", pieza->cilindrada);
+        mvprintw(fila++, 2, "Compresión Original: %.2f psi", pieza->compresionOriginal);
+        mvprintw(fila++, 2, "Número de Serie: %s", pieza->numeroSerie);
+        mvprintw(fila++, 2, "Tipo de Combustible: %s", tipoCombustibleToStr(pieza->tipoCombustible));
+        mvprintw(fila++, 2, "Material: %s", pieza->material);
+        /*
+        mvprintw(fila++, 2, "Desgaste: %.2f%%", pieza->desgaste * 100.0f);
+        mvprintw(fila++, 2, "Tolerancia: %.4f mm", pieza->tolerancia);
+        */
+        mvprintw(fila++, 2, "Medida Original: %.4f mm", pieza->medidaOriginal);
+        mvprintw(fila++, 2, "Medida Actual: %.4f mm", pieza->medidaActual);
+
+
+        if (pieza->culata != NULL) {
+            mvprintw(fila++, 4, "Tipo de Pieza: Culata");
+            mvprintw(fila++, 4, "N° Válvulas: %d", pieza->culata->numValvulas);
+            mvprintw(fila++, 4, "Presión Prueba: %.2f bar", pieza->culata->presionPrueba);
+            mvprintw(fila++, 4, "Tiene Fisuras: %s", pieza->culata->tieneFisuras ? "Sí" : "No");
+            mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(pieza->culata->operacionesMotor));
+        }else{
+            mvprintw(fila++, 4, "Culata : (NO Asignada)");
+        }
+        if (pieza->monoblock != NULL) {
+            Monoblock* monoblock = (Monoblock*)pieza;
+            mvprintw(fila++, 4, "Tipo de Pieza: Monoblock");
+            mvprintw(fila++, 4, "N° Cilindros: %d", monoblock->numCilindros);
+            mvprintw(fila++, 4, "Diámetro Cilindros: %.2f mm", monoblock->diametroCilindro);
+            mvprintw(fila++, 4, "Alineación Cigüeñal: %.2f mm", monoblock->alineacionCiguenal);
+            mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(monoblock->estadoPieza));
+        }else{
+            mvprintw(fila++, 4, "Monoblock : (NO Asignada)");
+        }
+        mvprintw(fila++, 10, "----------------------------------------------");
+
+        if (fila >= LINES - 5) {
+            mvprintw(fila++, 10, "Presiona cualquier tecla para continuar...");
+            getch();
+            clear();
+            fila = 1;
+        }
+    }
+
+    mvprintw(fila++, 10, "Fin del listado...");
+    getch();
+}
+
+void listarFoliosUsuarios(){
+    int y = 3;
+    for (int i = 0; i < arrayUsuarios.tamanno; i++) {
+        Usuario usuario = arrayUsuarios.datos[i];
+
+        mvprintw(y, 40, "Activo?: %s", usuario.activo ? "True" : "False");
+        mvprintw(y, 60, "ID: %d", usuario.id_usuario);
+        mvprintw(y, 70, "Nombre: %s", usuario.nombreUsuario);
+        mvprintw(y, 90, "Folio: %s", usuario.folio);
+
+        if (usuario.motor != NULL) {
+            mvprintw(y, 110, "Numero de serie del motor: %s", usuario.motor->numeroSerie);
+
+            if (usuario.motor->culata != NULL) {
+                mvprintw(y, 180, "(Culata asignada)");
+            } else {
+                mvprintw(y, 180, "(Culata no asignada)");
+            }
+        } else {
+            mvprintw(y, 105, "Motor no asignado");
+        }
+
+        y++; // Dejar una línea en blanco entre registros
+    }
+}

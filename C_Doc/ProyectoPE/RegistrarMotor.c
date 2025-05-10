@@ -28,6 +28,7 @@ int registrarMotor(){
 
             clear();
             mvprintw(2,10,"¿Deseas cargar este motor al usuario?, Asi ya no tendras que registrar un nuevo motor");
+            //AQUI
             imprimirDetallesMotor(motorUsr);
             //getch();
 
@@ -37,10 +38,12 @@ int registrarMotor(){
                 id_usuario =  obtenerIdSiExisteUsuario(10,10);
                 RETURN_IF_ESC(id_usuario);
                 Usuario* usuario = obtenerUsuarioByIdUsuario(id_usuario);
-                asignarMotorUsuario(usuario, motorUsr);
-                //Esta re asignacion se tiene que hacer para agregar correctamente el motor al usuario por medio de indices
-                motorUsr->id_usuario = usuario->id_usuario;
-                guardarMotorArray(motorUsr,id_usuario);
+
+                Motor* motorClonado = clonarMotor(motorUsr, id_usuario);
+
+                usuario->motor = motorClonado;
+                guardarMotorArray(motorClonado, id_usuario);
+
                 clear();
                 mvprintw(10,10,"Motor asignado correctamente al usuario con id %d", id_usuario);
                 getch();
@@ -87,6 +90,7 @@ int registrarMotor(){
     // Variables que dependen de cálculo y tienen que ir aparte
 
     // Ahora sí: inicializas la estructura
+    imprimirMensaje(5,5,"Depuracion 0");
     Paramsmotor paramsmotor = {
         .id_pieza = id_pieza,
         .id_usuario = id_usuario,
@@ -102,9 +106,14 @@ int registrarMotor(){
         .medidaOriginal = medidaOriginal,
         .medidaActual = medidaActual,
     };
+    imprimirMensaje(5,5,"Depuracion 1");
     Motor* motor = inicializarMotor(paramsmotor, id_usuario, id_piezaGlobal, 0, 0);
+    imprimirMensaje(5,5,"Depuracion 2");
     guardarMotorArray(motor, id_usuario);
+    imprimirMensaje(5,5,"Depuracion 3");
     asignarMotorUsuario(obtenerUsuarioByIdUsuario(id_usuario), motor);
+    imprimirMensaje(5,5,"Depuracion 4");
+    //liberarMotor(motor);
 
     if (mostrarMenu(7, "¿Deseas guardar este motor en la base de datos?") == 1
         && obtenerMotorPorNumeroDeSerie(&arrayMotoresUsuarios, numeroSerie) != NULL){
@@ -117,7 +126,7 @@ int registrarMotor(){
     id_piezaGlobal++;
     return 1;
 };
-
+//Le vas a registrar la culata al motor del usuario
 int registrarCulata(){
     //Si si tienes el nuemero de serie -> Agregar solo datos culata
     int y = 5;
@@ -139,15 +148,20 @@ int registrarCulata(){
     RETURN_IF_ESC(id_usuario);
     //Esta linea impide que si el usuario no existe no se hara nada
 
-        if (obtenerUsuarioByIdUsuario(id_usuario) == NULL) return -1;
-        //imprimirMensaje(10,10, numeroDeSerieUsr);
-        Motor* motorUsuario = obtenerMotorPorNumeroDeSerie(&arrayMotoresPrecargados,numeroDeSerieUsr);
-        if (motorUsuario == NULL){
-            imprimirMensaje(10,10,"El numero de serie es incorrecto o no coincide con ningun motor en la lista");
+        Usuario* usuario = obtenerUsuarioByIdUsuario(id_usuario);
+        if (usuario == NULL) {
+            imprimirMensaje(10, 10, "Ocurrió un problema al obtener los datos del usuario");
             return -1;
         }
+
+        Motor* motor = usuario->motor;
+        if (motor == NULL) {
+            imprimirMensaje(10, 10, "El motor del usuario es NULL, por favor asigna un motor al usuario");
+            return -1;
+        }
+        //Motor* motorUsuario = obtenerMotorPorNumeroDeSerie(&arrayMotoresUsuarios,numeroDeSerieUsr);
         //Motor* motorUsuario = obtenerMotorPorNumeroDeSerie(leerStringSeguro(10,10,30,"Ingrese numero de serie del motor"));
-        if (motorUsuario->culata == NULL){
+        if (motor->culata == NULL){
             clear();
             //--------------------------- MEDIDAS CULATA ---------------------------
             // Ingresar numValvulas
@@ -196,15 +210,16 @@ int registrarCulata(){
             getch();
             Culata* pzc = inicializarCulata(id_piezaGlobal, numValvulas, presionPrueba, tieneFisuras, alturaOriginal,alturaActual, alturaMinima,id_usuario, estadoPieza);
             guardarPiezaArray(pzc,id_usuario);
-            motorUsuario->culata = pzc;
+            usuario->motor->culata = pzc;
             id_piezaGlobal++;
             imprimirMensaje(10,10,"Culata Creada correctamente :)");
             return 1;
         }
-        clear();
-        mvprintw(10,10,"el motor ya tiene una culata asignada");
-        mvprintw(11,10,"porfavor modifica los datos o intenta registrando otro motor");
-        getch();
+        //clear();
+        //mvprintw(10,5,"el usuario NO tiene un motor asignado");
+        //mvprintw(11,5,"porfavor modifica los datos o intenta registrando un motor desde 0");
+        imprimirMensaje(5,5,"El usuario no es NULL, El motor no es NULL, La culata no es NULL. ¿?¿?¿");
+        //getch();
     }
     /*
      *else{
