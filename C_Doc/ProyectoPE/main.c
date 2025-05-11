@@ -45,7 +45,7 @@ int main(){
      *  6 = solo precargar motores (arrayMotoresPrecargados)
     precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
      */
-    testing(1);
+    testing(5);
     system("reset");
     clear();
     refresh();

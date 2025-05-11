@@ -65,8 +65,19 @@ const char* tipoCombustibleToStr(TipoCombustible tipo);
 int generarNota(int id);
 int generarTicket(int id);
 int generarFactura(int id);
-void imprimirDetallesTicket(int id);
+void imprimirDetallesTicket(int id, int fila);
 
+//Funciones OTROS
+int validarArchivo(FILE* archivo);
+void historialTickets();
+int exportarDetallesUsuarios(const char* nombreArchivo,FILE* archivo);
+int exportarMotoresUsuarios(const char* nombreArchivo,FILE* archivo);
+int exportarDetallesPiezas(const char* nombreArchivo,FILE* archivo);
+int exportarDetallesTickets(const char* nombreArchivo, FILE* archivo);
+int exportarMotoresPrecargados(const char* nombreArchivo,FILE* archivo);
+
+void exportarDetallesTodoElSistema();
+char* obtenerNombreArchivo(char* textoInicial);
 
 
 

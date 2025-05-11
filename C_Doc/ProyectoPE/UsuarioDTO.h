@@ -192,6 +192,34 @@ typedef struct {
 
 } Paramsmotor;
 
+// listas de cosas
+typedef struct{
+    ArrayTickets* array_list;
+    ArrayPiezas* array_piezas;
+    ArrayUsuarios* array_usuarios;
+
+}Almacen;
+
+// Detalles de los proveedores
+typedef struct{
+
+}Proveedor;
+
+// Maquinaria
+typedef struct  {
+
+}Equipo;
+
+// Caracteristicas y detalles de las Herramientas del almacen (tornillos) lainas, empaques, etc
+typedef struct{
+
+}HerramientasAlmacen;
+
+typedef struct{
+    void* herramienta;
+    int cantidad;
+} Inventario;
+
 Usuario inicializarUsuario(int id_usuario, const char* folio,const char* nombreUsuario,
     const char* apellido,long long celular,const char* email,const char* contacto);
 

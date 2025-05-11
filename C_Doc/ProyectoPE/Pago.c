@@ -93,7 +93,8 @@ int pago(){
                 RETURN_IF_ESC(generarFactura(id_usuario));
         }break;
         case 3:{
-                imprimirDetallesTicket(id_usuario);
+                clear();
+                imprimirDetallesTicket(id_usuario,1);
         }break;
         default:
                 mvprintw(10,10,"Opcion no valida, Intente de nuevo -> Ticket");
@@ -346,9 +347,7 @@ int generarFactura(int id_usuario){
 
 }
 
-void imprimirDetallesTicket(int id_usuario){
-    int fila = 1;
-    clear();
+void imprimirDetallesTicket(int id_usuario, int fila){
     mvprintw(fila++, 4, "IMPRIMIR DETALLES TICKET USUARIO ON");
     mvprintw(fila++, 4, "Tamanno array %d", arrayTickets.tamanno);
 
@@ -370,14 +369,6 @@ void imprimirDetallesTicket(int id_usuario){
             Motor* motor = usr->motor;
             Culata* culata = usr->motor->culata;
             Monoblock* monoblock = usr->motor->monoblock;
-
-            /*
-             if (culata != NULL) {
-                motor = &culata->motor;
-            } else if (monoblock != NULL) {
-                motor = &monoblock->motor;
-            }
-            */
 
             if (motor == NULL) {
                 mvprintw(fila++, 2, "Motor: No asignado.");
@@ -412,6 +403,76 @@ void imprimirDetallesTicket(int id_usuario){
         }
     }
 }
+//  FALTA AGREGAR MAS COSAS PARA IMPRIMIR
+// CADA VEZ QUE LLAME A ESTA FUNCION DEBO CERRAR EL ARCHIVO CON fclose(archivo);
+void exportarDetallesTickets(const char* nombreArchivo, FILE* archivo){
+    if (!archivo) {
+        perror("No se pudo abrir el archivo");
+        return;
+    }
+
+    fprintf(archivo, "EXPORTANDO DETALLES DE TODOS LOS TICKETS\n");
+    fprintf(archivo, "Tamaño del array: %d\n\n", arrayTickets.tamanno);
+
+    for (int i = 0; i < arrayTickets.tamanno; i++) {
+        Usuario* usr = arrayTickets.datos[i].usuario;
+        if (!usr) continue;
+
+        fprintf(archivo, "==============================================\n");
+        fprintf(archivo, "         INFORMACION DEL USUARIO\n");
+        fprintf(archivo, "==============================================\n");
+        fprintf(archivo, "ID Usuario: %d\n", usr->id_usuario);
+        fprintf(archivo, "Folio: %s\n", usr->folio);
+        fprintf(archivo, "Nombre: %s %s\n", usr->nombreUsuario, usr->apellido);
+        fprintf(archivo, "Celular: %lld\n", usr->celular);
+        fprintf(archivo, "Email: %s\n", usr->email);
+        fprintf(archivo, "Contacto: %s\n", usr->contacto);
+        fprintf(archivo, "Activo: %s\n", usr->activo ? "Si" : "No");
+
+        Motor* motor = usr->motor;
+        if (!motor) {
+            fprintf(archivo, "Motor: No asignado.\n\n");
+            continue;
+        }
+
+        fprintf(archivo, "\n----------- DETALLES DEL MOTOR -----------\n");
+        fprintf(archivo, "Modelo: %s\n",motor->modelo );
+        fprintf(archivo, "Fabricante: %s\n", motor->material);
+        fprintf(archivo, "Material: %s\n", motor->material);
+        fprintf(archivo, "Carro Asociado: %s\n", motor->carroAsociado);
+
+        if (motor->culata) {
+            Culata* culata = motor->culata;
+            fprintf(archivo, "\n----------- CULATA -----------\n");
+            fprintf(archivo, "Numero Valvulas: %d\n", culata->numValvulas);
+            fprintf(archivo, "Presion de Prueba: %.2f bar\n", culata->presionPrueba);
+            fprintf(archivo, "Fisuras: %s\n", culata->tieneFisuras ? "Si" : "No");
+            fprintf(archivo, "Estado de la Pieza: %s\n", estadoPiezaTexto(culata->operacionesMotor));
+        }
+
+        if (motor->monoblock) {
+            Monoblock* mono = motor->monoblock;
+            fprintf(archivo, "\n----------- MONOBLOCK -----------\n");
+            fprintf(archivo, "Numero Cilindros: %d\n", mono->numCilindros);
+            fprintf(archivo, "Diametro: %.2f mm\n", mono->diametroCilindro);
+            fprintf(archivo, "Ovalizacion: %.2f mm\n", mono->ovalizacion);
+            fprintf(archivo, "Alineacion Ciguenal: %.2f mm\n", mono->alineacionCiguenal);
+            fprintf(archivo, "Estado de la Pieza: %s\n", estadoPiezaTexto(mono->estadoPieza));
+        }
+
+        fprintf(archivo, "==============================================\n\n");
+    }
+
+    //printf("Archivo generado exitosamente: %s\n", nombreArchivo);
+}
+
+void exportar
+/**
+* arrayPiezas.tamanno > 0 ? imprimirMensaje(5,5,"array Piezas Esta Vacio") : fprintf(archivo, "\n");
+    arrayUsuarios.tamanno > 0 ? imprimirMensaje(5,5,"arrayUsuarios esta vacio") : fprintf(archivo, "\n");
+    arrayMotoresPrecargados.tamanno > 0 ? imprimirMensaje(5,5,"arrayMotoresPrecargados esta vacio") : fprintf(archivo, "\n");
+    arrayMotoresUsuarios.tamanno > 0 ? imprimirMensaje(5,5,"arrayMotoresUsuarios esta vacio") : fprintf(archivo, "\n");
+ */
 
 // 0 = Verificación (no se requiere nada)
 // 1 = Rectificación

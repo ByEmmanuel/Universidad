@@ -92,6 +92,7 @@ int almacen(){
     //Dudas
     {"Consulta Tecnica", "Consultar Version", "Manual de usuario", "Documentacion", "Salir"};
  */
+
 int otro(){
     int opcUsr = mostrarMenu(16, " ");
     switch (opcUsr) {
@@ -105,7 +106,11 @@ int otro(){
             break;
         case 2:
             imprimirMensaje(10,10,"Ver Historial de tickets");
-            //historialTickets();
+            //Buscar ticket por ID
+            //Lo ideal seria imprimir todos los tickets porque ya puedo impimir un ticket individual por usuario
+            if (mostrarMenu(7, "Estas apunto de generar un archivo con todos los tickets del dia, ¿Deseas generarlo?")) {
+                historialTickets();
+            }
         break;
         case 3:
             imprimirMensaje(10,10,"Limpieza de cache - Reinicio local del sistema");
@@ -116,8 +121,10 @@ int otro(){
             //enviarLogsSistema();
         break;
         case 5:
+            exportarDetallesTodoElSistema();
+        case 6:
             //imprimirMensaje(10,10,"Salir");
-            return -1;
+                return -1;
         default: break;
     }
     return 0;
@@ -290,7 +297,7 @@ int realizarOperacionesMotor(){
     };
 
     const int tiempos[] = {50, 25, (operacionesLogicas == -1) ? 80 : 70, 10, 30, 50};
-
+    //
     while (1){
         int opcUsr = mostrarMenu(15, "Seleccione operación a realizar");
         RETURN_IF_ESC(opcUsr);
