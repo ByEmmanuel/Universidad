@@ -150,6 +150,7 @@ int generarNota(int id_usuario, FILE *archivo) {
     fprintf(archivo, "==============================================\n");
     fprintf(archivo, "NOTA DE OPERACION\n");
     fprintf(archivo, "==============================================\n");
+    fprintf(archivo, "Le Atendio:  %s \n\n", empleado);
     fprintf(archivo, "Detalles proporcionados:\n\n");
     fprintf(archivo, "Nombre del Cliente: %s\n", ticket->usuario->nombreUsuario);
     fprintf(archivo, "Fabricante del motor: %s\n", ticket->usuario->motor->fabricante);
@@ -200,7 +201,8 @@ int generarTicket(int id_usuario, FILE *archivo) {
     const float total = subtotal + impuesto;
 
     fprintf(archivo, "==================================================\n");
-    fprintf(archivo, "TICKET DE SERVICIO - ID USUARIO: %d\n", usr->id_usuario);
+    fprintf(archivo, "TICKET DE SERVICIO - Le Atendio: %s\n", empleado);
+    fprintf(archivo, "ID USUARIO: %d\n", usr->id_usuario);
     fprintf(archivo, "==================================================\n");
     fprintf(archivo, "Cliente: %s %s\n", usr->nombreUsuario, usr->apellido);
     fprintf(archivo, "Folio: %s\n", usr->folio);

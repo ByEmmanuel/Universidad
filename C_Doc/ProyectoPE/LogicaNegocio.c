@@ -57,31 +57,42 @@ int servicio() {
 
     return 0;
 }
-
+int opcUsr = -2;
 int almacen(){
-    const int opcUsr = mostrarMenu(8, " ") + 1;
+    /*
+8     "Inventario General / Stock","Herramientas y Equipos","Proveedores y Compras","Reportes"};
+
+(0) 9     "Ver piezas", "Buscar / Filtrar","Agregar / Editar / Eliminar"};
+(1) 10    "Entradas / Salidas","Alertas de stock mínimo","Historial de movimientos"};
+(2) 11    "Estado de herramientas", "Registro de mantenimiento","Asignación"};
+(3) 12    "Registro de proveedor","Historial de compras","Pedidos pendientes"};
+(4) 13    "Movimientos","Piezas más usadas","Piezas inactivas"};
+     */
+    opcUsr = mostrarMenu(8, " ");
     RETURN_IF_ESC(opcUsr);
     switch (opcUsr){
+    case 0:
+        opcUsr = mostrarMenu(9,".");
+        RETURN_IF_ESC(opcUsr);
+        opcUsr = mostrarMenu()
+        break;
     case 1:
-        //const int opcUsrInventario = mostrarMenu(9,".");
-            clear();
-            mvprintw(10,10,"Atiende: %s",empleado);
-            getch();
+        opcUsr = mostrarMenu(10,".");
+        RETURN_IF_ESC(opcUsr);
         break;
     case 2:
-        //const int opcUsrControl = mostrarMenu(10,".");
+        opcUsr = mostrarMenu(11,".");
+        RETURN_IF_ESC(opcUsr);
         break;
     case 3:
-        //const int opcUsrHerramientas = mostrarMenu(11,".");
+        opcUsr = mostrarMenu(12,".");
+        RETURN_IF_ESC(opcUsr);
         break;
     case 4:
-        //const int opcUsrProveedores = mostrarMenu(12,".");
-        break;
-    case 5:
-        //const int opcUsrReportes = mostrarMenu(13,".");
+        opcUsr = mostrarMenu(13,".");
+        RETURN_IF_ESC(opcUsr);
         break;
     default:
-
         break;
     }
     return 0;

@@ -93,53 +93,55 @@ int mostrarMenu(int menuventana, const char* pregunta) {
      */
     int ch, highlight = 0;
     //Menu Principal
-    char* menuUno[SIZE_SIETE] = {"Clientes", "Servicio", "Pago", "Almacen", "Otros", "Dudas", "Salir"};
+    char* menuPrincipal[SIZE_SIETE] = {"Clientes", "Servicio", "Pago", "Almacen", "Otros", "Dudas", "Salir"};
     //Clientes
-    char* menuDos[SIZE_CUATRO] = {"Agregar", "Editar", "Listar", "Menu Principal"};
-    char* menuTres[SIZE_SIETE] = {"Nombre", "Apellido", "Num Celular", "Email", "Contacto", "Eliminar","Salir"};
+    char* menuClientesUno[SIZE_CUATRO] = {"Agregar", "Editar", "Listar", "Menu Principal"};
+    char* menuClientesDos[SIZE_SIETE] = {"Nombre", "Apellido", "Num Celular", "Email", "Contacto", "Eliminar","Salir"};
     //Servicio
-    char* menuCuatro[SIZE_CINCO] = {"Ingreso caracteristicas motor", "Medidas", "Operaciones", "Listar Motores Precargados","Salir"};
+    char* menuServicioUno[SIZE_CINCO] = {"Ingreso caracteristicas motor", "Medidas", "Operaciones", "Listar Motores Precargados","Salir"};
 
-    char* menuCinco[SIZE_TRES] = {"CULATA", "MONOBLOCK", "Listar Piezas"};
-    char* menuSeis[SIZE_TRES] = {"1 : Gasolina","2: Diesel","3: Electrico"};
-    char* menuSiete[SIZE_DOS] = {"NO","SI"};
+    char* menuServicioDos[SIZE_TRES] = {"CULATA", "MONOBLOCK", "Listar Piezas"};
+    char* menuServicioTres[SIZE_TRES] = {"1 : Gasolina","2: Diesel","3: Electrico"};
+    char* menuServicioCuatro[SIZE_DOS] = {"NO","SI"};
     //Almacen
-    char* menuOcho[SIZE_CUATRO] = {"Inventario General / Stock","Herramientas y Equipos","Proveedores y Compras","Reportes"};
+    char* menuAlmacenUno[SIZE_CUATRO] = {"Inventario General / Stock","Herramientas y Equipos","Proveedores y Compras","Reportes"};
 
-    char* subMenuUno[SIZE_TRES] = {"Ver piezas", "Buscar / Filtrar","Agregar / Editar / Eliminar"};
-    char* subMenuDos[SIZE_TRES] = {"Entradas / Salidas","Alertas de stock mínimo","Historial de movimientos"};
-    char* subMenuTres[SIZE_TRES] = {"Estado de herramientas", "Registro de mantenimiento","Asignación"};
-    char* subMenuCuatro[SIZE_TRES] = {"Registro de proveedor","Historial de compras","Pedidos pendientes"};
-    char* subMenuCinco[SIZE_TRES] = {"Movimientos","Piezas más usadas","Piezas inactivas"};
+    char* menuAlmacenDos[SIZE_TRES] = {"Ver piezas", "Buscar / Filtrar","Agregar / Editar / Eliminar"};
+    char* menuAlmacenTres[SIZE_TRES] = {"Entradas / Salidas","Alertas de stock mínimo","Historial de movimientos"};
+    char* menuAlmacenCuatro[SIZE_TRES] = {"Estado de herramientas", "Registro de mantenimiento","Asignación"};
+    char* menuAlmacenCinco[SIZE_TRES] = {"Registro de proveedor","Historial de compras","Pedidos pendientes"};
+    char* menuAlmacenSeis[SIZE_TRES] = {"Movimientos","Piezas más usadas","Piezas inactivas"};
+
     //Pago
-    char* subMenuSeis[SIZE_CUATRO] = {"Generar Nota", "Generar Ticket" , "Generar Factura", "Listar detalles del usuario"};
-    char* subMenuSiete[SIZE_SIETE] = {"Desmontado", "Lavado Inicial", "Rectificacion", "Pruebas Unitarias", "Lavado Secundario", "Montar Motor", "Salir"};
+    char* menuPagoUno[SIZE_CUATRO] = {"Generar Nota", "Generar Ticket" , "Generar Factura", "Listar detalles del usuario"};
+    char* menuPagoDos[SIZE_SIETE] = {"Desmontado", "Lavado Inicial", "Rectificacion", "Pruebas Unitarias", "Lavado Secundario", "Montar Motor", "Salir"};
     //Otros
-    char* subMenuOcho[SIZE_SIETE] = {"Reportar Bug", "Solicitar Mejora", "Ver Historial de tickets", "Limpieza de cache - Reinicio local del sistema", "Enviar Logs del sistema", "Exportar Todo el sistema", "Salir"};
+    char* menuOtrosUno[SIZE_SIETE] = {"Reportar Bug", "Solicitar Mejora", "Ver Historial de tickets", "Limpieza de cache - Reinicio local del sistema", "Enviar Logs del sistema", "Exportar Todo el sistema", "Salir"};
     //Dudas
-    char* subMenuNueve[SIZE_CINCO] = {"Consulta Tecnica", "Consultar Version", "Manual de usuario", "Documentacion", "Salir"};
+    char* menuDudasUno[SIZE_CINCO] = {"Consulta Tecnica", "Consultar Version", "Manual de usuario", "Documentacion", "Salir"};
 
     char** menuActual = NULL;
     int numOpciones = 0;
     switch (menuventana) {
-    case 1: menuActual = menuUno; numOpciones = SIZE_SIETE; break;
-    case 2: menuActual = menuDos; numOpciones = SIZE_CUATRO; break;
-    case 3: menuActual = menuTres; numOpciones = SIZE_SIETE; break;
-    case 4: menuActual = menuCuatro; numOpciones = SIZE_CINCO; break;
-    case 5: menuActual = menuCinco; numOpciones = SIZE_TRES; break;
-    case 6: menuActual = menuSeis; numOpciones = SIZE_TRES; break;
-    case 7: menuActual = menuSiete; numOpciones = SIZE_DOS; break;
-    case 8: menuActual = menuOcho; numOpciones = SIZE_CUATRO; break;
-    //SubMenus
-    case 9: menuActual = subMenuUno; numOpciones = SIZE_TRES; break;
-    case 10: menuActual = subMenuDos; numOpciones = SIZE_TRES; break;
-    case 11: menuActual = subMenuTres; numOpciones = SIZE_TRES; break;
-    case 12: menuActual = subMenuCuatro; numOpciones = SIZE_TRES; break;
-    case 13: menuActual = subMenuCinco; numOpciones = SIZE_TRES; break;
-    case 14: menuActual = subMenuSeis; numOpciones = SIZE_CUATRO; break;
-    case 15: menuActual = subMenuSiete; numOpciones = SIZE_SIETE; break;
-    case 16: menuActual = subMenuOcho; numOpciones = SIZE_SIETE; break;
-    case 17: menuActual = subMenuNueve; numOpciones = SIZE_CINCO; break;
+    case 1: menuActual = menuPrincipal; numOpciones = SIZE_SIETE; break;
+        //CLientes
+    case 2: menuActual = menuClientesUno; numOpciones = SIZE_CUATRO; break;
+    case 3: menuActual = menuClientesDos; numOpciones = SIZE_SIETE; break;
+        //Servicio
+    case 4: menuActual = menuServicioUno; numOpciones = SIZE_CINCO; break;
+    case 5: menuActual = menuServicioDos; numOpciones = SIZE_TRES; break;
+    case 6: menuActual = menuServicioTres; numOpciones = SIZE_TRES; break;
+    case 7: menuActual = menuServicioCuatro; numOpciones = SIZE_DOS; break;
+    case 8: menuActual = menuAlmacenUno; numOpciones = SIZE_CUATRO; break;
+    case 9: menuActual = menuAlmacenDos; numOpciones = SIZE_TRES; break;
+    case 10: menuActual = menuAlmacenTres; numOpciones = SIZE_TRES; break;
+    case 11: menuActual = menuAlmacenCuatro; numOpciones = SIZE_TRES; break;
+    case 12: menuActual = menuAlmacenCinco; numOpciones = SIZE_TRES; break;
+    case 13: menuActual = menuAlmacenSeis; numOpciones = SIZE_TRES; break;
+    case 14: menuActual = menuPagoUno; numOpciones = SIZE_CUATRO; break;
+    case 15: menuActual = menuPagoDos; numOpciones = SIZE_SIETE; break;
+    case 16: menuActual = menuOtrosUno; numOpciones = SIZE_SIETE; break;
+    case 17: menuActual = menuDudasUno; numOpciones = SIZE_CINCO; break;
 
     default:
         mvprintw(10, 10, "Opción no válida o ocurrió un error");

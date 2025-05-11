@@ -44,12 +44,12 @@ void exportarDetallesTodoElSistema() {
      * Tickets
      * Motores precargados
      */
-    arrayUsuarios.tamanno > 0 ? exportarDetallesUsuarios(nombreArchivo,archivo) : fprintf(archivo, "No hay Usuarios creados en la base de datos (arrayUsuarios)\n");
+    arrayUsuarios.tamanno > 0 ? exportarDetallesUsuarios(nombreArchivo,archivo) : fprintf(archivo, "NO HAY USUARIOS EN LA BASE DE DATOS (arrayUsuarios)\n\n");
     // Esto lo hace detalles usuarios por la gerarquia de relaciones de objetos
     //arrayMotoresUsuarios.tamanno > 0 ? exportarMotoresUsuarios(nombreArchivo, archivo) : fprintf(archivo, "No hay MotoresUsuarios creados en la base de datos (arrayMotoresUsuarios)\n");
     //arrayPiezas.tamanno > 0 ? exportarDetallesPiezas(nombreArchivo,archivo) : fprintf(archivo, "No hay Piezas creados en la base de datos (arrayPiezas)\n");
-    arrayTickets.tamanno > 0 ? exportarDetallesTickets(nombreArchivo, archivo) : fprintf(archivo, "No hay Tickets creados en la base de datos (arrayTickets)\n");
-    arrayMotoresPrecargados.tamanno > 0 ? exportarDetallesMotoresPrecargados(nombreArchivo, archivo) : fprintf(archivo, "No hay MotoresPrecargados creados en la base de datos (arrayMotoresPrecargados)\n");
+    arrayTickets.tamanno > 0 ? exportarDetallesTickets(nombreArchivo, archivo) : fprintf(archivo, "NO HAY TICKETS CREADOS EN LA BASE DE DATOS (arrayTickets)\n\n");
+    arrayMotoresPrecargados.tamanno > 0 ? exportarDetallesMotoresPrecargados(nombreArchivo, archivo) : fprintf(archivo, "NO HAY MOTORES PRECARCAGOS EN LA BASE DE DATOS (arrayMotoresPrecargados)\n\n");
     //Almacen
     //arrayAlmacen.tamanno > 0 ? exportarDetallesHerramientasAlmacen(nombreArchivo, archivo) : fprintf(archivo, "No hay Almacen creado en la base de datos (arrayAlmacen)\n");
     fclose(archivo);
