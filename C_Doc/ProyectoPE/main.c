@@ -16,25 +16,38 @@
 #include <stdlib.h>
 #include <time.h>
 #include "LogicaNegocio.h"
-#include "UsuarioDTO.h"
 #include "UserInterface.h"
 #include <pthread.h>
 #include <string.h>
 #include <unistd.h>
-#include "Util.h"
 
+#include "Testing.h"
 
 // Simulación de base de datos de usuarios y contraseñas
 
-int bandera = 1;
 int id_Usuario;
 
 // Variable global para controlar el hilo del reloj
 volatile int running = 1;
+int testingMode;
 
 int main(){
     // Inicio del programa
-    testing(1);
+    /** TESTING MODE
+     *  motoresDB = CANTIDAD DE MOTORES QUE TIENE EN EL SISTEMA (Precargando su informacion total) USANDO NUMERO DE SERIE
+     *  variable donde se guardanLosMotoresPrecargados : (arrayMotoresPrecargados);
+     *  Funcion donde se precargan los motores (precargarMotoresDB(););
+     *  0 = no testing mode
+     *  1 = agregar usuarios
+     *  2 = agregar motores y piezas -> Estos pertenecen a un usuario --> ¿Porque agregarias motores sin un usuario?
+     *  3 = agregar usuarios y (motores y piezas) -> Estos pertenecen a un usuario
+     *  4 = agregar usuarios con motoresDB precargados
+     *  5 = agregar usuarios, (motores y piezas) y agregar MotoresPrecargados;
+     *  6 = solo precargar motores (arrayMotoresPrecargados)
+    precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
+     */
+    testingMode = 0;
+    testing(testingMode);
     system("reset");
     clear();
     refresh();
@@ -43,21 +56,20 @@ int main(){
 
     //sleep(1);
     if (loginUsuario() == 1){
-        //imprimirMenuPrincipal();
-        //mostrarVentana(1);
         menuPrincipal();
     }
     //imprimirPiezasPorUsuario(0);
-
 
     return 0;
 }
 
 void menuPrincipal(){
     initscr();
-    while (bandera){
-        const int opc = mostrarMenu(1,".");
-        ejecutarOpcion(opc);
+    while (1){
+        const int opc = mostrarMenu(1," ");
+        if (opc != -1) {
+            ejecutarOpcion(opc);
+        }
     }
 
 };

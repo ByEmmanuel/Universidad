@@ -12,222 +12,162 @@
 #include "UserInterface.h"
 #include "LogicaNegocio.h"
 
-#define MAX_USUARIOS 6
-#define MAX_LONGITUD 50
+#include "ConstantesMotores.h"
+#include "Testing.h"
 
-char usuariosRegistrados[MAX_USUARIOS][MAX_LONGITUD] =  {"David","Jose","Admin","Pepe","Luis",""};
-char contraseñasUsuarios[MAX_USUARIOS][MAX_LONGITUD] = {"123456789","987654321","01","24680",""};
-char* empleado;
-int id_pieza_global = 0;
-
-
-int loginUsuario(){
-    int intentosUsuario = 0;
-
-    do {
-        printf("Ingrese Usuario: ");
-        // Función para leer cadenas de manera segura
-        char* usuarioID = enterString(MAX_LONGITUD);
-        // Buscar el usuario en la lista
-        int usuarioIndex = -1;
-        for (int i = 0; i < MAX_USUARIOS; i++) {
-            if (strcmp(usuarioID, usuariosRegistrados[i]) == 0) {
-                usuarioIndex = i;
-                break;
-            }
-        }
-
-        if (usuarioIndex != -1) {
-            //char passwUsuario[MAX_LONGITUD];
-            printf("Ingrese Contraseña: ");
-            char* passwUsuario = enterString(MAX_LONGITUD);
-            // Si se encontró el usuario
-            //scanf("%s", passwUsuario);
-
-            // Verificar contraseña
-            if (strEquals(passwUsuario, contraseñasUsuarios[usuarioIndex])) {
-                empleado = usuarioID;
-                printf("Inicio de sesión exitoso.\n");
-                return 1;
-            }
-            printf("Contraseña incorrecta.\n");
-        } else {
-            printf("Usuario no encontrado.\n");
-        }
-        intentosUsuario++;
-    } while (intentosUsuario < 3);  // Permitir 3 intentos
-
-    printf("Se agotaron los intentos.\n");
-    return 0;
-}
-//Aqui iría va la funcion cliente pero esta puesta en DTO USUARIO
-
-int servicio(){
-    //Varibales locales
-    // Material de la pieza (Hierro, Aluminio, etc.)
-    // Nivel de desgaste en porcentaje (0-100%)
-    // Tolerancia máxima de desgaste permitida antes de rectificar
-    // Medida original de la pieza en mm
-    // Medida actual después del desgaste
-    //TipoCombustible tipo_combustible = {};
-    int y = 2;
-    const int opc = mostrarMenu(4,".") + 1;
+int servicio() {
+    int opc = mostrarMenu(4, " ");
     RETURN_IF_ESC(opc);
     int opcusrParteMotor;
-    switch (opc){
+
+    switch (opc) {
+        case 0:
+            clear();
+            registrarMotor();
+            break;
+
         case 1:
-            //Ingreso culata o monoblock
-            //mvprintw(10,10,"Ingrese una opcion 1: Culata. 2: Monoblock");
-            opcusrParteMotor = mostrarMenu(5,".") + 1;
+            //Registrar Culata
+            clear();
+            opcusrParteMotor = mostrarMenu(5, " ");
             RETURN_IF_ESC(opcusrParteMotor);
             listarFoliosUsuarios();
-            if (opcusrParteMotor == 1){
-                //Esto debe ser el folio, pero esta agregado asi por temas de testeo
-                const int id_Usuario = leerIntSeguro(y+=6,10,10000,"Ingrese Id Usuario: ");
-                RETURN_IF_ESC(id_Usuario);
-                //Esta linea impide que si el usuario no existe no se hara nada
 
-                if(obtenerUsuarioByIdUsuario(id_Usuario) == NULL)return -1;
-                //Generar numero de servicio
-                // Ingresar material
-                char* material = leerStringSeguro(y+=2,10,30,"Ingrese material del motor ");
-                if (material == NULL) {
-                    return -1;
-                }
-                char* fabricante = leerStringSeguro(y+=2,10,20,"Ingrese Fabricante del motor");
-                char* nombreMotor = leerStringSeguro(y+=2,10,20,"Ingrese Nombre del motor");
-                char* numeroDeSerie = leerStringSeguro(y+=2,10,20,"Ingrese Numero de serie del motor");
-                // Ingresar desgaste
-                const float desgaste = leerFloatSeguro(y+=2, 10, 30,"Ingresar desgaste float");
-                // Este campo es automatico
-                const float tolerancia = leerFloatSeguro(y+=2, 10, 100, "Ingrese tolerancia float");
-                // Ingresar medidaOriginal
-                const float medidaOriginal = leerFloatSeguro(y+=2, 10, 100,"Ingrese medida Original float");
-                // Ingresar medidaActual
-                const float medidaActual = leerFloatSeguro(y+=2, 10, 100,"Ingrese Medida Actual float");
-                const float cilindrada = leerFloatSeguro(y+=2, 10, 100,"Ingrese Cilindrada en litros float");
-                const float compresionOriginal = leerFloatSeguro(y+=2, 10, 100,"Ingrese Compresion Original float");
-                // comprobar necesitaRectificacion
-                //Funcion necesita rectificacion
-                // Ingresar numValvulas
-                const int numValvulas = leerIntSeguro(y+=2, 10, 50,"Ingrese numero Valvulas entero");
-                // Ingresar presionPrueba
-                const float presionPrueba = leerFloatSeguro(y+=2, 10, 20,"Ingrese PresionPrueba float");
-                // Ingresar tipoCombustible
-                int tipo_combustible = mostrarMenu(6,"Ingrese tipo de combustible");
-                const int tieneFisuras = mostrarMenu(7,"¿Tiene Fisuras?");
-                const int rectificacion = mostrarMenu(7,"¿Necesita Rectificación?");
-                // Ahora puedes usar buffer como un char*
-                mvprintw(3, 55, "Rectificacion?: %d", rectificacion);
-                mvprintw(4, 55, "Tiene Fisuras?: %d", tieneFisuras);
-                mvprintw(5, 55, "Tipo Combustible: %d", tipo_combustible);
-
-                Paramsmotor registro_motor = {
-                        .nombre = nombreMotor,
-                        .fabricante = fabricante,
-                        .cilindrada = cilindrada,
-                        .compresionOriginal = compresionOriginal,
-                        .tipoCombustible = tipo_combustible,
-                        //Esta debe de ponerse en automatico en otra funcion
-                        .tipoPieza = CULATA,
-                        .material = material,
-                        .desgaste = desgaste,
-                        .tolerancia = tolerancia,
-                        .medidaOriginal = medidaOriginal,
-                        .medidaActual = medidaActual,
-                        .necesitaRectificacion = rectificacion
-                };
-                    //Polimorfismo
-                    Culata* pzc = inicializarCulata(numValvulas, presionPrueba, tieneFisuras);
-                    //const Motor piezaUsuario = inicializarMotor(registro_motor, );
-                    //Por agregar numero de serie
-                    Motor* motor = inicializarMotor(registro_motor, id_Usuario, id_pieza_global, numeroDeSerie, pzc,1);
-                    guardarPiezaArray((void*)motor, id_Usuario);  // Se guarda como puntero genérico
-
-                    Usuario* usuario = obtenerUsuarioByIdUsuario(id_Usuario);
-                    asignarPiezaUsuario(usuario, motor);
-                    mvprintw(8, 55, "Pieza Asignada y Guardada Correctamente");
-                id_pieza_global++;
-                getch();
-            }else if (opcusrParteMotor == 2){
-                mvprintw(10,10,"Opcion Monoblock");
-            }else if (opcusrParteMotor == 3){
+            if (opcusrParteMotor == 0 && registrarCulata() != 1)
+                imprimirMensaje(10, 10, "¡Error al crear piezas (Culata) o no hay motor previo!");
+            else if (opcusrParteMotor == 1)
+                registrarMonoblock();
+            else if (opcusrParteMotor == 2)
                 listarPiezas();
+            break;
+
+        case 2: {
+                //LogicaNegocio
+            realizarOperacionesMotor();
             }
-            printf("Opcion no valida");
-
-            break;
-        case 2:{
-                //Lavado
-                clear();
-                if (mostrarMenu(7, "¿Desea agregar el lavado a su servicio?") == 0) return -1;
-                clear();
-                int id_usuario = obtenerIdSiExisteUsuario();
-                RETURN_IF_ESC(id_usuario);
-                Ticket* ticket = obtenerTicketByIdUsuario(id_usuario);
-                ticket->lavado = 1;
-                clear();
-                //barraDeCarga(/*Tiempo en ms*/ 8000)
-                mvprintw(10,10,"El motor y el carro fueron lavados!     Presione Enter");
-                getch();
-            }
-            break;
-        case 3:
-            //Rectificar
-
-            break;
-        case 4:
-            //Ensamble
-
-            break;
-        case 5:
-            //Menu Anterior
-            return 1;
-    default:
         break;
+        case 3:
+            //Testing
+            listarMotoresPrecargados();
+            break;
+
+        default:
+            break;
     }
-    //Ingresar manualmente que es lo que se quiere reconstruir
-    // Cabeza o culata
 
     return 0;
 }
-
+int opcUsr = -2;
 int almacen(){
-    const int opcUsr = mostrarMenu(8, ".") + 1;
+    /*
+8     "Inventario General / Stock","Herramientas y Equipos","Proveedores y Compras","Reportes"};
+
+(0) 9     "Ver piezas", "Buscar / Filtrar","Agregar / Editar / Eliminar"};
+(1) 10    "Entradas / Salidas","Alertas de stock mínimo","Historial de movimientos"};
+(2) 11    "Estado de herramientas", "Registro de mantenimiento","Asignación"};
+(3) 12    "Registro de proveedor","Historial de compras","Pedidos pendientes"};
+(4) 13    "Movimientos","Piezas más usadas","Piezas inactivas"};
+     */
+    opcUsr = mostrarMenu(8, " ");
     RETURN_IF_ESC(opcUsr);
     switch (opcUsr){
+    case 0:
+        opcUsr = mostrarMenu(9,".");
+        RETURN_IF_ESC(opcUsr);
+        opcUsr = mostrarMenu()
+        break;
     case 1:
-        //const int opcUsrInventario = mostrarMenu(9,".");
-            clear();
-            mvprintw(10,10,"Atiende: %s",empleado);
-            getch();
+        opcUsr = mostrarMenu(10,".");
+        RETURN_IF_ESC(opcUsr);
         break;
     case 2:
-        //const int opcUsrControl = mostrarMenu(10,".");
+        opcUsr = mostrarMenu(11,".");
+        RETURN_IF_ESC(opcUsr);
         break;
     case 3:
-        //const int opcUsrHerramientas = mostrarMenu(11,".");
+        opcUsr = mostrarMenu(12,".");
+        RETURN_IF_ESC(opcUsr);
         break;
     case 4:
-        //const int opcUsrProveedores = mostrarMenu(12,".");
-        break;
-    case 5:
-        //const int opcUsrReportes = mostrarMenu(13,".");
+        opcUsr = mostrarMenu(13,".");
+        RETURN_IF_ESC(opcUsr);
         break;
     default:
-
         break;
     }
     return 0;
 }
+/**
+*
+* Otros {"Reportar Bug", "Solicitar Mejora", "Ver Historial de tickets", "Limpieza de cache - Reinicio local del sistema", "Enviar Logs del sistema", "Salir"};
+    //Dudas
+    {"Consulta Tecnica", "Consultar Version", "Manual de usuario", "Documentacion", "Salir"};
+ */
 
 int otro(){
-    printf("Opcion otro");
+    int opcUsr = mostrarMenu(16, " ");
+    switch (opcUsr) {
+        case 0:
+            imprimirMensaje(10,10,"Reportar Bug");
+            //reportarBug();
+            break;
+        case 1:
+            imprimirMensaje(10,10,"Solicitar Mejora");
+            //solicitarFeature();
+            break;
+        case 2:
+            imprimirMensaje(10,10,"Ver Historial de tickets");
+            //Buscar ticket por ID
+            //Lo ideal seria imprimir todos los tickets porque ya puedo impimir un ticket individual por usuario
+            if (mostrarMenu(7, "Estas apunto de generar un archivo con todos los tickets del dia, ¿Deseas generarlo?")) {
+                historialTickets();
+            }
+        break;
+        case 3:
+            imprimirMensaje(10,10,"Limpieza de cache - Reinicio local del sistema");
+            //limpiezaCache();
+        break;
+        case 4:
+            imprimirMensaje(10,10,"Enviar Logs del sistema");
+            //enviarLogsSistema();
+        break;
+        case 5:
+            if (mostrarMenu(7,"Estas apunto de generar un archivo con todos los detalles del sistema, ¿Deseas Generarlo?")){
+                exportarDetallesTodoElSistema();
+            }
+        break;
+        case 6:
+            //imprimirMensaje(10,10,"Salir");
+                return -1;
+        default: break;
+    }
     return 0;
 }
-
+//Dudas
+// {"Consulta Tecnica", "Consultar Version", "Manual de usuario", "Documentacion", "Salir"};
 int dudas(){
-    printf("Opcion Dudas");
+    int opcUsr = mostrarMenu(17, " ");
+    switch (opcUsr) {
+        case 0:
+            imprimirMensaje(10,10,"Consulta Tecnica");
+            //consultaTecnica();
+        break;
+        case 1:
+            imprimirMensaje(10,10,"Consultar Version");
+            //imprimirVersion(versionSoftware);
+        break;
+        case 2:
+            imprimirMensaje(10,10,"Manual de usuario");
+            //manualUsuario();
+        break;
+        case 3:
+            imprimirMensaje(10,10,"Documentacion");
+            //documentacion();-> Redireccionamiento al navegador
+        break;
+        case 4:
+            return -1;
+        default: break;
+    }
     return 0;
 }
 // AQUI VAN LAS FUNCIONES QUE QUIERES QUE SE EJECUTEN ANTES DE QUE TERMINE EL PROGRAMA
@@ -257,92 +197,152 @@ void mostrarLogo(){
 
 }
 
-int asignarPiezaUsuario(Usuario* usuario, Motor* motor ){
+int asignarMotorUsuario(Usuario* usuario, Motor* motor ){
     if (usuario == NULL || usuario->activo != 1){
-        clear();
-        mvprintw(10,10,"Usuario invalido o no encontrado");
-        getch();
+        imprimirMensaje(10,10,"Usuario invalido o no encontrado");
         return 0;
     }
     if (usuario->motor != NULL){
-        clear();
-        mvprintw(10,10,"La pieza ya fue asignada anteriormente");
-        getch();
+        imprimirMensaje(10,10,"La pieza ya fue asignada anteriormente");
         return 0;
     }
     if (motor != NULL) usuario->motor = motor;
     return 1;
 };
-
-void testing(int encendido) {
-    if (encendido) {
-        //usleep(200);
-        printf("\n------TESTING MODE ON------");
-        agregarUsuarios();
-        agregarPiezas();
+// 1 CULATA , 2  MONOBLOCK
+int asignarPiezaMotor(Usuario* usuario, void* pieza, int tipoDePieza){
+    if (tipoDePieza == 1){
+        usuario->motor->culata = (Culata*)pieza;
+        return 1;
     }
+    if (tipoDePieza == 2){
+        usuario->motor->monoblock = (Monoblock*)pieza;
+        return 1;
+    }
+    return 0;
+};
+
+/**
+ * Verifica si se debe rectificar o reconstruir una culata
+ * Devuelve:
+ * 0 = No intervención
+ * 1 = Rectificación
+ * 2 = Reconstrucción
+ */
+
+/**
+ *RECTIFICACION
+alturaOriginal = 130.0;
+alturaActual   = 128.9;
+alturaMinima   = 128.5;
+tolerancia     = 1.5;
+// desgaste = 1.1 → válido
+ */
+
+/**
+ *RECONSTRUCCION
+alturaOriginal = 130.0;
+alturaActual   = 127.0;
+alturaMinima   = 127.5;
+tolerancia     = 2.0;
+alturaActual < alturaMinima → reconstrucción
+ */
+int evaluarEstadoCulata(const float alturaOriginal, const float alturaActual, const float alturaMinima, const float tolerancia) {
+    const float desgaste = alturaOriginal - alturaActual;
+
+    if (alturaActual >= alturaMinima && desgaste <= tolerancia) {
+        return -1; // Rectificación
+    }
+    if (alturaActual < alturaMinima) {
+        return -2; // Reconstrucción
+    }
+    return 0; // No válido o error
+
 }
 
-void agregarUsuarios() {
-    const Usuario usuario1 = inicializarUsuario(0,"00001", "Usuario1", "Apellido 1", 1234567890, "EmailPrueba1@1", "Contacto1");
-    guardarUsuarioArray(usuario1);
-    const Usuario usuario2 = inicializarUsuario(1,"00002", "Usuario2", "Apellido 2", 1987654321, "EmailPrueba2@2", "Contacto2");
-    guardarUsuarioArray(usuario2);
-}
-
-void agregarPiezas() {
-
-    const Paramsmotor motores_registrados[2] = {
-            {
-                .nombre = "1.8L i-VTEC",
-                .fabricante = "Honda",
-                .cilindrada = 1.8f,
-                .compresionOriginal = 190.0f,
-                .tipoCombustible = 0,             // 0 = Gasolina
-                .tipoPieza = CULATA,              // Definido en enum TipoPieza
-                .material = "Aluminio",
-                .desgaste = 0.09f,                // 9% de desgaste
-                .tolerancia = 0.10f,
-                .medidaOriginal = 81.0f,
-                .medidaActual = 80.93f,
-                .necesitaRectificacion = 0       // No necesita rectificación
-            },
-            {
-                .nombre = "3.2L Duratorq",
-                .fabricante = "Ford",
-                .cilindrada = 3.2f,
-                .compresionOriginal = 410.0f,
-                .tipoCombustible = 1,             // 1 = Diesel
-                .tipoPieza = MONOBLOCK,           // Definido en enum TipoPieza
-                .material = "Hierro fundido",
-                .desgaste = 0.14f,                // 14% de desgaste
-                .tolerancia = 0.12f,
-                .medidaOriginal = 89.9f,
-                .medidaActual = 89.76f,
-                .necesitaRectificacion = 1       // Sí necesita rectificación
-            }
+char* imprimirOperacionesCulata(int estado) {
+    const char* mensajes[7] = {
+        "Montado inicial", "Desmontado", "Lavado inicial", "Rectificación/Reconstrucción",
+        "Pruebas Unitarias", "Lavado posterior", "Montado final"
     };
 
-    //id_pieza_global tiene problemas para actualizarse 
+    if (estado < 0 || estado > 6) {
+        return strdup("Ocurrió un error al obtener el estado de la pieza - Ve al siguiente apartado");
+    }
 
-    //Sospechozo, le asigno 2 veces el tipo de pieza, 1 aqui y otra en inicializarCulata
-    //piezaUsuario.tipoPieza = CULATA;
-    const int id_usuario = 0, id_usuario_2 = 1;
-    Culata* pzc = inicializarCulata(16, .10, 2);
-    Motor* piezaUsuario = inicializarMotor(motores_registrados[0],id_usuario,0,"NUMSERIE",pzc,1);
-    //piezaUsuario.tipoPieza = CULATA;
-    guardarPiezaArray(piezaUsuario,id_usuario);  // Se guarda como puntero genérico
-    Usuario* usuario1 = obtenerUsuarioByIdUsuario(id_usuario);
-    asignarPiezaUsuario(usuario1, piezaUsuario);
+    const char* base = "El estado actual de la culata es: ";
+    const char* adicional = " - Ve al siguiente apartado";
 
+    size_t tam = strlen(base) + strlen(mensajes[estado]) + strlen(adicional) + 1;
 
-    Culata* pzc2 = inicializarCulata(18, 0.12, 1);
-    Motor* piezaUsuario2 = inicializarMotor(motores_registrados[1], id_usuario_2,1,"NUMSERIE",pzc2,1);
-    //piezaUsuario2.tipoPieza = CULATA;
-    guardarPiezaArray(piezaUsuario2, id_usuario_2);
-    Usuario* usuario2 = obtenerUsuarioByIdUsuario(id_usuario_2);
-    asignarPiezaUsuario(usuario2, piezaUsuario2);
+    char* resultado = (char*)malloc(tam);
+    if (!resultado) {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
 
-    id_pieza_global+=2;
+    strcpy(resultado, base);
+    strcat(resultado, mensajes[estado]);
+    strcat(resultado, adicional);
 
+    return resultado;
+}
+int realizarOperacionesMotor(){
+    clear();
+    int id_usuario = obtenerIdSiExisteUsuario(5, 5);
+    RETURN_IF_ESC(id_usuario);
+
+    Motor* motor_usr = obtenerMotorByIdUsuario(id_usuario);
+    if (motor_usr == NULL || motor_usr->culata == NULL){
+        imprimirMensaje(10, 10, "Motor inválido o sin culata");
+        return -1;
+    }
+
+    int* estado = &motor_usr->culata->estadoTemporalPieza;
+    int operacionesLogicas = motor_usr->culata->operacionesMotor;
+    if (motor_usr->culata->estadoTemporalPieza < 0 || motor_usr->culata->estadoTemporalPieza > 5)
+        motor_usr->culata->estadoTemporalPieza = 0;
+
+    const char* mensajes[] = {
+        "Desmontando pieza", "Lavando Pieza",
+        (operacionesLogicas == -1) ? "Rectificando Culata" : "Reconstruyendo Culata",
+        "Haciendo Pruebas unitarias", "Haciendo una lavada final",
+        "Montando motor"
+    };
+    //TIEMPOS DE CARGA EN LAS OPERACIONES DEL MOTOR
+    const int tiempos_test[] = {10, 10, (operacionesLogicas == -1) ? 11 : 10, 10, 10, 10};
+    const int tiempos_default[] = {50, 25, (operacionesLogicas == -1) ? 80 : 70, 10, 30, 50};
+
+    const int* tiempos = (testingMode >= 1) ? tiempos_test : tiempos_default;
+
+    //
+    while (1){
+        int opcUsr = mostrarMenu(15, "Seleccione operación a realizar");
+        RETURN_IF_ESC(opcUsr);
+        if (opcUsr == 6) return -1;
+        if (opcUsr < 0 || opcUsr > 5) continue;
+
+        if (opcUsr == *estado && *estado < 6){
+            imprimirBarraDeCarga(tiempos[opcUsr], mensajes[opcUsr]);
+            (*estado)++;
+            if (opcUsr == 2)
+                motor_usr->culata->operacionesMotor = (operacionesLogicas == -1) ? 1 : 2;
+        }
+        else if (opcUsr < *estado){
+            imprimirMensaje(10, 10, "Operación ya realizada.");
+        }
+        else{
+            clear();
+            mvprintw(20, 20, "Estado de la pieza %s: ", imprimirOperacionesCulata(*estado));
+            getch();
+        }
+
+        if (motor_usr->culata->estadoTemporalPieza > 5){
+            imprimirTextoMultilinea(10, 10,
+                                    "El motor ya no tiene operaciones por realizar, puedes ir a generar las ordenes de pago",
+                                    50);
+            break;
+        }
+    }
+    return 0;
 }

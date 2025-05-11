@@ -14,6 +14,7 @@
 
 
 #include "UserInterface.h"
+#include "LogicaNegocio.h"
 
 
 //Funciones importantes para reducir la repeticion de codigo
@@ -72,7 +73,11 @@ int strContains(const char* src, const char* str) {
 // Copiamos las cadenas asegurándonos de que terminen en '\0'
 // Funcion que Asigna una cadena a otra Es decir algo como
 // var1 = "idk" var2 = var1 sin paso por referencia y borra el ultimo caracter que deja fgets
-void asignString(char *dst, const char *src, const size_t n){
+void asignString(char *dst, const char *src, const size_t n) {
+    if (src == NULL) {
+        dst[0] = '\0'; // O dejar una cadena vacía si src no es válido
+        return;
+    }
     strncpy(dst, src, n - 1);
     dst[n - 1] = '\0';
 }
@@ -356,7 +361,7 @@ char* leerStringSeguro(int y, int x, int maxLen, char* pregunta) {
     do {
         valor = leerString(y, x, maxLen, pregunta);
         if (valor == NULL) {
-            mvprintw(y + 1, x, "Entrada inválida o cancelada con (ESC). Inténtalo de nuevo.");
+            mvprintw(y + 1, x, "Entrada inválida o cancelada con (ESC). Presione ESC de nuevo.");
             refresh();
             int ch = getch();
             if (ch == 27) return NULL;  // salir si presiona ESC
@@ -392,6 +397,72 @@ void imprimirTextoMultilinea(int fila, int columna, const char* texto, int ancho
         while (texto[fin] == ' ') fin++;  // saltar espacios múltiples
         inicio = fin;
     }
+}
+
+void imprimirTextoMultilineaArchivo(FILE *archivo, const char *texto, int anchoMaximo){
+    if (!texto || !archivo) return;
+
+    int len = strlen(texto);
+    int inicio = 0;
+
+    while (inicio < len) {
+        int longitudLinea = (len - inicio > anchoMaximo) ? anchoMaximo : len - inicio;
+        char linea[anchoMaximo + 1];
+        strncpy(linea, texto + inicio, longitudLinea);
+        linea[longitudLinea] = '\0';
+        fprintf(archivo, "%s\n", linea);
+        inicio += longitudLinea;
+    }
+}
+
+int arrayPiezasSize(ArrayPiezas* list) {
+    int tamanno = 0;
+    for (int i = 0; i < list->tamanno; i++) {
+        if (list->datos[i] != NULL) {
+            tamanno++;
+        }
+    }
+    return tamanno;
+}
+
+const char* tipoCombustibleToStr(TipoCombustible tipo) {
+    switch (tipo) {
+    case GASOLINA: return "Gasolina";
+    case DIESEL:   return "Diesel";
+    case HIBRIDO:  return "Híbrido";
+    default:       return "Desconocido";
+    }
+}
+
+void mostrarUsuario(Usuario usr) {
+    mvprintw(10,10,"ID Usuario: %d\n", usr.id_usuario);
+    mvprintw(10,11,"Folio Usuario: %s\n", usr.folio);
+    mvprintw(10,12, "Activo?: %d", usr.activo);
+    mvprintw(10,13,"Nombre: %s\n", usr.nombreUsuario);
+    mvprintw(10,14,"Apellido: %s\n", usr.apellido);
+    mvprintw(10,15,"Celular: %lld\n", usr.celular);
+    mvprintw(10,16,"Email: %s\n", usr.email);
+    mvprintw(10,17,"Contacto: %s\n", usr.contacto);
+}
+
+char* obtenerNombreArchivo(const char* textoInicial){
+    char fecha[50];
+    time_t t = time(NULL);
+    struct tm *tm_info = localtime(&t);
+    strftime(fecha, sizeof(fecha), "%Y-%m-%d_%H-%M-%S", tm_info);
+
+
+    char* nombreArchivo = malloc(200);
+    if (nombreArchivo == NULL) {
+        perror("Error al reservar memoria");
+        exit(EXIT_FAILURE);
+    }
+
+    strcpy(nombreArchivo, textoInicial);
+    strcat(nombreArchivo, fecha);
+    strcat(nombreArchivo, ".txt");
+
+    return nombreArchivo;
 }
 
 void cleanScreen(){

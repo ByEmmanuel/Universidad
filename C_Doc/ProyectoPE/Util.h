@@ -11,6 +11,8 @@
 #define LEERINT_ERROR -2
 #define LEERINT_EMPTY -3
 #include <stddef.h>
+#include <stdio.h>
+
 #include "UsuarioDTO.h"
 
 //Strigs y metodos no agregados
@@ -30,16 +32,18 @@ ArrayList* arrayListNew(size_t capacidadInicial);
 
 /**@deprecated
  * Grupo de funciones en desuso
- */
 void arrayListAdd(ArrayList* list, void* element);
 void* arrayListGet(ArrayList* list, size_t index);
-size_t arrayListSize(ArrayList* list);
 void arrayListFree(ArrayList* list);
 void arrayListClear(ArrayList* list);
 //int arrayListContains(ArrayList* list, void* element, bool (*equals)(void*, void*)); // Verifica si contiene un elemento
 void arrayListRemove(ArrayList* list, size_t index); // Elimina elemento por índice
+ */
+//Solo se usa esta
+int arrayPiezasSize(ArrayPiezas* list);
 
 // FECHA
+/**@deprecated */
 typedef struct {
     int year;
     int month;
@@ -51,11 +55,10 @@ typedef struct {
 
 /**@deprecated
  * Grupo de funciones en desuso
- */
 SimpleDate* dateNow();                       // Obtiene la fecha y hora actual
 char* dateToString(SimpleDate* date);        // Convierte a cadena legible
 int dateCompare(SimpleDate* d1, SimpleDate* d2); // Compara dos fechas
-
+ */
 char* generarFolio(const char *nombre);
 
 // Estas funciones son para ncurses
@@ -67,6 +70,7 @@ int leerIntSeguro(int y, int x, int maxLen, char* pregunta);
 float leerFloatSeguro(int y, int x, int maxLen, char* pregunta);
 char* leerStringSeguro(int y, int x, int maxLen, char* pregunta);
 void imprimirTextoMultilinea(int fila, int columna, const char* texto, int anchoMaximo);
+void imprimirTextoMultilineaArchivo(FILE *archivo, const char *texto, int anchoMaximo);
 
 // Buffer
 /**@deprecated */
