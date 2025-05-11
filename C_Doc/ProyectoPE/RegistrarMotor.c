@@ -218,7 +218,7 @@ int registrarCulata(){
         //clear();
         //mvprintw(10,5,"el usuario NO tiene un motor asignado");
         //mvprintw(11,5,"porfavor modifica los datos o intenta registrando un motor desde 0");
-        imprimirMensaje(5,5,"El usuario no es NULL, El motor no es NULL, La culata no es NULL. ¿?¿?¿");
+        imprimirMensaje(5,5,"El usuario no es NULL, El motor no es NULL, La culata no es NULL. YA TIENE TODO AGREGADO ¿?¿?¿");
         //getch();
     }
     /*

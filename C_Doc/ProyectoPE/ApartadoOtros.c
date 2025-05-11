@@ -18,6 +18,11 @@
 void historialTickets(){
     char* nombreArchivo = obtenerNombreArchivo("Tickets_"); // malloc
 
+    //Si existe por lo menos 1 ticket creara el archivo
+    if (arrayTickets.tamanno < 1){
+        imprimirMensaje(5,5,"No existen Tickets Creados, porfavor crea nuevos tickets");
+        return;
+    }
     FILE* archivo = fopen(nombreArchivo, "w"); //Abrir archivo
 
     exportarDetallesTickets(nombreArchivo, archivo);       // uso
@@ -44,32 +49,13 @@ void exportarDetallesTodoElSistema() {
     //arrayMotoresUsuarios.tamanno > 0 ? exportarMotoresUsuarios(nombreArchivo, archivo) : fprintf(archivo, "No hay MotoresUsuarios creados en la base de datos (arrayMotoresUsuarios)\n");
     //arrayPiezas.tamanno > 0 ? exportarDetallesPiezas(nombreArchivo,archivo) : fprintf(archivo, "No hay Piezas creados en la base de datos (arrayPiezas)\n");
     arrayTickets.tamanno > 0 ? exportarDetallesTickets(nombreArchivo, archivo) : fprintf(archivo, "No hay Tickets creados en la base de datos (arrayTickets)\n");
-    arrayMotoresPrecargados.tamanno > 0 ? exportarMotoresPrecargados(nombreArchivo, archivo) : fprintf(archivo, "No hay MotoresPrecargados creados en la base de datos (arrayMotoresPrecargados)\n");
+    arrayMotoresPrecargados.tamanno > 0 ? exportarDetallesMotoresPrecargados(nombreArchivo, archivo) : fprintf(archivo, "No hay MotoresPrecargados creados en la base de datos (arrayMotoresPrecargados)\n");
     //Almacen
-
-
+    //arrayAlmacen.tamanno > 0 ? exportarDetallesHerramientasAlmacen(nombreArchivo, archivo) : fprintf(archivo, "No hay Almacen creado en la base de datos (arrayAlmacen)\n");
+    fclose(archivo);
     free(nombreArchivo);
 };
 
-char* obtenerNombreArchivo(const char* textoInicial){
-    char fecha[50];
-    time_t t = time(NULL);
-    struct tm *tm_info = localtime(&t);
-    strftime(fecha, sizeof(fecha), "%Y-%m-%d_%H-%M-%S", tm_info);
-
-
-    char* nombreArchivo = malloc(200);
-    if (nombreArchivo == NULL) {
-        perror("Error al reservar memoria");
-        exit(EXIT_FAILURE);
-    }
-
-    strcpy(nombreArchivo, textoInicial);
-    strcat(nombreArchivo, fecha);
-    strcat(nombreArchivo, ".txt");
-
-    return nombreArchivo;
-}
 
 /*
 int exportarDetallesArrayPiezas(const char* nombreArchivo, FILE* archivo) {
@@ -132,64 +118,18 @@ int exportarDetallesArrayPiezas(const char* nombreArchivo, FILE* archivo) {
 
     return 1;
 }
-*/
-long long a;
-/**
- *
- *
- * typedef struct {
-    int id_pieza;              // IDENTIFICADOR UNICO DE LA PIEZA -> TODAS LAS PIEZAS DE UN MOTOR DEBEN CONTENER EL MISMO ID
-    int id_usuario;            // IDENTIFICADOR UNICO DE LA PIEZA POR USUARIO, ES DECIR, A QUE USUARIO PERTENECE ESTA PIEZA
-    int numCilindros;           // Número de cilindros en el bloque
 
-    float diametroCilindro;     // Diámetro nominal de los cilindros (mm)
-    float ovalizacion;          // Deformación del cilindro (mm)
-    float alineacionCiguenal;   // Desalineación del cigüeñal respecto al bloque (mm)
-    float desgasteCilindros;    // Desgaste promedio de los cilindros (mm)
-
-    float desgaste;      // Desgaste en altura de culata (mm o %)
-    float tolerancia;    // Tolerancia de rectificado (mm)
-
-     0 = No intervención
-     * 1 = Rectificación
-     * 2 = Reconstrucción
-
-    int estadoPieza;
-} Monoblock;
-typedef struct {
-    int id_pieza;              // IDENTIFICADOR UNICO DE LA PIEZA -> TODAS LAS PIEZAS DE UN MOTOR DEBEN CONTENER EL MISMO ID
-    int id_usuario;            // IDENTIFICADOR UNICO DE LA PIEZA POR USUARIO, ES DECIR, A QUE USUARIO PERTENECE ESTA PIEZA
-    const char* modelo;         // Nombre del motor (modelo).
-    const char* fabricante;     // Fabricante del motor
-    int anno;                    // Año del motor
-    char* carroAsociado;
-    float cilindrada;           // Cilindrada total (litros)
-    float compresionOriginal;   // Compresión de fábrica (psi)
-    const char* numeroSerie;    // Número de serie del motor
-    TipoCombustible tipoCombustible; // Tipo de combustible (enum GASOLINA, DIESEL, etc.)
-    Culata* culata;             // Culata asociada
-    Monoblock* monoblock;       // Monoblock asociado
-    char material[30];          // Material del bloque/cabeza (Aluminio, Hierro, etc.)
-    float medidaOriginal;       // Medida original de referencia (por ejemplo, diámetro cilindros) (mm)
-    float medidaActual;         // Medida actual tras desgaste (mm)
-} Motor;
-//Entidad Usuario
-typedef struct {
-    Motor* motor;
-    char contacto[20];
-    long long numeroContacto;
-    int activo;
-}Usuario;
  * @param nombreArchivo
  * @param archivo
  * @return
  */
-int exportarDetallesArrayUsuarios(const char* nombreArchivo, FILE* archivo) {
+int exportarDetallesUsuarios(const char* nombreArchivo, FILE* archivo) {
     RETURN_IF_ESC(validarArchivo(archivo));
 
     fprintf(archivo, "EXPORTANDO DETALLES DE ARRAY USUARIOS\n");
     fprintf(archivo, "Tamaño del array: %d\n\n", arrayUsuarios.tamanno);
-
+    //Esto hace que por cada usuario valido imprima sus caracteristicas,
+    //Asi Esto obliga a que cada usuario solamente tenga un motor asignado
     for (int i = 0; i < arrayUsuarios.tamanno; i++){
         Usuario* usr = arrayUsuarios.datos;
         if (!usr) continue;
@@ -213,28 +153,52 @@ int exportarDetallesArrayUsuarios(const char* nombreArchivo, FILE* archivo) {
         }
 
         fprintf(archivo, "\n----------- DETALLES DEL MOTOR -----------\n");
+        fprintf(archivo, "FOLIO: %s\n", usr->folio );
+        fprintf(archivo, "ID Pieza: %d\n",motor->id_pieza );
+        fprintf(archivo, "ID Usuario Asociado: %d\n",motor->id_usuario );
         fprintf(archivo, "Modelo: %s\n",motor->modelo );
-        fprintf(archivo, "Fabricante: %s\n", motor->material);
+        fprintf(archivo, "Numero de serie : %s\n", motor->numeroSerie );
+        fprintf(archivo, "Fabricante: %s\n", motor->fabricante);
         fprintf(archivo, "Material: %s\n", motor->material);
         fprintf(archivo, "Carro Asociado: %s\n", motor->carroAsociado);
+        fprintf(archivo, "Anno: %d\n", motor->anno );
+        fprintf(archivo, "Carro Asociado: %s\n", motor->carroAsociado );
+        fprintf(archivo, "Cilindrada (Litros) : %.2f\n", motor->cilindrada );
+        fprintf(archivo, "Compresion Original (psi) : %.2f\n", motor->compresionOriginal );
+        fprintf(archivo, "Combustible: %s", tipoCombustibleToStr(motor->tipoCombustible));
+        fprintf(archivo, "Medida Original (mm) : %.2f\n", motor->medidaOriginal );
+        fprintf(archivo, "Medida Actual (mm) : %.2f\n", motor->medidaActual );
 
         if (motor->culata) {
             Culata* culata = motor->culata;
             fprintf(archivo, "\n----------- CULATA -----------\n");
+            fprintf(archivo, "ID Pieza: %d\n", culata->id_pieza);
+            fprintf(archivo, "ID Usuario: %d\n", culata->id_usuario);
+            fprintf(archivo, "Desgaste Pieza: %.3f\n", culata->desgaste);
+            fprintf(archivo, "Tolerancia Maxima: %.3f\n", culata->tolerancia);
+            fprintf(archivo, "Altura Original: %.3f\n", culata->alturaOriginal);
+            fprintf(archivo, "Altura Actual: %.3f\n", culata->alturaActual);
+            fprintf(archivo, "Altura minima: %.3f\n", culata->alturaMinima);
+
             fprintf(archivo, "Numero Valvulas: %d\n", culata->numValvulas);
             fprintf(archivo, "Presion de Prueba: %.2f bar\n", culata->presionPrueba);
-            fprintf(archivo, "Fisuras: %s\n", culata->tieneFisuras ? "Si" : "No");
+            fprintf(archivo, "Fisuras: %s \n", culata->tieneFisuras ? "Si" : "No");
             fprintf(archivo, "Estado de la Pieza: %s\n", estadoPiezaTexto(culata->operacionesMotor));
         }
 
         if (motor->monoblock) {
             Monoblock* mono = motor->monoblock;
             fprintf(archivo, "\n----------- MONOBLOCK -----------\n");
+            fprintf(archivo, "ID Pieza: %d\n", mono->id_pieza);
+            fprintf(archivo, "ID Usuario: %d\n", mono->id_usuario);
             fprintf(archivo, "Numero Cilindros: %d\n", mono->numCilindros);
-            fprintf(archivo, "Diametro: %.2f mm\n", mono->diametroCilindro);
+            fprintf(archivo, "Diametro: %.2f mm \n", mono->diametroCilindro);
             fprintf(archivo, "Ovalizacion: %.2f mm\n", mono->ovalizacion);
             fprintf(archivo, "Alineacion Ciguenal: %.2f mm\n", mono->alineacionCiguenal);
             fprintf(archivo, "Estado de la Pieza: %s\n", estadoPiezaTexto(mono->estadoPieza));
+            fprintf(archivo, "Desgaste Pieza: %.3f\n", mono->desgaste);
+            fprintf(archivo, "Desgaste Cilindros: %.3f\n", mono->desgasteCilindros);
+            fprintf(archivo, "Tolerancia Maxima: %.3f\n", mono->tolerancia);
         }
 
         fprintf(archivo, "==============================================\n\n");
@@ -251,15 +215,26 @@ int exportarDetallesMotoresPrecargados(const char* nombreArchivo, FILE* archivo)
     fprintf(archivo, "EXPORTANDO DETALLES DE MOTORES PRECARGADOS\n");
     fprintf(archivo, "Tamaño del array: %d\n\n", arrayMotoresPrecargados.tamanno);
 
-    return 1;
-}
+    for (int i = 0; i < arrayMotoresPrecargados.tamanno; i++) {
+        Motor* m = arrayMotoresPrecargados.datos[i];
 
-int exportarDetallesUsuarios(const char* nombreArchivo, FILE* archivo) {
-    RETURN_IF_ESC(validarArchivo(archivo));
+        fprintf(archivo, "Motor #%d\n", i + 1);
+        fprintf(archivo, "  ID de pieza: %d\n", m->id_pieza);
+        fprintf(archivo, "  ID de usuario: %d\n", m->id_usuario);
+        fprintf(archivo, "  Modelo: %s\n", m->modelo);
+        fprintf(archivo, "  Fabricante: %s\n", m->fabricante);
+        fprintf(archivo, "  Año: %d\n", m->anno);
+        fprintf(archivo, "  Carro asociado: %s\n", m->carroAsociado ? m->carroAsociado : "N/A");
+        fprintf(archivo, "  Cilindrada: %.2f L\n", m->cilindrada);
+        fprintf(archivo, "  Compresión original: %.2f psi\n", m->compresionOriginal);
+        fprintf(archivo, "  Número de serie: %s\n", m->numeroSerie);
+        fprintf(archivo, "  Tipo de combustible: %s\n", tipoCombustibleToStr(m->tipoCombustible));
 
-    fprintf(archivo, "EXPORTANDO DETALLES DE ARRAY USUARIOS\n");
-    fprintf(archivo, "Tamaño del array: %d\n\n", arrayUsuarios.tamanno);
-
+        fprintf(archivo, "  Material: %s\n", m->material);
+        fprintf(archivo, "  Medida original: %.2f mm\n", m->medidaOriginal);
+        fprintf(archivo, "  Medida actual: %.2f mm\n", m->medidaActual);
+        fprintf(archivo, "\n");
+    }
 
     return 1;
 }

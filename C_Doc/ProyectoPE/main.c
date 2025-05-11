@@ -29,6 +29,7 @@ int id_Usuario;
 
 // Variable global para controlar el hilo del reloj
 volatile int running = 1;
+int testingMode;
 
 int main(){
     // Inicio del programa
@@ -45,7 +46,8 @@ int main(){
      *  6 = solo precargar motores (arrayMotoresPrecargados)
     precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
      */
-    testing(5);
+    testingMode = 5;
+    testing(testingMode);
     system("reset");
     clear();
     refresh();

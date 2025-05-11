@@ -11,6 +11,8 @@
 #define LEERINT_ERROR -2
 #define LEERINT_EMPTY -3
 #include <stddef.h>
+#include <stdio.h>
+
 #include "UsuarioDTO.h"
 
 //Strigs y metodos no agregados
@@ -68,6 +70,7 @@ int leerIntSeguro(int y, int x, int maxLen, char* pregunta);
 float leerFloatSeguro(int y, int x, int maxLen, char* pregunta);
 char* leerStringSeguro(int y, int x, int maxLen, char* pregunta);
 void imprimirTextoMultilinea(int fila, int columna, const char* texto, int anchoMaximo);
+void imprimirTextoMultilineaArchivo(FILE *archivo, const char *texto, int anchoMaximo);
 
 // Buffer
 /**@deprecated */

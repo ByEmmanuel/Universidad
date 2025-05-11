@@ -121,7 +121,10 @@ int otro(){
             //enviarLogsSistema();
         break;
         case 5:
-            exportarDetallesTodoElSistema();
+            if (mostrarMenu(7,"Estas apunto de generar un archivo con todos los detalles del sistema, ¿Deseas Generarlo?")){
+                exportarDetallesTodoElSistema();
+            }
+        break;
         case 6:
             //imprimirMensaje(10,10,"Salir");
                 return -1;
@@ -295,8 +298,12 @@ int realizarOperacionesMotor(){
         "Haciendo Pruebas unitarias", "Haciendo una lavada final",
         "Montando motor"
     };
+    //TIEMPOS DE CARGA EN LAS OPERACIONES DEL MOTOR
+    const int tiempos_test[] = {10, 10, (operacionesLogicas == -1) ? 11 : 10, 10, 10, 10};
+    const int tiempos_default[] = {50, 25, (operacionesLogicas == -1) ? 80 : 70, 10, 30, 50};
 
-    const int tiempos[] = {50, 25, (operacionesLogicas == -1) ? 80 : 70, 10, 30, 50};
+    const int* tiempos = (testingMode >= 1) ? tiempos_test : tiempos_default;
+
     //
     while (1){
         int opcUsr = mostrarMenu(15, "Seleccione operación a realizar");

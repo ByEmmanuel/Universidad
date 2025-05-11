@@ -77,6 +77,16 @@ int guardarTicket(Ticket ticket){
     return 1;
 }
 
+/**
+ *
+ * Esto asigna al ticket, un usuario siempre que usuario no sea null.
+ * Esto asigna al ticket, un motor AL Usuario del ticket siempre que usuario y motor no sea null.
+ * @param usuario
+ * @param motor
+ * @param detalles
+ * @param detalles2
+ * @return
+ */
 Ticket inicializarTicket(Usuario* usuario,Motor* motor,char* detalles, char* detalles2){
     Ticket ticket = {0};
     if (usuario != NULL) ticket.usuario = usuario;

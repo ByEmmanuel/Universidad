@@ -7,6 +7,7 @@
 #define LOGICANEGOCIO_H
 
 #include "UsuarioDTO.h"
+#include <stdio.h>
 
 //No Usar variables en haders
 //char* empleado;
@@ -62,22 +63,22 @@ const char* tipoCombustibleToStr(TipoCombustible tipo);
 
 
 // FUNCIONES DE USO EXCLUSIVAMENTE PARA TICKETS
-int generarNota(int id);
-int generarTicket(int id);
-int generarFactura(int id);
+int generarNota(int id, FILE* archivo);
+int generarTicket(int id, FILE* archivo);
+int generarFactura(int id, FILE* archivo);
 void imprimirDetallesTicket(int id, int fila);
 
 //Funciones OTROS
 int validarArchivo(FILE* archivo);
 void historialTickets();
 int exportarDetallesUsuarios(const char* nombreArchivo,FILE* archivo);
-int exportarMotoresUsuarios(const char* nombreArchivo,FILE* archivo);
-int exportarDetallesPiezas(const char* nombreArchivo,FILE* archivo);
+//int exportarMotoresUsuarios(const char* nombreArchivo,FILE* archivo);
+//int exportarDetallesPiezas(const char* nombreArchivo,FILE* archivo);
 int exportarDetallesTickets(const char* nombreArchivo, FILE* archivo);
-int exportarMotoresPrecargados(const char* nombreArchivo,FILE* archivo);
+int exportarDetallesMotoresPrecargados(const char* nombreArchivo, FILE* archivo);
 
 void exportarDetallesTodoElSistema();
-char* obtenerNombreArchivo(char* textoInicial);
+char* obtenerNombreArchivo(const char* textoInicial);
 
 
 

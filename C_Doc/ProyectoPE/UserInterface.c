@@ -115,7 +115,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     char* subMenuSeis[SIZE_CUATRO] = {"Generar Nota", "Generar Ticket" , "Generar Factura", "Listar detalles del usuario"};
     char* subMenuSiete[SIZE_SIETE] = {"Desmontado", "Lavado Inicial", "Rectificacion", "Pruebas Unitarias", "Lavado Secundario", "Montar Motor", "Salir"};
     //Otros
-    char* subMenuOcho[SIZE_SEIS] = {"Reportar Bug", "Solicitar Mejora", "Ver Historial de tickets", "Limpieza de cache - Reinicio local del sistema", "Enviar Logs del sistema", "Salir"};
+    char* subMenuOcho[SIZE_SIETE] = {"Reportar Bug", "Solicitar Mejora", "Ver Historial de tickets", "Limpieza de cache - Reinicio local del sistema", "Enviar Logs del sistema", "Exportar Todo el sistema", "Salir"};
     //Dudas
     char* subMenuNueve[SIZE_CINCO] = {"Consulta Tecnica", "Consultar Version", "Manual de usuario", "Documentacion", "Salir"};
 
@@ -138,7 +138,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     case 13: menuActual = subMenuCinco; numOpciones = SIZE_TRES; break;
     case 14: menuActual = subMenuSeis; numOpciones = SIZE_CUATRO; break;
     case 15: menuActual = subMenuSiete; numOpciones = SIZE_SIETE; break;
-    case 16: menuActual = subMenuOcho; numOpciones = SIZE_SEIS; break;
+    case 16: menuActual = subMenuOcho; numOpciones = SIZE_SIETE; break;
     case 17: menuActual = subMenuNueve; numOpciones = SIZE_CINCO; break;
 
     default:

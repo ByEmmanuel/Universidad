@@ -14,6 +14,7 @@
 
 
 #include "UserInterface.h"
+#include "LogicaNegocio.h"
 
 
 //Funciones importantes para reducir la repeticion de codigo
@@ -398,6 +399,22 @@ void imprimirTextoMultilinea(int fila, int columna, const char* texto, int ancho
     }
 }
 
+void imprimirTextoMultilineaArchivo(FILE *archivo, const char *texto, int anchoMaximo){
+    if (!texto || !archivo) return;
+
+    int len = strlen(texto);
+    int inicio = 0;
+
+    while (inicio < len) {
+        int longitudLinea = (len - inicio > anchoMaximo) ? anchoMaximo : len - inicio;
+        char linea[anchoMaximo + 1];
+        strncpy(linea, texto + inicio, longitudLinea);
+        linea[longitudLinea] = '\0';
+        fprintf(archivo, "%s\n", linea);
+        inicio += longitudLinea;
+    }
+}
+
 int arrayPiezasSize(ArrayPiezas* list) {
     int tamanno = 0;
     for (int i = 0; i < list->tamanno; i++) {
@@ -426,6 +443,26 @@ void mostrarUsuario(Usuario usr) {
     mvprintw(10,15,"Celular: %lld\n", usr.celular);
     mvprintw(10,16,"Email: %s\n", usr.email);
     mvprintw(10,17,"Contacto: %s\n", usr.contacto);
+}
+
+char* obtenerNombreArchivo(const char* textoInicial){
+    char fecha[50];
+    time_t t = time(NULL);
+    struct tm *tm_info = localtime(&t);
+    strftime(fecha, sizeof(fecha), "%Y-%m-%d_%H-%M-%S", tm_info);
+
+
+    char* nombreArchivo = malloc(200);
+    if (nombreArchivo == NULL) {
+        perror("Error al reservar memoria");
+        exit(EXIT_FAILURE);
+    }
+
+    strcpy(nombreArchivo, textoInicial);
+    strcat(nombreArchivo, fecha);
+    strcat(nombreArchivo, ".txt");
+
+    return nombreArchivo;
 }
 
 void cleanScreen(){

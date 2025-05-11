@@ -14,6 +14,8 @@ extern Monoblock monoblocksExistentes[CANTIDAD_MOTORES_PRECARGADOS];
 extern Motor motoresExistentesCONCulatasAsignadas[CANTIDAD_MOTORES_PRECARGADOS];
 extern Motor motoresExistentesSINCulatasAsignadas[CANTIDAD_MOTORES_PRECARGADOS];
 
+extern int testingMode;
+
 void testing(int encendido);
 void agregarUsuarios();
 void agregarPiezas();
