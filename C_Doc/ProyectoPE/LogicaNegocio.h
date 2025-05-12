@@ -81,5 +81,17 @@ void exportarDetallesTodoElSistema();
 char* obtenerNombreArchivo(const char* textoInicial);
 
 
+// FUNCIONES ALMACEN
+int cargarAlmacen();
+void precargarPiezasAlmacen(PiezaAlmacen pieza_almacen[], int cantidad);
+PiezaAlmacen* buscarPiezaPorIdUnico(ArrayPiezasAlmacen* inventario, int numPiezas, char *id_unico);
+void imprimirArrayPiezasAlmacen();
+void ejecutarOpcionAlmacen(int opcionMenu, int opcionSubMenu);
+int listarPiezasAlmacen();
+int buscarPiezasAlmacen();
+int agregarPizasAlmacen();
+int eliminarPiezasAlmacen();
+
+void imprimirArrayPiezasAlmacenArchivo(FILE* archivo);
 
 #endif //LOGICANEGOCIO_H

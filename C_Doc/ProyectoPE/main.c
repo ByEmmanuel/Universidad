@@ -56,6 +56,7 @@ int main(){
 
     //sleep(1);
     if (loginUsuario() == 1){
+        cargarAlmacen();
         menuPrincipal();
     }
     //imprimirPiezasPorUsuario(0);

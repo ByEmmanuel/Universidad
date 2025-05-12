@@ -193,12 +193,7 @@ typedef struct {
 } Paramsmotor;
 
 // listas de cosas
-typedef struct{
-    ArrayTickets* array_list;
-    ArrayPiezas* array_piezas;
-    ArrayUsuarios* array_usuarios;
 
-}Almacen;
 
 // Detalles de los proveedores
 typedef struct{
@@ -211,14 +206,56 @@ typedef struct  {
 }Equipo;
 
 // Caracteristicas y detalles de las Herramientas del almacen (tornillos) lainas, empaques, etc
-typedef struct{
+typedef struct {
+    char id_pieza[20];       // Identificador único de la pieza
+    char* id_unicoPieza;
+    char tipo[50];           // Tipo de pieza (e.g., Laina, Pistón, Válvula)
+    float tolerancia;        // Tolerancia o medida específica (mm, bar, etc.)
+    char material[20];       // Material de la pieza (e.g., Acero, Aluminio)
+    char estadoPieza[20];    // Estado (Nueva, Reconstruida, Usada)
+    char compatibilidad[100]; // Modelos/motores compatibles
+    int cantidad;            // Cantidad en inventario
+} PiezaAlmacen;
 
-}HerramientasAlmacen;
+
 
 typedef struct{
-    void* herramienta;
+    char* id_herramienta;    // Identificador único de la herramienta
+    char* tipo;             // Tipo de herramienta (e.g., Micrómetro, Bruñidora, Llave de torque)
+    int usos;                  // Número de veces que la herramienta ha sido utilizada
+    char* compatibilidad;  // Motores o tareas compatibles (e.g., "Ford Duratec 2.0, Honda K20A")
+    float rango;               // Rango de operación (e.g., 0-25 mm para micrómetro, 50-100 Nm para llave de torque)
+    char* material;         // Material principal (e.g., Acero, Plástico)
+    int cantidad;              // Cantidad disponible en inventario
+}Herramienta;
+typedef struct{
+    Herramienta* herramienta;
     int cantidad;
 } Inventario;
+
+typedef struct {
+    PiezaAlmacen* datos;  // Puntero a la lista de usuarios
+    int tamanno;       // Número actual de usuarios / elementos
+    int capacidad;   // Capacidad máxima del array
+} ArrayPiezasAlmacen;
+
+typedef struct {
+    Inventario* datos;  // Puntero a la lista de usuarios
+    int tamanno;       // Número actual de usuarios / elementos
+    int capacidad;   // Capacidad máxima del array
+} ArrayHerramientasAlmacen;
+
+typedef struct{
+    // Array de tickets
+    ArrayTickets* array_list;
+    //Array de piezas
+    //ArrayPiezas* array_piezas;
+    //Array de usuarios
+    ArrayUsuarios* array_usuarios;
+    //Array de piezas del almacen
+    ArrayPiezasAlmacen* pieza_almacen;
+
+}Almacen;
 
 Usuario inicializarUsuario(int id_usuario, const char* folio,const char* nombreUsuario,
     const char* apellido,long long celular,const char* email,const char* contacto);
@@ -229,11 +266,15 @@ Motor* inicializarMotor(Paramsmotor paramsmotor, int id_usuario, int id_pieza, v
 Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,int fisuras,
                           float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario, int estadoPieza);
 
+Herramienta* incializarHerramienta(char* id_herramienta, char* tipo, int usos, char* compatibilidad, float rango, char* material, int cantidad);
+
 extern ArrayTickets arrayTickets;  // ← accedida desde otros .c
 extern ArrayUsuarios arrayUsuarios; // ← accedida desde otros .c
 extern ArrayPiezas arrayMotoresUsuarios;
 extern ArrayPiezas arrayMotoresPrecargados;
 extern ArrayPiezas arrayPiezas;
+extern ArrayPiezasAlmacen arrayPiezasAlmacen;
+extern Almacen almacenBaseDatos;
 //private -> Declarada en UsuarioDTO.c
 extern int id_UsuarioGlobal;
 extern int id_piezaGlobal;
@@ -265,5 +306,11 @@ Motor* clonarMotor(Motor* original, int nuevoIdUsuario);
 void liberarMotor(Motor* pz);
 
 extern char* empleado;
+
+#define CANTIDAD_PIEZASPRECARGADAS 5
+extern PiezaAlmacen componentes_motor[];
+extern PiezaAlmacen componentes_culata[];
+extern PiezaAlmacen componentes_monoblock[];
+
 
 #endif //NEGOCIODTO_H

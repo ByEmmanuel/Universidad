@@ -23,6 +23,8 @@ ArrayList array_list;
 ArrayPiezas arrayMotoresPrecargados = {0};
 ArrayPiezas arrayMotoresUsuarios = {0};
 ArrayPiezas arrayPiezas = {0};
+ArrayPiezasAlmacen arrayPiezasAlmacen = {0};
+Almacen almacenBaseDatos = {0};
 
 
 //Funciones Importantes para la ejecucion detodo el programa y evitar la reutilizacion de codigo
