@@ -9,6 +9,8 @@
 #include "LogicaNegocio.h"
 #include "UserInterface.h"
 #include "Util.h"
+#include "AlmacenYOtros.h"
+
 #define MAX_USUARIOS 6
 #define MAX_LONGITUD 50
 

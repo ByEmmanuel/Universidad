@@ -12,7 +12,9 @@
 #include "UserInterface.h"
 #include "LogicaNegocio.h"
 
-#include "ConstantesMotores.h"
+#include <time.h>
+
+#include "AlmacenYOtros.h"
 #include "Testing.h"
 
 int servicio() {
@@ -131,7 +133,14 @@ int otro(){
         break;
         case 4:
             imprimirMensaje(10,10,"Enviar Logs del sistema");
-            //enviarLogsSistema();
+
+            char* nombreArchivo = obtenerNombreArchivo("Logs-Sistema");
+
+            FILE* archivo = fopen(nombreArchivo,"w");
+
+            enviarLogsSistema(nombreArchivo, archivo);
+
+            fclose(archivo);
         break;
         case 5:
             if (mostrarMenu(7,"Estas apunto de generar un archivo con todos los detalles del sistema, ¿Deseas Generarlo?")){
@@ -312,7 +321,7 @@ int realizarOperacionesMotor(){
         "Montando motor"
     };
     //TIEMPOS DE CARGA EN LAS OPERACIONES DEL MOTOR
-    const int tiempos_test[] = {10, 10, (operacionesLogicas == -1) ? 11 : 10, 10, 10, 10};
+    const int tiempos_test[] = {5, 6, (operacionesLogicas == -1) ? 5 : 6, 5, 5, 5};
     const int tiempos_default[] = {50, 25, (operacionesLogicas == -1) ? 80 : 70, 10, 30, 50};
 
     const int* tiempos = (testingMode >= 1) ? tiempos_test : tiempos_default;
@@ -347,4 +356,99 @@ int realizarOperacionesMotor(){
         }
     }
     return 0;
+}
+
+//-----------------------------------------------------Logs
+/**
+* int id_unico;
+    char* fecha; // formato: "YYYY-MM-DD HH:MM:SS"
+    int usuario_id;
+    char* accion; // ej: "modificar_motor"
+    char* objeto; // ej: "motor"
+    char* id_objeto; // ej: "MONO123"
+    NivelSeveridad nivel_severidad;
+    char* ip_origen; // ej: "192.168.0.5"
+    char* origen_modulo; // ej: "Inventario"
+    int exito; // 1 = éxito, 0 = error
+    char* codigo_error; // solo si exito == 0*/
+void agregarSystemLog(int usuario_id, char* accion, char* objeto, char* id_objeto,
+                      NivelSeveridad severidad, int exito, char* modulo, char* ip, char* codigoError) {
+
+    char fecha[50];
+    time_t t = time(NULL);
+    struct tm *tm_info = localtime(&t);
+    strftime(fecha, sizeof(fecha), "%Y-%m-%d_%H-%M-%S", tm_info);
+
+    int log_id = getIdLog(); // Asegúrate que esta función devuelva un ID único incremental
+    //AQUI TRUENA ESTA MADRE
+    SystemLogs log = inicializarLogs(fecha, log_id, accion, objeto, id_objeto, severidad, exito, modulo, ip, codigoError);
+    //log.usuario_id = usuario_id; // Asignación directa
+
+    if (guardarSystemLogs(log) == -1) {
+        clear(); // Solo se limpia y muestra error si hubo fallo
+        mvprintw(5, 5, "❌ Error al guardar el log. ID: %d, Acción: %s", log_id, accion);
+        getch();
+    }
+}
+
+/*
+* int id_unico;
+    char* fecha; // formato: "YYYY-MM-DD HH:MM:SS"
+    int usuario_id;
+    char* accion; // ej: "modificar_motor"
+    char* objeto; // ej: "motor"
+    char* id_objeto; // ej: "MONO123"
+    NivelSeveridad nivel_severidad;
+    char* ip_origen; // ej: "192.168.0.5"
+    char* origen_modulo; // ej: "Inventario"
+    int exito; // 1 = éxito, 0 = error
+    char* codigo_error; // solo si exito == 0
+ */
+SystemLogs inicializarLogs(char* fecha, int log_id, char* accion, char* objeto, char* id_objeto,
+                           NivelSeveridad severidad, int exito, char* modulo, char* ip, char* codigoError) {
+    SystemLogs log = {0};
+
+    asignString(log.fecha, fecha, sizeof(log.fecha));
+    asignString(log.accion, accion, sizeof(log.accion));
+    log.usuario_id = 1; // Valor fijo, ajusta según necesidad
+    log.id_unico = log_id;
+    asignString(log.objeto, objeto, sizeof(log.objeto));
+    asignString(log.id_objeto, id_objeto, sizeof(log.id_objeto));
+    asignString(log.origen_modulo, modulo, sizeof(log.origen_modulo));
+    log.nivel_severidad = severidad;
+    log.exito = exito;
+    asignString(log.ip_origen, ip, sizeof(log.ip_origen));
+    log.codigo_error = (codigoError != NULL && codigoError[0] != '\0') ? strdup(codigoError) : NULL;
+
+    return log;
+}
+void liberarSystemLog(SystemLogs *log) {
+    if (log->codigo_error != NULL) {
+        free(log->codigo_error);
+        log->codigo_error = NULL;
+    }
+}
+
+int guardarSystemLogs(SystemLogs log) {
+    if (log.accion[0] == '\0') { // Verificar si accion está vacía
+        liberarSystemLog(&log);
+        return -1;
+    }
+
+    if (arrayLogs.tamanno >= arrayLogs.capacidad) {
+        const int nuevaCapacidad = arrayLogs.capacidad == 0 ? 1 : arrayLogs.capacidad * 2;
+        SystemLogs* nuevoArray = realloc(arrayLogs.datos, nuevaCapacidad * sizeof(SystemLogs));
+        if (nuevoArray == NULL) {
+            printf("Error al redimensionar el array de logs.\n");
+            liberarSystemLog(&log);
+            return -1;
+        }
+        arrayLogs.datos = nuevoArray;
+        arrayLogs.capacidad = nuevaCapacidad;
+    }
+
+    arrayLogs.datos[arrayLogs.tamanno] = log;
+    arrayLogs.tamanno++;
+
+    return 1;
 }

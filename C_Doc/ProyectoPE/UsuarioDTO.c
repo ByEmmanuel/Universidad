@@ -10,11 +10,14 @@
 #include <string.h>
 #include "LogicaNegocio.h"
 #include "UserInterface.h"
-#include "ConstantesMotores.h"
+
+#include "AlmacenYOtros.h"
+
 #include "Util.h"
 //Variable encapsulada -> Private
 int id_UsuarioGlobal = 0;
 int id_piezaGlobal = 0;
+int id_unicoLogs = 0;
 //int id_Pieza = 0;
 // Declaración global de array's
 ArrayUsuarios arrayUsuarios = {0};
@@ -25,6 +28,7 @@ ArrayPiezas arrayMotoresUsuarios = {0};
 ArrayPiezas arrayPiezas = {0};
 ArrayPiezasAlmacen arrayPiezasAlmacen = {0};
 Almacen almacenBaseDatos = {0};
+ArrayLogs arrayLogs = {0};
 
 
 //Funciones Importantes para la ejecucion detodo el programa y evitar la reutilizacion de codigo
@@ -125,6 +129,12 @@ void setIdUsuarioLogico(const int nuevoId){
 int getIdUsuarioLogico(){
     return id_UsuarioGlobal;
 };
+void setIdLog(const int id) {
+    id_unicoLogs = id;
+}
+int getIdLog() {
+    return id_unicoLogs;
+}
 
 //Funcion para clonar el contenido de una variable a otra nueva variable
 //-> Esto no pasaria con POO ya que cada nuevo objeto es una nueva direccion en memoria, y si quiero asignar, se asignan los valores de esa direccion PROPIA

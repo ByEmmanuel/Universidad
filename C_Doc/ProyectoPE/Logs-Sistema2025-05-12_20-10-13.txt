@@ -1,0 +1,51 @@
+======= SISTEMA DE LOGS =======
+Cantidad de registros: 16
+
+[2025-05-12_20-10-06] [Login] ID_LOG: 0 | USUARIO_ID: 1 | OBJETO: Ninguno | ID_OBJETO: -1 | SEVERIDAD: INFO
+└── ACCIÓN: Login | IP: IDK | RESULTADO: ÉXITO
+
+[2025-05-12_20-10-06] [GuardarUsuario] ID_LOG: 0 | USUARIO_ID: 1 | OBJETO: Registro | ID_OBJETO: 00001 | SEVERIDAD: INFO
+└── ACCIÓN: Usuario | IP: Usuario1 agregado | RESULTADO: ÉXITO
+
+[2025-05-12_20-10-06] [GuardarUsuario] ID_LOG: 0 | USUARIO_ID: 1 | OBJETO: Registro | ID_OBJETO: 00002 | SEVERIDAD: INFO
+└── ACCIÓN: Usuario | IP: Usuario2 agregado | RESULTADO: ÉXITO
+
+[2025-05-12_20-10-06] [GuardarUsuario] ID_LOG: 0 | USUARIO_ID: 1 | OBJETO: Registro | ID_OBJETO: 00003 | SEVERIDAD: INFO
+└── ACCIÓN: Usuario | IP: Usuario3 agregado | RESULTADO: ÉXITO
+
+[2025-05-12_20-10-06] [GuardarMotor] ID_LOG: 0 | USUARIO_ID: 1 | OBJETO: Registro | ID_OBJETO: FD2K-123456 | SEVERIDAD: INFO
+└── ACCIÓN: Motor | IP: Motor registrado en | RESULTADO: ÉXITO
+
+[2025-05-12_20-10-06] [GuardarPieza] ID_LOG: 0 | USUARIO_ID: 1 | OBJETO: Registro | ID_OBJETO: Culata | SEVERIDAD: INFO
+└── ACCIÓN: Pieza | IP: Culata registrada e | RESULTADO: ÉXITO
+
+[2025-05-12_20-10-06] [PrecargarMotor] ID_LOG: 0 | USUARIO_ID: 1 | OBJETO: Precarga | ID_OBJETO: FD123456 | SEVERIDAD: INFO
+└── ACCIÓN: Motor | IP: Motor insertado en  | RESULTADO: ÉXITO
+
+[2025-05-12_20-10-06] [PrecargarMotor] ID_LOG: 0 | USUARIO_ID: 1 | OBJETO: Precarga | ID_OBJETO: CHV09876 | SEVERIDAD: INFO
+└── ACCIÓN: Motor | IP: Motor insertado en  | RESULTADO: ÉXITO
+
+[2025-05-12_20-10-06] [PrecargarMotor] ID_LOG: 0 | USUARIO_ID: 1 | OBJETO: Precarga | ID_OBJETO: FRD45678 | SEVERIDAD: INFO
+└── ACCIÓN: Motor | IP: Motor insertado en  | RESULTADO: ÉXITO
+
+[2025-05-12_20-10-06] [PrecargarMotor] ID_LOG: 0 | USUARIO_ID: 1 | OBJETO: Precarga | ID_OBJETO: CMS23456 | SEVERIDAD: INFO
+└── ACCIÓN: Motor | IP: Motor insertado en  | RESULTADO: ÉXITO
+
+[2025-05-12_20-10-06] [PrecargarMotor] ID_LOG: 0 | USUARIO_ID: 1 | OBJETO: Precarga | ID_OBJETO: MZD67890 | SEVERIDAD: INFO
+└── ACCIÓN: Motor | IP: Motor insertado en  | RESULTADO: ÉXITO
+
+[2025-05-12_20-10-06] [PrecargarMotor] ID_LOG: 0 | USUARIO_ID: 1 | OBJETO: Precarga | ID_OBJETO: TYT56473 | SEVERIDAD: INFO
+└── ACCIÓN: Motor | IP: Motor insertado en  | RESULTADO: ÉXITO
+
+[2025-05-12_20-10-06] [PrecargarMotor] ID_LOG: 0 | USUARIO_ID: 1 | OBJETO: Precarga | ID_OBJETO: PWS98765 | SEVERIDAD: INFO
+└── ACCIÓN: Motor | IP: Motor insertado en  | RESULTADO: ÉXITO
+
+[2025-05-12_20-10-06] [PrecargarMotor] ID_LOG: 0 | USUARIO_ID: 1 | OBJETO: Precarga | ID_OBJETO: HND13579 | SEVERIDAD: INFO
+└── ACCIÓN: Motor | IP: Motor insertado en  | RESULTADO: ÉXITO
+
+[2025-05-12_20-10-06] [PrecargarMotor] ID_LOG: 0 | USUARIO_ID: 1 | OBJETO: Precarga | ID_OBJETO: BMW24681 | SEVERIDAD: INFO
+└── ACCIÓN: Motor | IP: Motor insertado en  | RESULTADO: ÉXITO
+
+[2025-05-12_20-10-06] [PrecargarMotor] ID_LOG: 0 | USUARIO_ID: 1 | OBJETO: Precarga | ID_OBJETO: HND12345 | SEVERIDAD: INFO
+└── ACCIÓN: Motor | IP: Motor insertado en  | RESULTADO: ÉXITO
+

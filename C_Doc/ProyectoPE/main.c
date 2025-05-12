@@ -17,6 +17,7 @@
 #include <time.h>
 #include "LogicaNegocio.h"
 #include "UserInterface.h"
+#include "AlmacenYOtros.h"
 #include <pthread.h>
 #include <string.h>
 #include <unistd.h>

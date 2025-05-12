@@ -77,7 +77,7 @@ typedef struct {
     char* carroAsociado;
     float cilindrada;           // Cilindrada total (litros)
     float compresionOriginal;   // Compresión de fábrica (psi)
-    const char* numeroSerie;    // Número de serie del motor
+    char* numeroSerie;    // Número de serie del motor
     TipoCombustible tipoCombustible; // Tipo de combustible (enum GASOLINA, DIESEL, etc.)
 
     Culata* culata;             // Culata asociada
@@ -170,7 +170,7 @@ typedef struct {
     int anno;                        // Año de fabricación del motor
     float cilindrada;               // Cilindrada total en litros
     float compresionOriginal;       // Compresión de fábrica en psi
-    const char* numeroSerie;        // Número de serie único del motor
+    char* numeroSerie;        // Número de serie único del motor
     TipoCombustible tipoCombustible;// Tipo de combustible (GASOLINA, DIESEL, etc.)
 
     //TipoPieza tipoPieza;            // Tipo de pieza: CULATA, MONOBLOCK, etc.
@@ -276,6 +276,8 @@ extern int id_piezaGlobal;
 //Public
 void setIdUsuarioLogico(int nuevoId);
 int getIdUsuarioLogico();
+void setIdLog(int id);
+int getIdLog();
 
 void mostrarUsuario(Usuario usr);
 

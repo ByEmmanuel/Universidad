@@ -9,6 +9,8 @@
 #include "UsuarioDTO.h"
 #include <stdio.h>
 
+#include "AlmacenYOtros.h"
+
 //No Usar variables en haders
 //char* empleado;
 
@@ -92,6 +94,9 @@ int listarPiezasAlmacen();
 int buscarPiezasAlmacen();
 int agregarPizasAlmacen();
 int eliminarPiezasAlmacen();
+//LOGS
+const char* obtenerNombreSeveridad(NivelSeveridad severidad);
+void enviarLogsSistema(char* nombreArchivo, FILE* archivo);
 
 void imprimirArrayPiezasAlmacenArchivo(FILE* archivo);
 
