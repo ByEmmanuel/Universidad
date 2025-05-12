@@ -72,6 +72,7 @@ void imprimirDetallesTicket(int id, int fila);
 int validarArchivo(FILE* archivo);
 void historialTickets();
 int exportarDetallesUsuarios(const char* nombreArchivo,FILE* archivo);
+int exportarDetallesPiezasAlmacen(const char* nombreArchivo,FILE* archivo);
 //int exportarMotoresUsuarios(const char* nombreArchivo,FILE* archivo);
 //int exportarDetallesPiezas(const char* nombreArchivo,FILE* archivo);
 int exportarDetallesTickets(const char* nombreArchivo, FILE* archivo);

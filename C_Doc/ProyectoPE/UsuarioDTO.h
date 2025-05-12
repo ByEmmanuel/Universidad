@@ -217,8 +217,6 @@ typedef struct {
     int cantidad;            // Cantidad en inventario
 } PiezaAlmacen;
 
-
-
 typedef struct{
     char* id_herramienta;    // Identificador único de la herramienta
     char* tipo;             // Tipo de herramienta (e.g., Micrómetro, Bruñidora, Llave de torque)
@@ -228,20 +226,16 @@ typedef struct{
     char* material;         // Material principal (e.g., Acero, Plástico)
     int cantidad;              // Cantidad disponible en inventario
 }Herramienta;
-typedef struct{
-    Herramienta* herramienta;
-    int cantidad;
-} Inventario;
 
 typedef struct {
-    PiezaAlmacen* datos;  // Puntero a la lista de usuarios
+    PiezaAlmacen* datos;  // Puntero a la lista de PiezasAlmacen
     int tamanno;       // Número actual de usuarios / elementos
     int capacidad;   // Capacidad máxima del array
 } ArrayPiezasAlmacen;
-
+//No esta en uso
 typedef struct {
-    Inventario* datos;  // Puntero a la lista de usuarios
-    int tamanno;       // Número actual de usuarios / elementos
+    Herramienta* datos;  // Puntero a Herramientas
+    int tamanno;       // Numero actual de Herramientas/ elementos
     int capacidad;   // Capacidad máxima del array
 } ArrayHerramientasAlmacen;
 

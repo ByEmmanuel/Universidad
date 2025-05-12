@@ -122,7 +122,7 @@ void precargarPiezasAlmacen(PiezaAlmacen pieza_almacen[], const int cantidad){
     for (int i = 0; i < cantidad; i++) {
         if (arrayPiezasAlmacen.tamanno >= arrayPiezasAlmacen.capacidad) {
             int nuevaCapacidad = arrayPiezasAlmacen.capacidad == 0 ? 1 : arrayPiezasAlmacen.capacidad * 2;
-            PiezaAlmacen* nuevoArray = realloc(arrayPiezasAlmacen.datos, nuevaCapacidad * sizeof(PiezaAlmacen*));
+            PiezaAlmacen* nuevoArray = realloc(arrayPiezasAlmacen.datos, nuevaCapacidad * sizeof(PiezaAlmacen));
             if (!nuevoArray) {
                 imprimirMensaje(10,10,"Error al redimensionar el array de motores precargados");
                 return;
@@ -135,7 +135,6 @@ void precargarPiezasAlmacen(PiezaAlmacen pieza_almacen[], const int cantidad){
         id_piezaGlobal++;
     }
     //return ;
-
 }
 
 PiezaAlmacen* buscarPiezaPorIdUnico(ArrayPiezasAlmacen* inventario, int numPiezas, char *id_unico) {
