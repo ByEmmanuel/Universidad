@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "AlmacenYOtros.h"
 #include "UserInterface.h"
 #include "LogicaNegocio.h"
 

@@ -8,13 +8,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "AlmacenYOtros.h"
 #include "LogicaNegocio.h"
+#include "SystemLogs.h"
 #include "UserInterface.h"
 #include "UsuarioDTO.h"
 
 void testing(int tipoDeTesting) {
-    agregarSystemLog(1,"Login","Ninguno","-1",INFO, 1, "Login", "IDK", "0");
+    agregarSystemLog(1,"Login","Ninguno","-1",INFO, 1, "Login", "testing", HTTP_OK);
     if (tipoDeTesting){
         //usleep(200);
         int cantidadMotores = sizeof(motoresExistentesSINCulatasAsignadas) / sizeof(Motor);
@@ -70,15 +70,12 @@ void testing(int tipoDeTesting) {
 void agregarUsuarios() {
     const Usuario usuario1 = inicializarUsuario(0,"00001", "Usuario1", "Apellido 1", 1234567890, "EmailPrueba1@1", "Contacto1");
     guardarUsuarioArray(usuario1);
-    agregarSystemLog(usuario1.id_usuario, "Usuario", "Registro", "00001", INFO, 1, "GuardarUsuario", "Usuario1 agregado", "0");
 
     const Usuario usuario2 = inicializarUsuario(1,"00002", "Usuario2", "Apellido 2", 1987654321, "EmailPrueba2@2", "Contacto2");
     guardarUsuarioArray(usuario2);
-    agregarSystemLog(usuario1.id_usuario, "Usuario", "Registro", "00002", INFO, 1, "GuardarUsuario", "Usuario2 agregado", "0");
 
     const Usuario usuario3 = inicializarUsuario(2,"00003","Usuario3","Apellido 3",2746297201,"emailPrueba3@3","Contacto3");
     guardarUsuarioArray(usuario3);
-    agregarSystemLog(usuario1.id_usuario, "Usuario", "Registro", "00003", INFO, 1, "GuardarUsuario", "Usuario3 agregado", "0");
 }
 
 void inicializarArrayMotoresPrecargados() {
@@ -94,12 +91,13 @@ int precargarMotoresDB(Motor motores[], int cantidad) {
             void** nuevoArray = realloc(arrayMotoresPrecargados.datos, nuevaCapacidad * sizeof(void*));
             if (!nuevoArray) {
                 imprimirMensaje(10,10,"Error al redimensionar el array de motores precargados");
+                agregarSystemLog(motores[i].id_usuario, "Add Motor arrayMotores", "Precarga", motores[i].numeroSerie, WARN, 0, "PrecargarMotor", "precargarMotoresDB", HTTP_BAD_REQUEST);
                 return -1;
             }
             arrayMotoresPrecargados.datos = nuevoArray;
             arrayMotoresPrecargados.capacidad = nuevaCapacidad;
         }
-        agregarSystemLog(motores[i].id_usuario, "Motor", "Precarga", motores[i].numeroSerie, INFO, 1, "PrecargarMotor", "Motor insertado en array de motores precargados", "0");
+        agregarSystemLog(motores[i].id_usuario, "Add Motor arrayMotores", "Precarga", motores[i].numeroSerie, INFO, 1, "PrecargarMotor", "precargarMotoresDB", HTTP_OK);
         arrayMotoresPrecargados.datos[arrayMotoresPrecargados.tamanno++] = &motores[i];
         id_piezaGlobal++;
     }
@@ -167,10 +165,10 @@ void agregarPiezas() {
     //piezaUsuario.tipoPieza = CULATA;
 
     guardarMotorArray(motorUsuario_1,id_usuario);
-    agregarSystemLog(id_usuario, "Motor", "Registro", motores_registrados[0].numeroSerie, INFO, 1, "GuardarMotor", "Motor registrado en pruebas", "0");
+    //agregarSystemLog(id_usuario, "Motor", "Registro", motores_registrados[0].numeroSerie, INFO, 1, "GuardarMotor", "Motor registrado en pruebas", "0");
 
     guardarPiezaArray(pzc,id_usuario);
-    agregarSystemLog(id_usuario, "Pieza", "Registro", "Culata", INFO, 1, "GuardarPieza", "Culata registrada en pruebas", "0");
+    //agregarSystemLog(id_usuario, "Pieza", "Registro", "Culata", INFO, 1, "GuardarPieza", "Culata registrada en pruebas", "0");
 
     Usuario* usuario1 = obtenerUsuarioByIdUsuario(id_usuario);
     asignarMotorUsuario(usuario1, motorUsuario_1);

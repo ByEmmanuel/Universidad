@@ -251,16 +251,18 @@ typedef struct{
 
 }Almacen;
 
-Usuario inicializarUsuario(int id_usuario, const char* folio,const char* nombreUsuario,
-    const char* apellido,long long celular,const char* email,const char* contacto);
-
-Ticket inicializarTicket(Usuario* usuario,Motor* motor ,char* detalles, char* detalles2);
+//---------------------------------USUARIO DTO
+Usuario inicializarUsuario(int id_usuario, char* folio,const char* nombreUsuario,const char* apellido,
+                          long long celular,const char* email,const char* contacto);
 Motor* inicializarMotor(Paramsmotor paramsmotor, int id_usuario, int id_pieza, void* tipoDePieza, int numTipoDepieza);
-
 Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,int fisuras,
                           float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario, int estadoPieza);
-
-Herramienta* incializarHerramienta(char* id_herramienta, char* tipo, int usos, char* compatibilidad, float rango, char* material, int cantidad);
+Motor* clonarMotor(Motor* original, int nuevoIdUsuario);
+//Public
+void setIdUsuarioLogico(int nuevoId);
+int getIdUsuarioLogico();
+void setIdLog(int id);
+int getIdLog();
 
 extern ArrayTickets arrayTickets;  // ← accedida desde otros .c
 extern ArrayUsuarios arrayUsuarios; // ← accedida desde otros .c
@@ -273,36 +275,17 @@ extern Almacen almacenBaseDatos;
 extern int id_UsuarioGlobal;
 extern int id_piezaGlobal;
 
-//Public
-void setIdUsuarioLogico(int nuevoId);
-int getIdUsuarioLogico();
-void setIdLog(int id);
-int getIdLog();
 
+//---------------------------------UTIL
 void mostrarUsuario(Usuario usr);
 
-int modificarCliente();
-int guardarUsuarioArray(Usuario usuario);
-int guardarMotorArray(void* motor, int id_usuario);
-int guardarPiezaArray(void* pieza, int id_usuario);
-int guardarTicket(Ticket ticket);
-
-//Culata* inicializarCulata(Motor pieza,int numValvulas , double presionPrueba
-//    /** int tipoCombustible */ ,int fisuras);
-
 /**@deprecated */
-void listarUsuarios(ArrayUsuarios listaUsuarios);
-
-void listarFoliosUsuarios();
 void listarNumerosDeSerieMotores();
-
-void listarPiezas();
-
-Motor* clonarMotor(Motor* original, int nuevoIdUsuario);
 void liberarMotor(Motor* pz);
 
-extern char* empleado;
 
+
+//---------------------------------ConstanteMotores.c
 #define CANTIDAD_PIEZASPRECARGADAS 5
 extern PiezaAlmacen componentes_motor[];
 extern PiezaAlmacen componentes_culata[];

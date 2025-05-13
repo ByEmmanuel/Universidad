@@ -12,7 +12,6 @@
 #include "UserInterface.h"
 #include "LogicaNegocio.h"
 
-#include "AlmacenYOtros.h"
 #include "Testing.h"
 
 void historialTickets(){
@@ -205,44 +204,6 @@ int exportarDetallesPiezasAlmacen(const char* nombreArchivo, FILE* archivo) {
         fprintf(archivo, "==============================================\n\n");
     }
     return 1;
-}
-
-void enviarLogsSistema(char* nombreArchivo, FILE* archivo) {
-    if (!archivo) {
-        printf("Error al abrir el archivo de logs: %s\n", nombreArchivo);
-        return;
-    }
-
-    fprintf(archivo, "======= SISTEMA DE LOGS =======\n");
-    fprintf(archivo, "Cantidad de registros: %d\n\n", arrayLogs.tamanno);
-
-    for (int i = 0; i < arrayLogs.tamanno; i++) {
-        const SystemLogs* log = &arrayLogs.datos[i];
-
-        fprintf(archivo, "[%s] [%s] ID_LOG: %d | USUARIO_ID: %d | OBJETO: %s | ID_OBJETO: %s | SEVERIDAD: %s\n",
-                log->fecha, log->origen_modulo, log->id_unico, log->usuario_id,
-                log->objeto, log->id_objeto, obtenerNombreSeveridad(log->nivel_severidad));
-
-        fprintf(archivo, "└── ACCIÓN: %s | IP: %s | RESULTADO: %s\n",
-                log->accion, log->ip_origen, log->exito ? "ÉXITO" : "ERROR");
-
-        if (!log->exito && log->codigo_error != NULL)
-            fprintf(archivo, "    CÓDIGO DE ERROR: %s\n", log->codigo_error);
-
-        fprintf(archivo, "\n");
-    }
-
-    printf(" Logs escritos correctamente en el archivo: %s\n", nombreArchivo);
-}
-
-
-const char* obtenerNombreSeveridad(NivelSeveridad severidad) {
-    switch (severidad) {
-        case INFO: return "INFO";
-        case WARN: return "WARNING";
-        case ERROR: return "ERROR";
-        default: return "DESCONOCIDO";
-    }
 }
 
 int validarArchivo(FILE* archivo){
