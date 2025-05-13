@@ -9,6 +9,7 @@
 #include "LogicaNegocio.h"
 #include "UserInterface.h"
 #include "Util.h"
+
 #define MAX_USUARIOS 6
 #define MAX_LONGITUD 50
 
@@ -39,7 +40,7 @@ int cliente(){
         if (nombreUsr == NULL) {
             return -1;
         }
-        const char* folio = generarFolio(nombreUsr);
+        char* folio = generarFolio(nombreUsr);
         const char* apellidoUsr = leerStringSeguro(y+=2, 5, 19,"Ingrese Apellido: ");
         if (apellidoUsr == NULL) {
             return -1;

@@ -12,14 +12,9 @@
  */
 
 #include <ncurses.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include "LogicaNegocio.h"
 #include "UserInterface.h"
-#include <pthread.h>
-#include <string.h>
-#include <unistd.h>
 
 #include "Testing.h"
 
@@ -46,7 +41,7 @@ int main(){
      *  6 = solo precargar motores (arrayMotoresPrecargados)
     precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
      */
-    testingMode = 0;
+    testingMode = 5;
     testing(testingMode);
     system("reset");
     clear();
@@ -56,6 +51,7 @@ int main(){
 
     //sleep(1);
     if (loginUsuario() == 1){
+        cargarAlmacen();
         menuPrincipal();
     }
     //imprimirPiezasPorUsuario(0);

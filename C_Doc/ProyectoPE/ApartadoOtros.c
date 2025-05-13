@@ -12,7 +12,6 @@
 #include "UserInterface.h"
 #include "LogicaNegocio.h"
 
-#include "ConstantesMotores.h"
 #include "Testing.h"
 
 void historialTickets(){
@@ -51,6 +50,7 @@ void exportarDetallesTodoElSistema() {
     arrayTickets.tamanno > 0 ? exportarDetallesTickets(nombreArchivo, archivo) : fprintf(archivo, "NO HAY TICKETS CREADOS EN LA BASE DE DATOS (arrayTickets)\n\n");
     arrayMotoresPrecargados.tamanno > 0 ? exportarDetallesMotoresPrecargados(nombreArchivo, archivo) : fprintf(archivo, "NO HAY MOTORES PRECARCAGOS EN LA BASE DE DATOS (arrayMotoresPrecargados)\n\n");
     //Almacen
+    arrayPiezasAlmacen.tamanno > 0 ? exportarDetallesPiezasAlmacen(nombreArchivo, archivo) : fprintf(archivo, "No hay Piezas en el almacen registradas en la base de datos (arrayPiezasAlmacen)\n");
     //arrayAlmacen.tamanno > 0 ? exportarDetallesHerramientasAlmacen(nombreArchivo, archivo) : fprintf(archivo, "No hay Almacen creado en la base de datos (arrayAlmacen)\n");
     fclose(archivo);
     free(nombreArchivo);
@@ -58,67 +58,6 @@ void exportarDetallesTodoElSistema() {
 
 
 /*
-int exportarDetallesArrayPiezas(const char* nombreArchivo, FILE* archivo) {
-    RETURN_IF_ESC(validarArchivo(archivo));
-
-    fprintf(archivo, "EXPORTANDO DETALLES DE ARRAY PIZAS\n");
-    fprintf(archivo, "Tamaño del array: %d\n\n", arrayPiezas.tamanno);
-
-    for (int i = 0; i < arrayPiezas.tamanno; i++){
-        Pieza* usr = arrayPiezas.datos[i];
-        if (!usr) continue;
-
-        fprintf(archivo, "==============================================\n");
-        fprintf(archivo, "         INFORMACION DEL USUARIO\n");
-        fprintf(archivo, "==============================================\n");
-        fprintf(archivo, "ID Usuario: %d\n", usr->id_usuario);
-        fprintf(archivo, "Folio: %s\n", usr->folio);
-        fprintf(archivo, "Nombre: %s %s\n", usr->nombreUsuario, usr->apellido);
-        fprintf(archivo, "Celular: %lld\n", usr->celular);
-        fprintf(archivo, "Email: %s\n", usr->email);
-        fprintf(archivo, "Contacto: %s\n", usr->contacto);
-        fprintf(archivo, "Activo: %s\n", usr->activo ? "Si" : "No");
-
-        Motor* motor = usr->motor;
-        if (!motor) {
-            fprintf(archivo, "Motor: No asignado.\n\n");
-            continue;
-        }
-
-        fprintf(archivo, "\n----------- DETALLES DEL MOTOR -----------\n");
-        fprintf(archivo, "Modelo: %s\n",motor->modelo );
-        fprintf(archivo, "Fabricante: %s\n", motor->material);
-        fprintf(archivo, "Material: %s\n", motor->material);
-        fprintf(archivo, "Carro Asociado: %s\n", motor->carroAsociado);
-
-        if (motor->culata) {
-            Culata* culata = motor->culata;
-            fprintf(archivo, "\n----------- CULATA -----------\n");
-            fprintf(archivo, "Numero Valvulas: %d\n", culata->numValvulas);
-            fprintf(archivo, "Presion de Prueba: %.2f bar\n", culata->presionPrueba);
-            fprintf(archivo, "Fisuras: %s\n", culata->tieneFisuras ? "Si" : "No");
-            fprintf(archivo, "Estado de la Pieza: %s\n", estadoPiezaTexto(culata->operacionesMotor));
-        }
-
-        if (motor->monoblock) {
-            Monoblock* mono = motor->monoblock;
-            fprintf(archivo, "\n----------- MONOBLOCK -----------\n");
-            fprintf(archivo, "Numero Cilindros: %d\n", mono->numCilindros);
-            fprintf(archivo, "Diametro: %.2f mm\n", mono->diametroCilindro);
-            fprintf(archivo, "Ovalizacion: %.2f mm\n", mono->ovalizacion);
-            fprintf(archivo, "Alineacion Ciguenal: %.2f mm\n", mono->alineacionCiguenal);
-            fprintf(archivo, "Estado de la Pieza: %s\n", estadoPiezaTexto(mono->estadoPieza));
-        }
-
-        fprintf(archivo, "==============================================\n\n");
-    }
-
-    printf("Archivo generado exitosamente: %s\n", nombreArchivo);
-    }
-
-    return 1;
-}
-
  * @param nombreArchivo
  * @param archivo
  * @return
@@ -236,6 +175,34 @@ int exportarDetallesMotoresPrecargados(const char* nombreArchivo, FILE* archivo)
         fprintf(archivo, "\n");
     }
 
+    return 1;
+}
+
+int exportarDetallesPiezasAlmacen(const char* nombreArchivo, FILE* archivo) {
+   RETURN_IF_ESC(validarArchivo(archivo));
+
+    fprintf(archivo, "==============================================\n\n");
+    fprintf(archivo, "EXPORTANDO DETALLES DE MOTORES PRECARGADOS\n");
+    fprintf(archivo, "Tamaño del array: %d\n\n", arrayPiezasAlmacen.tamanno);
+
+    for (int i = 0; i < arrayPiezasAlmacen.tamanno; i++) {
+        PiezaAlmacen* p = &arrayPiezasAlmacen.datos[i];
+
+        // Título principal
+        fprintf(archivo, "===== INVENTARIO DE PIEZAS EN ALMACEN =====");
+        fprintf(archivo, "Pieza #%d\n", i + 1);
+        fprintf(archivo, "ID: %s\n", p->id_pieza);
+        fprintf(archivo, "ID Unico: %s\n", p->id_unicoPieza);
+        fprintf(archivo, "Tipo: %s\n", p->tipo);
+        fprintf(archivo, "Tolerancia: %.2f mm\n", p->tolerancia);
+        fprintf(archivo, "Material: %s\n", p->material);
+        fprintf(archivo, "Estado: %s\n", p->estadoPieza);
+        fprintf(archivo, "Compatibilidad: %s\n", p->compatibilidad);
+        fprintf(archivo, "Cantidad: %d\n", p->cantidad);
+        fprintf(archivo, "------------------------\n");
+
+        fprintf(archivo, "==============================================\n\n");
+    }
     return 1;
 }
 

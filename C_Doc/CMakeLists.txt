@@ -11,24 +11,25 @@ include_directories(${CURSES_INCLUDE_DIR})
 add_executable(C_Doc
 
         ProyectoPE/main.c
-        ProyectoPE/LogicaNegocio.h
+        #ProyectoPE/LogicaNegocio.h
         ProyectoPE/LogicaNegocio.c
         ProyectoPE/UsuarioDTO.c
-        ProyectoPE/UsuarioDTO.h
+        #ProyectoPE/UsuarioDTO.h
         ProyectoPE/Util.c
-        ProyectoPE/Util.h
+        #ProyectoPE/Util.h
         ProyectoPE/UserInterface.c
-        ProyectoPE/UserInterface.h
+        #ProyectoPE/UserInterface.h
         ProyectoPE/Pago.c
         ProyectoPE/Clientes.c
-        ProyectoPE/ConstantesMotores.h
+        #ProyectoPE/ConstantesMotores.h
         ProyectoPE/RegistrarMotor.c
         ProyectoPE/Testing.c
-        ProyectoPE/Testing.h
+        #ProyectoPE/Testing.h
         ProyectoPE/ApartadoDudas.c
         ProyectoPE/Almacen.c
         ProyectoPE/UsuarioDAO.c
         ProyectoPE/ApartadoOtros.c
+        ProyectoPE/ConstantesMotores.c
 )
 
 target_link_libraries(C_Doc ${CURSES_LIBRARIES})

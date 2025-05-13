@@ -24,16 +24,16 @@ int numOpciones = 0;
 #define BAR_WIDTH 50  // Ancho de la barra de carga
 
 
-int (*funcionesInt[SIZE_SIETE])() = {
+int (*funcionesSistema[SIZE_SIETE])() = {
     cliente, servicio,pago , almacen, otro, dudas, salir // Solo "Clientes" está implementado
 };
 
 void ejecutarOpcion(int opcion) {
     clear();
-    if (funcionesInt[opcion] != NULL) {
+    if (funcionesSistema[opcion] != NULL) {
         //mvprintw(10, 10, "Has seleccionado: Opción %d", opcion+1);
         refresh();
-        funcionesInt[opcion]();  // Ejecuta la función de la opción
+        funcionesSistema[opcion]();  // Ejecuta la función de la opción
     } else {
         mvprintw(10, 10, "Opción %d no implementada aún.", opcion+1);
         refresh();

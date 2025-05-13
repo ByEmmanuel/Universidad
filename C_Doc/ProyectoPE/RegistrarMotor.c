@@ -8,6 +8,7 @@
 #include "Testing.h"
 #include "UserInterface.h"
 #include "Util.h"
+
 int registrarMotor(){
     int y = 2;
     /** Preguntar si tiene numero de seria del motor,

@@ -77,7 +77,7 @@ typedef struct {
     char* carroAsociado;
     float cilindrada;           // Cilindrada total (litros)
     float compresionOriginal;   // Compresión de fábrica (psi)
-    const char* numeroSerie;    // Número de serie del motor
+    char* numeroSerie;    // Número de serie del motor
     TipoCombustible tipoCombustible; // Tipo de combustible (enum GASOLINA, DIESEL, etc.)
 
     Culata* culata;             // Culata asociada
@@ -170,7 +170,7 @@ typedef struct {
     int anno;                        // Año de fabricación del motor
     float cilindrada;               // Cilindrada total en litros
     float compresionOriginal;       // Compresión de fábrica en psi
-    const char* numeroSerie;        // Número de serie único del motor
+    char* numeroSerie;        // Número de serie único del motor
     TipoCombustible tipoCombustible;// Tipo de combustible (GASOLINA, DIESEL, etc.)
 
     //TipoPieza tipoPieza;            // Tipo de pieza: CULATA, MONOBLOCK, etc.
@@ -193,12 +193,7 @@ typedef struct {
 } Paramsmotor;
 
 // listas de cosas
-typedef struct{
-    ArrayTickets* array_list;
-    ArrayPiezas* array_piezas;
-    ArrayUsuarios* array_usuarios;
 
-}Almacen;
 
 // Detalles de los proveedores
 typedef struct{
@@ -211,59 +206,90 @@ typedef struct  {
 }Equipo;
 
 // Caracteristicas y detalles de las Herramientas del almacen (tornillos) lainas, empaques, etc
+typedef struct {
+    char id_pieza[20];       // Identificador único de la pieza
+    char* id_unicoPieza;
+    char tipo[50];           // Tipo de pieza (e.g., Laina, Pistón, Válvula)
+    float tolerancia;        // Tolerancia o medida específica (mm, bar, etc.)
+    char material[20];       // Material de la pieza (e.g., Acero, Aluminio)
+    char estadoPieza[20];    // Estado (Nueva, Reconstruida, Usada)
+    char compatibilidad[100]; // Modelos/motores compatibles
+    int cantidad;            // Cantidad en inventario
+} PiezaAlmacen;
+
 typedef struct{
+    char* id_herramienta;    // Identificador único de la herramienta
+    char* tipo;             // Tipo de herramienta (e.g., Micrómetro, Bruñidora, Llave de torque)
+    int usos;                  // Número de veces que la herramienta ha sido utilizada
+    char* compatibilidad;  // Motores o tareas compatibles (e.g., "Ford Duratec 2.0, Honda K20A")
+    float rango;               // Rango de operación (e.g., 0-25 mm para micrómetro, 50-100 Nm para llave de torque)
+    char* material;         // Material principal (e.g., Acero, Plástico)
+    int cantidad;              // Cantidad disponible en inventario
+}Herramienta;
 
-}HerramientasAlmacen;
+typedef struct {
+    PiezaAlmacen* datos;  // Puntero a la lista de PiezasAlmacen
+    int tamanno;       // Número actual de usuarios / elementos
+    int capacidad;   // Capacidad máxima del array
+} ArrayPiezasAlmacen;
+//No esta en uso
+typedef struct {
+    Herramienta* datos;  // Puntero a Herramientas
+    int tamanno;       // Numero actual de Herramientas/ elementos
+    int capacidad;   // Capacidad máxima del array
+} ArrayHerramientasAlmacen;
 
 typedef struct{
-    void* herramienta;
-    int cantidad;
-} Inventario;
+    // Array de tickets
+    ArrayTickets* array_list;
+    //Array de piezas
+    //ArrayPiezas* array_piezas;
+    //Array de usuarios
+    ArrayUsuarios* array_usuarios;
+    //Array de piezas del almacen
+    ArrayPiezasAlmacen* pieza_almacen;
 
-Usuario inicializarUsuario(int id_usuario, const char* folio,const char* nombreUsuario,
-    const char* apellido,long long celular,const char* email,const char* contacto);
+}Almacen;
 
-Ticket inicializarTicket(Usuario* usuario,Motor* motor ,char* detalles, char* detalles2);
+//---------------------------------USUARIO DTO
+Usuario inicializarUsuario(int id_usuario, char* folio,const char* nombreUsuario,const char* apellido,
+                          long long celular,const char* email,const char* contacto);
 Motor* inicializarMotor(Paramsmotor paramsmotor, int id_usuario, int id_pieza, void* tipoDePieza, int numTipoDepieza);
-
 Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,int fisuras,
                           float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario, int estadoPieza);
+Motor* clonarMotor(Motor* original, int nuevoIdUsuario);
+//Public
+void setIdUsuarioLogico(int nuevoId);
+int getIdUsuarioLogico();
+void setIdLog(int id);
+int getIdLog();
 
 extern ArrayTickets arrayTickets;  // ← accedida desde otros .c
 extern ArrayUsuarios arrayUsuarios; // ← accedida desde otros .c
 extern ArrayPiezas arrayMotoresUsuarios;
 extern ArrayPiezas arrayMotoresPrecargados;
 extern ArrayPiezas arrayPiezas;
+extern ArrayPiezasAlmacen arrayPiezasAlmacen;
+extern Almacen almacenBaseDatos;
 //private -> Declarada en UsuarioDTO.c
 extern int id_UsuarioGlobal;
 extern int id_piezaGlobal;
 
-//Public
-void setIdUsuarioLogico(int nuevoId);
-int getIdUsuarioLogico();
 
+//---------------------------------UTIL
 void mostrarUsuario(Usuario usr);
 
-int modificarCliente();
-int guardarUsuarioArray(Usuario usuario);
-int guardarMotorArray(void* motor, int id_usuario);
-int guardarPiezaArray(void* pieza, int id_usuario);
-int guardarTicket(Ticket ticket);
-
-//Culata* inicializarCulata(Motor pieza,int numValvulas , double presionPrueba
-//    /** int tipoCombustible */ ,int fisuras);
-
 /**@deprecated */
-void listarUsuarios(ArrayUsuarios listaUsuarios);
-
-void listarFoliosUsuarios();
 void listarNumerosDeSerieMotores();
-
-void listarPiezas();
-
-Motor* clonarMotor(Motor* original, int nuevoIdUsuario);
 void liberarMotor(Motor* pz);
 
-extern char* empleado;
+
+
+//---------------------------------ConstanteMotores.c
+#define CANTIDAD_PIEZASPRECARGADAS 5
+extern PiezaAlmacen componentes_motor[];
+extern PiezaAlmacen componentes_culata[];
+extern PiezaAlmacen componentes_monoblock[];
+
 
 #endif //NEGOCIODTO_H

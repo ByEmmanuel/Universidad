@@ -12,7 +12,9 @@
 #include "UserInterface.h"
 #include "LogicaNegocio.h"
 
-#include "ConstantesMotores.h"
+#include <time.h>
+
+#include "SystemLogs.h"
 #include "Testing.h"
 
 int servicio() {
@@ -58,10 +60,12 @@ int servicio() {
     return 0;
 }
 int opcUsr = -2;
+int subOpcUsr = -2;
 int almacen(){
     /*
 8     "Inventario General / Stock","Herramientas y Equipos","Proveedores y Compras","Reportes"};
-
+|
+v
 (0) 9     "Ver piezas", "Buscar / Filtrar","Agregar / Editar / Eliminar"};
 (1) 10    "Entradas / Salidas","Alertas de stock mínimo","Historial de movimientos"};
 (2) 11    "Estado de herramientas", "Registro de mantenimiento","Asignación"};
@@ -72,25 +76,25 @@ int almacen(){
     RETURN_IF_ESC(opcUsr);
     switch (opcUsr){
     case 0:
-        opcUsr = mostrarMenu(9,".");
-        RETURN_IF_ESC(opcUsr);
-        opcUsr = mostrarMenu()
+        subOpcUsr = mostrarMenu(9," ");
+        RETURN_IF_ESC(subOpcUsr);
+        ejecutarOpcionAlmacen(opcUsr,subOpcUsr);
         break;
     case 1:
-        opcUsr = mostrarMenu(10,".");
-        RETURN_IF_ESC(opcUsr);
+        subOpcUsr = mostrarMenu(10," ");
+        RETURN_IF_ESC(subOpcUsr);
         break;
     case 2:
-        opcUsr = mostrarMenu(11,".");
-        RETURN_IF_ESC(opcUsr);
+        subOpcUsr = mostrarMenu(11," ");
+        RETURN_IF_ESC(subOpcUsr);
         break;
     case 3:
-        opcUsr = mostrarMenu(12,".");
-        RETURN_IF_ESC(opcUsr);
+        subOpcUsr = mostrarMenu(12," ");
+        RETURN_IF_ESC(subOpcUsr);
         break;
     case 4:
-        opcUsr = mostrarMenu(13,".");
-        RETURN_IF_ESC(opcUsr);
+        subOpcUsr = mostrarMenu(13," ");
+        RETURN_IF_ESC(subOpcUsr);
         break;
     default:
         break;
@@ -129,7 +133,14 @@ int otro(){
         break;
         case 4:
             imprimirMensaje(10,10,"Enviar Logs del sistema");
-            //enviarLogsSistema();
+
+            char* nombreArchivo = obtenerNombreArchivo("Logs-Sistema");
+
+            FILE* archivo = fopen(nombreArchivo,"w");
+
+            enviarLogsSistema(nombreArchivo, archivo);
+
+            fclose(archivo);
         break;
         case 5:
             if (mostrarMenu(7,"Estas apunto de generar un archivo con todos los detalles del sistema, ¿Deseas Generarlo?")){
@@ -310,7 +321,7 @@ int realizarOperacionesMotor(){
         "Montando motor"
     };
     //TIEMPOS DE CARGA EN LAS OPERACIONES DEL MOTOR
-    const int tiempos_test[] = {10, 10, (operacionesLogicas == -1) ? 11 : 10, 10, 10, 10};
+    const int tiempos_test[] = {5, 6, (operacionesLogicas == -1) ? 5 : 6, 5, 5, 5};
     const int tiempos_default[] = {50, 25, (operacionesLogicas == -1) ? 80 : 70, 10, 30, 50};
 
     const int* tiempos = (testingMode >= 1) ? tiempos_test : tiempos_default;

@@ -1,85 +1,95 @@
 //
 // Created by Jesus Emmanuel Garcia on 2/17/25.
-// Este es el archivo que simula ser una interface
-// y desde aqui se declaran las funciones para tener un mejor control
+// Interface principal: Declaración de funciones del sistema de rectificación
+//
 
 #ifndef LOGICANEGOCIO_H
 #define LOGICANEGOCIO_H
 
+// ------------------------------------- Includes
 #include "UsuarioDTO.h"
 #include <stdio.h>
 
-//No Usar variables en haders
-//char* empleado;
-
-void mostrarLogo();
-
+// ------------------------------------- Modulo Principal
 void menuPrincipal();
+extern char* empleado;
 
-int loginUsuario();
-
-int preguntaSalida();
-
-int cliente();
-
+// ------------------------------------- UI y flujo principal
+void mostrarLogo();
 int servicio();
-
-int pago();
-
 int almacen();
-
 int otro();
-
 int dudas();
-
 int salir();
 
+// -------------------------------------  Clientes
+int loginUsuario();
+int cliente();
+int modificarCliente();
+void listarFoliosUsuarios();
+void listarPiezas();
+
+
+// -------------------------------------  UsuarioDAO
 Usuario* obtenerUsuarioByIdUsuario(int id);
-Motor* obtenerMotorPorNumeroDeSerie(const ArrayPiezas* array, const char* numeroDeSerieMotor) ;
+Motor* obtenerMotorPorNumeroDeSerie(const ArrayPiezas* array, const char* numeroDeSerieMotor);
 Motor* obtenerMotorByIdUsuario(int id);
 Ticket* obtenerTicketByIdUsuario(int id_usuario);
 int obtenerIdSiExisteUsuario(int POS_Y, int POS_X);
 
-// FUNCIONES EXCLUSIVAS DE REGISTRAR MOTORES
+Ticket inicializarTicket(Usuario* usuario,Motor* motor ,char* detalles, char* detalles2);
+int guardarUsuarioArray(Usuario usuario);
+int guardarMotorArray(void* motor, int id_usuario);
+int guardarPiezaArray(void* pieza, int id_usuario);
+int guardarTicket(Ticket ticket);
 
+// -------------------------------------  Registrar Motores
 int registrarMotor();
 int registrarCulata();
 int registrarMonoblock();
 void rectificarCulata(Culata* culata, int id_usuario);
+void imprimirDetallesMotor(Motor* motor);
 int asignarMotorUsuario(Usuario* usuario, Motor* motor);
 int asignarPiezaMotor(Usuario* usuario, void* pieza, int tipoDePieza);
 int evaluarEstadoCulata(float alturaOriginal, float alturaActual, float alturaMinima, float tolerancia);
-const char* estadoPiezaTexto(int estadoPieza);
-void imprimirDetallesMotor(Motor* motor);
 char* imprimirOperacionesCulata(int operacion);
 int realizarOperacionesMotor();
 
-/**
- * @deprecated
- */
-void printCulata(const Culata* c);
-
+// -------------------------------------  Utilidades
 const char* tipoCombustibleToStr(TipoCombustible tipo);
+char* obtenerNombreArchivo(const char* textoInicial);
 
-
-// FUNCIONES DE USO EXCLUSIVAMENTE PARA TICKETS
+// -------------------------------------  Tickets y Pagos
+int pago();
 int generarNota(int id, FILE* archivo);
 int generarTicket(int id, FILE* archivo);
 int generarFactura(int id, FILE* archivo);
 void imprimirDetallesTicket(int id, int fila);
+const char* estadoPiezaTexto(int estadoPieza);
 
-//Funciones OTROS
-int validarArchivo(FILE* archivo);
-void historialTickets();
-int exportarDetallesUsuarios(const char* nombreArchivo,FILE* archivo);
-//int exportarMotoresUsuarios(const char* nombreArchivo,FILE* archivo);
-//int exportarDetallesPiezas(const char* nombreArchivo,FILE* archivo);
+// -------------------------------------  Exportaciones
+int exportarDetallesUsuarios(const char* nombreArchivo, FILE* archivo);
+int exportarDetallesPiezasAlmacen(const char* nombreArchivo, FILE* archivo);
 int exportarDetallesTickets(const char* nombreArchivo, FILE* archivo);
 int exportarDetallesMotoresPrecargados(const char* nombreArchivo, FILE* archivo);
-
 void exportarDetallesTodoElSistema();
-char* obtenerNombreArchivo(const char* textoInicial);
 
+// -------------------------------------  Historial y validaciones
+int validarArchivo(FILE* archivo);
+void historialTickets();
 
+// -------------------------------------  Almacen
+int cargarAlmacen();
+void precargarPiezasAlmacen(PiezaAlmacen pieza_almacen[], int cantidad);
+PiezaAlmacen* buscarPiezaPorIdUnico(ArrayPiezasAlmacen* inventario, int numPiezas, char *id_unico);
+void imprimirArrayPiezasAlmacen();
+void ejecutarOpcionAlmacen(int opcionMenu, int opcionSubMenu);
+int listarPiezasAlmacen();
+int buscarPiezasAlmacen();
+int agregarPizasAlmacen();
+int eliminarPiezasAlmacen();
+void imprimirArrayPiezasAlmacenArchivo(FILE* archivo);
+Herramienta* incializarHerramienta(char* id_herramienta, char* tipo, int usos, char* compatibilidad,
+    float rango, char* material, int cantidad);
 
 #endif //LOGICANEGOCIO_H
