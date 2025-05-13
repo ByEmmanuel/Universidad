@@ -5,7 +5,7 @@
 #include "LogicaNegocio.h"
 #include "UsuarioDTO.h"
 #include <stdio.h>
-#include <ncurses.h>
+#include <curses.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -116,7 +116,8 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     char* menuPagoUno[SIZE_CUATRO] = {"Generar Nota", "Generar Ticket" , "Generar Factura", "Listar detalles del usuario"};
     char* menuPagoDos[SIZE_SIETE] = {"Desmontado", "Lavado Inicial", "Rectificacion", "Pruebas Unitarias", "Lavado Secundario", "Montar Motor", "Salir"};
     //Otros
-    char* menuOtrosUno[SIZE_SIETE] = {"Reportar Bug", "Solicitar Mejora", "Ver Historial de tickets", "Limpieza de cache - Reinicio local del sistema", "Enviar Logs del sistema", "Exportar Todo el sistema", "Salir"};
+    char* menuOtrosUno[SIZE_SIETE] = {"Reportar Bug", "Solicitar Mejora", "Ver Historial de tickets", "Limpieza de cache - Reinicio local del sistema",
+        "Enviar Logs del sistema", "Exportar Todo el sistema", "Salir"};
     //Dudas
     char* menuDudasUno[SIZE_CINCO] = {"Consulta Tecnica", "Consultar Version", "Manual de usuario", "Documentacion", "Salir"};
 

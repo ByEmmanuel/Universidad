@@ -1,7 +1,8 @@
 //
 // Created by Jesus Emmanuel Garcia on 4/28/25.
 //
-#include <ncurses.h>
+#include <curses.h>
+#include <stdlib.h>
 
 #include "UsuarioDTO.h"
 #include "LogicaNegocio.h"
@@ -240,8 +241,87 @@ int registrarCulata(){
                 */
 int registrarMonoblock(){
 
+    //int numCilindros, num_bancadas;
+    int y = 5;
 
-    return 0;
+    char* numeroDeSerieUsr = leerStringSeguro(10,10,25,"Ingrese numero de serie del motor asignado al cliente:");
+    if (obtenerMotorPorNumeroDeSerie(&arrayMotoresUsuarios, numeroDeSerieUsr)  != NULL){
+        //clear();
+        const int id_usuario = obtenerIdSiExisteUsuario(13,10);
+        RETURN_IF_ESC(id_usuario);
+        //Esta linea impide que si el usuario no existe no se hara nada
+
+        Usuario* usuario = obtenerUsuarioByIdUsuario(id_usuario);
+        if (usuario == NULL) {
+            imprimirMensaje(10, 10, "Ocurrió un problema al obtener los datos del usuario");
+            return -1;
+        }
+
+        Motor* motor = usuario->motor;
+        if (motor == NULL) {
+            imprimirMensaje(10, 10, "El motor del usuario es NULL, por favor asigna un motor al usuario");
+            return -1;
+        }
+
+        int numCilindros = leerIntSeguro(y++,5,10,"Ingrese numero de cilindros");
+        int num_bancadas = leerIntSeguro(y++,5,10,"Ingrese numero de bancadas");
+
+        float* diametros = malloc(numCilindros * sizeof(float));
+        float* conicidades = malloc(numCilindros * sizeof(float));
+        float* desalineaciones = malloc(numCilindros * sizeof(float));
+        float* bancadas = malloc(num_bancadas * sizeof(float));
+
+        for (int i = 0; i < numCilindros; i++) {
+            char mensajeUno[30];
+            sprintf(mensajeUno, "Diametro del cilindro %d", i);
+            diametros[i] = leerFloatSeguro(y+=1,5,10,mensajeUno);
+
+            char mensajeDos[30];
+            sprintf(mensajeDos, "Conicidad del cilindro %d", i);
+            conicidades[i] = leerFloatSeguro(y+=1,5,10,mensajeDos);
+
+            char mensajeTres[30];
+            sprintf(mensajeDos, "Desalineacion del cilindro %d", i);
+            desalineaciones[i] = leerFloatSeguro(y+=1,5,10,mensajeTres);
+        }
+
+        for (int i = 0; i < num_bancadas; i++) {
+            char mensajeCuatro[30];
+            sprintf(mensajeCuatro, "Diametro de bancada %d", i);
+            bancadas[i] = leerFloatSeguro(y++,5,10,mensajeCuatro);
+        }
+
+        // Otros valores de ejemplo
+
+        //int id_pieza = leerIntSeguro();
+        //int id_usuario = leerIntSeguro();
+        int flags = leerIntSeguro(y++,5,10,"Ingrese flag");
+        int estado = leerIntSeguro(y++,5,10,"Ingrese estado");
+        float oval = leerFloatSeguro(y++,5,10,"Ingrese oval");
+        float planitud = leerFloatSeguro(y++,5,10,"Ingrese planitud");
+
+        char* observaciones;
+        if (mostrarMenu(7,"¿Desea agregar observaciones?")){
+            observaciones = leerStringSeguro(y++,5,100,"Ingrese Observaciones");
+        }else{
+            observaciones = " ";
+        }
+
+
+        Monoblock* mono = inicializarMonoblock(
+            0, id_usuario, numCilindros, diametros,
+            conicidades, num_bancadas, bancadas ,
+            bancadas, oval, planitud, flags, numeroDeSerieUsr, observaciones, estado
+        );
+        imprimirMensaje(10,10,mono->numero_serie);
+
+        // Libera memoria si no se usará más
+        free(diametros); free(conicidades); free(desalineaciones); free(bancadas);
+        // Liberar dentro de estructura también si se destruye
+
+        return 0;
+    }
+    return 1;
 };
 
 void imprimirDetallesMotor(Motor* motor){

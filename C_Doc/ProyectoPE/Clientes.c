@@ -3,7 +3,7 @@
 //
 
 
-#include <ncurses.h>
+#include <curses.h>
 #include <string.h>
 
 #include "LogicaNegocio.h"
@@ -327,8 +327,8 @@ void listarPiezas(){
             mvprintw(fila++, 4, "Tipo de Pieza: Monoblock");
             mvprintw(fila++, 4, "N° Cilindros: %d", monoblock->numCilindros);
             mvprintw(fila++, 4, "Diámetro Cilindros: %.2f mm", monoblock->diametroCilindro);
-            mvprintw(fila++, 4, "Alineación Cigüeñal: %.2f mm", monoblock->alineacionCiguenal);
-            mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(monoblock->estadoPieza));
+            //mvprintw(fila++, 4, "Alineación Cigüeñal: %.2f mm", monoblock->alineacionCiguenal);
+            //mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(monoblock->estadoPieza));
         }else{
             mvprintw(fila++, 4, "Monoblock : (NO Asignada)");
         }

@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
-#include <ncurses.h>
+#include <curses.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -362,9 +362,9 @@ void imprimirDetallesTicket(int id_usuario, int fila){
                 mvprintw(fila++, 4, "---------- MONOBLOCK ---------");
                 mvprintw(fila++, 4, "Numero Cilindros: %d", monoblock->numCilindros);
                 mvprintw(fila++, 4, "Diametro: %.2f mm", monoblock->diametroCilindro);
-                mvprintw(fila++, 4, "Ovalizacion: %.2f mm", monoblock->ovalizacion);
-                mvprintw(fila++, 4, "Alineacion Ciguenal: %.2f mm", monoblock->alineacionCiguenal);
-                mvprintw(fila++, 2, "Estado de la Pieza: %s", estadoPiezaTexto(monoblock->estadoPieza));
+                mvprintw(fila++, 4, "Ovalizacion: %.2f mm", monoblock->ovalizacion_max);
+                mvprintw(fila++, 4, "Desalineacion: %.2f mm", monoblock->desalineacion_bancadas);
+                mvprintw(fila++, 2, "Estado de la Pieza: %s", estadoPiezaTexto(monoblock->estado_diagnostico));
             }
 
             mvprintw(fila++, 4, "==============================================");

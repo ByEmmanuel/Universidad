@@ -11,7 +11,7 @@
  * si no salir y camniar el color de la terminal
  */
 
-#include <ncurses.h>
+#include <curses.h>
 #include <stdlib.h>
 #include "LogicaNegocio.h"
 #include "UserInterface.h"

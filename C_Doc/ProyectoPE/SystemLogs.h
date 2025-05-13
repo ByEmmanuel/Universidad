@@ -60,8 +60,6 @@ SystemLogs inicializarLogs(char* fecha, int log_id, char* accion, char* objeto, 
 
 int guardarSystemLogs(SystemLogs log);
 
-
-
 extern ArrayLogs arrayLogs;
 
 

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <ncurses.h>
+#include <curses.h>
 
 #include "UsuarioDTO.h"
 #include "Util.h"

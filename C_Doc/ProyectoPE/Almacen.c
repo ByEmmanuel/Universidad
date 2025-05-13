@@ -2,7 +2,7 @@
 // Created by Jesus Emmanuel Garcia on 5/7/25.
 //
 
-#include <ncurses.h>
+#include <curses.h>
 #include <stdlib.h>
 #include <string.h>
 

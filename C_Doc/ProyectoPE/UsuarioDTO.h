@@ -6,6 +6,17 @@
 #define NEGOCIODTO_H
 #include <stddef.h>
 
+//Flags usados en monoblock debido a que un monoblock tiene varios estados
+#define FLAG_CILINDROS_OK       0x01 // 0b0001
+#define FLAG_BANCADAS_OK        0x02 // 0b0010
+#define FLAG_FISURAS_DETECTADAS 0x04 // 0b0100
+#define FLAG_SUPERFICIE_PLANA   0x08 // 0b1000
+
+// Funciones para verificar banderas
+#define IS_CILINDROS_OK(flags)    ((flags) & FLAG_CILINDROS_OK)
+#define IS_BANCADAS_OK(flags)     ((flags) & FLAG_BANCADAS_OK)
+#define IS_FISURAS_DETECTADAS(flags) ((flags) & FLAG_FISURAS_DETECTADAS)
+#define IS_SUPERFICIE_PLANA(flags) ((flags) & FLAG_SUPERFICIE_PLANA)
 
 // 0 Monoblock, 1 culata
 typedef enum { MONOBLOCK = 0, CULATA = 1 } TipoPieza;
@@ -51,20 +62,18 @@ typedef struct {
     int id_pieza;              // IDENTIFICADOR UNICO DE LA PIEZA -> TODAS LAS PIEZAS DE UN MOTOR DEBEN CONTENER EL MISMO ID
     int id_usuario;            // IDENTIFICADOR UNICO DE LA PIEZA POR USUARIO, ES DECIR, A QUE USUARIO PERTENECE ESTA PIEZA
     int numCilindros;           // Número de cilindros en el bloque
+    float* diametroCilindro;     // Diámetro nominal de los cilindros (mm)
+    int num_bancadas;                   // Número de bancadas (determina tamaño de diametro_bancadas)
+    float* diametro_bancadas;           // Arreglo dinámico para diámetros de bancadas (en mm)
 
-    float diametroCilindro;     // Diámetro nominal de los cilindros (mm)
-    float ovalizacion;          // Deformación del cilindro (mm)
-    float alineacionCiguenal;   // Desalineación del cigüeñal respecto al bloque (mm)
-    float desgasteCilindros;    // Desgaste promedio de los cilindros (mm)
-
-    float desgaste;      // Desgaste en altura de culata (mm o %)
-    float tolerancia;    // Tolerancia de rectificado (mm)
-
-    /* 0 = No intervención
-     * 1 = Rectificación
-     * 2 = Reconstrucción
-     */
-    int estadoPieza;
+    float ovalizacion_max;          // Deformación del cilindro (mm) / Máxima ovalización detectada (en mm)
+    float* conicidad_max;                // Máxima conicidad detectada (en mm)
+    float* desalineacion_bancadas;       // Desalineación máxima de bancadas (en mm)
+    float planitud_superficie;          // Desviación de planitud de la superficie superior (en mm)
+    int flags;                         // FLAGS DE CILINDROS/BANCADAS/FISURAS
+    char* numero_serie;              // Número de serie del motor/monoblock
+    char* observaciones;            // Notas del técnico
+    int estado_diagnostico;           // 0: sin intervención, 1: rectificación, 2: reconstrucción
 } Monoblock;
 
 typedef struct {
@@ -257,6 +266,10 @@ Usuario inicializarUsuario(int id_usuario, char* folio,const char* nombreUsuario
 Motor* inicializarMotor(Paramsmotor paramsmotor, int id_usuario, int id_pieza, void* tipoDePieza, int numTipoDepieza);
 Culata* inicializarCulata(int id_pieza , int numValvulas, double presionPrueba,int fisuras,
                           float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario, int estadoPieza);
+Monoblock* inicializarMonoblock(int id_pieza, int id_usuario, int numCilindros, const float* diametroCilindro,
+    const float* conicidad_max, int num_bancadas, const float* diametro_bancadas, const float* desalineacion_bancadas,
+    float ovalizacion_max, float planitud_superficie, int flags, char* numero_serie, char* observaciones,
+    int estado_diagnostico);
 Motor* clonarMotor(Motor* original, int nuevoIdUsuario);
 //Public
 void setIdUsuarioLogico(int nuevoId);

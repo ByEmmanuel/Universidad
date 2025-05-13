@@ -30,6 +30,7 @@ add_executable(C_Doc
         ProyectoPE/UsuarioDAO.c
         ProyectoPE/ApartadoOtros.c
         ProyectoPE/ConstantesMotores.c
+        ProyectoPE/SystemLogs.c
 )
 
 target_link_libraries(C_Doc ${CURSES_LIBRARIES})

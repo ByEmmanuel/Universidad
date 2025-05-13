@@ -4,7 +4,7 @@
 
 #include "UsuarioDTO.h"
 
-#include <ncurses.h>
+#include <curses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -128,6 +128,54 @@ Culata* inicializarCulata(int id_pieza, int numValvulas, double presionPrueba, i
     return culata;
 }
 
+Monoblock* inicializarMonoblock(int id_pieza, int id_usuario, int numCilindros, const float* diametroCilindro,
+    const float* conicidad_max, int num_bancadas, const float* diametro_bancadas, const float* desalineacion_bancadas,
+    float ovalizacion_max, float planitud_superficie, int flags, char* numero_serie, char* observaciones,
+    int estado_diagnostico){
+
+    Monoblock* mono = malloc(sizeof(Monoblock));
+    if (!mono) {
+        perror("Fallo al asignar memoria para Monoblock");
+        exit(EXIT_FAILURE);
+    }
+
+    mono->id_pieza = id_pieza;
+    mono->id_usuario = id_usuario;
+    mono->numCilindros = numCilindros;
+    mono->num_bancadas = num_bancadas;
+    mono->ovalizacion_max = ovalizacion_max;
+    mono->planitud_superficie = planitud_superficie;
+    mono->flags = flags;
+    mono->estado_diagnostico = estado_diagnostico;
+
+    mono->diametroCilindro = malloc(numCilindros * sizeof(float));
+    mono->conicidad_max = malloc(numCilindros * sizeof(float));
+    mono->desalineacion_bancadas = malloc(numCilindros * sizeof(float));
+    mono->diametro_bancadas = malloc(num_bancadas * sizeof(float));
+
+    if (!mono->diametroCilindro || !mono->conicidad_max || !mono->diametro_bancadas || !mono->desalineacion_bancadas) {
+        perror("Fallo en malloc de arrays");
+        free(mono);
+        exit(EXIT_FAILURE);
+    }
+
+    memcpy(mono->diametroCilindro, diametroCilindro, numCilindros * sizeof(float));
+    memcpy(mono->conicidad_max, conicidad_max, numCilindros * sizeof(float));
+    memcpy(mono->diametro_bancadas, diametro_bancadas, num_bancadas * sizeof(float));
+    memcpy(mono->desalineacion_bancadas, desalineacion_bancadas, num_bancadas * sizeof(float));
+
+    mono->numero_serie = numero_serie;
+    mono->observaciones = observaciones;
+
+    if (!mono->numero_serie || !mono->observaciones) {
+        perror("Fallo en malloc de cadenas");
+        free(mono);
+        exit(EXIT_FAILURE);
+    }
+
+    return mono;
+}
+
 //Getters y setters
 void setIdUsuarioLogico(const int nuevoId){
     id_UsuarioGlobal = nuevoId;
@@ -171,4 +219,16 @@ Motor* clonarMotor(Motor* original, int nuevoIdUsuario) {
                      "UsuarioDTO.c", "clonarMotor", HTTP_CREATED);
 
     return copia;
+}
+
+void liberarMonoblock(Monoblock* mono) {
+    if (!mono) return;
+
+    free(mono->diametroCilindro);
+    free(mono->conicidad_max);
+    free(mono->desalineacion_bancadas);
+    free(mono->diametro_bancadas);
+    free(mono->numero_serie);
+    free(mono->observaciones);
+    free(mono);
 }

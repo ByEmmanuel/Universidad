@@ -1,7 +1,7 @@
 //
 // Created by Jesus Emmanuel Garcia on 5/7/25.
 //
-#include <ncurses.h>
+#include <curses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -125,19 +125,21 @@ int exportarDetallesUsuarios(const char* nombreArchivo, FILE* archivo) {
             fprintf(archivo, "Estado de la Pieza: %s\n", estadoPiezaTexto(culata->operacionesMotor));
         }
 
-        if (motor->monoblock) {
+        if (motor->monoblock && motor->monoblock->numCilindros) {
             Monoblock* mono = motor->monoblock;
             fprintf(archivo, "\n----------- MONOBLOCK -----------\n");
             fprintf(archivo, "ID Pieza: %d\n", mono->id_pieza);
             fprintf(archivo, "ID Usuario: %d\n", mono->id_usuario);
             fprintf(archivo, "Numero Cilindros: %d\n", mono->numCilindros);
-            fprintf(archivo, "Diametro: %.2f mm \n", mono->diametroCilindro);
-            fprintf(archivo, "Ovalizacion: %.2f mm\n", mono->ovalizacion);
-            fprintf(archivo, "Alineacion Ciguenal: %.2f mm\n", mono->alineacionCiguenal);
-            fprintf(archivo, "Estado de la Pieza: %s\n", estadoPiezaTexto(mono->estadoPieza));
-            fprintf(archivo, "Desgaste Pieza: %.3f\n", mono->desgaste);
-            fprintf(archivo, "Desgaste Cilindros: %.3f\n", mono->desgasteCilindros);
-            fprintf(archivo, "Tolerancia Maxima: %.3f\n", mono->tolerancia);
+            for (int j = mono->numCilindros; i < mono->numCilindros; i++){
+                fprintf(archivo, "Diametro: %.2f mm \n", mono->diametroCilindro);
+                fprintf(archivo, "Ovalizacion: %.2f mm\n", mono->ovalizacion_max);
+                fprintf(archivo, "Desalineacion Bancada: %.2f mm\n", mono->desalineacion_bancadas);
+                fprintf(archivo, "Estado de la Pieza: %s\n", estadoPiezaTexto(mono->estado_diagnostico));
+                //fprintf(archivo, "Desgaste Pieza: %.3f\n", mono->d);
+                fprintf(archivo, "Conicidad: %.3f\n", mono->conicidad_max);
+                //fprintf(archivo, "Tolerancia Maxima: %.3f\n", mono->ci);
+            }
         }
 
         fprintf(archivo, "==============================================\n\n");

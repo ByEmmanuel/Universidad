@@ -4,7 +4,7 @@
 
 #include "Testing.h"
 
-#include <ncurses.h>
+#include <curses.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -233,8 +233,8 @@ void listarMotoresPrecargados() {
             mvprintw(fila++, 7, "--- MONOBLOCK ---");
             mvprintw(fila++, 7, "N° Cilindros:     %d", motor->monoblock->numCilindros);
             mvprintw(fila++, 7, "Diámetro Cilindro:%.2f mm", motor->monoblock->diametroCilindro);
-            mvprintw(fila++, 7, "Ovalización:      %.2f mm", motor->monoblock->ovalizacion);
-            mvprintw(fila++, 7, "Alineación:       %.2f mm", motor->monoblock->alineacionCiguenal);
+            mvprintw(fila++, 7, "Ovalización:      %.2f mm", motor->monoblock->ovalizacion_max);
+            mvprintw(fila++, 7, "desalinacion bancada:       %.2f mm", motor->monoblock->desalineacion_bancadas);
         }
 
         if (fila >= LINES - 8) {
@@ -262,18 +262,244 @@ Culata culatasExistentes[10] = {
     {9, 0, 24, 0.8, 1, 0.28f, 0.06f, 146.0f, 145.65f, 145.50f, 2}
 };
 
-Monoblock monoblocksExistentes[10] = {
-    {0, 0, 4, 84.0f, 0.02f, 0.05f, 0.08f, 0.04f, 1},
-    {1, 0, 6, 92.0f, 0.03f, 0.04f, 0.02f, 0.03f, 0},
-    {2, 0, 8, 96.0f, 0.06f, 0.07f, 0.14f, 0.05f, 2},
-    {3, 0, 4, 81.0f, 0.01f, 0.03f, 0.03f, 0.03f, 0},
-    {4, 0, 6, 89.0f, 0.02f, 0.04f, 0.05f, 0.04f, 1},
-    {5, 0, 4, 86.0f, 0.015f, 0.035f, 0.09f, 0.04f, 1},
-    {6, 0, 6, 90.0f, 0.04f, 0.06f, 0.12f, 0.06f, 2},
-    {7, 0, 8, 102.0f, 0.05f, 0.07f, 0.03f, 0.03f, 0},
-    {8, 0, 4, 78.0f, 0.01f, 0.02f, 0.02f, 0.02f, 0},
-    {9, 0, 6, 91.0f, 0.025f, 0.03f, 0.13f, 0.05f, 2}
-};
+#include <stdlib.h>
+#include <string.h>
+
+// Arreglo estático de monoblocks
+Monoblock monoblocksExistentes[10];
+
+// Función para inicializar el arreglo estático
+void inicializarMonoblocksExistentes() {
+    // Monoblock 0: Motor 4 cilindros, buen estado
+    {
+        static float cilindros0[] = {83.02f, 83.01f, 83.03f, 83.02f};
+        static float bancadas0[] = {60.01f, 60.00f, 60.02f, 60.01f, 60.00f};
+        static char serie0[] = "FD123456";
+        monoblocksExistentes[0] = (Monoblock){
+            .id_pieza = 100,
+            .id_usuario = 1,
+            .numCilindros = 4,
+            .diametroCilindro = cilindros0,
+            .num_bancadas = 5,
+            .diametro_bancadas = bancadas0,
+            .ovalizacion_max = 0.01f,
+            //.conicidad_max = 0.02f,
+            //.desalineacion_bancadas = 0.01f,
+            .planitud_superficie = 0.02f,
+            .flags = FLAG_CILINDROS_OK | FLAG_BANCADAS_OK | FLAG_SUPERFICIE_PLANA, // 0b1011 = 11
+            .numero_serie = serie0,
+            .observaciones = "Monoblock en buen estado, apto para uso",
+            .estado_diagnostico = 0
+        };
+    }
+
+    // Monoblock 1: Motor 6 cilindros, necesita rectificación
+    {
+        static float cilindros1[] = {92.05f, 92.07f, 92.06f, 92.08f, 92.05f, 92.06f};
+        static float bancadas1[] = {65.03f, 65.04f, 65.02f, 65.05f, 65.03f, 65.04f, 65.02f};
+        static char serie1[] = "AB654321";
+        monoblocksExistentes[1] = (Monoblock){
+            .id_pieza = 101,
+            .id_usuario = 2,
+            .numCilindros = 6,
+            .diametroCilindro = cilindros1,
+            .num_bancadas = 7,
+            .diametro_bancadas = bancadas1,
+            .ovalizacion_max = 0.03f,
+            //.conicidad_max = 0.04f,
+            //.desalineacion_bancadas = 0.02f,
+            .planitud_superficie = 0.03f,
+            .flags = FLAG_BANCADAS_OK | FLAG_SUPERFICIE_PLANA, // 0b1010 = 10
+            .numero_serie = serie1,
+            .observaciones = "Cilindros con desgaste, requiere rectificación",
+            .estado_diagnostico = 1
+        };
+    }
+
+    // Monoblock 2: Motor 8 cilindros, reconstrucción necesaria
+    {
+        static float cilindros2[] = {96.10f, 96.12f, 96.09f, 96.11f, 96.08f, 96.10f, 96.13f, 96.09f};
+        static float bancadas2[] = {70.05f, 70.07f, 70.06f, 70.08f, 70.05f, 70.06f, 70.04f, 70.07f, 70.05f};
+        static char serie2[] = "XY789012";
+        monoblocksExistentes[2] = (Monoblock){
+            .id_pieza = 102,
+            .id_usuario = 3,
+            .numCilindros = 8,
+            .diametroCilindro = cilindros2,
+            .num_bancadas = 9,
+            .diametro_bancadas = bancadas2,
+            .ovalizacion_max = 0.06f,
+            //.conicidad_max = 0.07f,
+            //.desalineacion_bancadas = 0.05f,
+            .planitud_superficie = 0.06f,
+            .flags = FLAG_FISURAS_DETECTADAS, // 0b0100 = 4
+            .numero_serie = serie2,
+            .observaciones = "Fisuras detectadas, requiere reconstrucción",
+            .estado_diagnostico = 2
+        };
+    }
+
+    // Monoblock 3: Motor 4 cilindros, buen estado
+    {
+        static float cilindros3[] = {81.01f, 81.00f, 81.02f, 81.01f};
+        static float bancadas3[] = {58.00f, 58.01f, 58.00f, 58.02f, 58.01f};
+        static char serie3[] = "LM456789";
+        monoblocksExistentes[3] = (Monoblock){
+            .id_pieza = 103,
+            .id_usuario = 4,
+            .numCilindros = 4,
+            .diametroCilindro = cilindros3,
+            .num_bancadas = 5,
+            .diametro_bancadas = bancadas3,
+            .ovalizacion_max = 0.01f,
+            //.conicidad_max = 0.01f,
+            //.desalineacion_bancadas = 0.01f,
+            .planitud_superficie = 0.01f,
+            .flags = FLAG_CILINDROS_OK | FLAG_BANCADAS_OK | FLAG_SUPERFICIE_PLANA, // 0b1011 = 11
+            .numero_serie = serie3,
+            .observaciones = "Monoblock en excelente estado",
+            .estado_diagnostico = 0
+        };
+    }
+
+    // Monoblock 4: Motor 6 cilindros, rectificación
+    {
+        static float cilindros4[] = {89.04f, 89.05f, 89.06f, 89.04f, 89.05f, 89.03f};
+        static float bancadas4[] = {62.02f, 62.03f, 62.01f, 62.04f, 62.02f, 62.03f, 62.01f};
+        static char serie4[] = "PQ987654";
+        monoblocksExistentes[4] = (Monoblock){
+            .id_pieza = 104,
+            .id_usuario = 5,
+            .numCilindros = 6,
+            .diametroCilindro = cilindros4,
+            .num_bancadas = 7,
+            .diametro_bancadas = bancadas4,
+            .ovalizacion_max = 0.02f,
+            //.conicidad_max = 0.03f,
+            //.desalineacion_bancadas = 0.02f,
+            .planitud_superficie = 0.04f,
+            .flags = FLAG_BANCADAS_OK, // 0b0010 = 2
+            .numero_serie = serie4,
+            .observaciones = "Superficie no plana, requiere rectificación",
+            .estado_diagnostico = 1
+        };
+    }
+
+    // Monoblock 5: Motor 4 cilindros, rectificación
+    {
+        static float cilindros5[] = {86.03f, 86.04f, 86.02f, 86.03f};
+        static float bancadas5[] = {59.01f, 59.02f, 59.00f, 59.01f, 59.02f};
+        static char serie5[] = "JK321098";
+        monoblocksExistentes[5] = (Monoblock){
+            .id_pieza = 105,
+            .id_usuario = 6,
+            .numCilindros = 4,
+            .diametroCilindro = cilindros5,
+            .num_bancadas = 5,
+            .diametro_bancadas = bancadas5,
+            .ovalizacion_max = 0.015f,
+            //.conicidad_max = 0.025f,
+            //.desalineacion_bancadas = 0.03f,
+            .planitud_superficie = 0.03f,
+            .flags = FLAG_CILINDROS_OK | FLAG_SUPERFICIE_PLANA, // 0b1001 = 9
+            .numero_serie = serie5,
+            .observaciones = "Bancadas desalineadas, rectificar",
+            .estado_diagnostico = 1
+        };
+    }
+
+    // Monoblock 6: Motor 6 cilindros, reconstrucción
+    {
+        static float cilindros6[] = {90.08f, 90.09f, 90.07f, 90.10f, 90.08f, 90.09f};
+        static float bancadas6[] = {64.04f, 64.05f, 64.03f, 64.06f, 64.04f, 64.05f, 64.03f};
+        static char serie6[] = "UV123987";
+        monoblocksExistentes[6] = (Monoblock){
+            .id_pieza = 106,
+            .id_usuario = 7,
+            .numCilindros = 6,
+            .diametroCilindro = cilindros6,
+            .num_bancadas = 7,
+            .diametro_bancadas = bancadas6,
+            .ovalizacion_max = 0.04f,
+            //.conicidad_max = 0.05f,
+            //.desalineacion_bancadas = 0.04f,
+            .planitud_superficie = 0.05f,
+            .flags = FLAG_FISURAS_DETECTADAS, // 0b0100 = 4
+            .numero_serie = serie6,
+            .observaciones = "Fisuras menores, reconstruir",
+            .estado_diagnostico = 2
+        };
+    }
+
+    // Monoblock 7: Motor 8 cilindros, buen estado
+    {
+        static float cilindros7[] = {102.01f, 102.00f, 102.02f, 102.01f, 102.00f, 102.01f, 102.02f, 102.00f};
+        static float bancadas7[] = {72.00f, 72.01f, 72.00f, 72.02f, 72.01f, 72.00f, 72.01f, 72.02f, 72.00f};
+        static char serie7[] = "WX456321";
+        monoblocksExistentes[7] = (Monoblock){
+            .id_pieza = 107,
+            .id_usuario = 8,
+            .numCilindros = 8,
+            .diametroCilindro = cilindros7,
+            .num_bancadas = 9,
+            .diametro_bancadas = bancadas7,
+            .ovalizacion_max = 0.01f,
+            //.conicidad_max = 0.01f,
+            //.desalineacion_bancadas = 0.01f,
+            .planitud_superficie = 0.02f,
+            .flags = FLAG_CILINDROS_OK | FLAG_BANCADAS_OK | FLAG_SUPERFICIE_PLANA, // 0b1011 = 11
+            .numero_serie = serie7,
+            .observaciones = "Monoblock en buen estado, sin intervención",
+            .estado_diagnostico = 0
+        };
+    }
+
+    // Monoblock 8: Motor 4 cilindros, buen estado
+    {
+        static float cilindros8[] = {78.00f, 78.01f, 78.00f, 78.02f};
+        static float bancadas8[] = {57.01f, 57.00f, 57.01f, 57.02f, 57.00f};
+        static char serie8[] = "YZ789654";
+        monoblocksExistentes[8] = (Monoblock){
+            .id_pieza = 108,
+            .id_usuario = 9,
+            .numCilindros = 4,
+            .diametroCilindro = cilindros8,
+            .num_bancadas = 5,
+            .diametro_bancadas = bancadas8,
+            .ovalizacion_max = 0.01f,
+            //.conicidad_max = 0.01f,
+            //.desalineacion_bancadas = 0.01f,
+            .planitud_superficie = 0.01f,
+            .flags = FLAG_CILINDROS_OK | FLAG_BANCADAS_OK | FLAG_SUPERFICIE_PLANA, // 0b1011 = 11
+            .numero_serie = serie8,
+            .observaciones = "Monoblock en excelente estado",
+            .estado_diagnostico = 0
+        };
+    }
+
+    // Monoblock 9: Motor 6 cilindros, reconstrucción
+    {
+        static float cilindros9[] = {91.07f, 91.08f, 91.06f, 91.09f, 91.07f, 91.08f};
+        static float bancadas9[] = {63.05f, 63.06f, 63.04f, 63.07f, 63.05f, 63.06f, 63.04f};
+        static char serie9[] = "KL012345";
+        monoblocksExistentes[9] = (Monoblock){
+            .id_pieza = 109,
+            .id_usuario = 10,
+            .numCilindros = 6,
+            .diametroCilindro = cilindros9,
+            .num_bancadas = 7,
+            .diametro_bancadas = bancadas9,
+            .ovalizacion_max = 0.035f,
+            //.conicidad_max = 0.04f,
+            //.desalineacion_bancadas = 0.05f,
+            .planitud_superficie = 0.05f,
+            .flags = FLAG_FISURAS_DETECTADAS, // 0b0100 = 4
+            .numero_serie = serie9,
+            .observaciones = "Fisuras detectadas, reconstrucción necesaria",
+            .estado_diagnostico = 2
+        };
+    }
+}
 //Creo que no voy a necesitar esto
 Motor motoresExistentesCONCulatasAsignadas[10] = {
     {
