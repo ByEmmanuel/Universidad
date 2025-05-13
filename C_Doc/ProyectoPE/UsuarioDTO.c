@@ -117,7 +117,7 @@ Culata* inicializarCulata(int id_pieza, int numValvulas, double presionPrueba, i
     culata->alturaMinima = alturaMinima;
     culata->estadoTemporalPieza = -1;
     culata->operacionesMotor = estadoPieza;
-    id_piezaGlobal++;
+    setIdPiezaGlobal(getIdPiezaGlobal()+1);
 
     char id_objeto[50];
     snprintf(id_objeto, sizeof(id_objeto), "CULATA_%d", id_pieza); // Generar ID único para el log
@@ -189,6 +189,13 @@ void setIdLog(const int id) {
 int getIdLog() {
     return id_unicoLogs;
 }
+void setIdPiezaGlobal(const int id) {
+        id_piezaGlobal = id;
+}
+int getIdPiezaGlobal() {
+    return id_piezaGlobal;
+}
+
 
 //Funcion para clonar el contenido de una variable a otra nueva variable
 //-> Esto no pasaria con POO ya que cada nuevo objeto es una nueva direccion en memoria, y si quiero asignar, se asignan los valores de esa direccion PROPIA

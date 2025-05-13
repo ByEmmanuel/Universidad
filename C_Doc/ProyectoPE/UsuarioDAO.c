@@ -51,20 +51,20 @@ int guardarMotorArray(void* motor, const int id_usuario) {
                      "UsuarioDAO", "guardarMotorArray", HTTP_CREATED);
     return 1;
 }
-
-int guardarPiezaArray(void* pieza, int id_usuario) {
+//Tipo Pieza "culata" o "monoblock"
+int guardarPiezaArray(void* pieza, int id_usuario, char* tipoPieza){
     if (arrayPiezas.tamanno >= arrayPiezas.capacidad) {
         const int nuevaCapacidad = arrayPiezas.capacidad == 0 ? 1 : arrayPiezas.capacidad * 2;
         void** nuevoArray = realloc(arrayPiezas.datos, nuevaCapacidad * sizeof(void*));
         if (nuevoArray == NULL) {
-            agregarSystemLog(id_usuario, "Redimensionar Array", "Pieza", "Pieza", ERROR, 0,
+            agregarSystemLog(id_usuario, "Redimensionar Array", tipoPieza, "Pieza", ERROR, 0,
                              "UsuarioDAO", "guardarPiezaArray", HTTP_INTERNAL_SERVER_ERROR);
             printf("Error al redimensionar el array de Piezas.\n");
             return -1;
         }
         arrayPiezas.datos = nuevoArray;
         arrayPiezas.capacidad = nuevaCapacidad;
-        agregarSystemLog(id_usuario, "Redimensionar Array", "Pieza", "Pieza", INFO, 1,
+        agregarSystemLog(id_usuario, "Redimensionar Array", "Pieza", tipoPieza, INFO, 1,
                          "UsuarioDAO", "guardarPiezaArray", HTTP_OK);
     }
 

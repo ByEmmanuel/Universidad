@@ -132,12 +132,12 @@ int exportarDetallesUsuarios(const char* nombreArchivo, FILE* archivo) {
             fprintf(archivo, "ID Usuario: %d\n", mono->id_usuario);
             fprintf(archivo, "Numero Cilindros: %d\n", mono->numCilindros);
             for (int j = mono->numCilindros; i < mono->numCilindros; i++){
-                fprintf(archivo, "Diametro: %.2f mm \n", mono->diametroCilindro);
+                //fprintf(archivo, "Diametro: %.2f mm \n", mono->diametroCilindro);
                 fprintf(archivo, "Ovalizacion: %.2f mm\n", mono->ovalizacion_max);
-                fprintf(archivo, "Desalineacion Bancada: %.2f mm\n", mono->desalineacion_bancadas);
+                //fprintf(archivo, "Desalineacion Bancada: %.2f mm\n", mono->desalineacion_bancadas);
                 fprintf(archivo, "Estado de la Pieza: %s\n", estadoPiezaTexto(mono->estado_diagnostico));
                 //fprintf(archivo, "Desgaste Pieza: %.3f\n", mono->d);
-                fprintf(archivo, "Conicidad: %.3f\n", mono->conicidad_max);
+                //fprintf(archivo, "Conicidad: %.3f\n", mono->conicidad_max);
                 //fprintf(archivo, "Tolerancia Maxima: %.3f\n", mono->ci);
             }
         }

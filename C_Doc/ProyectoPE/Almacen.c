@@ -132,14 +132,15 @@ void precargarPiezasAlmacen(PiezaAlmacen pieza_almacen[], const int cantidad){
         }
 
         arrayPiezasAlmacen.datos[arrayPiezasAlmacen.tamanno++] = pieza_almacen[i];
-        id_piezaGlobal++;
+        setIdPiezaGlobal(getIdPiezaGlobal()+1);
     }
     //return ;
 }
-
+//???? si el monoblock y culata son identicos va a fallar esto
 PiezaAlmacen* buscarPiezaPorIdUnico(ArrayPiezasAlmacen* inventario, int numPiezas, char *id_unico) {
     for (int i = 0; i < numPiezas; i++) {
         if (strcmp(inventario->datos[i].id_unicoPieza, id_unico) == 0) {
+            mvprintw(5,5,"Debug BuscarPieza");
             return inventario[i].datos;
         }
     }

@@ -65,7 +65,7 @@ int registrarMotor(){
     //Ingreso datos motor
     // Variables auxiliares
     clear();
-    int id_pieza = id_piezaGlobal;
+    int id_pieza = getIdPiezaGlobal();
     id_usuario =  obtenerIdSiExisteUsuario(10,10);
     RETURN_IF_ESC(id_usuario);
     clear();
@@ -109,7 +109,7 @@ int registrarMotor(){
         .medidaActual = medidaActual,
     };
     imprimirMensaje(5,5,"Depuracion 1");
-    Motor* motor = inicializarMotor(paramsmotor, id_usuario, id_piezaGlobal, 0, 0);
+    Motor* motor = inicializarMotor(paramsmotor, id_usuario, getIdPiezaGlobal(), 0, 0);
     imprimirMensaje(5,5,"Depuracion 2");
     guardarMotorArray(motor, id_usuario);
     imprimirMensaje(5,5,"Depuracion 3");
@@ -125,7 +125,7 @@ int registrarMotor(){
     }
     //Mensaje de exito
     imprimirMensaje(10, 10, "El motor fue registrado al usuario Correctamente");
-    id_piezaGlobal++;
+    setIdPiezaGlobal(getIdPiezaGlobal()+1);
     return 1;
 };
 //Le vas a registrar la culata al motor del usuario
@@ -210,10 +210,10 @@ int registrarCulata(){
             mvprintw(y +=2, 55, "Tiene Fisuras?: %d", tieneFisuras);
             //mvprintw(y++, 55, "Tipo Combustible: %d", tipo_combustible);
             getch();
-            Culata* pzc = inicializarCulata(id_piezaGlobal, numValvulas, presionPrueba, tieneFisuras, alturaOriginal,alturaActual, alturaMinima,id_usuario, estadoPieza);
-            guardarPiezaArray(pzc,id_usuario);
+            Culata* pzc = inicializarCulata(getIdPiezaGlobal(), numValvulas, presionPrueba, tieneFisuras, alturaOriginal,alturaActual, alturaMinima,id_usuario, estadoPieza);
+            guardarPiezaArray(pzc,id_usuario, "culata");
             usuario->motor->culata = pzc;
-            id_piezaGlobal++;
+            setIdPiezaGlobal(getIdPiezaGlobal()+1);
             imprimirMensaje(10,10,"Culata Creada correctamente :)");
             return 1;
         }
@@ -263,6 +263,7 @@ int registrarMonoblock(){
             return -1;
         }
 
+        clear();
         int numCilindros = leerIntSeguro(y++,5,10,"Ingrese numero de cilindros");
         int num_bancadas = leerIntSeguro(y++,5,10,"Ingrese numero de bancadas");
 
@@ -272,22 +273,22 @@ int registrarMonoblock(){
         float* bancadas = malloc(num_bancadas * sizeof(float));
 
         for (int i = 0; i < numCilindros; i++) {
-            char mensajeUno[30];
-            sprintf(mensajeUno, "Diametro del cilindro %d", i);
-            diametros[i] = leerFloatSeguro(y+=1,5,10,mensajeUno);
+            char mensajeUno[50];
+            sprintf(mensajeUno, "Diametro del cilindro %d", i+1);
+            diametros[i] = leerFloatSeguro(y++,5,10,mensajeUno);
 
-            char mensajeDos[30];
-            sprintf(mensajeDos, "Conicidad del cilindro %d", i);
-            conicidades[i] = leerFloatSeguro(y+=1,5,10,mensajeDos);
+            char mensajeDos[50];
+            sprintf(mensajeDos, "Conicidad del cilindro %d", i+1);
+            conicidades[i] = leerFloatSeguro(y++,5,10,mensajeDos);
 
-            char mensajeTres[30];
-            sprintf(mensajeDos, "Desalineacion del cilindro %d", i);
-            desalineaciones[i] = leerFloatSeguro(y+=1,5,10,mensajeTres);
+            char mensajeTres[50];
+            sprintf(mensajeTres, "Desalineacion del cilindro %d", i+1);
+            desalineaciones[i] = leerFloatSeguro(y++,5,10,mensajeTres);
         }
 
         for (int i = 0; i < num_bancadas; i++) {
-            char mensajeCuatro[30];
-            sprintf(mensajeCuatro, "Diametro de bancada %d", i);
+            char mensajeCuatro[35];
+            sprintf(mensajeCuatro, "Diametro de bancada %d", i+1);
             bancadas[i] = leerFloatSeguro(y++,5,10,mensajeCuatro);
         }
 
@@ -313,6 +314,12 @@ int registrarMonoblock(){
             conicidades, num_bancadas, bancadas ,
             bancadas, oval, planitud, flags, numeroDeSerieUsr, observaciones, estado
         );
+
+        //Crear monoblock
+        guardarPiezaArray(mono,id_usuario,"monoblock");
+        imprimirMensaje(10,10,"Monoblock creado correctamente :)");
+        usuario->motor->monoblock = mono;
+        setIdPiezaGlobal(getIdPiezaGlobal()+1);
         imprimirMensaje(10,10,mono->numero_serie);
 
         // Libera memoria si no se usará más
@@ -326,8 +333,6 @@ int registrarMonoblock(){
 
 void imprimirDetallesMotor(Motor* motor){
     int fila = 5;
-
-
 
     if (motor == NULL) {
         mvprintw(5, 35, "Error: El motor es NULL.");

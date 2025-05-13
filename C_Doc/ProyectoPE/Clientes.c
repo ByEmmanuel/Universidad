@@ -326,7 +326,7 @@ void listarPiezas(){
             Monoblock* monoblock = (Monoblock*)pieza;
             mvprintw(fila++, 4, "Tipo de Pieza: Monoblock");
             mvprintw(fila++, 4, "N° Cilindros: %d", monoblock->numCilindros);
-            mvprintw(fila++, 4, "Diámetro Cilindros: %.2f mm", monoblock->diametroCilindro);
+            //mvprintw(fila++, 4, "Diámetro Cilindros: %.2f mm", monoblock->diametroCilindro);
             //mvprintw(fila++, 4, "Alineación Cigüeñal: %.2f mm", monoblock->alineacionCiguenal);
             //mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(monoblock->estadoPieza));
         }else{

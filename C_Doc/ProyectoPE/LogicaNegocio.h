@@ -40,7 +40,7 @@ int obtenerIdSiExisteUsuario(int POS_Y, int POS_X);
 Ticket inicializarTicket(Usuario* usuario,Motor* motor ,char* detalles, char* detalles2);
 int guardarUsuarioArray(Usuario usuario);
 int guardarMotorArray(void* motor, int id_usuario);
-int guardarPiezaArray(void* pieza, int id_usuario);
+int guardarPiezaArray(void* pieza, int id_usuario,char* tipoPieza);
 int guardarTicket(Ticket ticket);
 
 // -------------------------------------  Registrar Motores

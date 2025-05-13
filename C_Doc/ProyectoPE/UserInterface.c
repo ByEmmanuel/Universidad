@@ -100,7 +100,8 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     //Servicio
     char* menuServicioUno[SIZE_CINCO] = {"Ingreso caracteristicas motor", "Medidas", "Operaciones", "Listar Motores Precargados","Salir"};
 
-    char* menuServicioDos[SIZE_TRES] = {"CULATA", "MONOBLOCK", "Listar Piezas"};
+    //Este listar piezas debe estar en otro lado
+    char* menuServicioDos[SIZE_DOS] = {"CULATA", "MONOBLOCK"};
     char* menuServicioTres[SIZE_TRES] = {"1 : Gasolina","2: Diesel","3: Electrico"};
     char* menuServicioCuatro[SIZE_DOS] = {"NO","SI"};
     //Almacen
@@ -116,7 +117,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     char* menuPagoUno[SIZE_CUATRO] = {"Generar Nota", "Generar Ticket" , "Generar Factura", "Listar detalles del usuario"};
     char* menuPagoDos[SIZE_SIETE] = {"Desmontado", "Lavado Inicial", "Rectificacion", "Pruebas Unitarias", "Lavado Secundario", "Montar Motor", "Salir"};
     //Otros
-    char* menuOtrosUno[SIZE_SIETE] = {"Reportar Bug", "Solicitar Mejora", "Ver Historial de tickets", "Limpieza de cache - Reinicio local del sistema",
+    char* menuOtrosUno[SIZE_SIETE] = {"Reportar Bug/Solicitar Mejora", "Listar Piezas Guardadas Sistema", "Ver Historial de tickets", "Limpieza de cache - Reinicio local del sistema",
         "Enviar Logs del sistema", "Exportar Todo el sistema", "Salir"};
     //Dudas
     char* menuDudasUno[SIZE_CINCO] = {"Consulta Tecnica", "Consultar Version", "Manual de usuario", "Documentacion", "Salir"};
@@ -130,7 +131,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     case 3: menuActual = menuClientesDos; numOpciones = SIZE_SIETE; break;
         //Servicio
     case 4: menuActual = menuServicioUno; numOpciones = SIZE_CINCO; break;
-    case 5: menuActual = menuServicioDos; numOpciones = SIZE_TRES; break;
+    case 5: menuActual = menuServicioDos; numOpciones = SIZE_DOS; break;
     case 6: menuActual = menuServicioTres; numOpciones = SIZE_TRES; break;
     case 7: menuActual = menuServicioCuatro; numOpciones = SIZE_DOS; break;
     case 8: menuActual = menuAlmacenUno; numOpciones = SIZE_CUATRO; break;

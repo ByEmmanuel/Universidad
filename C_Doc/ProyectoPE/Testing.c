@@ -99,7 +99,7 @@ int precargarMotoresDB(Motor motores[], int cantidad) {
         }
         agregarSystemLog(motores[i].id_usuario, "Add Motor arrayMotores", "Precarga", motores[i].numeroSerie, INFO, 1, "PrecargarMotor", "precargarMotoresDB", HTTP_OK);
         arrayMotoresPrecargados.datos[arrayMotoresPrecargados.tamanno++] = &motores[i];
-        id_piezaGlobal++;
+        setIdPiezaGlobal(getIdPiezaGlobal()+1);
     }
     return 1; // Éxito
 }
@@ -167,7 +167,7 @@ void agregarPiezas() {
     guardarMotorArray(motorUsuario_1,id_usuario);
     //agregarSystemLog(id_usuario, "Motor", "Registro", motores_registrados[0].numeroSerie, INFO, 1, "GuardarMotor", "Motor registrado en pruebas", "0");
 
-    guardarPiezaArray(pzc,id_usuario);
+    guardarPiezaArray(pzc,id_usuario,"culata");
     //agregarSystemLog(id_usuario, "Pieza", "Registro", "Culata", INFO, 1, "GuardarPieza", "Culata registrada en pruebas", "0");
 
     Usuario* usuario1 = obtenerUsuarioByIdUsuario(id_usuario);
@@ -179,12 +179,12 @@ void agregarPiezas() {
     Culata* pzc2 = inicializarCulata(18, 12, 1,14,.340f,.338f,.339f, id_usuario_2,-2);
     //piezaUsuario2.tipoPieza = CULATA;
     guardarMotorArray(motorUsuario_2, id_usuario_2);
-    guardarPiezaArray(pzc2, id_usuario_2);
+    guardarPiezaArray(pzc2, id_usuario_2,"culata");
     Usuario* usuario2 = obtenerUsuarioByIdUsuario(id_usuario_2);
     asignarMotorUsuario(usuario2, motorUsuario_2);
     asignarPiezaMotor(usuario2,pzc2, 1);
 
-    id_piezaGlobal+=2;
+    setIdPiezaGlobal(getIdPiezaGlobal()+2);
 
 }
 
@@ -232,9 +232,9 @@ void listarMotoresPrecargados() {
         if (motor->monoblock != NULL) {
             mvprintw(fila++, 7, "--- MONOBLOCK ---");
             mvprintw(fila++, 7, "N° Cilindros:     %d", motor->monoblock->numCilindros);
-            mvprintw(fila++, 7, "Diámetro Cilindro:%.2f mm", motor->monoblock->diametroCilindro);
-            mvprintw(fila++, 7, "Ovalización:      %.2f mm", motor->monoblock->ovalizacion_max);
-            mvprintw(fila++, 7, "desalinacion bancada:       %.2f mm", motor->monoblock->desalineacion_bancadas);
+            //mvprintw(fila++, 7, "Diámetro Cilindro:%.2f mm", motor->monoblock->diametroCilindro);
+            //mvprintw(fila++, 7, "Ovalización:      %.2f mm", motor->monoblock->ovalizacion_max);
+            //mvprintw(fila++, 7, "desalinacion bancada:       %.2f mm", motor->monoblock->desalineacion_bancadas);
         }
 
         if (fila >= LINES - 8) {

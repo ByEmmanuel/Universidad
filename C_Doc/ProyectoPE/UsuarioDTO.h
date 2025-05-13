@@ -276,6 +276,8 @@ void setIdUsuarioLogico(int nuevoId);
 int getIdUsuarioLogico();
 void setIdLog(int id);
 int getIdLog();
+void setIdPiezaGlobal(int id);
+int getIdPiezaGlobal();
 
 extern ArrayTickets arrayTickets;  // ← accedida desde otros .c
 extern ArrayUsuarios arrayUsuarios; // ← accedida desde otros .c
@@ -285,8 +287,6 @@ extern ArrayPiezas arrayPiezas;
 extern ArrayPiezasAlmacen arrayPiezasAlmacen;
 extern Almacen almacenBaseDatos;
 //private -> Declarada en UsuarioDTO.c
-extern int id_UsuarioGlobal;
-extern int id_piezaGlobal;
 
 
 //---------------------------------UTIL
