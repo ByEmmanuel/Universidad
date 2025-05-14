@@ -7,11 +7,11 @@
 #include <time.h>
 
 #include "UsuarioDTO.h"
-#include "Util.h"
-#include "UserInterface.h"
-#include "LogicaNegocio.h"
+#include "../ProyectoPE/Util.h"
+#include "../ProyectoPE/UserInterface.h"
+#include "../ProyectoPE/LogicaNegocio.h"
 
-#include "Testing.h"
+#include "../ProyectoPE/Testing.h"
 
 void historialTickets() {
     char *nombreArchivo = obtenerNombreArchivo("Tickets_");

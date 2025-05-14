@@ -3,9 +3,9 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#include "LogicaNegocio.h"
-#include "SystemLogs.h"
-#include "Util.h"
+#include "../ProyectoPE/LogicaNegocio.h"
+#include "../ProyectoPE/SystemLogs.h"
+#include "../ProyectoPE/Util.h"
 
 int guardarUsuarioArray(Usuario usuario) {
     if (arrayUsuarios.tamanno >= arrayUsuarios.capacidad) {

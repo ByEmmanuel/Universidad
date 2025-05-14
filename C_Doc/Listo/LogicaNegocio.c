@@ -5,15 +5,15 @@
 #include <unistd.h>
 #include <curses.h>
 
-#include "UsuarioDTO.h"
-#include "Util.h"
-#include "UserInterface.h"
-#include "LogicaNegocio.h"
+#include "../ProyectoPE/UsuarioDTO.h"
+#include "../ProyectoPE/Util.h"
+#include "../ProyectoPE/UserInterface.h"
+#include "../ProyectoPE/LogicaNegocio.h"
 
 #include <time.h>
 
-#include "SystemLogs.h"
-#include "Testing.h"
+#include "../ProyectoPE/SystemLogs.h"
+#include "../ProyectoPE/Testing.h"
 
 int servicio() {
     int opc = mostrarMenu(4, " ");

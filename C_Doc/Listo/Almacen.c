@@ -1,79 +1,83 @@
-//Almacen
+//
+// Created by Jesus Emmanuel Garcia on 5/7/25.
+// ALMACEN
+
 #include <curses.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "UserInterface.h"
-#include "LogicaNegocio.h"
+#include "../ProyectoPE/UserInterface.h"
+#include "../ProyectoPE/LogicaNegocio.h"
 
 int (*funcionesInventarioAlmacen[4])() = {
     listarPiezasAlmacen, buscarPiezasAlmacen, agregarPizasAlmacen, eliminarPiezasAlmacen
 };
 
 int (*funcionesHerramientas[3])() = {
-
+    //entradas, alertasStock, historialDeMovimientosAlmacen
 };
 
 int (*funcionesProveedores[3])() = {
-
+    //"estadoHerramientas, registroMantenimiento, asignación
 };
 
 int (*funcionesReportes[3])() = {
-
+    //registroProveedor, historialCompras, pedidosPendientes
 };
 
-void ejecutarOpcionAlmacen(int opcionMenu, int opcionSubMenu) {
+void ejecutarOpcionAlmacen(int opcionMenu, int opcionSubMenu){
     clear();
     refresh();
-    switch (opcionMenu) {
-        case 0:
-            funcionesInventarioAlmacen[opcionSubMenu]();
-            break;
-        case 1:
-            funcionesHerramientas[opcionSubMenu]();
-            break;
-        case 2:
-            funcionesProveedores[opcionSubMenu]();
-            break;
-        case 3:
-            funcionesReportes[opcionSubMenu]();
-            break;
-        default:
-            imprimirMensaje(5, 5, "Opcion no valida -> Ocurrio un problema");
-            break;
+    switch (opcionMenu){
+    case 0:
+        funcionesInventarioAlmacen[opcionSubMenu]();
+        break;
+    case 1:
+        funcionesHerramientas[opcionSubMenu]();
+        break;
+    case 2:
+        funcionesProveedores[opcionSubMenu]();
+        break;
+    case 3:
+        funcionesReportes[opcionSubMenu]();
+        break;
+    default:
+        imprimirMensaje(5, 5, "Opcion no valida -> Ocurrio un problema");
+        break;
     }
 
     mvprintw(1, 60, "Presiona cualquier tecla para volver al menu...");
     refresh();
 }
 
-int listarPiezasAlmacen() {
+int listarPiezasAlmacen(){
+    //imprimirMensaje(1, 5, "====== LISTADO DE PIEZAS EN ALMACEN ======");
     imprimirArrayPiezasAlmacen();
-    char *nombreArchivo = obtenerNombreArchivo("PiezaAlmacen");
-    FILE *archivo = fopen(nombreArchivo, "w");
+    char* nombreArchivo = obtenerNombreArchivo("PiezaAlmacen");
+    FILE* archivo = fopen(nombreArchivo, "w");
     imprimirArrayPiezasAlmacenArchivo(archivo);
     fclose(archivo);
     return 0;
 };
 
-int buscarPiezasAlmacen() {
+int buscarPiezasAlmacen(){
     imprimirMensaje(1, 5, "====== BUSQUEDA DE PIEZAS EN ALMACEN ======");
     return 0;
 };
 
-int agregarPizasAlmacen() {
+int agregarPizasAlmacen(){
     imprimirMensaje(1, 5, "====== AGREGAR PIEZAS EN ALMACEN ======");
     return 0;
 };
 
-int eliminarPiezasAlmacen() {
+int eliminarPiezasAlmacen(){
     imprimirMensaje(1, 5, "====== ELIMINAR PIEZAS EN ALMACEN ======");
     return 0;
 };
 
-Herramienta *incializarHerramienta(char *id_herramienta, char *tipo, int usos, char *compatibilidad, float rango,
-                                   char *material, int cantidad) {
-    Herramienta *herramienta = (Herramienta *) malloc(sizeof(Herramienta));
+Herramienta* incializarHerramienta(char* id_herramienta, char* tipo, int usos, char* compatibilidad, float rango,
+                                   char* material, int cantidad){
+    Herramienta* herramienta = (Herramienta*)malloc(sizeof(Herramienta));
     if (herramienta == NULL)return NULL;
 
     herramienta->id_herramienta = id_herramienta;
@@ -87,22 +91,26 @@ Herramienta *incializarHerramienta(char *id_herramienta, char *tipo, int usos, c
     return herramienta;
 }
 
-int cargarAlmacen() {
-    almacenBaseDatos.array_list = &arrayTickets;
-    almacenBaseDatos.array_usuarios = &arrayUsuarios;
+int cargarAlmacen(){
+    //Hace referencia a los arrays, si se modifican en otros lados, almacen tambien sera modificado
+    almacenBaseDatos.array_list = &arrayTickets; // ArrayTickets* ← OK
+    //almacenBaseDatos.array_piezas = &arrayPiezas;       // ArrayPiezas* ← OK
+    almacenBaseDatos.array_usuarios = &arrayUsuarios; // ArrayUsuarios* ← OK
     almacenBaseDatos.pieza_almacen = &arrayPiezasAlmacen;
+
     precargarPiezasAlmacen(componentes_motor, CANTIDAD_PIEZASPRECARGADAS);
     precargarPiezasAlmacen(componentes_culata, CANTIDAD_PIEZASPRECARGADAS);
     precargarPiezasAlmacen(componentes_monoblock, CANTIDAD_PIEZASPRECARGADAS);
+
     return 1;
 }
 
-void precargarPiezasAlmacen(PiezaAlmacen pieza_almacen[], const int cantidad) {
-    for (int i = 0; i < cantidad; i++) {
-        if (arrayPiezasAlmacen.tamanno >= arrayPiezasAlmacen.capacidad) {
+void precargarPiezasAlmacen(PiezaAlmacen pieza_almacen[], const int cantidad){
+    for (int i = 0; i < cantidad; i++){
+        if (arrayPiezasAlmacen.tamanno >= arrayPiezasAlmacen.capacidad){
             int nuevaCapacidad = arrayPiezasAlmacen.capacidad == 0 ? 1 : arrayPiezasAlmacen.capacidad * 2;
-            PiezaAlmacen *nuevoArray = realloc(arrayPiezasAlmacen.datos, nuevaCapacidad * sizeof(PiezaAlmacen));
-            if (!nuevoArray) {
+            PiezaAlmacen* nuevoArray = realloc(arrayPiezasAlmacen.datos, nuevaCapacidad * sizeof(PiezaAlmacen));
+            if (!nuevoArray){
                 imprimirMensaje(10, 10, "Error al redimensionar el array de motores precargados");
                 return;
             }
@@ -113,11 +121,13 @@ void precargarPiezasAlmacen(PiezaAlmacen pieza_almacen[], const int cantidad) {
         arrayPiezasAlmacen.datos[arrayPiezasAlmacen.tamanno++] = pieza_almacen[i];
         setIdPiezaGlobal(getIdPiezaGlobal() + 1);
     }
+    //return ;
 }
 
-PiezaAlmacen *buscarPiezaPorIdUnico(ArrayPiezasAlmacen *inventario, int numPiezas, char *id_unico) {
-    for (int i = 0; i < numPiezas; i++) {
-        if (strcmp(inventario->datos[i].id_unicoPieza, id_unico) == 0) {
+//???? si el monoblock y culata son identicos va a fallar esto
+PiezaAlmacen* buscarPiezaPorIdUnico(ArrayPiezasAlmacen* inventario, int numPiezas, char* id_unico){
+    for (int i = 0; i < numPiezas; i++){
+        if (strcmp(inventario->datos[i].id_unicoPieza, id_unico) == 0){
             mvprintw(5, 5, "Debug BuscarPieza");
             return inventario[i].datos;
         }
@@ -125,18 +135,19 @@ PiezaAlmacen *buscarPiezaPorIdUnico(ArrayPiezasAlmacen *inventario, int numPieza
     return NULL;
 }
 
-void imprimirArrayPiezasAlmacen() {
+void imprimirArrayPiezasAlmacen(){
     clear();
     int fila = 2, columna = 4;
     mvprintw(fila, columna, "===== INVENTARIO DE PIEZAS EN ALMACEN =====");
     fila += 2;
 
-    if (arrayPiezasAlmacen.tamanno == 0) {
+    if (arrayPiezasAlmacen.tamanno == 0){
         mvprintw(fila, columna, "[No hay piezas registradas en el inventario]");
         fila += 2;
-    } else {
-        for (int i = 0; i < arrayPiezasAlmacen.tamanno; i++) {
-            PiezaAlmacen *pieza = &arrayPiezasAlmacen.datos[i];
+    }
+    else{
+        for (int i = 0; i < arrayPiezasAlmacen.tamanno; i++){
+            PiezaAlmacen* pieza = &arrayPiezasAlmacen.datos[i];
             mvprintw(fila++, columna, "Pieza #%d", i + 1);
             mvprintw(fila++, columna, "ID: %s", pieza->id_pieza);
             mvprintw(fila++, columna, "ID Unico: %s", pieza->id_unicoPieza);
@@ -160,14 +171,15 @@ void imprimirArrayPiezasAlmacen() {
     getch();
 }
 
-void imprimirArrayPiezasAlmacenArchivo(FILE *archivo) {
+void imprimirArrayPiezasAlmacenArchivo(FILE* archivo){
     if (archivo == NULL) return;
     fprintf(archivo, "===== INVENTARIO DE PIEZAS EN ALMACEN =====\n\n");
-    if (arrayPiezasAlmacen.tamanno == 0) {
+    if (arrayPiezasAlmacen.tamanno == 0){
         fprintf(archivo, "[No hay piezas registradas en el inventario]\n\n");
-    } else {
-        for (int i = 0; i < arrayPiezasAlmacen.tamanno; i++) {
-            PiezaAlmacen *pieza = &arrayPiezasAlmacen.datos[i];
+    }
+    else{
+        for (int i = 0; i < arrayPiezasAlmacen.tamanno; i++){
+            PiezaAlmacen* pieza = &arrayPiezasAlmacen.datos[i];
 
             fprintf(archivo, "Pieza #%d\n", i + 1);
             fprintf(archivo, "ID: %s\n", pieza->id_pieza);
@@ -178,7 +190,7 @@ void imprimirArrayPiezasAlmacenArchivo(FILE *archivo) {
             fprintf(archivo, "Estado: %s\n", pieza->estadoPieza);
             fprintf(archivo, "Compatibilidad: %s\n", pieza->compatibilidad);
             fprintf(archivo, "Cantidad: %d\n", pieza->cantidad);
-            fprintf(archivo, "\n");
+            fprintf(archivo, "\n"); // Espacio entre piezas
         }
     }
     fprintf(archivo, "--------------------------------------------\n");

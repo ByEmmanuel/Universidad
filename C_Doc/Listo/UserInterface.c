@@ -1,5 +1,5 @@
 //UserInterface
-#include "UserInterface.h"
+#include "../ProyectoPE/UserInterface.h"
 
 #include <ctype.h>
 

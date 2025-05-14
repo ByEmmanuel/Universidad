@@ -1,0 +1,4971 @@
+//Main
+#include <curses.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <time.h>
+#include <unistd.h>
+#include "LogicaNegocio.h"
+#include "reloj.h"
+#include "UserInterface.h"
+#include "Testing.h"
+
+int id_Usuario;
+
+volatile int running = 1;
+int testingMode;
+
+int main() {
+    testingMode = 1;
+    testing(testingMode);
+    system("reset");
+    clear();
+    refresh();
+    mostrarLogo();
+
+
+    if (loginUsuario() == 1) {
+        cargarAlmacen();
+        menuPrincipal();
+    }
+
+
+    return 0;
+}
+
+void menuPrincipal() {
+    initscr();
+    cbreak();
+    noecho();
+    keypad(stdscr, TRUE);
+
+
+    ClockData clock_data;
+    clock_data.win = stdscr;
+    clock_data.running = 1;
+
+    pthread_t clock_tid;
+    pthread_create(&clock_tid, NULL, clock_thread, &clock_data);
+
+    while (1) {
+        const int opc = mostrarMenu(1, " ");
+        if (opc == -1) {
+            clock_data.running = 0;
+            pthread_join(clock_tid, NULL);
+            endwin();
+            break;
+        }
+        ejecutarOpcion(opc);
+    }
+}
+======================================================
+//Clientes
+#include <curses.h>
+#include <string.h>
+
+#include "LogicaNegocio.h"
+#include "UserInterface.h"
+#include "Util.h"
+
+#define MAX_USUARIOS 6
+#define MAX_LONGITUD 50
+
+char usuariosRegistrados[MAX_USUARIOS][MAX_LONGITUD] = {"David", "Jose", "Admin", "Pepe", "Luis", ""};
+char contraseñasUsuarios[MAX_USUARIOS][MAX_LONGITUD] = {"123456789", "987654321", "01", "24680", ""};
+
+char *empleado = 0;
+
+int cliente() {
+    int opcCliente = mostrarMenu(2, " ") + 1;
+    char *emailUsr;
+    clear();
+    refresh();
+
+    int y = 3;
+    if (opcCliente == 4) {
+        return 1;
+    }
+    if (opcCliente == 1) {
+        cleanScreen();
+        clear();
+        mvprintw(1, 10, "Agregar Cliente");
+        const char *nombreUsr = leerStringSeguro(y, 5, 19, "Ingrese Nombre: ");
+        if (nombreUsr == NULL) {
+            return -1;
+        }
+        char *folio = generarFolio(nombreUsr);
+        const char *apellidoUsr = leerStringSeguro(y += 2, 5, 19, "Ingrese Apellido: ");
+        if (apellidoUsr == NULL) {
+            return -1;
+        }
+        const int celularUsr = leerIntSeguro(y += 2, 5, 10, "Ingrese Celular: ");
+        const char *contactoUsr = leerStringSeguro(y += 2, 5, 29, "Ingrese Contacto: ");
+        if (contactoUsr == NULL) {
+            return -1;
+        }
+        emailUsr = leerStringSeguro(y += 2, 5, 49, "Ingrese Email: ");
+        if (emailUsr == NULL) {
+            return -1;
+        }
+        while (!strContains(emailUsr, "@")) {
+            if (mostrarMenu(7, "Tu Email no es valido, ¿Deseas volver a ingresarlo?") == 1) {
+                clear();
+                emailUsr = leerStringSeguro(y, 5, 49, "Ingrese Email");
+                if (emailUsr == NULL) {
+                    return -1;
+                }
+            } else {
+                mvprintw(y + 2, 10, "Registro INVÁLIDO: Email Inválido");
+                getch();
+                return -1;
+            }
+        }
+        const Usuario usuario = inicializarUsuario(getIdUsuarioLogico(), folio, nombreUsr, apellidoUsr, celularUsr,
+                                                   emailUsr, contactoUsr);
+        mostrarUsuario(usuario);
+        guardarUsuarioArray(usuario);
+        imprimirMensaje(10, 13, "Registro Correcto, Presione Enter");
+    } else if (opcCliente == 2) {
+        modificarCliente();
+    } else if (opcCliente == 3) {
+        cleanScreen();
+        if (arrayUsuarios.capacidad == 0) {
+            printf("No hay clientes registrados.\n");
+        } else {
+            int p = 2;
+            for (int i = 0; i < arrayUsuarios.tamanno; i++) {
+                mvprintw(p++, 1, "ID: %d", arrayUsuarios.datos[i].id_usuario);
+                if (arrayUsuarios.datos[i].motor != NULL) {
+                    mvprintw(p++, 1, "Pieza: %s", arrayUsuarios.datos[i].motor->material);
+                    mvprintw(p++, 1, "Num Serie: %s", arrayUsuarios.datos[i].motor->numeroSerie);
+
+                    if (arrayUsuarios.datos[i].motor->culata != NULL) {
+                        mvprintw(p++, 1, "Culata asignada -> ID - Pieza: %d",
+                                 arrayUsuarios.datos[i].motor->culata->id_pieza);
+                    }
+                    if (arrayUsuarios.datos[i].motor->monoblock != NULL) {
+                        mvprintw(p++, 1, "Monoblock asignado -> ID - Pieza: %d",
+                                 arrayUsuarios.datos[i].motor->monoblock->id_pieza);
+                    }
+                } else {
+                    mvprintw(p++, 1, "Motor: (no asignada)");
+                }
+                mvprintw(p++, 1, "Folio: %s", arrayUsuarios.datos[i].folio);
+                mvprintw(p++, 1, "Activo?: %d", arrayUsuarios.datos[i].activo);
+                mvprintw(p++, 1, "Nombre: %s", arrayUsuarios.datos[i].nombreUsuario);
+                mvprintw(p++, 1, "Apellido: %s", arrayUsuarios.datos[i].apellido);
+                mvprintw(p++, 1, "Celular: %lld", arrayUsuarios.datos[i].celular);
+                mvprintw(p++, 1, "Email: %s", arrayUsuarios.datos[i].email);
+                mvprintw(p++, 1, "Contacto: %s", arrayUsuarios.datos[i].contacto);
+                p++;
+            }
+            getch();
+            return 1;
+        }
+        mvprintw(10, 10, "Capacidad En El arrayUsuarios: %d", arrayUsuarios.capacidad);
+        mvprintw(10, 10, "Presiona ENTER para continuar...");
+        getchar();
+    }
+    cleanScreen();
+    return 1;
+}
+
+int modificarCliente() {
+    cleanScreen();
+    clear();
+    int id_Cliente = leerIntSeguro(11, 15, 2, "Ingrese ID, Folio o Numero de Cliente: ");
+    RETURN_IF_ESC(id_Cliente);
+
+    cleanScreen();
+    Usuario *usuarioNuevo = obtenerUsuarioByIdUsuario(id_Cliente);
+    if (usuarioNuevo == NULL) {
+        imprimirMensaje(13, 15, "Cliente no encontrado");
+        return -1;
+    }
+
+    if (strIsEmpty(usuarioNuevo->nombreUsuario) || strIsEmpty(usuarioNuevo->email) || strIsEmpty(
+            usuarioNuevo->nombreUsuario)) {
+        imprimirMensaje(12, 15, "Cliente con datos incompletos");
+        return -1;
+    }
+
+    mvprintw(0, 0, "Debug: usuarioNuevo = %p", usuarioNuevo);
+    refresh();
+    mvprintw(1, 0, "usuarioNuevo: %p", usuarioNuevo);
+    mvprintw(2, 1, "ID: %d", usuarioNuevo->id_usuario);
+    mvprintw(3, 1, "Folio: %s", usuarioNuevo->folio);
+    mvprintw(4, 1, "Nombre: %s", usuarioNuevo->nombreUsuario);
+    mvprintw(5, 1, "Apellido: %s", usuarioNuevo->apellido);
+    mvprintw(6, 1, "Celular: %lld", usuarioNuevo->celular);
+    mvprintw(7, 1, "Email: %s", usuarioNuevo->email);
+    mvprintw(8, 1, "Contacto: %s", usuarioNuevo->contacto);
+    refresh();
+
+    const int opcUsr = mostrarMenu(3, " ") + 1;
+
+    char *reemplazoUsuario;
+
+
+    switch (opcUsr) {
+        case 1:
+            clear();
+            refresh();
+            reemplazoUsuario = leerStringSeguro(10, 15, 50, "Ingrese nuevo Nombre: ");
+            if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")) {
+                asignString(usuarioNuevo->nombreUsuario, reemplazoUsuario, sizeof(usuarioNuevo->nombreUsuario));
+                mvprintw(12, 15, "Modificación realizada con éxito.\n");
+                getch();
+                break;
+            }
+            mvprintw(12, 15, "Error al leer entrada.\n");
+            break;
+        case 2:
+            clear();
+            refresh();
+            reemplazoUsuario = leerStringSeguro(10, 15, 50, "Ingrese nuevo Apellido: ");
+            if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")) {
+                asignString(usuarioNuevo->apellido, reemplazoUsuario, sizeof(usuarioNuevo->apellido));
+                imprimirMensaje(12, 15, "Modificación realizada con éxito");
+                break;
+            }
+            printf("Error al leer entrada.\n");
+            break;
+        case 3:
+            clear();
+            refresh();
+            usuarioNuevo->celular = leerIntSeguro(10, 15, 10, "Ingrese nuevo Número Celular: ");
+            if (usuarioNuevo->celular != 0) imprimirMensaje(12, 15, "Modificación realizada con éxito");
+            getch();
+            break;
+        case 4:
+            clear();
+            refresh();
+            reemplazoUsuario = leerStringSeguro(10, 15, 50, "Ingrese nuevo Email: ");
+
+            while (!strContains(reemplazoUsuario, "@")) {
+                if (mostrarMenu(7, "Tu Email no es valido, ¿Deseas volver a ingresarlo?") == 1) {
+                    clear();
+                    reemplazoUsuario = leerStringSeguro(10, 5, 49, "Ingrese Email");
+                    if (reemplazoUsuario == NULL) {
+                        return 0;
+                    }
+                } else {
+                    mvprintw(122, 10, "Registro INVÁLIDO: Email Inválido");
+                    getch();
+                    return 0;
+                }
+            }
+
+            if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")) {
+                asignString(usuarioNuevo->email, reemplazoUsuario, sizeof(usuarioNuevo->email));
+                mvprintw(12, 15, "Modificación realizada con éxito.\n");
+                getch();
+                break;
+            };
+            mvprintw(12, 15, "Error al leer entrada.\n");
+            getch();
+            break;
+        case 5:
+            clear();
+            refresh();
+            reemplazoUsuario = leerStringSeguro(10, 15, 50, "Ingrese nuevo Contacto: ");
+            if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")) {
+                asignString(usuarioNuevo->contacto, reemplazoUsuario, sizeof(usuarioNuevo->contacto));
+                mvprintw(12, 15, "Modificación realizada con éxito.\n");
+                getch();
+                break;
+            };
+            mvprintw(12, 15, "Error al leer entrada.\n");
+            getch();
+            break;
+        case 6:
+            if (mostrarMenu(7, "¿Deseas eliminar a este usuario?") == 1) usuarioNuevo->activo = 0;
+            asignString(usuarioNuevo->apellido, "0", sizeof(usuarioNuevo->apellido));
+            usuarioNuevo->celular = 0;
+            asignString(usuarioNuevo->contacto, "0", sizeof(usuarioNuevo->contacto));
+            break;
+        case 7:
+            mvprintw(2, 10, "Saliendo del menú...");
+            refresh();
+            return 0;
+        default:
+            mvprintw(12, 15, "Opción inválida.\n");
+            getch();
+            return -1;
+    }
+    clear();
+    refresh();
+    return 0;
+}
+
+int loginUsuario() {
+    int intentosUsuario = 0;
+
+    do {
+        printf("Ingrese Usuario: ");
+
+        char *usuarioID = enterString(MAX_LONGITUD);
+
+        int usuarioIndex = -1;
+        for (int i = 0; i < MAX_USUARIOS; i++) {
+            if (strcmp(usuarioID, usuariosRegistrados[i]) == 0) {
+                usuarioIndex = i;
+                break;
+            }
+        }
+
+        if (usuarioIndex != -1) {
+            printf("Ingrese Contraseña: ");
+            char *passwUsuario = enterString(MAX_LONGITUD);
+
+
+            if (strEquals(passwUsuario, contraseñasUsuarios[usuarioIndex])) {
+                empleado = usuarioID;
+                printf("Inicio de sesión exitoso.\n");
+                return 1;
+            }
+            printf("Contraseña incorrecta.\n");
+        } else {
+            printf("Usuario no encontrado.\n");
+        }
+        intentosUsuario++;
+    } while (intentosUsuario < 3);
+
+    printf("Se agotaron los intentos.\n");
+    return 0;
+}
+
+
+void listarPiezas() {
+    clear();
+    noecho();
+    cbreak();
+    keypad(stdscr, TRUE);
+
+    int fila = 1;
+    mvprintw(fila++, 10, "==============================================");
+    mvprintw(fila++, 15, "LISTADO DE TODAS LAS PIEZAS");
+    mvprintw(fila++, 10, "==============================================");
+
+    for (size_t i = 0; i < arrayMotoresUsuarios.tamanno; i++) {
+        Motor *pieza = (Motor *) arrayMotoresUsuarios.datos[i];
+        fila++;
+        mvprintw(fila++, 2, "ID Pieza: %d", pieza->id_pieza);
+        mvprintw(fila++, 2, "ID Usuario: %d", pieza->id_usuario);
+        mvprintw(fila++, 2, "Nombre del Motor: %s", pieza->modelo);
+        mvprintw(fila++, 2, "Fabricante: %s", pieza->fabricante);
+        mvprintw(fila++, 2, "Cilindrada: %.2f L", pieza->cilindrada);
+        mvprintw(fila++, 2, "Compresión Original: %.2f psi", pieza->compresionOriginal);
+        mvprintw(fila++, 2, "Numero de Serie: %s", pieza->numeroSerie);
+        mvprintw(fila++, 2, "Tipo de Combustible: %s", tipoCombustibleToStr(pieza->tipoCombustible));
+        mvprintw(fila++, 2, "Material: %s", pieza->material);
+
+        mvprintw(fila++, 2, "Medida Original: %.4f mm", pieza->medidaOriginal);
+        mvprintw(fila++, 2, "Medida Actual: %.4f mm", pieza->medidaActual);
+
+
+        if (pieza->culata != NULL) {
+            mvprintw(fila++, 4, "Tipo de Pieza: Culata");
+            mvprintw(fila++, 4, "N Valvulas: %d", pieza->culata->numValvulas);
+            mvprintw(fila++, 4, "Presion Prueba: %.2f bar", pieza->culata->presionPrueba);
+            mvprintw(fila++, 4, "Tiene Fisuras: %s", pieza->culata->tieneFisuras ? "Sí" : "No");
+            mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(pieza->culata->operacionesMotor));
+        } else {
+            mvprintw(fila++, 4, "Culata : (NO Asignada)");
+        }
+        if (pieza->monoblock != NULL) {
+            mvprintw(fila++, 4, "Tipo de Pieza: Monoblock");
+            mvprintw(fila++, 4, "N Cilindros: %d", pieza->monoblock->numCilindros);
+            mvprintw(fila++, 4, "Ovalizacion Max: %.2f mm", pieza->monoblock->ovalizacion_max);
+            for (int j = 0; j < pieza->monoblock->numCilindros; j++) {
+                mvprintw(fila++, 4, "Diametro Cilindro %d : %.4f mm", pieza->monoblock->numCilindros,
+                         pieza->monoblock->diametroCilindro[j]);
+            }
+            mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(pieza->monoblock->operacionesMonoblock));
+        } else {
+            mvprintw(fila++, 4, "Monoblock : (NO Asignada)");
+        }
+        mvprintw(fila++, 10, "----------------------------------------------");
+
+        if (fila >= LINES - 5) {
+            mvprintw(fila++, 10, "Presiona cualquier tecla para continuar...");
+            getch();
+            clear();
+            fila = 1;
+        }
+    }
+
+    mvprintw(fila++, 10, "Fin del listado...");
+    getch();
+}
+
+void listarFoliosUsuarios() {
+    int y = 3;
+    for (int i = 0; i < arrayUsuarios.tamanno; i++) {
+        Usuario usuario = arrayUsuarios.datos[i];
+
+        mvprintw(y, 40, "Activo?: %s", usuario.activo ? "True" : "False");
+        mvprintw(y, 60, "ID: %d", usuario.id_usuario);
+        mvprintw(y, 70, "Nombre: %s", usuario.nombreUsuario);
+        mvprintw(y, 90, "Folio: %s", usuario.folio);
+
+        if (usuario.motor != NULL) {
+            mvprintw(y, 110, "Numero de serie del motor: %s", usuario.motor->numeroSerie);
+
+            if (usuario.motor->culata != NULL) {
+                mvprintw(y, 180, "(Culata asignada)");
+            } else {
+                mvprintw(y, 180, "(Culata no asignada)");
+            }
+        } else {
+            mvprintw(y, 105, "Motor no asignado");
+        }
+
+        y++;
+    }
+}
+======================================================
+//LogicaNegocio
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <curses.h>
+
+#include "UsuarioDTO.h"
+#include "Util.h"
+#include "UserInterface.h"
+#include "LogicaNegocio.h"
+
+#include <time.h>
+
+#include "SystemLogs.h"
+#include "Testing.h"
+
+int servicio() {
+    int opc = mostrarMenu(4, " ");
+    RETURN_IF_ESC(opc);
+    int opcusrParteMotor;
+
+    switch (opc) {
+        case 0:
+            clear();
+            registrarMotor();
+            break;
+        case 1:
+
+            clear();
+            opcusrParteMotor = mostrarMenu(5, " ");
+            RETURN_IF_ESC(opcusrParteMotor);
+            listarFoliosUsuarios();
+
+            if (opcusrParteMotor == 0 && registrarCulata() != 1)
+                imprimirMensaje(10, 10, "¡Error al crear piezas (Culata) o no hay motor previo!");
+            else if (opcusrParteMotor == 1)
+                registrarMonoblock();
+
+            break;
+
+        case 2: {
+            realizarOperacionesMotor();
+        }
+        break;
+        case 3:
+
+            listarMotoresPrecargados();
+            break;
+
+        default:
+            break;
+    }
+
+    return 0;
+}
+
+int opcUsr = -2;
+int subOpcUsr = -2;
+
+int almacen() {
+    opcUsr = mostrarMenu(8, " ");
+    RETURN_IF_ESC(opcUsr);
+    switch (opcUsr) {
+        case 0:
+            subOpcUsr = mostrarMenu(9, " ");
+            RETURN_IF_ESC(subOpcUsr);
+            ejecutarOpcionAlmacen(opcUsr, subOpcUsr);
+            break;
+        case 1:
+            subOpcUsr = mostrarMenu(10, " ");
+            RETURN_IF_ESC(subOpcUsr);
+            break;
+        case 2:
+            subOpcUsr = mostrarMenu(11, " ");
+            RETURN_IF_ESC(subOpcUsr);
+            break;
+        case 3:
+            subOpcUsr = mostrarMenu(12, " ");
+            RETURN_IF_ESC(subOpcUsr);
+            break;
+        case 4:
+            subOpcUsr = mostrarMenu(13, " ");
+            RETURN_IF_ESC(subOpcUsr);
+            break;
+        default:
+            break;
+    }
+    return 0;
+}
+
+int otro() {
+    int opcUsr = mostrarMenu(16, " ");
+    switch (opcUsr) {
+        case 0:
+            imprimirMensaje(10, 10, "Reportar Bug");
+
+            break;
+        case 1:
+            listarPiezas();
+            break;
+        case 2:
+            imprimirMensaje(10, 10, "Ver Historial de tickets");
+
+
+            if (mostrarMenu(
+                7, "Estas apunto de generar un archivo con todos los tickets del dia, ¿Deseas generarlo?")) {
+                historialTickets();
+            }
+            break;
+        case 3:
+            imprimirMensaje(10, 10, "Limpieza de cache - Reinicio local del sistema");
+
+            break;
+        case 4:
+            imprimirMensaje(10, 10, "Enviar Logs del sistema");
+
+            char *nombreArchivo = obtenerNombreArchivo("Logs-Sistema");
+
+            FILE *archivo = fopen(nombreArchivo, "w");
+
+            enviarLogsSistema(nombreArchivo, archivo);
+
+            fclose(archivo);
+            break;
+        case 5:
+            if (mostrarMenu(
+                7, "Estas apunto de generar un archivo con todos los detalles del sistema, ¿Deseas Generarlo?")) {
+                exportarDetallesTodoElSistema();
+            }
+            break;
+        case 6:
+
+            return -1;
+        default: break;
+    }
+    return 0;
+}
+
+
+int dudas() {
+    int opcUsr = mostrarMenu(17, " ");
+    switch (opcUsr) {
+        case 0:
+            imprimirMensaje(10, 10, "Consulta Tecnica");
+
+            break;
+        case 1:
+            imprimirMensaje(10, 10, "Consultar Version");
+
+            break;
+        case 2:
+            imprimirMensaje(10, 10, "Manual de usuario");
+
+            break;
+        case 3:
+            imprimirMensaje(10, 10, "Documentacion");
+
+            break;
+        case 4:
+            return -1;
+        default: break;
+    }
+    return 0;
+}
+
+int salir() {
+    listarPiezas();
+    exit(0);
+}
+
+void mostrarLogo() {
+    printf("\nBienvenido al sistema\n");
+
+    printf("    ____           __ \n");
+
+    printf("   / __/__    ____/ /___  _________ \n");
+
+    printf("  / /_/ _ \\ / __  / __ / ___/ __ /\n");
+
+    printf(" / __/  __/ /_/ / /_/ / /  / /_/ / \n");
+
+    printf("/_/  \\___/\\__,_/\\____/_/   \\__,_/  \n");
+
+    printf("      /\\     \n");
+    printf("     /  \\    \n");
+    printf("    /    \\    \n");
+}
+
+int asignarMotorUsuario(Usuario *usuario, Motor *motor) {
+    if (usuario == NULL || usuario->activo != 1) {
+        imprimirMensaje(10, 10, "Usuario invalido o no encontrado");
+        return 0;
+    }
+    if (usuario->motor != NULL) {
+        imprimirMensaje(10, 10, "La pieza ya fue asignada anteriormente");
+        return 0;
+    }
+    if (motor != NULL) usuario->motor = motor;
+    return 1;
+};
+
+int asignarPiezaMotor(Usuario *usuario, void *pieza, int tipoDePieza) {
+    if (tipoDePieza == 1) {
+        usuario->motor->culata = (Culata *) pieza;
+        return 1;
+    }
+    if (tipoDePieza == 2) {
+        usuario->motor->monoblock = (Monoblock *) pieza;
+        return 1;
+    }
+    return 0;
+};
+
+
+int evaluarEstadoCulata(const float alturaOriginal, const float alturaActual, const float alturaMinima,
+                        const float tolerancia) {
+    const float desgaste = alturaOriginal - alturaActual;
+
+    if (alturaActual >= alturaMinima && desgaste <= tolerancia) {
+        return -1;
+    }
+    if (alturaActual < alturaMinima) {
+        return -2;
+    }
+    return 0;
+}
+
+const char *imprimirOperacionesEstadoPieza(int estado, int tipoPieza) {
+    const char *mensajes[7] = {
+        "Montado inicial", "Desmontado", "Lavado inicial", "Rectificación/Reconstrucción",
+        "Pruebas Unitarias", "Lavado posterior", "Montado final"
+    };
+
+    if (estado < 0 || estado > 6) {
+        return strdup("Ocurrió un error al obtener el estado de la pieza - Ve al siguiente apartado");
+    }
+    char *base = tipoPieza == 0 ? "El estado actual de la culata es: " : "El estado actual de la pieza es: ";
+    const char *adicional = " - Ve al siguiente apartado";
+
+    size_t tam = strlen(base) + strlen(mensajes[estado]) + strlen(adicional) + 1;
+
+    char *resultado = (char *) malloc(tam);
+    if (!resultado) {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
+    strcpy(resultado, base);
+    strcat(resultado, mensajes[estado]);
+    strcat(resultado, adicional);
+
+    return resultado;
+}
+
+int realizarOperacionesMotor() {
+    if (mostrarMenu(5, "Seleccione la parte que se Trabajara") == 0) {
+        realizarOperacionesPiezaMotor(0);
+    } else {
+        realizarOperacionesPiezaMotor(1);
+    }
+    return 0;
+}
+
+
+int realizarOperacionesPiezaMotor(int tipoPieza) {
+    int id_usuario = obtenerIdSiExisteUsuario(5, 5);
+    RETURN_IF_ESC(id_usuario);
+
+    const int tiempos_test[] = {5, 6, 6, 5, 5, 5};
+    const int tiempos_default[] = {50, 25, 70, 10, 30, 50};
+    const int *tiempos = (testingMode >= 1) ? tiempos_test : tiempos_default;
+
+    Motor *motor_usr = obtenerMotorByIdUsuario(id_usuario);
+    if (motor_usr == NULL) {
+        imprimirMensaje(10, 10, "No hay un motor asociado al ID propocionado");
+        return -1;
+    }
+
+    if (tipoPieza == 0) {
+        clear();
+        mvprintw(0, 0, "Operaciones culata");
+
+        if (motor_usr->culata == NULL) {
+            imprimirMensaje(10, 10, "Motor inválido o sin culata");
+            return -1;
+        }
+
+        int *estado = &motor_usr->culata->estadoTemporalPieza;
+        int operacionesLogicas = motor_usr->culata->operacionesMotor;
+        if (motor_usr->culata->estadoTemporalPieza < 0 || motor_usr->culata->estadoTemporalPieza > 5)
+            motor_usr->culata->estadoTemporalPieza = 0;
+        const char *mensajes[] = {
+            "Desmontando pieza", "Lavando Pieza",
+            (operacionesLogicas == -1) ? "Rectificando Culata" : "Reconstruyendo Culata",
+            "Haciendo Pruebas unitarias", "Haciendo una lavada final",
+            "Montando motor"
+        };
+        while (1) {
+            int opcUsr = mostrarMenu(15, "Seleccione operación a realizar");
+            RETURN_IF_ESC(opcUsr);
+            if (opcUsr == 6) return -1;
+            if (opcUsr < 0 || opcUsr > 5) continue;
+
+            if (opcUsr == *estado && *estado < 6) {
+                imprimirBarraDeCarga(tiempos[opcUsr], mensajes[opcUsr]);
+                (*estado)++;
+                if (opcUsr == 2)
+                    motor_usr->culata->operacionesMotor = (operacionesLogicas == -1) ? 1 : 2;
+            } else if (opcUsr < *estado) {
+                imprimirMensaje(10, 10, "Operación ya realizada.");
+            } else {
+                clear();
+                mvprintw(20, 20, "Estado de la pieza %s: ", imprimirOperacionesEstadoPieza(*estado, 0));
+                getch();
+            }
+
+            if (motor_usr->culata->estadoTemporalPieza > 5) {
+                imprimirTextoMultilinea(10, 10,
+                                        "El motor ya no tiene operaciones por realizar, puedes ir a generar las ordenes de pago",
+                                        50);
+                break;
+            }
+            generarSystemLog(id_usuario, "Operaciones Culata", "Culata", motor_usr->numeroSerie, INFO, 1,
+                             "LogicaNegocio.c", "RealizarOperacionesPiezaMotor", HTTP_ACCEPTED);
+        }
+    } else if (tipoPieza == 1) {
+        clear();
+        mvprintw(0, 0, "Operaciones Monoblock");
+        if (motor_usr->monoblock == NULL) {
+            imprimirMensaje(10, 10, "Motor inválido o sin Monoblock");
+            return -1;
+        }
+        int *estado = &motor_usr->monoblock->estadoTemporalPieza;
+        int operacionesLogicas = motor_usr->monoblock->operacionesMotor;
+        if (motor_usr->monoblock->estadoTemporalPieza < 0 || motor_usr->monoblock->estadoTemporalPieza > 5)
+            motor_usr->monoblock->estadoTemporalPieza = 0;
+        const char *mensajes[] = {
+            "Desmontando Monoblock", "Lavando Pieza",
+            (operacionesLogicas == -1) ? "Rectificando Monoblock" : "Reconstruyendo Monoblock",
+            "Haciendo Pruebas unitarias", "Haciendo una lavada final",
+            "Montando Monoblock"
+        };
+        while (1) {
+            int opcUsr = mostrarMenu(15, "Seleccione operación a realizar");
+            RETURN_IF_ESC(opcUsr);
+            if (opcUsr == 6) return -1;
+            if (opcUsr < 0 || opcUsr > 5) continue;
+
+            if (opcUsr == *estado && *estado < 6) {
+                imprimirBarraDeCarga(tiempos[opcUsr], mensajes[opcUsr]);
+                (*estado)++;
+                if (opcUsr == 2)
+                    motor_usr->monoblock->operacionesMotor = (operacionesLogicas == -1) ? 1 : 2;
+            } else if (opcUsr < *estado) {
+                imprimirMensaje(10, 10, "Operación ya realizada.");
+            } else {
+                clear();
+                mvprintw(20, 20, "Estado de la pieza %s: ", imprimirOperacionesEstadoPieza(*estado, 1));
+                getch();
+            }
+
+            if (motor_usr->monoblock->estadoTemporalPieza > 5) {
+                imprimirTextoMultilinea(10, 10,
+                                        "Monoblock ya no tiene operaciones por realizar, puedes ir a generar las ordenes de pago",
+                                        50);
+                break;
+            }
+            generarSystemLog(id_usuario, "Operaciones Monoblock", "Monoblock", motor_usr->numeroSerie, INFO, 1,
+                             "LogicaNegocio.c", "RealizarOperacionesPiezaMotor", HTTP_ACCEPTED);
+        }
+    }
+    return 0;
+};
+======================================================
+//LOGICANEGOCIO_H
+#ifndef LOGICANEGOCIO_H
+#define LOGICANEGOCIO_H
+
+// ------------------------------------- Includes
+#include "UsuarioDTO.h"
+#include <stdio.h>
+
+// ------------------------------------- Modulo Principal
+void menuPrincipal();
+extern char* empleado;
+
+// ------------------------------------- UI y flujo principal
+void mostrarLogo();
+int servicio();
+int almacen();
+int otro();
+int dudas();
+int salir();
+
+// -------------------------------------  Clientes
+int loginUsuario();
+int cliente();
+int modificarCliente();
+void listarFoliosUsuarios();
+void listarPiezas();
+
+
+// -------------------------------------  UsuarioDAO
+Usuario* obtenerUsuarioByIdUsuario(int id);
+Motor* obtenerMotorPorNumeroDeSerie(const ArrayPiezas* array, const char* numeroDeSerieMotor);
+Motor* obtenerMotorByIdUsuario(int id);
+Ticket* obtenerTicketByIdUsuario(int id_usuario);
+int obtenerIdSiExisteUsuario(int POS_Y, int POS_X);
+
+Ticket inicializarTicket(Usuario* usuario,Motor* motor ,char* detalles, char* detalles2);
+int guardarUsuarioArray(Usuario usuario);
+int guardarMotorArray(void* motor, int id_usuario);
+int guardarPiezaArray(void* pieza, int id_usuario,char* tipoPieza);
+int guardarTicket(Ticket ticket);
+
+// -------------------------------------  Registrar Motores
+int registrarMotor();
+int registrarCulata();
+int registrarMonoblock();
+void rectificarCulata(Culata* culata, int id_usuario);
+void imprimirDetallesMotor(Motor* motor);
+int asignarMotorUsuario(Usuario* usuario, Motor* motor);
+int asignarPiezaMotor(Usuario* usuario, void* pieza, int tipoDePieza);
+int evaluarEstadoCulata(float alturaOriginal, float alturaActual, float alturaMinima, float tolerancia);
+const char* imprimirOperacionesEstadoPieza(int estado, int tipoPieza);
+int realizarOperacionesMotor();
+int realizarOperacionesPiezaMotor(int tipoPieza);
+
+int evaluarDiametrosCilindros(const float* diametros, int numCilindros, int y, int* necesitaReconstruccion);
+int evaluarConicidadCilindros(const float* conicidades, int numCilindros, int y);
+int evaluarDesalineacionCilindros(float* desalineaciones, int numCilindros, int y);
+int evaluarDiametrosBancadas(float* bancadas, int num_bancadas, int y);
+int evaluarOvalidad(float oval, int y);
+int evaluarPlanitud(float planitud, int y);
+int evaluarJuegoAxial(int y, float* grosorLaina);
+void actualizarStockLaina(float grosor, int cantidad);
+void registrarUsoHerramienta(char* idHerramienta, char* etapa);
+
+// -------------------------------------  Utilidades
+const char* tipoCombustibleToStr(TipoCombustible tipo);
+char* obtenerNombreArchivo(const char* textoInicial);
+
+// -------------------------------------  Tickets y Pagos
+int pago();
+int generarNota(int id, FILE* archivo);
+int generarTicket(int id, FILE* archivo);
+int generarFactura(int id, FILE* archivo);
+void imprimirDetallesTicket(int id, int fila);
+const char* estadoPiezaTexto(int estadoPieza);
+
+// -------------------------------------  Exportaciones
+int exportarDetallesUsuarios(const char* nombreArchivo, FILE* archivo);
+int exportarDetallesPiezasAlmacen(const char* nombreArchivo, FILE* archivo);
+int exportarDetallesTickets(const char* nombreArchivo, FILE* archivo);
+int exportarDetallesMotoresPrecargados(const char* nombreArchivo, FILE* archivo);
+void exportarDetallesTodoElSistema();
+
+// -------------------------------------  Historial y validaciones
+int validarArchivo(FILE* archivo);
+void historialTickets();
+
+// -------------------------------------  Almacen
+int cargarAlmacen();
+void precargarPiezasAlmacen(PiezaAlmacen pieza_almacen[], int cantidad);
+PiezaAlmacen* buscarPiezaPorIdUnico(ArrayPiezasAlmacen* inventario, int numPiezas, char *id_unico);
+void imprimirArrayPiezasAlmacen();
+void ejecutarOpcionAlmacen(int opcionMenu, int opcionSubMenu);
+int listarPiezasAlmacen();
+int buscarPiezasAlmacen();
+int agregarPizasAlmacen();
+int eliminarPiezasAlmacen();
+void imprimirArrayPiezasAlmacenArchivo(FILE* archivo);
+Herramienta* incializarHerramienta(char* id_herramienta, char* tipo, int usos, char* compatibilidad,
+    float rango, char* material, int cantidad);
+
+#endif
+=======================================================================
+//RegistrarMotor
+#include <curses.h>
+#include <stdlib.h>
+#include <tgmath.h>
+#include <time.h>
+
+#include "UsuarioDTO.h"
+#include "LogicaNegocio.h"
+#include "Testing.h"
+#include "UserInterface.h"
+#include "Util.h"
+
+int registrarMotor() {
+    int y = 2;
+
+    int opcUsr = mostrarMenu(7, "¿Tienes el numero de serie del motor?");
+    int id_usuario = 0;
+    RETURN_IF_ESC(opcUsr);
+    if (opcUsr == 1) {
+        char *numeroDeSerieUsuario = leerStringSeguro(10, 10, 20, "Ingrese el numero de serie del motor");
+        if (numeroDeSerieUsuario == NULL)return -1;
+        Motor *motorUsr = obtenerMotorPorNumeroDeSerie(&arrayMotoresPrecargados, numeroDeSerieUsuario);
+        if (motorUsr != NULL) {
+            clear();
+            mvprintw(2, 10, "¿Deseas cargar este motor al usuario?, Asi ya no tendras que registrar un nuevo motor");
+
+            imprimirDetallesMotor(motorUsr);
+
+
+            int opcUsr2 = mostrarMenu(7, " ");
+            if (opcUsr2 == 1) {
+                clear();
+                id_usuario = obtenerIdSiExisteUsuario(10, 10);
+                RETURN_IF_ESC(id_usuario);
+                Usuario *usuario = obtenerUsuarioByIdUsuario(id_usuario);
+
+                Motor *motorClonado = clonarMotor(motorUsr, id_usuario);
+
+                usuario->motor = motorClonado;
+                guardarMotorArray(motorClonado, id_usuario);
+
+                clear();
+                mvprintw(10, 10, "Motor asignado correctamente al usuario con id %d", id_usuario);
+                getch();
+                return -1;
+            }
+        }
+    }
+
+
+    clear();
+    int id_pieza = getIdPiezaGlobal();
+    id_usuario = obtenerIdSiExisteUsuario(10, 10);
+    RETURN_IF_ESC(id_usuario);
+    clear();
+    mvprintw(2, 10, "Estas agregando un motor.");
+    char *modelo = leerStringSeguro(y += 2, 10, 100, "Ingrese Modelo del Motor - String");
+    if (modelo == NULL)return -1;
+    char *fabricante = leerStringSeguro(y += 2, 10, 100, "Ingrese Fabricante del Motor - String");
+    if (fabricante == NULL)return -1;
+    char *carroAsociado = leerStringSeguro(y += 2, 10, 100, "Ingrese Carro Asociado - String");
+    if (carroAsociado == NULL)return -1;
+    char *material = leerStringSeguro(y += 2, 10, 30, "Ingrese Material de Motor - String");
+    if (material == NULL) return -1;
+    int anno = leerIntSeguro(y += 2, 10, 10, "Ingrese Año del Motor - Entero");
+    float cilindrada = leerFloatSeguro(y += 2, 10, 10, "Ingrese Cilindrada (L) - Float");
+    float compresionOriginal = leerFloatSeguro(y += 2, 10, 10, "Ingrese Compresión Original (psi) - Float");
+    char *numeroSerie = leerStringSeguro(y += 2, 10, 50, "Ingrese Número de Serie - String");
+    int tipoCombustible = mostrarMenu(6, "Seleccione Tipo de Combustible - Entero");
+
+    float medidaOriginal = leerFloatSeguro(y += 2, 10, 10, "Ingrese Medida Original (mm) - Float");
+    float medidaActual = leerFloatSeguro(y += 2, 10, 10, "Ingrese Medida Actual (mm) - Float");
+
+
+    Paramsmotor paramsmotor = {
+        .id_pieza = id_pieza,
+        .id_usuario = id_usuario,
+        .modelo = modelo,
+        .fabricante = fabricante,
+        .carroAsociado = carroAsociado,
+        .anno = anno,
+        .cilindrada = cilindrada,
+        .compresionOriginal = compresionOriginal,
+        .numeroSerie = numeroSerie,
+        .tipoCombustible = tipoCombustible,
+        .material = material,
+        .medidaOriginal = medidaOriginal,
+        .medidaActual = medidaActual,
+    };
+    Motor *motor = inicializarMotor(paramsmotor, id_usuario, getIdPiezaGlobal(), 0, 0);
+    guardarMotorArray(motor, id_usuario);
+    asignarMotorUsuario(obtenerUsuarioByIdUsuario(id_usuario), motor);
+
+    if (mostrarMenu(7, "¿Deseas guardar este motor en la base de datos?") == 1
+        && obtenerMotorPorNumeroDeSerie(&arrayMotoresUsuarios, numeroSerie) != NULL) {
+        precargarMotoresDB(motor, 1);
+        imprimirMensaje(10, 10, "El motor fue registrado al usuario y en la base de datos Correctamente");
+        return 1;
+    }
+    imprimirMensaje(10, 10, "El motor fue registrado al usuario Correctamente");
+    setIdPiezaGlobal(getIdPiezaGlobal() + 1);
+    return 1;
+};
+
+int registrarCulata() {
+    int y = 5;
+
+
+    char *numeroDeSerieUsr = leerStringSeguro(10, 10, 25, "Ingrese numero de serie del motor asignado al cliente:");
+    if (obtenerMotorPorNumeroDeSerie(&arrayMotoresUsuarios, numeroDeSerieUsr) != NULL) {
+        const int id_usuario = obtenerIdSiExisteUsuario(13, 10);
+        RETURN_IF_ESC(id_usuario);
+
+
+        Usuario *usuario = obtenerUsuarioByIdUsuario(id_usuario);
+        if (usuario == NULL) {
+            imprimirMensaje(10, 10, "Ocurrió un problema al obtener los datos del usuario");
+            return -1;
+        }
+
+        Motor *motor = usuario->motor;
+        if (motor == NULL) {
+            imprimirMensaje(10, 10, "El motor del usuario es NULL, por favor asigna un motor al usuario");
+            return -1;
+        }
+
+
+        if (motor->culata == NULL) {
+            clear();
+
+
+            int numValvulas = leerIntSeguro(y += 2, 10, 50, "Ingrese numero Valvulas entero");
+
+            double presionPrueba = leerFloatSeguro(y += 2, 10, 20, "Ingrese PresionPrueba float");
+
+
+            int tieneFisuras = mostrarMenu(7, "¿Tiene Fisuras?");
+
+            clear();
+
+            float alturaOriginal = leerFloatSeguro(y += 2, 10, 20, "Ingrese medida original");
+            float alturaActual = leerFloatSeguro(y += 2, 10, 20, "Ingrese la altura Actual");
+            float alturaMinima = leerFloatSeguro(y += 2, 10, 20, "Ingrese altura minima");
+            float tolerancia = leerFloatSeguro(y += 2, 10, 20, "Ingrese Tolerancia Maxima");
+
+
+            int estadoPieza = evaluarEstadoCulata(alturaOriginal, alturaActual, alturaMinima, tolerancia);
+
+
+            if (estadoPieza == -1) {
+                imprimirMensaje(
+                    10, 10, "La pieza necesita Rectificacion, porfavor ve al apartado de Servicio-Operaciones");
+            } else if (estadoPieza == -2) {
+                imprimirMensaje(
+                    10, 10, "La pieza necesita Reeconstruccion, porfavor ve al apartado de Servicio-Operaciones");
+            } else {
+                imprimirMensaje(10, 10, "Se introdujeron datos erroneos, porfavor Introduce datos validos");
+            }
+
+
+            mvprintw(y += 2, 55, "Tiene Fisuras?: %d", tieneFisuras);
+
+            getch();
+            Culata *pzc = inicializarCulata(getIdPiezaGlobal(), numValvulas, presionPrueba, tieneFisuras,
+                                            alturaOriginal, alturaActual, alturaMinima, id_usuario, estadoPieza);
+            guardarPiezaArray(pzc, id_usuario, "culata");
+            usuario->motor->culata = pzc;
+            setIdPiezaGlobal(getIdPiezaGlobal() + 1);
+            imprimirMensaje(10, 10, "Culata Creada correctamente :)");
+            return 1;
+        }
+        imprimirMensaje(
+            5, 5, "El usuario no es NULL, El motor no es NULL, La culata no es NULL. YA TIENE TODO AGREGADO ¿?¿?¿");
+    }
+    return -1;
+}
+
+void imprimirDetallesMotor(Motor *motor) {
+    int fila = 5;
+
+    if (motor == NULL) {
+        mvprintw(5, 35, "Error: El motor es NULL.");
+        getch();
+        return;
+    }
+
+    mvprintw(fila++, 35, "==============================================");
+    mvprintw(fila++, 35, "INFORMACION DE LA PIEZA / MOTOR");
+    mvprintw(fila++, 35, "==============================================");
+
+    mvprintw(fila++, 35, "ID Pieza: %d", motor->id_pieza);
+    mvprintw(fila++, 35, "ID Usuario: %d", motor->id_usuario);
+
+    mvprintw(fila++, 35, "Modelo Motor: %s", motor->modelo ? motor->modelo : "(No definido)");
+
+    if (motor->anno > 0)
+        mvprintw(fila++, 35, "Anno Motor: %d", motor->anno);
+    else
+        mvprintw(fila++, 35, "Anno Motor: (No definido)");
+
+    mvprintw(fila++, 35, "Carro asociado: %s", motor->carroAsociado ? motor->carroAsociado : "(No definido)");
+    mvprintw(fila++, 35, "Fabricante: %s", motor->fabricante ? motor->fabricante : "(No definido)");
+    mvprintw(fila++, 35, "Numero Serie: %s", motor->numeroSerie ? motor->numeroSerie : "(No definido)");
+
+    mvprintw(fila++, 35, "Cilindrada: %.2f L", motor->cilindrada);
+    mvprintw(fila++, 35, "Compresion Original: %.2f psi", motor->compresionOriginal);
+    mvprintw(fila++, 35, "Combustible: %s", tipoCombustibleToStr(motor->tipoCombustible));
+    mvprintw(fila++, 35, "Material: %s", motor->material);
+
+    mvprintw(fila++, 35, "Medida Original: %.4f mm", motor->medidaOriginal);
+    mvprintw(fila++, 35, "Medida Actual: %.4f mm", motor->medidaActual);
+
+    if (motor->culata == NULL) {
+        mvprintw(fila++, 35, "(Culata no asignada)");
+    }
+    if (motor->monoblock == NULL) {
+        mvprintw(fila++, 35, "(Monoblock no asignado)");
+    }
+
+
+    getch();
+}
+
+void rectificarCulata(Culata *culata, int id_usuario) {
+    if (culata != NULL && culata->id_usuario == id_usuario) {
+        culata->operacionesMotor = 1;
+    }
+}
+
+
+int registrarMonoblock() {
+    int y = 5, y_2 = 5;
+
+    char *numeroDeSerieUsr = leerStringSeguro(10, 10, 25, "Ingrese numero de serie del motor asignado al cliente:");
+    if (obtenerMotorPorNumeroDeSerie(&arrayMotoresUsuarios, numeroDeSerieUsr) != NULL) {
+        const int id_usuario = obtenerIdSiExisteUsuario(13, 10);
+        RETURN_IF_ESC(id_usuario);
+
+        Usuario *usuario = obtenerUsuarioByIdUsuario(id_usuario);
+        if (usuario == NULL) {
+            imprimirMensaje(10, 10, "Ocurrió un problema al obtener los datos del usuario");
+            return -1;
+        }
+
+        Motor *motor = usuario->motor;
+        if (motor == NULL) {
+            imprimirMensaje(10, 10, "El motor del usuario es NULL, por favor asigna un motor al usuario");
+            return -1;
+        }
+
+        clear();
+        int numCilindros = leerIntSeguro(y++, 5, 10, "Ingrese numero de cilindros");
+        int num_bancadas = leerIntSeguro(y++, 5, 10, "Ingrese numero de bancadas");
+
+        float *diametros = malloc(numCilindros * sizeof(float));
+        float *conicidades = malloc(numCilindros * sizeof(float));
+        float *desalineaciones = malloc(numCilindros * sizeof(float));
+        float *bancadas = malloc(num_bancadas * sizeof(float));
+
+        for (int i = 0; i < numCilindros; i++) {
+            char mensajeUno[50];
+            sprintf(mensajeUno, "Diametro del cilindro %d", i + 1);
+            diametros[i] = leerFloatSeguro(y++, 5, 10, mensajeUno);
+        }
+        for (int i = 0; i < numCilindros; i++) {
+            char mensajeDos[50];
+            sprintf(mensajeDos, "Conicidad del cilindro %d", i + 1);
+            conicidades[i] = leerFloatSeguro(y++, 5, 10, mensajeDos);
+        }
+        for (int i = 0; i < numCilindros; i++) {
+            char mensajeTres[50];
+            sprintf(mensajeTres, "Desalineacion del cilindro %d", i + 1);
+            desalineaciones[i] = leerFloatSeguro(y++, 5, 10, mensajeTres);
+        }
+
+        for (int i = 0; i < num_bancadas; i++) {
+            char mensajeCuatro[35];
+            sprintf(mensajeCuatro, "Diametro de bancada %d", i + 1);
+            bancadas[i] = leerFloatSeguro(y++, 5, 10, mensajeCuatro);
+        }
+
+        int flags = leerIntSeguro(y++, 5, 10, "Ingrese flag");
+        int estado = leerIntSeguro(y++, 5, 10, "Ingrese estado");
+
+        float oval = leerFloatSeguro(y++, 5, 10, "Ingrese oval");
+        float planitud = leerFloatSeguro(y++, 5, 10, "Ingrese planitud");
+
+        char *observaciones;
+        if (mostrarMenu(7, "¿Desea agregar observaciones?")) {
+            observaciones = leerStringSeguro(y++, 5, 100, "Ingrese Observaciones");
+        } else {
+            observaciones = " ";
+        }
+
+
+        int necesitaRectificacion = 0;
+        int necesitaReconstruccion = 0;
+        float grosorLaina = 0.0f;
+
+        necesitaRectificacion |= evaluarDiametrosCilindros(diametros, numCilindros, y_2, &necesitaReconstruccion);
+        y_2 += 3;
+        necesitaRectificacion |= evaluarConicidadCilindros(conicidades, numCilindros, y_2);
+        y_2++;
+        necesitaRectificacion |= evaluarDesalineacionCilindros(desalineaciones, numCilindros, y_2);
+        y_2++;
+        necesitaRectificacion |= evaluarDiametrosBancadas(bancadas, num_bancadas, y_2);
+        y_2++;
+        necesitaRectificacion |= evaluarOvalidad(oval, y_2);
+        y_2++;
+        necesitaRectificacion |= evaluarPlanitud(planitud, y_2);
+        y_2++;
+        int necesitaLaina = evaluarJuegoAxial(y_2, &grosorLaina);
+        y_2++;
+
+
+        Monoblock *mono = inicializarMonoblock(
+            0, id_usuario, numCilindros, diametros,
+            conicidades, num_bancadas, bancadas,
+            bancadas, oval, planitud, flags, numeroDeSerieUsr, observaciones, estado
+        );
+
+        clear();
+
+        if (flags == -2 || necesitaReconstruccion) {
+            mvprintw(y_2++, 5, "Monoblock requiere reconstruccion");
+            mono->operacionesMonoblock = -2;
+            if (necesitaLaina) {
+                actualizarStockLaina(grosorLaina, -1);
+                registrarUsoHerramienta("Micrometro", "Reconstrucción");
+            }
+
+            actualizarStockLaina(0.0f, -1);
+        } else if (necesitaRectificacion) {
+            mvprintw(y_2++, 5, "Monoblock requiere rectificacion");
+            mono->operacionesMonoblock = -1;
+            mvprintw(y_2++, 5, "Regresar");
+        } else if (necesitaLaina) {
+            mvprintw(y_2++, 5, "Monoblock solo requiere ajuste con laina");
+            mono->operacionesMonoblock = -3;
+        } else {
+            mvprintw(y_2++, 5, "Monoblock dentro de tolerancias, no requiere accion");
+            mono->operacionesMonoblock = 0;
+        }
+
+        guardarPiezaArray(mono, id_usuario, "monoblock");
+        imprimirMensaje(10, 10, "Monoblock creado correctamente :)");
+        usuario->motor->monoblock = mono;
+        setIdPiezaGlobal(getIdPiezaGlobal() + 1);
+        imprimirMensaje(10, 10, mono->numero_serie);
+
+        free(desalineaciones);
+
+        return 0;
+    }
+    return 1;
+}
+
+int evaluarDiametrosCilindros(const float *diametros, int numCilindros, int y, int *necesitaReconstruccion) {
+    float toleranciaDiametro = 0.05f;
+    float diametroNominal = 80.00f;
+    int necesitaRectificacion = 0;
+
+    for (int i = 0; i < numCilindros; i++) {
+        float deltaD = fabs(diametros[i] - diametroNominal);
+        if (deltaD > toleranciaDiametro) {
+            necesitaRectificacion = 1;
+            mvprintw(y++, 5, "Cilindro %d: Desgaste %.3f mm, requiere rectificación", i + 1, deltaD);
+            if (deltaD > 0.5) {
+                *necesitaReconstruccion = 1;
+                mvprintw(y++, 5, "Cilindro %d: Desgaste severo, considerar reconstrucción", i + 1);
+            }
+        }
+    }
+    return necesitaRectificacion;
+}
+
+
+int evaluarConicidadCilindros(const float *conicidades, int numCilindros, int y) {
+    float conicidadMax = 0.02f;
+    int necesitaRectificacion = 0;
+
+    for (int i = 0; i < numCilindros; i++) {
+        if (conicidades[i] > conicidadMax) {
+            necesitaRectificacion = 1;
+            mvprintw(y++, 5, "Cilindro %d: Conicidad %.3f mm, requiere rectificación", i + 1, conicidades[i]);
+        }
+    }
+    return necesitaRectificacion;
+}
+
+
+int evaluarDesalineacionCilindros(float *desalineaciones, int numCilindros, int y) {
+    float desalineacionMax = 0.01f;
+    int necesitaRectificacion = 0;
+
+    for (int i = 0; i < numCilindros; i++) {
+        if (desalineaciones[i] > desalineacionMax) {
+            necesitaRectificacion = 1;
+            mvprintw(y++, 5, "Cilindro %d: Desalineación %.3f mm, requiere rectificación", i + 1, desalineaciones[i]);
+        }
+    }
+    return necesitaRectificacion;
+}
+
+int evaluarDiametrosBancadas(float *bancadas, int num_bancadas, int y) {
+    float toleranciaBancada = 0.03f;
+    float bancadaNominal = 50.00f;
+    int necesitaRectificacion = 0;
+
+    for (int i = 0; i < num_bancadas; i++) {
+        float deltaB = fabs(bancadas[i] - bancadaNominal);
+        if (deltaB > toleranciaBancada) {
+            necesitaRectificacion = 1;
+            mvprintw(y++, 5, "Bancada %d: Desgaste %.3f mm, requiere rectificación", i + 1, deltaB);
+        }
+    }
+    return necesitaRectificacion;
+}
+
+int evaluarOvalidad(float oval, int y) {
+    float ovalidadMax = 0.02f;
+    int necesitaRectificacion = 0;
+
+    if (oval > ovalidadMax) {
+        necesitaRectificacion = 1;
+        mvprintw(y++, 5, "Ovalidad %.3f mm, requiere rectificación", oval);
+    }
+    return necesitaRectificacion;
+}
+
+int evaluarPlanitud(float planitud, int y) {
+    float planitudMax = 0.05f;
+    int necesitaRectificacion = 0;
+
+    if (planitud > planitudMax) {
+        necesitaRectificacion = 1;
+        mvprintw(y++, 5, "Planitud %.3f mm, requiere rectificación", planitud);
+    }
+    return necesitaRectificacion;
+}
+
+int evaluarJuegoAxial(int y, float *grosorLaina) {
+    float juegoNominal = 0.15f;
+    float juegoMedido = leerFloatSeguro(y++, 5, 10, "Ingrese juego axial de bancada (mm)");
+    *grosorLaina = juegoMedido - juegoNominal;
+    int necesitaLaina = 0;
+
+    if (*grosorLaina > 0) {
+        necesitaLaina = 1;
+        mvprintw(y++, 5, "Instalar laina de %.3f mm para bancada", *grosorLaina);
+    }
+    return necesitaLaina;
+}
+
+
+void actualizarStockLaina(float grosor, int cantidad) {
+    FILE *archivo = fopen("inventario.txt", "a");
+    fprintf(archivo, "Laina,%.3f,%d\n", grosor, cantidad);
+    fclose(archivo);
+}
+
+void registrarUsoHerramienta(char *idHerramienta, char *etapa) {
+    FILE *archivo = fopen("herramientas.txt", "a");
+    fprintf(archivo, "%s,%s,%ld\n", idHerramienta, etapa, time(NULL));
+    fclose(archivo);
+}
+======================================================
+//Usuario DAO
+#include <curses.h>
+#include <stddef.h>
+#include <stdlib.h>
+
+#include "LogicaNegocio.h"
+#include "SystemLogs.h"
+#include "Util.h"
+
+int guardarUsuarioArray(Usuario usuario) {
+    if (arrayUsuarios.tamanno >= arrayUsuarios.capacidad) {
+        const int nuevaCapacidad = arrayUsuarios.capacidad == 0 ? 1 : arrayUsuarios.capacidad * 2;
+        Usuario *nuevoArray = realloc(arrayUsuarios.datos, nuevaCapacidad * sizeof(Usuario));
+        if (nuevoArray == NULL) {
+            printf("Error al redimensionar el array de usuarios.\n");
+            generarSystemLog(usuario.id_usuario, "Guardar", "Array", "Usuario", WARN, 0, "UsuarioDAO",
+                             "guardarUsuarioArray", HTTP_BAD_REQUEST);
+            return -1;
+        }
+        arrayUsuarios.datos = nuevoArray;
+        arrayUsuarios.capacidad = nuevaCapacidad;
+    }
+    generarSystemLog(usuario.id_usuario, "Guardar", "Array", "Usuario", INFO, 1, "UsuarioDAO", "guardarUsuarioArray",
+                     HTTP_OK);
+    arrayUsuarios.datos[arrayUsuarios.tamanno] = usuario;
+    arrayUsuarios.tamanno++;
+    return 1;
+}
+
+int guardarMotorArray(void *motor, const int id_usuario) {
+    if (arrayMotoresUsuarios.tamanno >= arrayMotoresUsuarios.capacidad) {
+        const int nuevaCapacidad = arrayMotoresUsuarios.capacidad == 0 ? 1 : arrayMotoresUsuarios.capacidad * 2;
+        void *nuevoArray = realloc(arrayMotoresUsuarios.datos, nuevaCapacidad * sizeof(void *));
+        if (nuevoArray == NULL) {
+            generarSystemLog(id_usuario, "Redimensionar Array", "Motor", "motor", ERROR, 0,
+                             "UsuarioDAO", "guardarMotorArray", HTTP_INTERNAL_SERVER_ERROR);
+            printf("Error al redimensionar el array de Piezas.\n");
+            return -1;
+        }
+        arrayMotoresUsuarios.datos = nuevoArray;
+        arrayMotoresUsuarios.capacidad = nuevaCapacidad;
+        generarSystemLog(id_usuario, "Redimensionar Array", "Motor", "motor", INFO, 1,
+                         "UsuarioDAO", "guardarMotorArray", HTTP_OK);
+    }
+
+    arrayMotoresUsuarios.datos[arrayMotoresUsuarios.tamanno] = motor;
+    arrayMotoresUsuarios.tamanno++;
+    arrayMotoresUsuarios.id_usuario = id_usuario;
+    generarSystemLog(id_usuario, "Guardar Motor", "Motor", "motor", INFO, 1,
+                     "UsuarioDAO", "guardarMotorArray", HTTP_CREATED);
+    return 1;
+}
+
+int guardarPiezaArray(void *pieza, int id_usuario, char *tipoPieza) {
+    if (arrayPiezas.tamanno >= arrayPiezas.capacidad) {
+        const int nuevaCapacidad = arrayPiezas.capacidad == 0 ? 1 : arrayPiezas.capacidad * 2;
+        void **nuevoArray = realloc(arrayPiezas.datos, nuevaCapacidad * sizeof(void *));
+        if (nuevoArray == NULL) {
+            generarSystemLog(id_usuario, "Redimensionar Array", tipoPieza, "Pieza", ERROR, 0,
+                             "UsuarioDAO", "guardarPiezaArray", HTTP_INTERNAL_SERVER_ERROR);
+            printf("Error al redimensionar el array de Piezas.\n");
+            return -1;
+        }
+        arrayPiezas.datos = nuevoArray;
+        arrayPiezas.capacidad = nuevaCapacidad;
+        generarSystemLog(id_usuario, "Redimensionar Array", tipoPieza, tipoPieza, INFO, 1,
+                         "UsuarioDAO", "guardarPiezaArray", HTTP_OK);
+    }
+
+    arrayPiezas.datos[arrayPiezas.tamanno] = pieza;
+    arrayPiezas.tamanno++;
+    arrayPiezas.id_usuario = id_usuario;
+    generarSystemLog(id_usuario, "Guardar Pieza", tipoPieza, "Pieza", INFO, 1,
+                     "UsuarioDAO", "guardarPiezaArray", HTTP_CREATED);
+    return 1;
+}
+
+int guardarTicket(Ticket ticket) {
+    int usuario_id = ticket.usuario ? ticket.usuario->id_usuario : 0;
+
+    if (arrayTickets.tamanno >= arrayTickets.capacidad) {
+        const int nuevaCapacidad = arrayTickets.capacidad == 0 ? 1 : arrayTickets.capacidad * 2;
+        Ticket *nuevoArray = realloc(arrayTickets.datos, nuevaCapacidad * sizeof(Ticket));
+        if (nuevoArray == NULL) {
+            generarSystemLog(usuario_id, "Redimensionar Array", "Ticket", "Ticket", ERROR, 0,
+                             "UsuarioDAO", "guardarTicket", HTTP_INTERNAL_SERVER_ERROR);
+            printf("Error al redimensionar el array de tickets.\n");
+            return -1;
+        }
+        arrayTickets.datos = nuevoArray;
+        arrayTickets.capacidad = nuevaCapacidad;
+        generarSystemLog(usuario_id, "Redimensionar Array", "Ticket", "Ticket", INFO, 1,
+                         "UsuarioDAO", "guardarTicket", HTTP_OK);
+    }
+
+    arrayTickets.datos[arrayTickets.tamanno] = ticket;
+    arrayTickets.tamanno++;
+    generarSystemLog(usuario_id, "Guardar Ticket", "Ticket", "Ticket", INFO, 1,
+                     "UsuarioDAO", "guardarTicket", HTTP_CREATED);
+    return 1;
+}
+
+
+Ticket inicializarTicket(Usuario *usuario, Motor *motor, char *detalles, char *detalles2) {
+    Ticket ticket = {0};
+    if (usuario != NULL) ticket.usuario = usuario;
+    if (motor != NULL && usuario != NULL) ticket.usuario->motor = motor;
+    ticket.detalles = detalles;
+    ticket.detalles2 = detalles2;
+
+    return ticket;
+}
+
+
+Usuario *obtenerUsuarioByIdUsuario(const int id) {
+    for (int i = 0; i < arrayUsuarios.tamanno; i++) {
+        if (arrayUsuarios.datos[i].id_usuario == id) {
+            return &arrayUsuarios.datos[i];
+        }
+    }
+
+    mvprintw(12, 5, "Usuario no encontrado, no corresponde a un numero de ID, o Esta Eliminado");
+    getch();
+    return NULL;
+}
+
+Motor *obtenerMotorByIdUsuario(const int id) {
+    for (int i = 0; i < arrayMotoresUsuarios.tamanno; i++) {
+        Motor *motor = (Motor *) arrayMotoresUsuarios.datos[i];
+        if (motor->id_usuario == id) {
+            return motor;
+        }
+    }
+
+    clear();
+    mvprintw(12, 10, "X Motor no encontrado o ID de usuario inválido");
+    getch();
+    return NULL;
+}
+
+Motor *obtenerMotorPorNumeroDeSerie(const ArrayPiezas *array, const char *numeroDeSerieMotor) {
+    for (int i = 0; i < array->tamanno; i++) {
+        Motor *motor = (Motor *) array->datos[i];
+        if (strEquals(motor->numeroSerie, numeroDeSerieMotor)) {
+            return motor;
+        }
+    }
+    clear();
+    mvprintw(12, 10, "El número de serie ingresado no coincide con ningún registro.");
+    getch();
+    return NULL;
+}
+
+
+Ticket *obtenerTicketByIdUsuario(int id_usuario) {
+    for (int i = 0; i < arrayTickets.tamanno; i++) {
+        if (arrayTickets.datos[i].usuario->id_usuario == id_usuario) {
+            return &arrayTickets.datos[i];
+        }
+    }
+
+    return NULL;
+}
+
+int obtenerIdSiExisteUsuario(const int POS_Y, const int POS_X) {
+    const int id_usuario = leerIntSeguro(POS_Y, POS_X, 10000, "Ingrese Id Usuario: ");
+    RETURN_IF_ESC(id_usuario);
+    const Usuario *usuario = obtenerUsuarioByIdUsuario(id_usuario);
+    if (usuario == NULL || usuario->activo == 0) {
+        return -1;
+    }
+    return id_usuario;
+}
+======================================================
+//USuario DTO.h
+#include "UsuarioDTO.h"
+
+#include <curses.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "LogicaNegocio.h"
+#include "UserInterface.h"
+
+#include "SystemLogs.h"
+#include "Util.h"
+int id_UsuarioGlobal = 0;
+int id_piezaGlobal = 0;
+int id_unicoLogs = 0;
+
+ArrayUsuarios arrayUsuarios = {0};
+ArrayTickets arrayTickets = {0};
+ArrayList array_list;
+ArrayPiezas arrayMotoresPrecargados = {0};
+ArrayPiezas arrayMotoresUsuarios = {0};
+ArrayPiezas arrayPiezas = {0};
+ArrayPiezasAlmacen arrayPiezasAlmacen = {0};
+Almacen almacenBaseDatos = {0};
+ArrayLogs arrayLogs = {0};
+
+Usuario inicializarUsuario(const int id_usuario, char *folio, const char *nombreUsuario, const char *apellido,
+                           long long celular, const char *email, const char *contacto) {
+    Usuario usr = {0};
+    usr.id_usuario = id_usuario;
+    asignString(usr.folio, folio, sizeof(usr.folio));
+    asignString(usr.nombreUsuario, nombreUsuario, sizeof(usr.nombreUsuario));
+    asignString(usr.apellido, apellido, sizeof(usr.apellido));
+    usr.celular = celular;
+    asignString(usr.email, email, sizeof(usr.email));
+    asignString(usr.contacto, contacto, sizeof(usr.contacto));
+
+    usr.motor = NULL;
+    usr.activo = 1;
+    setIdUsuarioLogico(getIdUsuarioLogico() + 1);
+
+    generarSystemLog(id_usuario, "Inicializar Usuario", "Usuario", folio, INFO, 1,
+                     "UsuarioDTO.c", "inicializarUsuario", HTTP_CREATED);
+
+    return usr;
+}
+
+
+Motor *inicializarMotor(Paramsmotor params, const int id_usuario, const int id_pieza, void *tipoDePieza,
+                        const int tipoPieza) {
+    Motor *pz = (Motor *) malloc(sizeof(Motor));
+    if (pz == NULL) {
+        generarSystemLog(id_usuario, "Inicializar Motor", "Motor", params.numeroSerie, ERROR, 0,
+                         "UsuarioDTO.c", "inicializarMotor", HTTP_INTERNAL_SERVER_ERROR);
+        perror("Error al asignar memoria para Motor");
+        exit(EXIT_FAILURE);
+    }
+
+    pz->id_usuario = id_usuario;
+    pz->id_pieza = id_pieza;
+    pz->tipoCombustible = params.tipoCombustible;
+    asignString(pz->material, params.material, sizeof(pz->material));
+    pz->modelo = params.modelo;
+    pz->fabricante = params.fabricante;
+    pz->carroAsociado = params.carroAsociado;
+    pz->numeroSerie = params.numeroSerie;
+    pz->anno = params.anno;
+    pz->cilindrada = params.cilindrada;
+    pz->compresionOriginal = params.compresionOriginal;
+    pz->medidaOriginal = params.medidaOriginal;
+    pz->medidaActual = params.medidaActual;
+    pz->culata = NULL;
+    pz->monoblock = NULL;
+
+    generarSystemLog(id_usuario, "Inicializar Motor", "Motor", params.numeroSerie, INFO, 1,
+                     "UsuarioDTO.c", "inicializarMotor", HTTP_CREATED);
+
+    return pz;
+}
+
+Culata *inicializarCulata(int id_pieza, int numValvulas, double presionPrueba, int fisuras,
+                          float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario,
+                          int estadoPieza) {
+    Culata *culata = malloc(sizeof(Culata));
+    if (culata == NULL) {
+        generarSystemLog(id_usuario, "Inicializar Culata", "Culata", "UNKNOWN", ERROR, 0,
+                         "UsuarioDTO.c", "inicializarCulata", HTTP_INTERNAL_SERVER_ERROR);
+        perror("Error al asignar memoria para Culata");
+        exit(EXIT_FAILURE);
+    }
+
+    culata->id_usuario = id_usuario;
+    culata->id_pieza = id_pieza;
+    culata->numValvulas = numValvulas;
+    culata->presionPrueba = presionPrueba;
+    culata->tieneFisuras = fisuras;
+    culata->alturaOriginal = alturaOriginal;
+    culata->alturaActual = alturaActual;
+    culata->alturaMinima = alturaMinima;
+    culata->estadoTemporalPieza = -1;
+    culata->operacionesMotor = estadoPieza;
+    setIdPiezaGlobal(getIdPiezaGlobal() + 1);
+
+    char id_objeto[50];
+    snprintf(id_objeto, sizeof(id_objeto), "CULATA_%d", id_pieza);
+
+    generarSystemLog(id_usuario, "Inicializar Culata", "Culata", id_objeto, INFO, 1,
+                     "UsuarioDTO.c", "inicializarCulata", HTTP_CREATED);
+
+    return culata;
+}
+
+Monoblock *inicializarMonoblock(int id_pieza, int id_usuario, int numCilindros, const float *diametroCilindro,
+                                const float *conicidad_max, int num_bancadas, const float *diametro_bancadas,
+                                const float *desalineacion_bancadas,
+                                float ovalizacion_max, float planitud_superficie, int flags, char *numero_serie,
+                                char *observaciones,
+                                int estado_diagnostico) {
+    Monoblock *mono = malloc(sizeof(Monoblock));
+    if (!mono) {
+        perror("Fallo al asignar memoria para Monoblock");
+        exit(EXIT_FAILURE);
+    }
+
+    mono->id_pieza = id_pieza;
+    mono->id_usuario = id_usuario;
+    mono->numCilindros = numCilindros;
+    mono->num_bancadas = num_bancadas;
+    mono->ovalizacion_max = ovalizacion_max;
+    mono->planitud_superficie = planitud_superficie;
+    mono->flags = flags;
+    mono->estado_diagnostico = estado_diagnostico;
+
+    mono->diametroCilindro = malloc(numCilindros * sizeof(float));
+    mono->conicidad_max = malloc(numCilindros * sizeof(float));
+    mono->desalineacion_bancadas = malloc(numCilindros * sizeof(float));
+    mono->diametro_bancadas = malloc(num_bancadas * sizeof(float));
+
+    if (!mono->diametroCilindro || !mono->conicidad_max || !mono->diametro_bancadas || !mono->desalineacion_bancadas) {
+        perror("Fallo en malloc de arrays");
+        free(mono);
+        exit(EXIT_FAILURE);
+    }
+
+    memcpy(mono->diametroCilindro, diametroCilindro, numCilindros * sizeof(float));
+    memcpy(mono->conicidad_max, conicidad_max, numCilindros * sizeof(float));
+    memcpy(mono->diametro_bancadas, diametro_bancadas, num_bancadas * sizeof(float));
+    memcpy(mono->desalineacion_bancadas, desalineacion_bancadas, num_bancadas * sizeof(float));
+
+    mono->numero_serie = numero_serie;
+    mono->observaciones = observaciones;
+
+    if (!mono->numero_serie || !mono->observaciones) {
+        perror("Fallo en malloc de cadenas");
+        free(mono);
+        exit(EXIT_FAILURE);
+    }
+
+    return mono;
+}
+
+
+void setIdUsuarioLogico(const int nuevoId) {
+    id_UsuarioGlobal = nuevoId;
+};
+
+int getIdUsuarioLogico() {
+    return id_UsuarioGlobal;
+};
+
+void setIdLog(const int id) {
+    id_unicoLogs = id;
+}
+
+int getIdLog() {
+    return id_unicoLogs;
+}
+
+void setIdPiezaGlobal(const int id) {
+    id_piezaGlobal = id;
+}
+
+int getIdPiezaGlobal() {
+    return id_piezaGlobal;
+}
+
+
+Motor *clonarMotor(Motor *original, int nuevoIdUsuario) {
+    if (original == NULL) {
+        generarSystemLog(nuevoIdUsuario, "Clonar Motor", "Motor", "NULL", ERROR, 0,
+                         "UsuarioDTO.c", "clonarMotor", HTTP_UNPROCESSABLE_ENTITY);
+        return NULL;
+    }
+
+    Motor *copia = malloc(sizeof(Motor));
+    if (!copia) {
+        generarSystemLog(nuevoIdUsuario, "Clonar Motor", "Motor", "NULL", ERROR, 0,
+                         "UsuarioDTO.c", "clonarMotor", HTTP_INTERNAL_SERVER_ERROR);
+        return NULL;
+    }
+
+    *copia = *original;
+    copia->modelo = strdup(original->modelo);
+    copia->fabricante = strdup(original->fabricante);
+    copia->carroAsociado = strdup(original->carroAsociado);
+    asignString(copia->material, original->material, sizeof(copia->material));
+    copia->numeroSerie = strdup(original->numeroSerie);
+    copia->id_usuario = nuevoIdUsuario;
+    copia->culata = NULL;
+
+    generarSystemLog(nuevoIdUsuario, "Clonar Motor", "Motor", copia->numeroSerie, INFO, 1,
+                     "UsuarioDTO.c", "clonarMotor", HTTP_CREATED);
+
+    return copia;
+}
+
+void liberarMonoblock(Monoblock *mono) {
+    if (!mono) return;
+
+    free(mono->diametroCilindro);
+    free(mono->conicidad_max);
+    free(mono->desalineacion_bancadas);
+    free(mono->diametro_bancadas);
+    free(mono->numero_serie);
+    free(mono->observaciones);
+    free(mono);
+}
+======================================================
+//UsuarioDTO
+#ifndef NEGOCIODTO_H
+#define NEGOCIODTO_H
+#include <stddef.h>
+
+
+#define FLAG_CILINDROS_OK       0x01
+#define FLAG_BANCADAS_OK        0x02
+#define FLAG_FISURAS_DETECTADAS 0x04
+#define FLAG_SUPERFICIE_PLANA   0x08
+
+
+#define IS_CILINDROS_OK(flags)    ((flags) & FLAG_CILINDROS_OK)
+#define IS_BANCADAS_OK(flags)     ((flags) & FLAG_BANCADAS_OK)
+#define IS_FISURAS_DETECTADAS(flags) ((flags) & FLAG_FISURAS_DETECTADAS)
+#define IS_SUPERFICIE_PLANA(flags) ((flags) & FLAG_SUPERFICIE_PLANA)
+
+
+typedef enum { MONOBLOCK = 0, CULATA = 1 } TipoPieza;
+
+typedef enum { GASOLINA = 0, DIESEL = 1, HIBRIDO = 2 } TipoCombustible;
+
+
+typedef struct {
+    int id_pieza;
+    int id_usuario;
+    int numValvulas;
+    double presionPrueba;
+    int tieneFisuras;
+
+    float desgaste;
+    float tolerancia;
+
+    float alturaOriginal;
+    float alturaActual;
+    float alturaMinima;
+
+
+    int estadoTemporalPieza;
+
+
+    int operacionesMotor;
+} Culata;
+
+typedef struct {
+    int id_pieza;
+    int id_usuario;
+    int numCilindros;
+    float *diametroCilindro;
+    int num_bancadas;
+    float *diametro_bancadas;
+
+    float ovalizacion_max;
+    float *conicidad_max;
+    float *desalineacion_bancadas;
+    float planitud_superficie;
+    int flags;
+    char *numero_serie;
+    char *observaciones;
+    int estado_diagnostico;
+    int operacionesMonoblock;
+    int estadoTemporalPieza;
+    int operacionesMotor;
+} Monoblock;
+
+typedef struct {
+    int id_pieza;
+    int id_usuario;
+
+    const char *modelo;
+    const char *fabricante;
+    int anno;
+    char *carroAsociado;
+    float cilindrada;
+    float compresionOriginal;
+    char *numeroSerie;
+    TipoCombustible tipoCombustible;
+
+    Culata *culata;
+    Monoblock *monoblock;
+
+    char material[30];
+
+
+    float medidaOriginal;
+    float medidaActual;
+} Motor;
+
+
+typedef struct {
+    Motor *motor;
+    int id_usuario;
+    char folio[12];
+    char nombreUsuario[20];
+    char apellido[20];
+    long long celular;
+    char email[30];
+    char contacto[20];
+    long long numeroContacto;
+    int activo;
+} Usuario;
+
+typedef struct {
+    Usuario *usuario;
+
+    int lavado;
+    char *detalles;
+    char *detalles2;
+} Ticket;
+
+
+typedef struct {
+    Usuario *datos;
+    int tamanno;
+    int capacidad;
+} ArrayUsuarios;
+
+typedef struct {
+    Ticket *datos;
+    int tamanno;
+    int capacidad;
+} ArrayTickets;
+
+typedef struct {
+    void **datos;
+    int id_usuario;
+    int tamanno;
+    int capacidad;
+} ArrayPiezas;
+
+
+typedef struct {
+    void **data;
+    size_t size;
+    size_t capacidad;
+} ArrayList;
+
+
+typedef struct {
+    int id_pieza;
+    int id_usuario;
+    const char *modelo;
+    const char *fabricante;
+    char *carroAsociado;
+    int anno;
+    float cilindrada;
+    float compresionOriginal;
+    char *numeroSerie;
+    TipoCombustible tipoCombustible;
+
+
+    char *material;
+
+    float medidaOriginal;
+    float medidaActual;
+} Paramsmotor;
+
+
+typedef struct {
+} Proveedor;
+
+
+typedef struct {
+} Equipo;
+
+
+typedef struct {
+    char id_pieza[20];
+    char *id_unicoPieza;
+    char tipo[50];
+    float tolerancia;
+    char material[20];
+    char estadoPieza[20];
+    char compatibilidad[100];
+    int cantidad;
+} PiezaAlmacen;
+
+typedef struct {
+    char *id_herramienta;
+    char *tipo;
+    int usos;
+    char *compatibilidad;
+    float rango;
+    char *material;
+    int cantidad;
+} Herramienta;
+
+typedef struct {
+    PiezaAlmacen *datos;
+    int tamanno;
+    int capacidad;
+} ArrayPiezasAlmacen;
+
+typedef struct {
+    Herramienta *datos;
+    int tamanno;
+    int capacidad;
+} ArrayHerramientasAlmacen;
+
+typedef struct {
+    ArrayTickets *array_list;
+
+
+    ArrayUsuarios *array_usuarios;
+
+    ArrayPiezasAlmacen *pieza_almacen;
+} Almacen;
+
+
+Usuario inicializarUsuario(int id_usuario, char *folio, const char *nombreUsuario, const char *apellido,
+                           long long celular, const char *email, const char *contacto);
+
+Motor *inicializarMotor(Paramsmotor paramsmotor, int id_usuario, int id_pieza, void *tipoDePieza, int numTipoDepieza);
+
+Culata *inicializarCulata(int id_pieza, int numValvulas, double presionPrueba, int fisuras,
+                          float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario,
+                          int estadoPieza);
+
+Monoblock *inicializarMonoblock(int id_pieza, int id_usuario, int numCilindros, const float *diametroCilindro,
+                                const float *conicidad_max, int num_bancadas, const float *diametro_bancadas,
+                                const float *desalineacion_bancadas,
+                                float ovalizacion_max, float planitud_superficie, int flags, char *numero_serie,
+                                char *observaciones,
+                                int estado_diagnostico);
+
+Motor *clonarMotor(Motor *original, int nuevoIdUsuario);
+
+void setIdUsuarioLogico(int nuevoId);
+
+int getIdUsuarioLogico();
+
+void setIdLog(int id);
+
+int getIdLog();
+
+void setIdPiezaGlobal(int id);
+
+int getIdPiezaGlobal();
+
+extern ArrayTickets arrayTickets;
+extern ArrayUsuarios arrayUsuarios;
+extern ArrayPiezas arrayMotoresUsuarios;
+extern ArrayPiezas arrayMotoresPrecargados;
+extern ArrayPiezas arrayPiezas;
+extern ArrayPiezasAlmacen arrayPiezasAlmacen;
+extern Almacen almacenBaseDatos;
+
+
+void mostrarUsuario(Usuario usr);
+
+
+void listarNumerosDeSerieMotores();
+
+void liberarMotor(Motor *pz);
+
+
+#define CANTIDAD_PIEZASPRECARGADAS 5
+extern PiezaAlmacen componentes_motor[];
+extern PiezaAlmacen componentes_culata[];
+extern PiezaAlmacen componentes_monoblock[];
+
+#endif
+======================================================
+//Pago
+#include <stdio.h>
+#include <unistd.h>
+#include <curses.h>
+#include <stdlib.h>
+#include <time.h>
+
+#include "UsuarioDTO.h"
+#include "Util.h"
+#include "LogicaNegocio.h"
+#include "UserInterface.h"
+
+
+const float precioRectificadoCulata = 850.0f;
+const float precioReconstruccionCulata = 1200.f;
+const float precioRectificacionMonoblock = 1100.0f;
+const float precioReconstruccionMonoblock = 1500.0f;
+const float precioPruebaPresion = 350.0f;
+const float precioLavado = 160.0f;
+const float iva = 0.16f;
+
+
+int pago() {
+    const int id_usuario = obtenerIdSiExisteUsuario(10, 10);
+    RETURN_IF_ESC(id_usuario);
+
+    clear();
+    Motor *motor = obtenerMotorByIdUsuario(id_usuario);
+    if (!motor) {
+        mvprintw(10, 10, "No se encontró ninguna pieza asociada al usuario con ID %d", id_usuario);
+        getch();
+        return -1;
+    }
+    if (motor->culata == NULL && motor->monoblock == NULL) {
+        imprimirMensaje(10, 10, "ESTE MOTOR NO TIENE ASIGNADO NI CULATA NI MONOBLOCK"
+                        " -> No puedes crear tickets");
+        getch();
+        return -1;
+    }
+
+    Ticket ticket = inicializarTicket(obtenerUsuarioByIdUsuario(id_usuario), motor, NULL, NULL);
+    if (obtenerTicketByIdUsuario(id_usuario) == NULL) {
+        int operacion = 0;
+        if (motor->culata != NULL && motor->culata->operacionesMotor != -1 && motor->culata->operacionesMotor != -2) {
+            operacion = 1;
+        } else if (motor->monoblock != NULL && motor->monoblock->operacionesMotor != -1 && motor->monoblock->
+                   operacionesMotor != -2) {
+            operacion = 1;
+        }
+
+        if (!operacion) {
+            clear();
+            const char *estado_texto = "No disponible";
+            if (motor->culata != NULL) {
+                estado_texto = estadoPiezaTexto(motor->culata->operacionesMotor);
+            } else if (motor->monoblock != NULL) {
+                estado_texto = estadoPiezaTexto(motor->monoblock->operacionesMotor);
+            }
+            mvprintw(5, 5, "El estado actual de la pieza es: %s\nPor favor, ve al apartado de Operaciones en Servicio",
+                     estado_texto);
+            getch();
+            return -1;
+        }
+
+        if (guardarTicket(ticket) != 1) {
+            imprimirMensaje(20, 10, "X Error al crear los ticket's. Inténtelo de nuevo.");
+            getch();
+            return -1;
+        }
+
+        mvprintw(5, 10, "¡Ordenes de pago creadas correctamente - Presione enter !");
+        getch();
+    }
+
+    const int opcUsr = mostrarMenu(14, "Por favor selecciona una opción");
+    RETURN_IF_ESC(opcUsr);
+
+    char *nombreArchivo = NULL;
+    const char *nombresOperaciones[] = {"Nota", "Ticket", "Factura"};
+    FILE *archivo = NULL;
+
+    switch (opcUsr) {
+        case 0: {
+            nombreArchivo = obtenerNombreArchivo(nombresOperaciones[0]);
+            archivo = fopen(nombreArchivo, "w");
+            RETURN_IF_ESC(generarNota(id_usuario, archivo));
+            break;
+        }
+        case 1: {
+            nombreArchivo = obtenerNombreArchivo(nombresOperaciones[1]);
+            archivo = fopen(nombreArchivo, "w");
+            RETURN_IF_ESC(generarTicket(id_usuario, archivo));
+            break;
+        }
+        case 2: {
+            nombreArchivo = obtenerNombreArchivo(nombresOperaciones[2]);
+            archivo = fopen(nombreArchivo, "w");
+            RETURN_IF_ESC(generarFactura(id_usuario, archivo));
+            break;
+        }
+        case 3: {
+            clear();
+            imprimirDetallesTicket(id_usuario, 1);
+            break;
+        }
+        default: {
+            mvprintw(10, 10, "Opción no válida, Intente de nuevo -> Ticket");
+            clear();
+            getch();
+            break;
+        }
+    }
+
+    if (archivo != NULL) fclose(archivo);
+    if (nombreArchivo != NULL) free(nombreArchivo);
+
+    return 0;
+}
+
+int generarNota(int id_usuario, FILE *archivo) {
+    if (!archivo) return -1;
+
+    Ticket *ticket = obtenerTicketByIdUsuario(id_usuario);
+    if (ticket == NULL) {
+        fprintf(archivo, "==============================================\n");
+        fprintf(archivo, "ERROR: Ticket no encontrado\n");
+        fprintf(archivo, "==============================================\n");
+        fprintf(archivo, "No existe un ticket vinculado al ID ingresado.\n");
+        return -1;
+    }
+
+    Usuario *usr = ticket->usuario;
+    if (usr == NULL) {
+        fprintf(archivo, "Usuario no asignado. No se puede generar la nota.\n");
+        mvprintw(10, 10, "Error: Usuario no asignado para el ticket.");
+        getch();
+        return -1;
+    }
+
+    Motor *motor = usr->motor;
+    if (motor == NULL) {
+        fprintf(archivo, "Motor no asignado. No se puede generar la nota.\n");
+        mvprintw(10, 10, "Error: Motor no asignado para el usuario.");
+        getch();
+        return -1;
+    }
+
+
+    if (ticket->detalles == NULL && ticket->detalles2 == NULL) {
+        char *detalles = leerStringSeguro(
+            10, 5, 255, "Ingrese detalles de la operación para OPCION NOTA -MAX 255 & MIN 1 caracter-");
+        char *detalles2 = leerStringSeguro(13, 5, 255, "Ingrese detalles adicionales -MAX 255 & MIN 1 caracter-");
+        if (detalles == NULL || detalles2 == NULL) {
+            fprintf(archivo, "Ocurrió un error al crear la nota, intente de nuevo\n");
+            mvprintw(10, 10, "Error: No se pudieron ingresar los detalles de la nota.");
+            getch();
+            free(detalles);
+            free(detalles2);
+            return -1;
+        }
+        ticket->detalles = detalles;
+        ticket->detalles2 = detalles2;
+    }
+
+
+    fprintf(archivo, "==============================================\n");
+    fprintf(archivo, "NOTA DE OPERACIÓN\n");
+    fprintf(archivo, "==============================================\n");
+    fprintf(archivo, "Le Atendió: %s\n", empleado ? empleado : "No especificado");
+    fprintf(archivo, "ID Usuario: %d\n\n", usr->id_usuario);
+
+    fprintf(archivo, "---------------- DATOS DEL CLIENTE ----------------\n");
+    fprintf(archivo, "Nombre: %s %s\n", usr->nombreUsuario, usr->apellido);
+    fprintf(archivo, "Folio: %s\n", usr->folio);
+
+    fprintf(archivo, "\n---------------- DATOS DEL MOTOR -----------------\n");
+    fprintf(archivo, "Fabricante: %s\n", motor->fabricante ? motor->fabricante : "No disponible");
+    fprintf(archivo, "Número de Serie: %s\n", motor->numeroSerie ? motor->numeroSerie : "No disponible");
+    fprintf(archivo, "Material: %s\n", motor->material ? motor->material : "No disponible");
+    fprintf(archivo, "Modelo: %s\n", motor->modelo ? motor->modelo : "No disponible");
+
+    fprintf(archivo, "\n---------------- DETALLES DE LA OPERACIÓN --------\n");
+    fprintf(archivo, "Detalles:\n");
+    imprimirTextoMultilineaArchivo(archivo, ticket->detalles ? ticket->detalles : "No proporcionado", 60);
+    fprintf(archivo, "\nDetalles Adicionales:\n");
+    imprimirTextoMultilineaArchivo(archivo, ticket->detalles2 ? ticket->detalles2 : "No proporcionado", 60);
+    fprintf(archivo, "==============================================\n");
+
+    return 1;
+}
+
+int generarTicket(int id_usuario, FILE *archivo) {
+    if (!archivo) return -1;
+
+    Ticket *ticket = obtenerTicketByIdUsuario(id_usuario);
+    if (ticket == NULL) {
+        fprintf(archivo, "==============================================\n");
+        fprintf(archivo, "ERROR: Ticket no encontrado\n");
+        fprintf(archivo, "==============================================\n");
+        fprintf(archivo, "No existe un ticket vinculado al ID ingresado.\n");
+        return -1;
+    }
+
+    Usuario *usr = ticket->usuario;
+    if (usr == NULL) {
+        fprintf(archivo, "Usuario no asignado. No se puede generar el ticket.\n");
+        return -1;
+    }
+
+    Motor *motor = usr->motor;
+    if (motor == NULL) {
+        fprintf(archivo, "Motor no asignado. No se puede generar el ticket.\n");
+        return -1;
+    }
+
+
+    float precioCulata = 0.0f;
+    float precioMonoblock = 0.0f;
+    const char *estadoCulata = "No asignada";
+    const char *estadoMonoblock = "No asignada";
+
+
+    if (motor->culata != NULL) {
+        if (motor->culata->operacionesMotor == 1) {
+            precioCulata = precioRectificadoCulata;
+            estadoCulata = estadoPiezaTexto(motor->culata->operacionesMotor);
+        } else if (motor->culata->operacionesMotor == 2) {
+            precioCulata = precioReconstruccionCulata;
+            estadoCulata = estadoPiezaTexto(motor->culata->operacionesMotor);
+        }
+    }
+
+
+    if (motor->monoblock != NULL) {
+        if (motor->monoblock->estado_diagnostico == 1) {
+            precioMonoblock = precioRectificacionMonoblock;
+            estadoMonoblock = estadoPiezaTexto(motor->monoblock->operacionesMonoblock);
+        } else if (motor->monoblock->estado_diagnostico == 2) {
+            precioMonoblock = precioReconstruccionMonoblock;
+            estadoMonoblock = estadoPiezaTexto(motor->monoblock->operacionesMonoblock);
+        }
+    }
+
+    const float precioFinalPruebaPresion = (motor->culata != NULL) ? precioPruebaPresion : 0.0f;
+    const float precioFinalLavado = ticket->lavado ? precioLavado : 0.0f;
+    const float subtotal = precioCulata + precioMonoblock + precioFinalPruebaPresion + precioFinalLavado;
+    const float impuesto = subtotal * iva;
+    const float total = subtotal + impuesto;
+
+
+    fprintf(archivo, "==================================================\n");
+    fprintf(archivo, "TICKET DE SERVICIO - Le Atendió: %s\n", empleado);
+    fprintf(archivo, "ID USUARIO: %d\n", usr->id_usuario);
+    fprintf(archivo, "==================================================\n");
+    fprintf(archivo, "Cliente: %s %s\n", usr->nombreUsuario, usr->apellido);
+    fprintf(archivo, "Folio: %s\n", usr->folio);
+    fprintf(archivo, "Contacto: %s\n", usr->contacto);
+    fprintf(archivo, "Email: %s\n", usr->email);
+    fprintf(archivo, "Celular: %lld\n\n", usr->celular);
+
+    fprintf(archivo, "---------------- DATOS DEL MOTOR -----------------\n");
+    fprintf(archivo, "Nombre: %s\n", motor->modelo);
+    fprintf(archivo, "Fabricante: %s\n", motor->fabricante);
+    fprintf(archivo, "Serie: %s\n", motor->numeroSerie);
+    fprintf(archivo, "Combustible: %s\n", tipoCombustibleToStr(motor->tipoCombustible));
+    fprintf(archivo, "Material: %s\n", motor->material);
+    fprintf(archivo, "Medida Original: %.2f mm\n", motor->medidaOriginal);
+    fprintf(archivo, "Medida Actual: %.2f mm\n", motor->medidaActual);
+
+    fprintf(archivo, "\n---------------- DATOS DE CULATA -----------------\n");
+    if (motor->culata != NULL) {
+        fprintf(archivo, "Tipo: Culata\n");
+        fprintf(archivo, "Estado: %s\n", estadoCulata);
+        fprintf(archivo, "N° Válvulas: %d\n", motor->culata->numValvulas);
+        fprintf(archivo, "Presión Prueba: %.2f bar\n", motor->culata->presionPrueba);
+        fprintf(archivo, "Fisuras: %s\n", motor->culata->tieneFisuras ? "Sí" : "No");
+    } else {
+        fprintf(archivo, "Culata: No asignada\n");
+    }
+
+    fprintf(archivo, "\n---------------- DATOS DE MONOBLOCK --------------\n");
+    if (motor->monoblock != NULL) {
+        fprintf(archivo, "Tipo: Monoblock\n");
+        fprintf(archivo, "Estado: %s\n", estadoMonoblock);
+        fprintf(archivo, "N° Cilindros: %d\n", motor->monoblock->numCilindros);
+        fprintf(archivo, "N° Serie: %s\n", motor->monoblock->numero_serie);
+        fprintf(archivo, "Bancadas: %d\n", motor->monoblock->num_bancadas);
+        fprintf(archivo, "Planitud Superficie: %.2f mm\n", motor->monoblock->planitud_superficie);
+    } else {
+        fprintf(archivo, "Monoblock: No asignado\n");
+    }
+
+    fprintf(archivo, "\n----------------- RESUMEN DE COSTOS ------------------\n");
+    if (motor->culata != NULL) {
+        fprintf(archivo, "Trabajo en Culata (%s): $ %.2f\n", estadoCulata, precioCulata);
+    }
+    if (motor->monoblock != NULL) {
+        fprintf(archivo, "Trabajo en Monoblock (%s): $ %.2f\n", estadoMonoblock, precioMonoblock);
+    }
+    fprintf(archivo, "Prueba de Presión: $ %.2f\n", precioFinalPruebaPresion);
+    fprintf(archivo, "Lavado de motor: $ %.2f\n", precioFinalLavado);
+    fprintf(archivo, "------------------------------------------------------\n");
+    fprintf(archivo, "Subtotal: $ %.2f\n", subtotal);
+    fprintf(archivo, "IVA (%.0f%%): $ %.2f\n", iva * 100, impuesto);
+    fprintf(archivo, "TOTAL: $ %.2f\n", total);
+    fprintf(archivo, "==================================================\n");
+
+    return 1;
+}
+
+int generarFactura(int id_usuario, FILE *archivo) {
+    if (!archivo) return -1;
+
+    Ticket *ticket = obtenerTicketByIdUsuario(id_usuario);
+    if (ticket == NULL) {
+        fprintf(archivo, "==================================================\n");
+        fprintf(archivo, "FACTURA NO DISPONIBLE: Ticket no encontrado\n");
+        fprintf(archivo, "==================================================\n");
+        fprintf(archivo, "No existe información fiscal asociada al usuario.\n");
+        mvprintw(10, 10, "Error: No se encontró ticket para el usuario ID %d", id_usuario);
+        getch();
+        return -1;
+    }
+
+    Usuario *usr = ticket->usuario;
+    if (usr == NULL) {
+        fprintf(archivo, "Usuario no asignado. No se puede facturar.\n");
+        mvprintw(10, 10, "Error: Usuario no asignado para el ticket.");
+        getch();
+        return -1;
+    }
+
+    Motor *motor = usr->motor;
+    if (motor == NULL) {
+        fprintf(archivo, "Motor no asignado al usuario. No se puede facturar.\n");
+        mvprintw(10, 10, "Error: Motor no asignado para el usuario.");
+        getch();
+        return -1;
+    }
+
+    time_t t = time(NULL);
+    struct tm fecha = *localtime(&t);
+
+    float precioCulata = 0.0f;
+    float precioMonoblock = 0.0f;
+    const char *estadoCulata = "No asignada";
+    const char *estadoMonoblock = "No asignada";
+
+    if (motor->culata != NULL) {
+        if (motor->culata->operacionesMotor == 1) {
+            precioCulata = precioRectificadoCulata;
+            estadoCulata = estadoPiezaTexto(motor->culata->operacionesMotor);
+        } else if (motor->culata->operacionesMotor == 2) {
+            precioCulata = precioReconstruccionCulata;
+            estadoCulata = estadoPiezaTexto(motor->culata->operacionesMotor);
+        }
+    }
+
+    if (motor->monoblock != NULL) {
+        if (motor->monoblock->estado_diagnostico == 1) {
+            precioMonoblock = precioRectificacionMonoblock;
+            estadoMonoblock = estadoPiezaTexto(motor->monoblock->estado_diagnostico);
+        } else if (motor->monoblock->estado_diagnostico == 2) {
+            precioMonoblock = precioReconstruccionMonoblock;
+            estadoMonoblock = estadoPiezaTexto(motor->monoblock->estado_diagnostico);
+        }
+    }
+
+    const float precioFinalPruebaPresion = (motor->culata != NULL) ? precioPruebaPresion : 0.0f;
+    const float precioFinalLavado = ticket->lavado ? precioLavado : 0.0f;
+    const float subtotal = precioCulata + precioMonoblock + precioFinalPruebaPresion + precioFinalLavado;
+    const float impuesto = subtotal * iva;
+    const float total = subtotal + impuesto;
+
+    fprintf(archivo, "============================================================\n");
+    fprintf(archivo, "FACTURA ELECTRÓNICA DE SERVICIO AUTOMOTRIZ\n");
+    fprintf(archivo, "============================================================\n");
+    fprintf(archivo, "Folio Interno: %s\n", usr->folio);
+    fprintf(archivo, "Fecha Emisión: %02d/%02d/%04d %02d:%02d\n",
+            fecha.tm_mday, fecha.tm_mon + 1, fecha.tm_year + 1900,
+            fecha.tm_hour, fecha.tm_min);
+    fprintf(archivo, "RFC Cliente: %s\n", "CLI890123XYZ");
+    fprintf(archivo, "Nombre Cliente: %s %s\n", usr->nombreUsuario, usr->apellido);
+    fprintf(archivo, "Correo: %s\n", usr->email);
+
+    fprintf(archivo, "------------------------------------------------------------\n");
+    fprintf(archivo, "Descripción del Servicio:\n");
+
+    if (motor->culata != NULL && motor->culata->operacionesMotor == 1) {
+        fprintf(archivo, "  - Rectificación de culata              $ %.2f\n", precioCulata);
+    } else if (motor->culata != NULL && motor->culata->operacionesMotor == 2) {
+        fprintf(archivo, "  - Reconstrucción de culata             $ %.2f\n", precioCulata);
+    }
+    if (motor->monoblock != NULL && motor->monoblock->estado_diagnostico == 1) {
+        fprintf(archivo, "  - Rectificación de monoblock           $ %.2f\n", precioMonoblock);
+    } else if (motor->monoblock != NULL && motor->monoblock->estado_diagnostico == 2) {
+        fprintf(archivo, "  - Reconstrucción de monoblock          $ %.2f\n", precioMonoblock);
+    }
+    if (motor->culata != NULL) {
+        fprintf(archivo, "  - Prueba de presión en culata          $ %.2f\n", precioFinalPruebaPresion);
+    }
+    if (ticket->lavado) {
+        fprintf(archivo, "  - Lavado general                       $ %.2f\n", precioFinalLavado);
+    }
+    fprintf(archivo, "\n");
+
+    fprintf(archivo, "------------------------------------------------------------\n");
+    fprintf(archivo, "Subtotal:                              $ %.2f\n", subtotal);
+    fprintf(archivo, "IVA (%.0f%%):                          $ %.2f\n", iva * 100, impuesto);
+    fprintf(archivo, "TOTAL A PAGAR:                         $ %.2f\n", total);
+    fprintf(archivo, "============================================================\n");
+    fprintf(archivo, "Condiciones de pago: Contado\n");
+    fprintf(archivo, "Forma de pago: Efectivo / Transferencia\n");
+    fprintf(archivo, "Uso CFDI: G03 - Gastos en general\n");
+    fprintf(archivo, "Método de pago: PUE - Pago en una sola exhibición\n");
+    fprintf(archivo, "============================================================\n");
+    fprintf(archivo, "Gracias por confiar en nuestros servicios.\n");
+
+    return 1;
+}
+
+void imprimirDetallesTicket(int id_usuario, int fila) {
+    mvprintw(fila++, 4, "IMPRIMIR DETALLES TICKET USUARIO ON");
+    mvprintw(fila++, 4, "Tamanno array %d", arrayTickets.tamanno);
+
+    for (int i = 0; i < arrayTickets.tamanno; i++) {
+        if (arrayTickets.datos[i].usuario->id_usuario == id_usuario) {
+            Usuario *usr = arrayTickets.datos[i].usuario;
+
+            mvprintw(fila++, 4, "==============================================");
+            mvprintw(fila++, 10, "INFORMACION DEL USUARIO");
+            mvprintw(fila++, 4, "==============================================");
+            mvprintw(fila++, 2, "ID Usuario: %d", usr->id_usuario);
+            mvprintw(fila++, 2, "Folio: %s", usr->folio);
+            mvprintw(fila++, 2, "Nombre: %s %s", usr->nombreUsuario, usr->apellido);
+            mvprintw(fila++, 2, "Celular: %lld", usr->celular);
+            mvprintw(fila++, 2, "Email: %s", usr->email);
+            mvprintw(fila++, 2, "Contacto: %s", usr->contacto);
+            mvprintw(fila++, 2, "Activo: %s", usr->activo ? "Si" : "No");
+
+            Motor *motor = usr->motor;
+            Culata *culata = usr->motor->culata;
+            Monoblock *monoblock = usr->motor->monoblock;
+
+            if (motor == NULL) {
+                mvprintw(fila++, 2, "Motor: No asignado.");
+                getch();
+                return;
+            }
+
+            imprimirDetallesMotor(motor);
+
+            mvprintw(fila++, 2, "Lavado?: %s", arrayTickets.datos[i].lavado ? "Si" : "No");
+
+            if (motor->culata != NULL) {
+                mvprintw(fila++, 4, "----------- CULATA -----------");
+                mvprintw(fila++, 4, "Numero Valvulas: %d", culata->numValvulas);
+                mvprintw(fila++, 4, "Presion de Prueba: %.2f bar", culata->presionPrueba);
+                mvprintw(fila++, 4, "Fisuras: %s", culata->tieneFisuras ? "Si" : "No");
+                mvprintw(fila++, 2, "Estado de la Pieza: %s", estadoPiezaTexto(culata->operacionesMotor));
+            } else if (motor->monoblock != NULL) {
+                mvprintw(fila++, 4, "---------- MONOBLOCK ---------");
+                mvprintw(fila++, 4, "Numero Cilindros: %d", monoblock->numCilindros);
+
+                mvprintw(fila++, 4, "Ovalizacion: %.2f mm", monoblock->ovalizacion_max);
+
+                mvprintw(fila++, 2, "Estado de la Pieza: %s", estadoPiezaTexto(monoblock->estado_diagnostico));
+            }
+
+            mvprintw(fila++, 4, "==============================================");
+            mvprintw(fila++, 10, "Presiona cualquier tecla para continuar...");
+            getch();
+            return;
+        }
+    }
+}
+
+
+int exportarDetallesTickets(const char *nombreArchivo, FILE *archivo) {
+    if (!archivo) {
+        perror("No se pudo abrir el archivo");
+        return -1;
+    }
+
+    fprintf(archivo, "EXPORTANDO DETALLES DE TODOS LOS TICKETS\n");
+    fprintf(archivo, "Tamaño del array: %d\n\n", arrayTickets.tamanno);
+
+    for (int i = 0; i < arrayTickets.tamanno; i++) {
+        Usuario *usr = arrayTickets.datos[i].usuario;
+        if (!usr) continue;
+
+        Ticket *ticket = obtenerTicketByIdUsuario(usr->id_usuario);
+        if (!ticket) {
+            fprintf(stderr, "ERROR: Ticket no encontrado para el usuario ID %d\n", usr->id_usuario);
+            continue;
+        }
+
+        Motor *motor = usr->motor;
+
+
+        if (!motor) {
+            fprintf(stderr, "ERROR: Motor no asignado para usuario ID %d. No se puede exportar.\n", usr->id_usuario);
+            continue;
+        }
+
+
+        float precioFinalEstadoPieza = 0;
+        if (motor->culata && motor->culata->operacionesMotor == 1) {
+            precioFinalEstadoPieza = precioRectificadoCulata;
+        } else if (motor->culata && motor->culata->operacionesMotor == 2) {
+            precioFinalEstadoPieza = precioReconstruccionCulata;
+        }
+
+        const float precioFinalPruebaPresion = (motor->culata != NULL) ? precioPruebaPresion : 0.0f;
+        const float precioFinalLavado = ticket->lavado ? precioLavado : 0.0f;
+        const float subtotal = precioFinalEstadoPieza + precioFinalPruebaPresion + precioFinalLavado;
+        const float impuesto = subtotal * iva;
+        const float total = subtotal + impuesto;
+
+        fprintf(archivo, "==================================================\n");
+        fprintf(archivo, "TICKET DE SERVICIO - ID USUARIO: %d\n", usr->id_usuario);
+        fprintf(archivo, "==================================================\n");
+
+        fprintf(archivo, "Cliente: %s %s\n", usr->nombreUsuario, usr->apellido);
+        fprintf(archivo, "Folio: %s\n", usr->folio);
+        fprintf(archivo, "Contacto: %s\n", usr->contacto);
+        fprintf(archivo, "Email: %s\n", usr->email);
+        fprintf(archivo, "Celular: %lld\n", usr->celular);
+        fprintf(archivo, "\n");
+
+        fprintf(archivo, "---------------- DATOS DEL MOTOR -----------------\n");
+        fprintf(archivo, "Nombre: %s\n", motor->modelo);
+        fprintf(archivo, "Fabricante: %s\n", motor->fabricante);
+        fprintf(archivo, "Serie: %s\n", motor->numeroSerie);
+        fprintf(archivo, "Combustible: %s\n", tipoCombustibleToStr(motor->tipoCombustible));
+        fprintf(archivo, "Tipo: %s\n", motor->culata != NULL ? "Culata" : "Culata no asignada");
+        fprintf(archivo, "Material: %s\n", motor->material);
+        fprintf(archivo, "Medida Original: %.2f mm\n", motor->medidaOriginal);
+        fprintf(archivo, "Medida Actual: %.2f mm\n", motor->medidaActual);
+        if (motor->culata) {
+            fprintf(archivo, "Estado de la Pieza: %s\n", estadoPiezaTexto(motor->culata->operacionesMotor));
+            fprintf(archivo, "N° Válvulas: %d\n", motor->culata->numValvulas);
+            fprintf(archivo, "Presión Prueba: %.2f bar\n", motor->culata->presionPrueba);
+            fprintf(archivo, "Fisuras: %s\n", motor->culata->tieneFisuras ? "Sí" : "No");
+        }
+
+        fprintf(archivo, "\n----------------- RESUMEN DE COSTOS ------------------\n");
+        if (motor->culata)
+            fprintf(archivo, "Estado de la Pieza: %s\n", estadoPiezaTexto(motor->culata->operacionesMotor));
+        const char *estado = motor->culata ? estadoPiezaTexto(motor->culata->operacionesMotor) : "No definido";
+        fprintf(archivo, "Trabajo requerido - %s: $ %.2f\n", estado, precioFinalEstadoPieza);
+        fprintf(archivo, "Prueba de Presión:   $ %.2f\n", precioFinalPruebaPresion);
+        fprintf(archivo, "Lavado de motor:     $ %.2f\n", precioFinalLavado);
+        fprintf(archivo, "------------------------------------------------------\n");
+        fprintf(archivo, "Subtotal:            $ %.2f\n", subtotal);
+        fprintf(archivo, "IVA (16%%):           $ %.2f\n", impuesto);
+        fprintf(archivo, "TOTAL:               $ %.2f\n", total);
+        fprintf(archivo, "==================================================\n\n");
+    }
+
+
+    return 1;
+}
+
+const char *estadoPiezaTexto(int estadoPieza) {
+    switch (estadoPieza) {
+        case -2: return "Falta trabajo en la pieza, (Reconstruccion) ve al apartado de Servicio-Operaciones";
+        case -1: return "Falta trabajo en la pieza, (Rectificacion) ve al apartado de Servicio-Operaciones";
+        case 1: return "Rectificación";
+        case 2: return "Reconstrucción";
+        default: return "Verificación";
+    }
+}
+======================================================
+//ApartadoOtros
+
+#include <curses.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#include "UsuarioDTO.h"
+#include "Util.h"
+#include "UserInterface.h"
+#include "LogicaNegocio.h"
+
+#include "Testing.h"
+
+void historialTickets() {
+    char *nombreArchivo = obtenerNombreArchivo("Tickets_");
+
+    if (arrayTickets.tamanno < 1) {
+        imprimirMensaje(5, 5, "No existen Tickets Creados, porfavor crea nuevos tickets");
+        return;
+    }
+    FILE *archivo = fopen(nombreArchivo, "w");
+    exportarDetallesTickets(nombreArchivo, archivo);
+    fclose(archivo);
+    free(nombreArchivo);
+};
+
+void exportarDetallesTodoElSistema() {
+    char *nombreArchivo = obtenerNombreArchivo("Detalles_SistemaCompleto");
+    FILE *archivo = fopen(nombreArchivo, "w");
+
+    arrayUsuarios.tamanno > 0
+        ? exportarDetallesUsuarios(nombreArchivo, archivo)
+        : fprintf(archivo, "NO HAY USUARIOS EN LA BASE DE DATOS (arrayUsuarios)\n\n");
+    arrayTickets.tamanno > 0
+        ? exportarDetallesTickets(nombreArchivo, archivo)
+        : fprintf(archivo, "NO HAY TICKETS CREADOS EN LA BASE DE DATOS (arrayTickets)\n\n");
+    arrayMotoresPrecargados.tamanno > 0
+        ? exportarDetallesMotoresPrecargados(nombreArchivo, archivo)
+        : fprintf(archivo, "NO HAY MOTORES PRECARCAGOS EN LA BASE DE DATOS (arrayMotoresPrecargados)\n\n");
+
+    arrayPiezasAlmacen.tamanno > 0
+        ? exportarDetallesPiezasAlmacen(nombreArchivo, archivo)
+        : fprintf(archivo, "No hay Piezas en el almacen registradas en la base de datos (arrayPiezasAlmacen)\n");
+    fclose(archivo);
+    free(nombreArchivo);
+};
+
+int exportarDetallesUsuarios(const char *nombreArchivo, FILE *archivo) {
+    RETURN_IF_ESC(validarArchivo(archivo));
+
+    fprintf(archivo, "EXPORTANDO DETALLES DE ARRAY USUARIOS\n");
+    fprintf(archivo, "Tamaño del array: %d\n\n", arrayUsuarios.tamanno);
+    for (int i = 0; i < arrayUsuarios.tamanno; i++) {
+        Usuario *usr = arrayUsuarios.datos;
+        if (!usr) continue;
+
+        fprintf(archivo, "==============================================\n");
+        fprintf(archivo, "         INFORMACION DEL USUARIO\n");
+        fprintf(archivo, "==============================================\n");
+        fprintf(archivo, "ID Usuario: %d\n", usr->id_usuario);
+        fprintf(archivo, "Folio: %s\n", usr->folio);
+        fprintf(archivo, "Nombre: %s %s\n", usr->nombreUsuario, usr->apellido);
+        fprintf(archivo, "Celular: %lld\n", usr->celular);
+        fprintf(archivo, "Email: %s\n", usr->email);
+        fprintf(archivo, "Contacto: %s\n", usr->contacto);
+        fprintf(archivo, "Activo: %s\n", usr->activo ? "Si" : "No");
+
+        Motor *motor = usr->motor;
+        if (!motor) {
+            fprintf(archivo, "Motor: No asignado.\n\n");
+            continue;
+        }
+
+        fprintf(archivo, "\n----------- DETALLES DEL MOTOR -----------\n");
+        fprintf(archivo, "FOLIO: %s\n", usr->folio);
+        fprintf(archivo, "ID Pieza: %d\n", motor->id_pieza);
+        fprintf(archivo, "ID Usuario Asociado: %d\n", motor->id_usuario);
+        fprintf(archivo, "Modelo: %s\n", motor->modelo);
+        fprintf(archivo, "Numero de serie : %s\n", motor->numeroSerie);
+        fprintf(archivo, "Fabricante: %s\n", motor->fabricante);
+        fprintf(archivo, "Material: %s\n", motor->material);
+        fprintf(archivo, "Carro Asociado: %s\n", motor->carroAsociado);
+        fprintf(archivo, "Anno: %d\n", motor->anno);
+        fprintf(archivo, "Carro Asociado: %s\n", motor->carroAsociado);
+        fprintf(archivo, "Cilindrada (Litros) : %.2f\n", motor->cilindrada);
+        fprintf(archivo, "Compresion Original (psi) : %.2f\n", motor->compresionOriginal);
+        fprintf(archivo, "Combustible: %s", tipoCombustibleToStr(motor->tipoCombustible));
+        fprintf(archivo, "Medida Original (mm) : %.2f\n", motor->medidaOriginal);
+        fprintf(archivo, "Medida Actual (mm) : %.2f\n", motor->medidaActual);
+
+        if (motor->culata) {
+            Culata *culata = motor->culata;
+            fprintf(archivo, "\n----------- CULATA -----------\n");
+            fprintf(archivo, "ID Pieza: %d\n", culata->id_pieza);
+            fprintf(archivo, "ID Usuario: %d\n", culata->id_usuario);
+            fprintf(archivo, "Desgaste Pieza: %.3f\n", culata->desgaste);
+            fprintf(archivo, "Tolerancia Maxima: %.3f\n", culata->tolerancia);
+            fprintf(archivo, "Altura Original: %.3f\n", culata->alturaOriginal);
+            fprintf(archivo, "Altura Actual: %.3f\n", culata->alturaActual);
+            fprintf(archivo, "Altura minima: %.3f\n", culata->alturaMinima);
+
+            fprintf(archivo, "Numero Valvulas: %d\n", culata->numValvulas);
+            fprintf(archivo, "Presion de Prueba: %.2f bar\n", culata->presionPrueba);
+            fprintf(archivo, "Fisuras: %s \n", culata->tieneFisuras ? "Si" : "No");
+            fprintf(archivo, "Estado de la Pieza: %s\n", estadoPiezaTexto(culata->operacionesMotor));
+        }
+
+        if (motor->monoblock && motor->monoblock->numCilindros) {
+            Monoblock *mono = motor->monoblock;
+            fprintf(archivo, "\n----------- MONOBLOCK -----------\n");
+            fprintf(archivo, "ID Pieza: %d\n", mono->id_pieza);
+            fprintf(archivo, "ID Usuario: %d\n", mono->id_usuario);
+            fprintf(archivo, "Numero Cilindros: %d\n", mono->numCilindros);
+            fprintf(archivo, "Ovalizacion: %.2f mm\n", mono->ovalizacion_max);
+            for (int j = mono->numCilindros; j < mono->numCilindros; j++) {
+                fprintf(archivo, "Diametro Cilindro %d : %.2f mm \n", j, mono->diametroCilindro[j]);
+                fprintf(archivo, "Desalineacion Bancada: %.2f mm\n", mono->desalineacion_bancadas[j]);
+            }
+            fprintf(archivo, "Estado de la Pieza: %s\n", estadoPiezaTexto(mono->estado_diagnostico));
+        }
+
+        fprintf(archivo, "==============================================\n\n");
+    }
+
+    printf("Archivo generado exitosamente: %s\n", nombreArchivo);
+
+    return 1;
+}
+
+int exportarDetallesMotoresPrecargados(const char *nombreArchivo, FILE *archivo) {
+    RETURN_IF_ESC(validarArchivo(archivo));
+
+    fprintf(archivo, "EXPORTANDO DETALLES DE MOTORES PRECARGADOS\n");
+    fprintf(archivo, "Tamaño del array: %d\n\n", arrayMotoresPrecargados.tamanno);
+
+    for (int i = 0; i < arrayMotoresPrecargados.tamanno; i++) {
+        Motor *m = arrayMotoresPrecargados.datos[i];
+
+        fprintf(archivo, "Motor #%d\n", i + 1);
+        fprintf(archivo, "  ID de pieza: %d\n", m->id_pieza);
+        fprintf(archivo, "  ID de usuario: %d\n", m->id_usuario);
+        fprintf(archivo, "  Modelo: %s\n", m->modelo);
+        fprintf(archivo, "  Fabricante: %s\n", m->fabricante);
+        fprintf(archivo, "  Año: %d\n", m->anno);
+        fprintf(archivo, "  Carro asociado: %s\n", m->carroAsociado ? m->carroAsociado : "N/A");
+        fprintf(archivo, "  Cilindrada: %.2f L\n", m->cilindrada);
+        fprintf(archivo, "  Compresión original: %.2f psi\n", m->compresionOriginal);
+        fprintf(archivo, "  Número de serie: %s\n", m->numeroSerie);
+        fprintf(archivo, "  Tipo de combustible: %s\n", tipoCombustibleToStr(m->tipoCombustible));
+
+        fprintf(archivo, "  Material: %s\n", m->material);
+        fprintf(archivo, "  Medida original: %.2f mm\n", m->medidaOriginal);
+        fprintf(archivo, "  Medida actual: %.2f mm\n", m->medidaActual);
+        fprintf(archivo, "\n");
+    }
+
+    return 1;
+}
+
+int exportarDetallesPiezasAlmacen(const char *nombreArchivo, FILE *archivo) {
+    RETURN_IF_ESC(validarArchivo(archivo));
+
+    fprintf(archivo, "==============================================\n\n");
+    fprintf(archivo, "EXPORTANDO DETALLES DE MOTORES PRECARGADOS\n");
+    fprintf(archivo, "Tamaño del array: %d\n\n", arrayPiezasAlmacen.tamanno);
+
+    for (int i = 0; i < arrayPiezasAlmacen.tamanno; i++) {
+        PiezaAlmacen *p = &arrayPiezasAlmacen.datos[i];
+
+        fprintf(archivo, "===== INVENTARIO DE PIEZAS EN ALMACEN =====");
+        fprintf(archivo, "Pieza #%d\n", i + 1);
+        fprintf(archivo, "ID: %s\n", p->id_pieza);
+        fprintf(archivo, "ID Unico: %s\n", p->id_unicoPieza);
+        fprintf(archivo, "Tipo: %s\n", p->tipo);
+        fprintf(archivo, "Tolerancia: %.2f mm\n", p->tolerancia);
+        fprintf(archivo, "Material: %s\n", p->material);
+        fprintf(archivo, "Estado: %s\n", p->estadoPieza);
+        fprintf(archivo, "Compatibilidad: %s\n", p->compatibilidad);
+        fprintf(archivo, "Cantidad: %d\n", p->cantidad);
+        fprintf(archivo, "------------------------\n");
+
+        fprintf(archivo, "==============================================\n\n");
+    }
+    return 1;
+}
+
+int validarArchivo(FILE *archivo) {
+    if (!archivo) {
+        perror("No se pudo abrir el archivo");
+        return -1;
+    }
+    return 1;
+}
+
+======================================================
+///constantesMotores
+#include "LogicaNegocio.h"
+#include "UsuarioDTO.h"
+
+PiezaAlmacen componentes_motor[CANTIDAD_PIEZASPRECARGADAS] = {
+    {
+        .id_pieza = "PISTON_05MM_101",
+        .id_unicoPieza = "P101",
+        .tipo = "Pistón sobremedida",
+        .tolerancia = 0.5f,
+        .material = "Aluminio", .estadoPieza = "Nueva",
+        .compatibilidad = "FD123456, HND13579, MZD67890", .cantidad = 40
+    },
+    {
+        .id_pieza = "COJINETE_B_102",
+        .id_unicoPieza = "C102",
+        .tipo = "Cojinete de biela",
+        .tolerancia = 0.25f,
+        .material = "Bimetal",
+        .estadoPieza = "Nueva",
+        .compatibilidad = "CMS23456, PWS98765, TYT56473", .cantidad = 60
+    },
+    {
+        .id_pieza = "ANILLO_1.0MM_103",
+        .id_unicoPieza = "A103",
+        .tipo = "Anillo de compresión",
+        .tolerancia = 1.0f,
+        .material = "Acero",
+        .estadoPieza = "Nueva",
+        .compatibilidad = "CHV09876, HND13579", .cantidad = 100
+    },
+    {
+        .id_pieza = "JUNTA_ADM_104",
+        .id_unicoPieza = "J104",
+        .tipo = "Junta de admisión",
+        .tolerancia = 0.0f,
+        .material = "Goma",
+        .estadoPieza = "Nueva",
+        .compatibilidad = "PWS98765, BMW24681", .cantidad = 50
+    },
+    {
+        .id_pieza = "RETEN_CIG_105",
+        .id_unicoPieza = "R105",
+        .tipo = "Retén de cigüeñal",
+        .tolerancia = 0.0f,
+        .material = "Nitrilo",
+        .estadoPieza = "Nueva",
+        .compatibilidad = "MZD67890, HND13579, FD123456", .cantidad = 70
+    }
+};
+
+
+PiezaAlmacen componentes_culata[CANTIDAD_PIEZASPRECARGADAS] = {
+    {
+        .id_pieza = "LAINA_1.3MM_201",
+        .id_unicoPieza = "L201",
+        .tipo = "Laina de culata",
+        .tolerancia = 1.3f,
+        .material = "Cobre",
+        .estadoPieza = "Nueva",
+        .compatibilidad = "HND13579, HND12345, MZD67890", .cantidad = 25
+    },
+    {
+        .id_pieza = "VALVULA_EXH_202",
+        .id_unicoPieza = "V202",
+        .tipo = "Válvula de escape",
+        .tolerancia = 0.0f,
+        .material = "Acero inoxidable",
+        .estadoPieza = "Nueva",
+        .compatibilidad = "FD123456, FRD45678", .cantidad = 50
+    },
+    {
+        .id_pieza = "GUIA_VAL_203",
+        .id_unicoPieza = "G203",
+        .tipo = "Guía de válvula",
+        .tolerancia = 0.0f,
+        .material = "Bronce",
+        .estadoPieza = "Nueva",
+        .compatibilidad = "CHV09876, CMS23456", .cantidad = 80
+    },
+    {
+        .id_pieza = "JUNTA_CUL_204",
+        .id_unicoPieza = "J204",
+        .tipo = "Junta de culata",
+        .tolerancia = 1.4f,
+        .material = "Multicapa metálica",
+        .estadoPieza = "Nueva",
+        .compatibilidad = "TYT56473, BMW24681", .cantidad = 15
+    },
+    {
+        .id_pieza = "RESORTE_VAL_205",
+        .id_unicoPieza = "R205",
+        .tipo = "Resorte de válvula",
+        .tolerancia = 0.0f,
+        .material = "Acero templado",
+        .estadoPieza = "Nueva",
+        .compatibilidad = "PWS98765, HND12345", .cantidad = 60
+    }
+};
+
+
+PiezaAlmacen componentes_monoblock[CANTIDAD_PIEZASPRECARGADAS] = {
+    {
+        .id_pieza = "BLOQUE_301",
+        .id_unicoPieza = "B301",
+        .tipo = "Bloque de motor",
+        .tolerancia = 0.0f,
+        .material = "Aluminio",
+        .estadoPieza = "Reconstruida",
+        .compatibilidad = "FD123456, MZD67890", .cantidad = 3
+    },
+    {
+        .id_pieza = "CAMISA_0.75MM_302",
+        .id_unicoPieza = "C302",
+        .tipo = "Camisa de cilindro",
+        .tolerancia = 0.75f,
+        .material = "Hierro fundido",
+        .estadoPieza = "Nueva",
+        .compatibilidad = "CMS23456, PWS98765", .cantidad = 25
+    },
+    {
+        .id_pieza = "PISTON_0.25MM_303",
+        .id_unicoPieza = "P303",
+        .tipo = "Pistón sobremedida",
+        .tolerancia = 0.25f,
+        .material = "Aluminio",
+        .estadoPieza = "Nueva",
+        .compatibilidad = "HND13579, HND12345", .cantidad = 35
+    },
+    {
+        .id_pieza = "COJINETE_BANC_304",
+        .id_unicoPieza = "C304",
+        .tipo = "Cojinete de bancada",
+        .tolerancia = 0.5f,
+        .material = "Bimetal",
+        .estadoPieza = "Nueva",
+        .compatibilidad = "CHV09876, TYT56473", .cantidad = 45
+    },
+    {
+        .id_pieza = "TAPA_CIL_305",
+        .id_unicoPieza = "T305",
+        .tipo = "Tapa de cilindro",
+        .tolerancia = 0.0f,
+        .material = "Acero",
+        .estadoPieza = "Nueva",
+        .compatibilidad = "FRD45678, BMW24681", .cantidad = 20
+    }
+};
+======================================================
+//
+// Created by Jesus Emmanuel Garcia on 5/7/25.
+// ALMACEN
+
+#include <curses.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "UserInterface.h"
+#include "LogicaNegocio.h"
+
+int (*funcionesInventarioAlmacen[4])() = {
+    listarPiezasAlmacen, buscarPiezasAlmacen, agregarPizasAlmacen, eliminarPiezasAlmacen
+};
+
+int (*funcionesHerramientas[3])() = {
+    //entradas, alertasStock, historialDeMovimientosAlmacen
+};
+
+int (*funcionesProveedores[3])() = {
+    //"estadoHerramientas, registroMantenimiento, asignación
+};
+
+int (*funcionesReportes[3])() = {
+    //registroProveedor, historialCompras, pedidosPendientes
+};
+
+void ejecutarOpcionAlmacen(int opcionMenu, int opcionSubMenu){
+    clear();
+    refresh();
+    switch (opcionMenu){
+    case 0:
+        funcionesInventarioAlmacen[opcionSubMenu]();
+        break;
+    case 1:
+        funcionesHerramientas[opcionSubMenu]();
+        break;
+    case 2:
+        funcionesProveedores[opcionSubMenu]();
+        break;
+    case 3:
+        funcionesReportes[opcionSubMenu]();
+        break;
+    default:
+        imprimirMensaje(5, 5, "Opcion no valida -> Ocurrio un problema");
+        break;
+    }
+
+    mvprintw(1, 60, "Presiona cualquier tecla para volver al menu...");
+    refresh();
+}
+
+int listarPiezasAlmacen(){
+    //imprimirMensaje(1, 5, "====== LISTADO DE PIEZAS EN ALMACEN ======");
+    imprimirArrayPiezasAlmacen();
+    char* nombreArchivo = obtenerNombreArchivo("PiezaAlmacen");
+    FILE* archivo = fopen(nombreArchivo, "w");
+    imprimirArrayPiezasAlmacenArchivo(archivo);
+    fclose(archivo);
+    return 0;
+};
+
+int buscarPiezasAlmacen(){
+    imprimirMensaje(1, 5, "====== BUSQUEDA DE PIEZAS EN ALMACEN ======");
+    return 0;
+};
+
+int agregarPizasAlmacen(){
+    imprimirMensaje(1, 5, "====== AGREGAR PIEZAS EN ALMACEN ======");
+    return 0;
+};
+
+int eliminarPiezasAlmacen(){
+    imprimirMensaje(1, 5, "====== ELIMINAR PIEZAS EN ALMACEN ======");
+    return 0;
+};
+
+Herramienta* incializarHerramienta(char* id_herramienta, char* tipo, int usos, char* compatibilidad, float rango,
+                                   char* material, int cantidad){
+    Herramienta* herramienta = (Herramienta*)malloc(sizeof(Herramienta));
+    if (herramienta == NULL)return NULL;
+
+    herramienta->id_herramienta = id_herramienta;
+    herramienta->tipo = tipo;
+    herramienta->usos = usos;
+    herramienta->compatibilidad = compatibilidad;
+    herramienta->rango = rango;
+    herramienta->material = material;
+    herramienta->cantidad = cantidad;
+
+    return herramienta;
+}
+
+int cargarAlmacen(){
+    //Hace referencia a los arrays, si se modifican en otros lados, almacen tambien sera modificado
+    almacenBaseDatos.array_list = &arrayTickets; // ArrayTickets* ← OK
+    //almacenBaseDatos.array_piezas = &arrayPiezas;       // ArrayPiezas* ← OK
+    almacenBaseDatos.array_usuarios = &arrayUsuarios; // ArrayUsuarios* ← OK
+    almacenBaseDatos.pieza_almacen = &arrayPiezasAlmacen;
+
+    precargarPiezasAlmacen(componentes_motor, CANTIDAD_PIEZASPRECARGADAS);
+    precargarPiezasAlmacen(componentes_culata, CANTIDAD_PIEZASPRECARGADAS);
+    precargarPiezasAlmacen(componentes_monoblock, CANTIDAD_PIEZASPRECARGADAS);
+
+    return 1;
+}
+
+void precargarPiezasAlmacen(PiezaAlmacen pieza_almacen[], const int cantidad){
+    for (int i = 0; i < cantidad; i++){
+        if (arrayPiezasAlmacen.tamanno >= arrayPiezasAlmacen.capacidad){
+            int nuevaCapacidad = arrayPiezasAlmacen.capacidad == 0 ? 1 : arrayPiezasAlmacen.capacidad * 2;
+            PiezaAlmacen* nuevoArray = realloc(arrayPiezasAlmacen.datos, nuevaCapacidad * sizeof(PiezaAlmacen));
+            if (!nuevoArray){
+                imprimirMensaje(10, 10, "Error al redimensionar el array de motores precargados");
+                return;
+            }
+            arrayPiezasAlmacen.datos = nuevoArray;
+            arrayPiezasAlmacen.capacidad = nuevaCapacidad;
+        }
+
+        arrayPiezasAlmacen.datos[arrayPiezasAlmacen.tamanno++] = pieza_almacen[i];
+        setIdPiezaGlobal(getIdPiezaGlobal() + 1);
+    }
+    //return ;
+}
+
+//???? si el monoblock y culata son identicos va a fallar esto
+PiezaAlmacen* buscarPiezaPorIdUnico(ArrayPiezasAlmacen* inventario, int numPiezas, char* id_unico){
+    for (int i = 0; i < numPiezas; i++){
+        if (strcmp(inventario->datos[i].id_unicoPieza, id_unico) == 0){
+            mvprintw(5, 5, "Debug BuscarPieza");
+            return inventario[i].datos;
+        }
+    }
+    return NULL;
+}
+
+void imprimirArrayPiezasAlmacen(){
+    clear();
+    int fila = 2, columna = 4;
+    mvprintw(fila, columna, "===== INVENTARIO DE PIEZAS EN ALMACEN =====");
+    fila += 2;
+
+    if (arrayPiezasAlmacen.tamanno == 0){
+        mvprintw(fila, columna, "[No hay piezas registradas en el inventario]");
+        fila += 2;
+    }
+    else{
+        for (int i = 0; i < arrayPiezasAlmacen.tamanno; i++){
+            PiezaAlmacen* pieza = &arrayPiezasAlmacen.datos[i];
+            mvprintw(fila++, columna, "Pieza #%d", i + 1);
+            mvprintw(fila++, columna, "ID: %s", pieza->id_pieza);
+            mvprintw(fila++, columna, "ID Unico: %s", pieza->id_unicoPieza);
+            mvprintw(fila++, columna, "Tipo: %s", pieza->tipo);
+            mvprintw(fila++, columna, "Tolerancia: %.2f mm", pieza->tolerancia);
+            mvprintw(fila++, columna, "Material: %s", pieza->material);
+            mvprintw(fila++, columna, "Estado: %s", pieza->estadoPieza);
+            mvprintw(fila++, columna, "Compatibilidad: %s", pieza->compatibilidad);
+            mvprintw(fila++, columna, "Cantidad: %d", pieza->cantidad);
+
+            fila++;
+        }
+    }
+
+    fila += 2;
+    attron(A_BOLD);
+    mvprintw(fila, columna, "Presione cualquier tecla para continuar...");
+    attroff(A_BOLD);
+
+    refresh();
+    getch();
+}
+
+void imprimirArrayPiezasAlmacenArchivo(FILE* archivo){
+    if (archivo == NULL) return;
+    fprintf(archivo, "===== INVENTARIO DE PIEZAS EN ALMACEN =====\n\n");
+    if (arrayPiezasAlmacen.tamanno == 0){
+        fprintf(archivo, "[No hay piezas registradas en el inventario]\n\n");
+    }
+    else{
+        for (int i = 0; i < arrayPiezasAlmacen.tamanno; i++){
+            PiezaAlmacen* pieza = &arrayPiezasAlmacen.datos[i];
+
+            fprintf(archivo, "Pieza #%d\n", i + 1);
+            fprintf(archivo, "ID: %s\n", pieza->id_pieza);
+            fprintf(archivo, "ID Unico: %s\n", pieza->id_unicoPieza);
+            fprintf(archivo, "Tipo: %s\n", pieza->tipo);
+            fprintf(archivo, "Tolerancia: %.2f mm\n", pieza->tolerancia);
+            fprintf(archivo, "Material: %s\n", pieza->material);
+            fprintf(archivo, "Estado: %s\n", pieza->estadoPieza);
+            fprintf(archivo, "Compatibilidad: %s\n", pieza->compatibilidad);
+            fprintf(archivo, "Cantidad: %d\n", pieza->cantidad);
+            fprintf(archivo, "\n"); // Espacio entre piezas
+        }
+    }
+    fprintf(archivo, "--------------------------------------------\n");
+}
+======================================================
+//SystemLogs
+#include "SystemLogs.h"
+#include <stdio.h>
+#include <time.h>
+#include "Util.h"
+
+#include <ctype.h>
+#include <limits.h>
+#include <curses.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#include "UserInterface.h"
+#include "LogicaNegocio.h"
+
+void enviarLogsSistema(char *nombreArchivo, FILE *archivo) {
+    if (!archivo) {
+        fprintf(stderr, "Error al abrir el archivo de logs: %s\n", nombreArchivo ? nombreArchivo : "NULL");
+        return;
+    }
+
+    if (fprintf(archivo, "======= SISTEMA DE LOGS =======\n") < 0 ||
+        fprintf(archivo, "Cantidad de registros: %d\n\n", arrayLogs.tamanno) < 0) {
+        fprintf(stderr, "Error al escribir el encabezado en el archivo: %s\n", nombreArchivo);
+        fclose(archivo);
+        return;
+    }
+
+    for (int i = 0; i < arrayLogs.tamanno; i++) {
+        const SystemLogs *log = &arrayLogs.datos[i];
+
+        const char *fecha = log->fecha[0] ? log->fecha : "UNKNOWN";
+        const char *modulo = log->origen_modulo[0] ? log->origen_modulo : "UNKNOWN";
+        const char *objeto = log->objeto[0] ? log->objeto : "UNKNOWN";
+        const char *id_objeto = log->id_objeto[0] ? log->id_objeto : "UNKNOWN";
+        const char *accion = log->accion[0] ? log->accion : "UNKNOWN";
+        const char *ip = log->nombreFuncion[0] ? log->nombreFuncion : "UNKNOWN";
+
+        if (fprintf(archivo, "[%s] [%s] ID_LOG: %d | USUARIO_ID: %d | OBJETO: %s | ID_OBJETO: %s | SEVERIDAD: %s\n",
+                    fecha, modulo, log->id_unico, log->usuario_id, objeto, id_objeto,
+                    obtenerNombreSeveridad(log->nivel_severidad)) < 0) {
+            fprintf(stderr, "Error al escribir log %d en el archivo: %s\n", log->id_unico, nombreArchivo);
+            fclose(archivo);
+            return;
+        }
+
+        if (fprintf(archivo, "└── ACCIÓN: %s | NAME_FUNC: %s | RESULTADO: %s | CÓDIGO: %d\n",
+                    accion, ip, log->exito ? "ÉXITO" : "ERROR", log->codigoEstado) < 0) {
+            fprintf(stderr, "Error al escribir detalles del log %d en el archivo: %s\n", log->id_unico, nombreArchivo);
+            fclose(archivo);
+            return;
+        }
+
+        fprintf(archivo, "\n");
+    }
+    printf("Logs escritos correctamente en el archivo: %s\n", nombreArchivo);
+}
+
+const char *obtenerNombreSeveridad(NivelSeveridad severidad) {
+    switch (severidad) {
+        case INFO: return "INFO";
+        case WARN: return "WARNING";
+        case ERROR: return "ERROR";
+        default: return "DESCONOCIDO";
+    }
+}
+
+const char *obtenerMensajeHttp(HttpStatusCode code) {
+    switch (code) {
+        case HTTP_OK: return "Éxito (200 OK)";
+        case HTTP_CREATED: return "Recurso creado (201 Created)";
+        case HTTP_ACCEPTED: return "Petición aceptada (202 Accepted)";
+        case HTTP_NO_CONTENT: return "Sin contenido (204 No Content)";
+        case HTTP_BAD_REQUEST: return "Solicitud incorrecta (400 Bad Request)";
+        case HTTP_UNAUTHORIZED: return "No autorizado (401 Unauthorized)";
+        case HTTP_FORBIDDEN: return "Prohibido (403 Forbidden)";
+        case HTTP_NOT_FOUND: return "No encontrado (404 Not Found)";
+        case HTTP_CONFLICT: return "Conflicto (409 Conflict)";
+        case HTTP_UNPROCESSABLE_ENTITY: return "Entidad no procesable (422 Unprocessable Entity)";
+        case HTTP_INTERNAL_SERVER_ERROR: return "Error interno (500 Internal Server Error)";
+        case HTTP_NOT_IMPLEMENTED: return "No implementado (501 Not Implemented)";
+        case HTTP_SERVICE_UNAVAILABLE: return "Servicio no disponible (503 Service Unavailable)";
+        default: return "Código desconocido";
+    }
+}
+
+void generarSystemLog(int usuario_id, char *accion, char *objeto, char *id_objeto,
+                      NivelSeveridad severidad, int exito, char *modulo, char *nombreFuncion,
+                      HttpStatusCode codigoEstado) {
+    char fecha[50];
+    time_t t = time(NULL);
+    struct tm *tm_info = localtime(&t);
+    strftime(fecha, sizeof(fecha), "%Y-%m-%d %H:%M:%S", tm_info);
+
+    int log_id = getIdLog();
+    setIdLog(log_id + 1);
+
+    SystemLogs log = inicializarLogs(fecha, log_id, accion, objeto, id_objeto, severidad, exito, modulo,
+                                     nombreFuncion, codigoEstado);
+    log.usuario_id = usuario_id;
+
+    if (guardarSystemLogs(log) == -1) {
+        mvprintw(5, 5, "Error al guardar el log. ID: %d, Acción: %s", log_id, accion);
+        refresh();
+        getch();
+    }
+}
+
+SystemLogs inicializarLogs(char *fecha, int log_id, char *accion, char *objeto, char *id_objeto,
+                           NivelSeveridad severidad, int exito, char *modulo, char *nombreFuncion,
+                           HttpStatusCode codigoEstado) {
+    SystemLogs log = {0};
+
+    asignString(log.fecha, fecha, sizeof(log.fecha));
+    asignString(log.accion, accion, sizeof(log.accion));
+    log.usuario_id = 1;
+    log.id_unico = log_id;
+    asignString(log.objeto, objeto, sizeof(log.objeto));
+    asignString(log.id_objeto, id_objeto, sizeof(log.id_objeto));
+    asignString(log.origen_modulo, modulo, sizeof(log.origen_modulo));
+    log.nivel_severidad = severidad;
+    log.exito = exito;
+    asignString(log.nombreFuncion, nombreFuncion, sizeof(log.nombreFuncion));
+    log.codigoEstado = codigoEstado;
+
+    return log;
+}
+
+int guardarSystemLogs(SystemLogs log) {
+    if (log.accion[0] == '\0') {
+        return -1;
+    }
+    if (arrayLogs.tamanno >= arrayLogs.capacidad) {
+        int nuevaCapacidad = arrayLogs.capacidad == 0 ? 1 : arrayLogs.capacidad * 2;
+        SystemLogs *nuevoArray = realloc(arrayLogs.datos, nuevaCapacidad * sizeof(SystemLogs));
+        if (nuevoArray == NULL) {
+            fprintf(stderr, "Error al redimensionar el array de logs.\n");
+            return -1;
+        }
+        arrayLogs.datos = nuevoArray;
+        arrayLogs.capacidad = nuevaCapacidad;
+    }
+
+    arrayLogs.datos[arrayLogs.tamanno] = log;
+    arrayLogs.tamanno++;
+
+    return 1;
+}
+
+======================================================
+//SystemLogs.h
+#ifndef SYSTEMLOGS_H
+#define SYSTEMLOGS_H
+
+#include <stdio.h>
+
+typedef enum {
+    INFO,
+    WARN,
+    ERROR,
+    CRITICAL
+} NivelSeveridad;
+
+typedef enum {
+    HTTP_OK = 200,
+    HTTP_CREATED = 201,
+    HTTP_ACCEPTED = 202,
+    HTTP_NO_CONTENT = 204,
+    HTTP_BAD_REQUEST = 400,
+    HTTP_UNAUTHORIZED = 401,
+    HTTP_FORBIDDEN = 403,
+    HTTP_NOT_FOUND = 404,
+    HTTP_CONFLICT = 409,
+    HTTP_UNPROCESSABLE_ENTITY = 422,
+    HTTP_INTERNAL_SERVER_ERROR = 500,
+    HTTP_NOT_IMPLEMENTED = 501,
+    HTTP_SERVICE_UNAVAILABLE = 503
+} HttpStatusCode;
+
+typedef struct {
+    int id_unico;
+    char fecha[50];
+    int usuario_id;
+    char accion[50];
+    char objeto[50];
+    char id_objeto[50];
+    NivelSeveridad nivel_severidad;
+    char nombreFuncion[30];
+    char origen_modulo[50];
+    int exito;
+    HttpStatusCode codigoEstado;
+} SystemLogs;
+
+
+typedef struct {
+    SystemLogs *datos;
+    int tamanno;
+    int capacidad;
+} ArrayLogs;
+
+
+void generarSystemLog(int usuario_id, char *accion, char *objeto, char *id_objeto,
+                      NivelSeveridad severidad, int exito, char *modulo, char *nombreFuncion,
+                      HttpStatusCode codigoEstado);
+
+SystemLogs inicializarLogs(char *fecha, int log_id, char *accion, char *objeto, char *id_objeto,
+                           NivelSeveridad severidad, int exito, char *modulo, char *nombreFuncion,
+                           HttpStatusCode codigoEstado);
+
+int guardarSystemLogs(SystemLogs log);
+
+extern ArrayLogs arrayLogs;
+
+
+const char *obtenerNombreSeveridad(NivelSeveridad severidad);
+
+const char *obtenerMensajeHttp(HttpStatusCode code);
+
+void enviarLogsSistema(char *nombreArchivo, FILE *archivo);
+
+#endif
+======================================================
+//Testin
+#include "Testing.h"
+
+#include <curses.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "LogicaNegocio.h"
+#include "SystemLogs.h"
+#include "UserInterface.h"
+#include "UsuarioDTO.h"
+
+void testing(int tipoDeTesting) {
+    generarSystemLog(1, "Login", "Ninguno", "-1", INFO, 1, "Login", "testing", HTTP_OK);
+    if (tipoDeTesting) {
+        int cantidadMotores = sizeof(motoresExistentesSINCulatasAsignadas) / sizeof(Motor);
+
+
+        printf("\n------TESTING MODE ON------ %d ", tipoDeTesting);
+        switch (tipoDeTesting) {
+            case 1:
+                agregarUsuarios();
+                break;
+            case 2:
+
+
+                break;
+            case 3:
+                agregarUsuarios();
+                agregarPiezas();
+                break;
+            case 4:
+                agregarUsuarios();
+
+                inicializarArrayMotoresPrecargados();
+                precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
+                break;
+            case 5:
+                agregarUsuarios();
+                agregarPiezas();
+
+                inicializarArrayMotoresPrecargados();
+                precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
+                break;
+            case 6:
+                inicializarArrayMotoresPrecargados();
+                precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
+                break;
+            default: break;
+        }
+    }
+}
+
+void agregarUsuarios() {
+    const Usuario usuario1 = inicializarUsuario(0, "00001", "Usuario1", "Apellido 1", 1234567890, "EmailPrueba1@1",
+                                                "Contacto1");
+    guardarUsuarioArray(usuario1);
+
+    const Usuario usuario2 = inicializarUsuario(1, "00002", "Usuario2", "Apellido 2", 1987654321, "EmailPrueba2@2",
+                                                "Contacto2");
+    guardarUsuarioArray(usuario2);
+
+    const Usuario usuario3 = inicializarUsuario(2, "00003", "Usuario3", "Apellido 3", 2746297201, "emailPrueba3@3",
+                                                "Contacto3");
+    guardarUsuarioArray(usuario3);
+}
+
+void inicializarArrayMotoresPrecargados() {
+    arrayMotoresPrecargados.tamanno = 0;
+    arrayMotoresPrecargados.capacidad = 0;
+    arrayMotoresPrecargados.datos = NULL;
+}
+
+int precargarMotoresDB(Motor motores[], int cantidad) {
+    for (int i = 0; i < cantidad; i++) {
+        if (arrayMotoresPrecargados.tamanno >= arrayMotoresPrecargados.capacidad) {
+            int nuevaCapacidad = arrayMotoresPrecargados.capacidad == 0 ? 1 : arrayMotoresPrecargados.capacidad * 2;
+            void **nuevoArray = realloc(arrayMotoresPrecargados.datos, nuevaCapacidad * sizeof(void *));
+            if (!nuevoArray) {
+                imprimirMensaje(10, 10, "Error al redimensionar el array de motores precargados");
+                generarSystemLog(motores[i].id_usuario, "Add Motor arrayMotores", "Precarga", motores[i].numeroSerie,
+                                 WARN, 0, "PrecargarMotor", "precargarMotoresDB", HTTP_BAD_REQUEST);
+                return -1;
+            }
+            arrayMotoresPrecargados.datos = nuevoArray;
+            arrayMotoresPrecargados.capacidad = nuevaCapacidad;
+        }
+        generarSystemLog(motores[i].id_usuario, "Add Motor arrayMotores", "Precarga", motores[i].numeroSerie, INFO, 1,
+                         "PrecargarMotor", "precargarMotoresDB", HTTP_OK);
+        arrayMotoresPrecargados.datos[arrayMotoresPrecargados.tamanno++] = &motores[i];
+        setIdPiezaGlobal(getIdPiezaGlobal() + 1);
+    }
+    return 1;
+}
+
+void agregarPiezas() {
+    const Paramsmotor motores_registrados[2] = {
+        {
+            .id_pieza = 0,
+            .id_usuario = 0,
+            .modelo = "Duratec 2.0",
+            .fabricante = "Ford",
+            .carroAsociado = "Ford Focus 2012",
+            .anno = 2012,
+            .cilindrada = 2.0f,
+            .compresionOriginal = 130.0f,
+            .numeroSerie = "FD2K-123456",
+            .tipoCombustible = GASOLINA,
+            .material = "Aluminio",
+
+            .medidaOriginal = 82.50f,
+            .medidaActual = 82.40f,
+
+        },
+        {
+            .id_pieza = 1,
+            .id_usuario = 1,
+            .modelo = "K20A",
+            .fabricante = "Honda",
+            .carroAsociado = "Honda Civic Type R 2004",
+            .anno = 2004,
+            .cilindrada = 2.0f,
+            .compresionOriginal = 210.0f,
+            .numeroSerie = "HND-K20A1234",
+            .tipoCombustible = GASOLINA,
+            .material = "Aluminio",
+
+            .medidaOriginal = 86.0f,
+            .medidaActual = 85.98f,
+
+        },
+    };
+
+
+    const int id_usuario = 0, id_usuario_2 = 1;
+    Motor *motorUsuario_1 = inicializarMotor(motores_registrados[0], id_usuario, 0, 0, 0);
+    Culata *pzc = inicializarCulata(16, 10, 2, 2, .124f, .123f, .120f, id_usuario, -1);
+    float diametros_cilindro[] = {79.0f, 79.0f, 79.0f, 79.0f};
+    float conicidades[] = {0.01f, 0.015f, 0.012f, 0.014f};
+    float diametros_bancadas[] = {55.0f, 55.0f, 55.0f, 55.0f, 55.0f};
+    float desalineacion_bancadas[] = {0.01f, 0.008f, 0.009f, 0.007f, 0.01f};
+
+    Monoblock *mono = inicializarMonoblock(
+        -1,
+        1,
+        4,
+        diametros_cilindro,
+        conicidades,
+        5,
+        diametros_bancadas,
+        desalineacion_bancadas,
+        0.02f,
+        0.03f,
+        0b00000110,
+        "1ZZFE-TRD-987654",
+        "Se observó desgaste uniforme, requiere rectificado",
+        1
+    );
+
+
+    guardarMotorArray(motorUsuario_1, id_usuario);
+
+
+    guardarPiezaArray(mono, id_usuario, "monoblock");
+
+    Usuario *usuario1 = obtenerUsuarioByIdUsuario(id_usuario);
+    asignarMotorUsuario(usuario1, motorUsuario_1);
+
+
+    asignarPiezaMotor(usuario1, mono, 2);
+
+
+    Motor *motorUsuario_2 = inicializarMotor(motores_registrados[1], id_usuario_2, 1, 0, 0);
+    Culata *pzc2 = inicializarCulata(18, 12, 1, 14, .340f, .338f, .339f, id_usuario_2, -2);
+    float diametros_cilindroDos[] = {137.0f, 137.1f, 137.0f, 137.2f, 137.1f, 137.0f};
+    float conicidadesDos[] = {0.025f, 0.027f, 0.022f, 0.021f, 0.024f, 0.025f};
+    float diametros_bancadasDos[] = {78.0f, 78.0f, 78.0f, 78.0f, 78.0f, 78.0f, 78.0f};
+    float desalineacion_bancadasDos[] = {0.015f, 0.012f, 0.014f, 0.016f, 0.013f, 0.014f, 0.015f};
+
+    Monoblock *mono2 = inicializarMonoblock(
+        -1,
+        2,
+        6,
+        diametros_cilindroDos,
+        conicidadesDos,
+        7,
+        diametros_bancadasDos,
+        desalineacion_bancadasDos,
+        0.035f,
+        0.04f,
+        0b00001101,
+        "ISX15-456789-CUMMINS",
+        "Ovalización fuera de norma, bancadas desalineadas",
+        2
+    );
+    guardarMotorArray(motorUsuario_2, id_usuario_2);
+
+
+    guardarPiezaArray(mono2, id_usuario_2, "monoblock");
+    Usuario *usuario2 = obtenerUsuarioByIdUsuario(id_usuario_2);
+    asignarMotorUsuario(usuario2, motorUsuario_2);
+
+    asignarPiezaMotor(usuario2, mono2, 2);
+
+    setIdPiezaGlobal(getIdPiezaGlobal() + 2);
+}
+
+void listarMotoresPrecargados() {
+    clear();
+    int fila = 1;
+
+    if (arrayMotoresPrecargados.tamanno == 0) {
+        mvprintw(fila++, 5, "No hay motores precargados para mostrar.");
+        getch();
+        return;
+    }
+
+    mvprintw(fila++, 5, "====== LISTADO DE MOTORES PRECARGADOS ======");
+
+    for (int i = 0; i < arrayMotoresPrecargados.tamanno; i++) {
+        Motor *motor = (Motor *) arrayMotoresPrecargados.datos[i];
+        if (!motor) continue;
+
+        mvprintw(fila++, 5, "---------------------------------------------");
+        mvprintw(fila++, 5, "ID Motor (Pieza): %d", motor->id_pieza);
+        mvprintw(fila++, 5, "ID Usuario:       %d", motor->id_usuario);
+        mvprintw(fila++, 5, "Modelo:           %s", motor->modelo);
+        mvprintw(fila++, 5, "Fabricante:       %s", motor->fabricante);
+        mvprintw(fila++, 5, "Año:              %d", motor->anno);
+        mvprintw(fila++, 5, "Carro Asociado:   %s", motor->carroAsociado);
+        mvprintw(fila++, 5, "Cilindrada:       %.2f L", motor->cilindrada);
+        mvprintw(fila++, 5, "Compresión:       %.2f psi", motor->compresionOriginal);
+        mvprintw(fila++, 5, "N° Serie:         %s", motor->numeroSerie);
+        mvprintw(fila++, 5, "Combustible:      %s", tipoCombustibleToStr(motor->tipoCombustible));
+        mvprintw(fila++, 5, "Material:         %s", motor->material);
+        mvprintw(fila++, 5, "Medida Original:  %.2f mm", motor->medidaOriginal);
+        mvprintw(fila++, 5, "Medida Actual:    %.2f mm", motor->medidaActual);
+
+        if (motor->culata != NULL) {
+            mvprintw(fila++, 7, "--- CULATA ---");
+            mvprintw(fila++, 7, "N° Válvulas:      %d", motor->culata->numValvulas);
+            mvprintw(fila++, 7, "Presión Prueba:   %.2f bar", motor->culata->presionPrueba);
+            mvprintw(fila++, 7, "Fisuras:          %s", motor->culata->tieneFisuras ? "Sí" : "No");
+            mvprintw(fila++, 7, "Altura Original:  %.2f mm", motor->culata->alturaOriginal);
+            mvprintw(fila++, 7, "Altura Actual:    %.2f mm", motor->culata->alturaActual);
+            mvprintw(fila++, 7, "Altura Mínima:    %.2f mm", motor->culata->alturaMinima);
+        }
+
+        if (motor->monoblock != NULL) {
+            mvprintw(fila++, 7, "--- MONOBLOCK ---");
+            mvprintw(fila++, 7, "N° Cilindros:     %d", motor->monoblock->numCilindros);
+        }
+
+        if (fila >= LINES - 8) {
+            mvprintw(fila++, 5, "[Continuar con Enter...]");
+            getch();
+            clear();
+            fila = 1;
+        }
+    }
+
+    mvprintw(fila++, 5, "======= FIN DEL LISTADO =======");
+    getch();
+}
+
+Culata culatasExistentes[10] = {
+    {0, 0, 16, 1.0, 0, 0.12f, 0.05f, 140.0f, 139.88f, 139.80f, 1},
+    {1, 0, 8, 1.2, 0, 0.04f, 0.03f, 125.0f, 124.96f, 124.90f, 0},
+    {2, 0, 24, 0.9, 1, 0.25f, 0.06f, 148.0f, 147.70f, 147.50f, 2},
+    {3, 0, 12, 1.1, 0, 0.10f, 0.04f, 135.0f, 134.90f, 134.85f, 1},
+    {4, 0, 16, 1.0, 0, 0.03f, 0.05f, 142.0f, 141.97f, 141.80f, 0},
+    {5, 0, 16, 0.95, 0, 0.14f, 0.05f, 139.0f, 138.86f, 138.80f, 1},
+    {6, 0, 20, 0.9, 1, 0.30f, 0.07f, 150.0f, 149.50f, 149.40f, 2},
+    {7, 0, 12, 1.1, 0, 0.08f, 0.04f, 137.0f, 136.92f, 136.80f, 1},
+    {8, 0, 8, 1.2, 0, 0.05f, 0.05f, 128.0f, 127.95f, 127.90f, 0},
+    {9, 0, 24, 0.8, 1, 0.28f, 0.06f, 146.0f, 145.65f, 145.50f, 2}
+};
+
+#include <stdlib.h>
+#include <string.h>
+
+
+Monoblock monoblocksExistentes[10];
+
+
+void inicializarMonoblocksExistentes() { {
+        static float cilindros0[] = {83.02f, 83.01f, 83.03f, 83.02f};
+        static float bancadas0[] = {60.01f, 60.00f, 60.02f, 60.01f, 60.00f};
+        static char serie0[] = "FD123456";
+        monoblocksExistentes[0] = (Monoblock){
+            .id_pieza = 100,
+            .id_usuario = 1,
+            .numCilindros = 4,
+            .diametroCilindro = cilindros0,
+            .num_bancadas = 5,
+            .diametro_bancadas = bancadas0,
+            .ovalizacion_max = 0.01f,
+
+
+            .planitud_superficie = 0.02f,
+            .flags = FLAG_CILINDROS_OK | FLAG_BANCADAS_OK | FLAG_SUPERFICIE_PLANA,
+            .numero_serie = serie0,
+            .observaciones = "Monoblock en buen estado, apto para uso",
+            .estado_diagnostico = 0
+        };
+    } {
+        static float cilindros1[] = {92.05f, 92.07f, 92.06f, 92.08f, 92.05f, 92.06f};
+        static float bancadas1[] = {65.03f, 65.04f, 65.02f, 65.05f, 65.03f, 65.04f, 65.02f};
+        static char serie1[] = "AB654321";
+        monoblocksExistentes[1] = (Monoblock){
+            .id_pieza = 101,
+            .id_usuario = 2,
+            .numCilindros = 6,
+            .diametroCilindro = cilindros1,
+            .num_bancadas = 7,
+            .diametro_bancadas = bancadas1,
+            .ovalizacion_max = 0.03f,
+
+
+            .planitud_superficie = 0.03f,
+            .flags = FLAG_BANCADAS_OK | FLAG_SUPERFICIE_PLANA,
+            .numero_serie = serie1,
+            .observaciones = "Cilindros con desgaste, requiere rectificación",
+            .estado_diagnostico = 1
+        };
+    } {
+        static float cilindros2[] = {96.10f, 96.12f, 96.09f, 96.11f, 96.08f, 96.10f, 96.13f, 96.09f};
+        static float bancadas2[] = {70.05f, 70.07f, 70.06f, 70.08f, 70.05f, 70.06f, 70.04f, 70.07f, 70.05f};
+        static char serie2[] = "XY789012";
+        monoblocksExistentes[2] = (Monoblock){
+            .id_pieza = 102,
+            .id_usuario = 3,
+            .numCilindros = 8,
+            .diametroCilindro = cilindros2,
+            .num_bancadas = 9,
+            .diametro_bancadas = bancadas2,
+            .ovalizacion_max = 0.06f,
+
+
+            .planitud_superficie = 0.06f,
+            .flags = FLAG_FISURAS_DETECTADAS,
+            .numero_serie = serie2,
+            .observaciones = "Fisuras detectadas, requiere reconstruccion",
+            .estado_diagnostico = 2
+        };
+    } {
+        static float cilindros3[] = {81.01f, 81.00f, 81.02f, 81.01f};
+        static float bancadas3[] = {58.00f, 58.01f, 58.00f, 58.02f, 58.01f};
+        static char serie3[] = "LM456789";
+        monoblocksExistentes[3] = (Monoblock){
+            .id_pieza = 103,
+            .id_usuario = 4,
+            .numCilindros = 4,
+            .diametroCilindro = cilindros3,
+            .num_bancadas = 5,
+            .diametro_bancadas = bancadas3,
+            .ovalizacion_max = 0.01f,
+
+
+            .planitud_superficie = 0.01f,
+            .flags = FLAG_CILINDROS_OK | FLAG_BANCADAS_OK | FLAG_SUPERFICIE_PLANA,
+            .numero_serie = serie3,
+            .observaciones = "Monoblock en excelente estado",
+            .estado_diagnostico = 0
+        };
+    } {
+        static float cilindros4[] = {89.04f, 89.05f, 89.06f, 89.04f, 89.05f, 89.03f};
+        static float bancadas4[] = {62.02f, 62.03f, 62.01f, 62.04f, 62.02f, 62.03f, 62.01f};
+        static char serie4[] = "PQ987654";
+        monoblocksExistentes[4] = (Monoblock){
+            .id_pieza = 104,
+            .id_usuario = 5,
+            .numCilindros = 6,
+            .diametroCilindro = cilindros4,
+            .num_bancadas = 7,
+            .diametro_bancadas = bancadas4,
+            .ovalizacion_max = 0.02f,
+
+
+            .planitud_superficie = 0.04f,
+            .flags = FLAG_BANCADAS_OK,
+            .numero_serie = serie4,
+            .observaciones = "Superficie no plana, requiere rectificación",
+            .estado_diagnostico = 1
+        };
+    } {
+        static float cilindros5[] = {86.03f, 86.04f, 86.02f, 86.03f};
+        static float bancadas5[] = {59.01f, 59.02f, 59.00f, 59.01f, 59.02f};
+        static char serie5[] = "JK321098";
+        monoblocksExistentes[5] = (Monoblock){
+            .id_pieza = 105,
+            .id_usuario = 6,
+            .numCilindros = 4,
+            .diametroCilindro = cilindros5,
+            .num_bancadas = 5,
+            .diametro_bancadas = bancadas5,
+            .ovalizacion_max = 0.015f,
+
+
+            .planitud_superficie = 0.03f,
+            .flags = FLAG_CILINDROS_OK | FLAG_SUPERFICIE_PLANA,
+            .numero_serie = serie5,
+            .observaciones = "Bancadas desalineadas, rectificar",
+            .estado_diagnostico = 1
+        };
+    } {
+        static float cilindros6[] = {90.08f, 90.09f, 90.07f, 90.10f, 90.08f, 90.09f};
+        static float bancadas6[] = {64.04f, 64.05f, 64.03f, 64.06f, 64.04f, 64.05f, 64.03f};
+        static char serie6[] = "UV123987";
+        monoblocksExistentes[6] = (Monoblock){
+            .id_pieza = 106,
+            .id_usuario = 7,
+            .numCilindros = 6,
+            .diametroCilindro = cilindros6,
+            .num_bancadas = 7,
+            .diametro_bancadas = bancadas6,
+            .ovalizacion_max = 0.04f,
+
+
+            .planitud_superficie = 0.05f,
+            .flags = FLAG_FISURAS_DETECTADAS,
+            .numero_serie = serie6,
+            .observaciones = "Fisuras menores, reconstruir",
+            .estado_diagnostico = 2
+        };
+    } {
+        static float cilindros7[] = {102.01f, 102.00f, 102.02f, 102.01f, 102.00f, 102.01f, 102.02f, 102.00f};
+        static float bancadas7[] = {72.00f, 72.01f, 72.00f, 72.02f, 72.01f, 72.00f, 72.01f, 72.02f, 72.00f};
+        static char serie7[] = "WX456321";
+        monoblocksExistentes[7] = (Monoblock){
+            .id_pieza = 107,
+            .id_usuario = 8,
+            .numCilindros = 8,
+            .diametroCilindro = cilindros7,
+            .num_bancadas = 9,
+            .diametro_bancadas = bancadas7,
+            .ovalizacion_max = 0.01f,
+
+
+            .planitud_superficie = 0.02f,
+            .flags = FLAG_CILINDROS_OK | FLAG_BANCADAS_OK | FLAG_SUPERFICIE_PLANA,
+            .numero_serie = serie7,
+            .observaciones = "Monoblock en buen estado, sin intervención",
+            .estado_diagnostico = 0
+        };
+    } {
+        static float cilindros8[] = {78.00f, 78.01f, 78.00f, 78.02f};
+        static float bancadas8[] = {57.01f, 57.00f, 57.01f, 57.02f, 57.00f};
+        static char serie8[] = "YZ789654";
+        monoblocksExistentes[8] = (Monoblock){
+            .id_pieza = 108,
+            .id_usuario = 9,
+            .numCilindros = 4,
+            .diametroCilindro = cilindros8,
+            .num_bancadas = 5,
+            .diametro_bancadas = bancadas8,
+            .ovalizacion_max = 0.01f,
+
+
+            .planitud_superficie = 0.01f,
+            .flags = FLAG_CILINDROS_OK | FLAG_BANCADAS_OK | FLAG_SUPERFICIE_PLANA,
+            .numero_serie = serie8,
+            .observaciones = "Monoblock en excelente estado",
+            .estado_diagnostico = 0
+        };
+    } {
+        static float cilindros9[] = {91.07f, 91.08f, 91.06f, 91.09f, 91.07f, 91.08f};
+        static float bancadas9[] = {63.05f, 63.06f, 63.04f, 63.07f, 63.05f, 63.06f, 63.04f};
+        static char serie9[] = "KL012345";
+        monoblocksExistentes[9] = (Monoblock){
+            .id_pieza = 109,
+            .id_usuario = 10,
+            .numCilindros = 6,
+            .diametroCilindro = cilindros9,
+            .num_bancadas = 7,
+            .diametro_bancadas = bancadas9,
+            .ovalizacion_max = 0.035f,
+
+
+            .planitud_superficie = 0.05f,
+            .flags = FLAG_FISURAS_DETECTADAS,
+            .numero_serie = serie9,
+            .observaciones = "Fisuras detectadas, reconstrucción necesaria",
+            .estado_diagnostico = 2
+        };
+    }
+}
+
+Motor motoresExistentesCONCulatasAsignadas[10] = {
+    {
+        0, 0,
+        "Duratec 2.0",
+        "Ford",
+        2012,
+        "Focus",
+        2.0f,
+        130.0f,
+        "FD123456",
+        GASOLINA,
+        &culatasExistentes[0],
+        &monoblocksExistentes[0],
+        "Aluminio",
+        84.0f,
+        83.9f
+    },
+    {
+        1, 1,
+        "Vortec 4800",
+        "Chevrolet",
+        2010,
+        "Silverado",
+        4.8f,
+        150.0f,
+        "CHV09876",
+        GASOLINA,
+        &culatasExistentes[1],
+        &monoblocksExistentes[1],
+        "Hierro",
+        92.0f,
+        91.98f
+    },
+    {
+        2, 2,
+        "EcoBoost 1.5",
+        "Ford",
+        2018,
+        "Escape",
+        1.5f,
+        140.0f,
+        "FRD45678",
+        GASOLINA,
+        &culatasExistentes[2],
+        &monoblocksExistentes[2],
+        "Aluminio",
+        79.0f,
+        78.8f
+    },
+    {
+        3, 3,
+        "Cummins 6.7",
+        "Cummins",
+        2016,
+        "RAM 2500",
+        6.7f,
+        195.0f,
+        "CMS23456",
+        DIESEL,
+        &culatasExistentes[3],
+        &monoblocksExistentes[3],
+        "Hierro fundido",
+        107.0f,
+        106.97f
+    },
+    {
+        4, 4,
+        "SkyActiv-G 2.5",
+        "Mazda",
+        2020,
+        "Mazda6",
+        2.5f,
+        160.0f,
+        "MZD67890",
+        GASOLINA,
+        &culatasExistentes[4],
+        &monoblocksExistentes[4],
+        "Aluminio",
+        89.0f,
+        88.95f
+    },
+    {
+        5, 5,
+        "1KD-FTV",
+        "Toyota",
+        2013,
+        "Hilux",
+        3.0f,
+        175.0f,
+        "TYT56473",
+        DIESEL,
+        &culatasExistentes[5],
+        &monoblocksExistentes[5],
+        "Hierro",
+        95.0f,
+        94.85f
+    },
+    {
+        6, 6,
+        "PowerStroke 6.4",
+        "Ford",
+        2009,
+        "F-250",
+        6.4f,
+        200.0f,
+        "PWS98765",
+        DIESEL,
+        &culatasExistentes[6],
+        &monoblocksExistentes[6],
+        "Hierro fundido",
+        104.0f,
+        103.87f
+    },
+    {
+        7, 7,
+        "K20A",
+        "Honda",
+        2007,
+        "Civic Type-R",
+        2.0f,
+        210.0f,
+        "HND13579",
+        GASOLINA,
+        &culatasExistentes[7],
+        &monoblocksExistentes[7],
+        "Aluminio",
+        86.0f,
+        85.98f
+    },
+    {
+        8, 8,
+        "N57D30",
+        "BMW",
+        2015,
+        "Serie 5",
+        3.0f,
+        175.0f,
+        "BMW24681",
+        DIESEL,
+        &culatasExistentes[8],
+        &monoblocksExistentes[8],
+        "Aluminio reforzado",
+        84.0f,
+        83.95f
+    },
+    {
+        9, 9,
+        "F20C",
+        "Honda",
+        2005,
+        "S2000",
+        2.0f,
+        220.0f,
+        "HND12345",
+        GASOLINA,
+        &culatasExistentes[9],
+        &monoblocksExistentes[9],
+        "Aluminio",
+        87.0f,
+        86.94f
+    }
+};
+
+Motor motoresExistentesSINCulatasAsignadas[10] = {
+    {
+        0, 0,
+        "Duratec 2.0",
+        "Ford",
+        2012,
+        "Focus",
+        2.0f,
+        130.0f,
+        "FD123456",
+        GASOLINA,
+        NULL,
+        NULL,
+        "Aluminio",
+        84.0f,
+        83.9f
+    },
+    {
+        1, 0,
+        "Vortec 4800",
+        "Chevrolet",
+        2010,
+        "Silverado",
+        4.8f,
+        150.0f,
+        "CHV09876",
+        GASOLINA,
+        NULL,
+        NULL,
+        "Hierro",
+        92.0f,
+        91.98f
+    },
+    {
+        2, 0,
+        "EcoBoost 1.5",
+        "Ford",
+        2018,
+        "Escape",
+        1.5f,
+        140.0f,
+        "FRD45678",
+        GASOLINA,
+        NULL,
+        NULL,
+        "Aluminio",
+        79.0f,
+        78.8f
+    },
+    {
+        3, 0,
+        "Cummins 6.7",
+        "Cummins",
+        2016,
+        "RAM 2500",
+        6.7f,
+        195.0f,
+        "CMS23456",
+        DIESEL,
+        NULL,
+        NULL,
+        "Hierro fundido",
+        107.0f,
+        106.97f
+    },
+    {
+        4, 0,
+        "SkyActiv-G 2.5",
+        "Mazda",
+        2020,
+        "Mazda6",
+        2.5f,
+        160.0f,
+        "MZD67890",
+        GASOLINA,
+        NULL,
+        NULL,
+        "Aluminio",
+        89.0f,
+        88.95f
+    },
+    {
+        5, 0,
+        "1KD-FTV",
+        "Toyota",
+        2013,
+        "Hilux",
+        3.0f,
+        175.0f,
+        "TYT56473",
+        DIESEL,
+        NULL,
+        NULL,
+        "Hierro",
+        95.0f,
+        94.85f
+    },
+    {
+        6, 0,
+        "PowerStroke 6.4",
+        "Ford",
+        2009,
+        "F-250",
+        6.4f,
+        200.0f,
+        "PWS98765",
+        DIESEL,
+        NULL,
+        NULL,
+        "Hierro fundido",
+        104.0f,
+        103.87f
+    },
+    {
+        7, 0,
+        "K20A",
+        "Honda",
+        2007,
+        "Civic Type-R",
+        2.0f,
+        210.0f,
+        "HND13579",
+        GASOLINA,
+        NULL,
+        NULL,
+        "Aluminio",
+        86.0f,
+        85.98f
+    },
+    {
+        8, 0,
+        "N57D30",
+        "BMW",
+        2015,
+        "Serie 5",
+        3.0f,
+        175.0f,
+        "BMW24681",
+        DIESEL,
+        NULL,
+        NULL,
+        "Aluminio reforzado",
+        84.0f,
+        83.95f
+    },
+    {
+        9, 0,
+        "F20C",
+        "Honda",
+        2005,
+        "S2000",
+        2.0f,
+        220.0f,
+        "HND12345",
+        GASOLINA,
+        NULL,
+        NULL,
+        "Aluminio",
+        87.0f,
+        86.94f
+    }
+};
+======================================================
+//Testing
+#ifndef TESTING_H
+#define TESTING_H
+#include "UsuarioDTO.h"
+
+
+#define CANTIDAD_MOTORES_PRECARGADOS 10
+extern Culata culatasExistentes[CANTIDAD_MOTORES_PRECARGADOS];
+extern Monoblock monoblocksExistentes[CANTIDAD_MOTORES_PRECARGADOS];
+extern Motor motoresExistentesCONCulatasAsignadas[CANTIDAD_MOTORES_PRECARGADOS];
+extern Motor motoresExistentesSINCulatasAsignadas[CANTIDAD_MOTORES_PRECARGADOS];
+
+extern int testingMode;
+void testing(int encendido);
+void agregarUsuarios();
+void agregarPiezas();
+int precargarMotoresDB(Motor motores[], int cantidad);
+void inicializarArrayMotoresPrecargados();
+void listarMotoresPrecargados();
+
+#endif
+======================================================
+//Reloj
+#include "reloj.h"
+
+#include <ncurses.h>
+#include <pthread.h>
+#include <time.h>
+#include <string.h>
+#include <unistd.h>
+
+char *get_time_str() {
+    time_t rawtime;
+    struct tm *timeinfo;
+    static char buffer[9];
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    strftime(buffer, sizeof(buffer), "%H:%M:%S", timeinfo);
+    return buffer;
+}
+
+
+void *clock_thread(void *arg) {
+    ClockData *data = (ClockData *) arg;
+    WINDOW *win = data->win;
+
+    while (data->running) {
+        wmove(win, 5, COLS - 30);
+        wprintw(win, "%s", get_time_str());
+        wrefresh(win);
+        sleep(1);
+    }
+
+    return NULL;
+}
+======================================================
+//Reloj
+#ifndef RELOJ_H
+#define RELOJ_H
+#include <curses.h>
+
+
+typedef struct {
+    WINDOW *win;
+    int running;
+} ClockData;
+
+char *get_time_str();
+
+void *clock_thread(void *arg);
+
+#endif
+======================================================
+//UserInterface
+#include "UserInterface.h"
+
+#include <ctype.h>
+
+#include "LogicaNegocio.h"
+#include "UsuarioDTO.h"
+#include <stdio.h>
+#include <curses.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#define ESC 27
+#define SIZE_DOS 2
+#define SIZE_TRES 3
+#define SIZE_CUATRO 4
+#define SIZE_CINCO 5
+#define SIZE_SEIS 6
+#define SIZE_SIETE 7
+int numOpciones = 0;
+
+
+#define BAR_WIDTH 50
+#define DELAY 100000
+#define BAR_WIDTH 50
+
+
+int (*funcionesSistema[SIZE_SIETE])() = {
+    cliente, servicio, pago, almacen, otro, dudas, salir
+};
+
+void ejecutarOpcion(int opcion) {
+    clear();
+    if (funcionesSistema[opcion] != NULL) {
+        refresh();
+        funcionesSistema[opcion]();
+    } else {
+        mvprintw(10, 10, "Opción %d no implementada aún.", opcion + 1);
+        refresh();
+        getch();
+    }
+
+    mvprintw(1, 60, "Presiona cualquier tecla para volver al menu...");
+    refresh();
+}
+
+void imprimirMenu(char *menu[], int numOpciones, int highlight) {
+    for (int i = 0; i < numOpciones; i++) {
+        if (i == highlight) {
+            attron(A_REVERSE);
+        }
+        mvprintw(i + 5, 10, "%s", menu[i]);
+        attroff(A_REVERSE);
+    }
+    refresh();
+}
+
+int mostrarMenu(int menuventana, const char *pregunta) {
+    int ch, highlight = 0;
+
+    char *menuPrincipal[SIZE_SIETE] = {"Clientes", "Servicio", "Pago", "Almacen", "Otros", "Dudas", "Salir"};
+
+    char *menuClientesUno[SIZE_CUATRO] = {"Agregar", "Editar", "Listar", "Menu Principal"};
+    char *menuClientesDos[SIZE_SIETE] = {"Nombre", "Apellido", "Num Celular", "Email", "Contacto", "Eliminar", "Salir"};
+
+    char *menuServicioUno[SIZE_CINCO] = {
+        "Ingreso caracteristicas motor", "Medidas", "Operaciones", "Listar Motores Precargados", "Salir"
+    };
+
+
+    char *menuServicioDos[SIZE_DOS] = {"CULATA", "MONOBLOCK"};
+    char *menuServicioTres[SIZE_TRES] = {"1 : Gasolina", "2: Diesel", "3: Electrico"};
+    char *menuServicioCuatro[SIZE_DOS] = {"NO", "SI"};
+
+    char *menuAlmacenUno[SIZE_CUATRO] = {
+        "Inventario General / Stock", "Herramientas y Equipos", "Proveedores y Compras", "Reportes"
+    };
+
+    char *menuAlmacenDos[SIZE_TRES] = {"Ver piezas", "Buscar / Filtrar", "Agregar / Editar / Eliminar"};
+    char *menuAlmacenTres[SIZE_TRES] = {"Entradas / Salidas", "Alertas de stock mínimo", "Historial de movimientos"};
+    char *menuAlmacenCuatro[SIZE_TRES] = {"Estado de herramientas", "Registro de mantenimiento", "Asignación"};
+    char *menuAlmacenCinco[SIZE_TRES] = {"Registro de proveedor", "Historial de compras", "Pedidos pendientes"};
+    char *menuAlmacenSeis[SIZE_TRES] = {"Movimientos", "Piezas más usadas", "Piezas inactivas"};
+
+
+    char *menuPagoUno[SIZE_CUATRO] = {
+        "Generar Nota", "Generar Ticket", "Generar Factura", "Listar detalles del usuario"
+    };
+    char *menuPagoDos[SIZE_SIETE] = {
+        "Desmontado", "Lavado Inicial", "Rectificacion", "Pruebas Unitarias", "Lavado Secundario", "Montar Motor",
+        "Salir"
+    };
+
+    char *menuOtrosUno[SIZE_SIETE] = {
+        "Reportar Bug/Solicitar Mejora", "Listar Piezas Guardadas Sistema", "Ver Historial de tickets",
+        "Limpieza de cache - Reinicio local del sistema",
+        "Enviar Logs del sistema", "Exportar Todo el sistema", "Salir"
+    };
+
+    char *menuDudasUno[SIZE_CINCO] = {
+        "Consulta Tecnica", "Consultar Version", "Manual de usuario", "Documentacion", "Salir"
+    };
+
+    char **menuActual = NULL;
+    int numOpciones = 0;
+    switch (menuventana) {
+        case 1: menuActual = menuPrincipal;
+            numOpciones = SIZE_SIETE;
+            break;
+
+        case 2: menuActual = menuClientesUno;
+            numOpciones = SIZE_CUATRO;
+            break;
+        case 3: menuActual = menuClientesDos;
+            numOpciones = SIZE_SIETE;
+            break;
+
+        case 4: menuActual = menuServicioUno;
+            numOpciones = SIZE_CINCO;
+            break;
+        case 5: menuActual = menuServicioDos;
+            numOpciones = SIZE_DOS;
+            break;
+        case 6: menuActual = menuServicioTres;
+            numOpciones = SIZE_TRES;
+            break;
+        case 7: menuActual = menuServicioCuatro;
+            numOpciones = SIZE_DOS;
+            break;
+        case 8: menuActual = menuAlmacenUno;
+            numOpciones = SIZE_CUATRO;
+            break;
+        case 9: menuActual = menuAlmacenDos;
+            numOpciones = SIZE_TRES;
+            break;
+        case 10: menuActual = menuAlmacenTres;
+            numOpciones = SIZE_TRES;
+            break;
+        case 11: menuActual = menuAlmacenCuatro;
+            numOpciones = SIZE_TRES;
+            break;
+        case 12: menuActual = menuAlmacenCinco;
+            numOpciones = SIZE_TRES;
+            break;
+        case 13: menuActual = menuAlmacenSeis;
+            numOpciones = SIZE_TRES;
+            break;
+        case 14: menuActual = menuPagoUno;
+            numOpciones = SIZE_CUATRO;
+            break;
+        case 15: menuActual = menuPagoDos;
+            numOpciones = SIZE_SIETE;
+            break;
+        case 16: menuActual = menuOtrosUno;
+            numOpciones = SIZE_SIETE;
+            break;
+        case 17: menuActual = menuDudasUno;
+            numOpciones = SIZE_CINCO;
+            break;
+
+        default:
+            mvprintw(10, 10, "Opción no válida o ocurrió un error");
+            refresh();
+            getch();
+            return -1;
+    }
+
+
+    ESCDELAY = 25;
+    noecho();
+    cbreak();
+    keypad(stdscr, TRUE);
+
+    while (1) {
+        clear();
+        mvprintw(2, 10, "%s", pregunta);
+        imprimirMenu(menuActual, numOpciones, highlight);
+        ch = getch();
+
+        switch (ch) {
+            case KEY_UP: highlight = (highlight == 0) ? numOpciones - 1 : highlight - 1;
+                break;
+            case KEY_DOWN: highlight = (highlight == numOpciones - 1) ? 0 : highlight + 1;
+                break;
+            case 10: return highlight;
+            case ESC: return -1;
+        }
+    }
+}
+
+void imprimirMensaje(const int POS_Y, const int POS_X, char *pregunta) {
+    clear();
+    mvprintw(POS_Y, POS_X, "%s", pregunta);
+    getch();
+}
+
+void imprimirBarraDeCarga(const int delay_ms, const char *mensaje) {
+    noecho();
+    curs_set(FALSE);
+    clear();
+
+
+    int fila = LINES / 2;
+    int columna = (COLS - BAR_WIDTH) / 2;
+    mvprintw(fila - 2, columna, mensaje);
+
+
+    mvprintw(fila, columna, "[");
+    mvprintw(fila, columna + BAR_WIDTH + 1, "]");
+
+    for (int i = 0; i <= BAR_WIDTH; i++) {
+        mvprintw(fila, columna + 1 + i, "=");
+
+
+        mvprintw(fila + 2, columna, "Progreso: %d%%", (i * 100) / BAR_WIDTH);
+        refresh();
+        usleep(delay_ms * 1000);
+    }
+
+
+    mvprintw(fila + 4, columna, "Carga completada. Presiona una tecla para salir.");
+    refresh();
+    getch();
+}
+======================================================
+#ifndef USERINTERFACE_H
+#define USERINTERFACE_H
+
+void ejecutarOpcion(int opcion);
+int mostrarMenu(int menuventana, const char *pregunta);
+void imprimirMensaje(int POS_Y, int POS_X, char *pregunta);
+void imprimirBarraDeCarga(int delay_ms, const char *mensaje);
+
+#endif
+======================================================
+//Utils
+#include "Util.h"
+
+#include <ctype.h>
+#include <limits.h>
+#include <curses.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#include "UserInterface.h"
+#include "LogicaNegocio.h"
+
+char *strFill(const char *str) {
+    if (str == NULL) return NULL;
+
+    const char *start = str;
+    while (*start == ' ') start++;
+
+    if (*start == '\0') {
+        char *result = (char *) malloc(1);
+        result[0] = '\0';
+        return result;
+    }
+
+    const char *end = str + strlen(str) - 1;
+    while (end > start && *end == ' ') end--;
+
+    int len = end - start + 1;
+    char *result = (char *) malloc(len + 1);
+    if (result == NULL) return NULL;
+
+    strncpy(result, start, len);
+    result[len] = '\0';
+    return result;
+}
+
+int strEquals(const char *str1, const char *str2) {
+    if (str1 == NULL || str2 == NULL) {
+        return (str1 == str2);
+    }
+    return strcmp(str1, str2) == 0;
+}
+
+int strIsEmpty(const char *str) {
+    if (str == NULL) return 1;
+    return str[0] == '\0';
+}
+
+int strContains(const char *src, const char *str) {
+    if (src == NULL || str == NULL) return 0;
+    return strstr(src, str) != NULL;
+}
+
+
+void asignString(char *dst, const char *src, const size_t n) {
+    if (src == NULL) {
+        dst[0] = '\0';
+        return;
+    }
+    strncpy(dst, src, n - 1);
+    dst[n - 1] = '\0';
+}
+
+char *generarFolio(const char *nombre) {
+    char *folio = (char *) malloc(13);
+
+    if (folio == NULL) {
+        printf("Error de memoria al reservar %d bytes\n", 13);
+        return NULL;
+    }
+
+    int len = strlen(nombre);
+
+    for (int i = 0; i < 3; i++) {
+        if (i < len) {
+            folio[i] = toupper(nombre[i]);
+        } else {
+            folio[i] = 'X';
+        }
+    }
+
+    srand(time(NULL) + len);
+    for (int i = 3; i < 12; i++) {
+        folio[i] = '0' + rand() % 10;
+    }
+
+
+    folio[12] = '\0';
+    return folio;
+}
+
+void cleanBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF) {
+    }
+}
+
+
+int validarString(const char *src) {
+    if (src == NULL) {
+        return -1;
+    }
+    return 1;
+}
+
+char *enterString(int length) {
+    char *buffer = (char *) malloc(length + 1);
+    if (buffer == NULL) {
+        perror("Error al asignar memoria");
+        exit(1);
+    }
+    if (fgets(buffer, length + 1, stdin) != NULL) {
+        buffer[strcspn(buffer, "\n")] = '\0';
+    }
+    return buffer;
+}
+
+
+char *leerString(int y, int x, int maxLen, char *pregunta) {
+    mvprintw(y, x, "%s  ", pregunta);
+    char *buffer = (char *) malloc(maxLen + 1);
+    if (!buffer) {
+        mvprintw(y + 1, x, "Error: No se pudo asignar memoria.");
+        refresh();
+        return NULL;
+    }
+    memset(buffer, 0, maxLen + 1);
+
+    noecho();
+    cbreak();
+    keypad(stdscr, TRUE);
+
+    int ch, pos = 0;
+    move(y, x + strlen(pregunta) + 2);
+    while (1) {
+        ch = getch();
+        if (ch == 27) {
+            free(buffer);
+            return NULL;
+        } else if (ch == '\n' || ch == KEY_ENTER) {
+            break;
+        } else if (ch == KEY_BACKSPACE || ch == 127 || ch == 8) {
+            if (pos > 0) {
+                pos--;
+                move(y, x + strlen(pregunta) + 2 + pos);
+                addch(' ');
+                move(y, x + strlen(pregunta) + 2 + pos);
+                buffer[pos] = '\0';
+                refresh();
+            }
+        } else if (isprint(ch) && pos < maxLen) {
+            buffer[pos] = ch;
+            mvaddch(y, x + strlen(pregunta) + 2 + pos, ch);
+            pos++;
+            refresh();
+        }
+    }
+
+    buffer[pos] = '\0';
+    if (strlen(buffer) == 0) {
+        free(buffer);
+        return NULL;
+    }
+    return buffer;
+}
+
+int *leerInt(int y, int x, int maxLen, char *pregunta, int *codigoError) {
+    if (codigoError) *codigoError = 0;
+
+    mvprintw(y, x, "%s  ", pregunta);
+    refresh();
+
+    char buffer[maxLen + 1];
+    memset(buffer, 0, maxLen + 1);
+    echo();
+
+    int ch = getch();
+    if (ch == 27) {
+        noecho();
+        if (codigoError) *codigoError = LEERINT_ESC;
+        return NULL;
+    }
+
+    ungetch(ch);
+
+    mvgetnstr(y, x + (int)strlen(pregunta) + 2, buffer, maxLen);
+    noecho();
+
+    if (strlen(buffer) == 0) {
+        if (codigoError) *codigoError = LEERINT_EMPTY;
+        return NULL;
+    }
+
+    int i = 0;
+    if (buffer[0] == '-') i++;
+    for (; buffer[i] != '\0'; i++) {
+        if (!isdigit((unsigned char)buffer[i])) {
+            mvprintw(y + 1, x, "Entrada no válida: solo números.");
+            refresh();
+            if (codigoError) *codigoError = LEERINT_ERROR;
+            return NULL;
+        }
+    }
+
+    char *endptr;
+    long numLong = strtol(buffer, &endptr, 10);
+    if (*endptr != '\0' || numLong > INT_MAX || numLong < INT_MIN) {
+        mvprintw(y + 1, x, "Error: número fuera de rango.");
+        refresh();
+        if (codigoError) *codigoError = LEERINT_ERROR;
+        return NULL;
+    }
+
+    int *num = (int *) malloc(sizeof(int));
+    if (!num) {
+        mvprintw(y + 1, x, "Error al asignar memoria.");
+        refresh();
+        if (codigoError) *codigoError = LEERINT_ERROR;
+        return NULL;
+    }
+
+    *num = (int) numLong;
+    return num;
+}
+
+float *leerFloat(int y, int x, int maxLen, char *pregunta) {
+    mvprintw(y, x, "%s  ", pregunta);
+    if (maxLen <= 0) {
+        mvprintw(y + 1, x, "Error: Longitud máxima inválida.");
+        refresh();
+        return NULL;
+    }
+
+    char buffer[maxLen + 1];
+    memset(buffer, 0, maxLen + 1);
+    echo();
+    mvgetnstr(y, x + strlen(pregunta) + 2, buffer, maxLen);
+    noecho();
+
+    if (strlen(buffer) == 0) {
+        return NULL;
+    }
+
+    int i = 0, dotCount = 0;
+    if (buffer[0] == '-') {
+        i++;
+    }
+
+    for (; buffer[i] != '\0'; i++) {
+        if (buffer[i] == '.') {
+            dotCount++;
+            if (dotCount > 1) {
+                mvprintw(y + 1, x, "Error: Número no válido.");
+                refresh();
+                return NULL;
+            }
+        } else if (!isdigit((unsigned char)buffer[i])) {
+            mvprintw(y + 1, x, "Error: Solo números válidos.");
+            refresh();
+            return NULL;
+        }
+    }
+
+    char *endptr;
+    float numFloat = strtof(buffer, &endptr);
+    if (*endptr != '\0') {
+        mvprintw(y + 1, x, "Error: Conversión inválida.");
+        refresh();
+        return NULL;
+    }
+
+    float *num = (float *) malloc(sizeof(float));
+    if (!num) {
+        mvprintw(y + 1, x, "Error: No se pudo asignar memoria.");
+        refresh();
+        return NULL;
+    }
+
+    *num = numFloat;
+    return num;
+}
+
+int leerIntSeguro(int y, int x, int maxLen, char *pregunta) {
+    int *valor = NULL;
+    int codigoError = 0;
+
+    do {
+        move(y + 1, x);
+        clrtoeol();
+        refresh();
+
+        valor = leerInt(y, x, maxLen, pregunta, &codigoError);
+
+        if (valor == NULL) {
+            if (codigoError == LEERINT_ESC) {
+                return -1;
+            }
+        }
+    } while (valor == NULL);
+
+    int resultado = *valor;
+    free(valor);
+    return resultado;
+}
+
+float leerFloatSeguro(int y, int x, int maxLen, char *pregunta) {
+    float *valor = NULL;
+    do {
+        valor = leerFloat(y, x, maxLen, pregunta);
+        if (valor == NULL) {
+            mvprintw(y + 1, x, "X Entrada invalida. Intentalo de nuevo.");
+            getch();
+            refresh();
+            mvprintw(y + 1, 0,
+                     "                                                                                                                                                        ");
+        }
+    } while (valor == NULL);
+
+    float resultado = *valor;
+    free(valor);
+    return resultado;
+}
+
+
+char *leerStringSeguro(int y, int x, int maxLen, char *pregunta) {
+    char *valor = NULL;
+    do {
+        valor = leerString(y, x, maxLen, pregunta);
+        if (valor == NULL) {
+            mvprintw(y + 1, x, "Entrada inválida o cancelada con (ESC). Presione ESC de nuevo.");
+            refresh();
+            int ch = getch();
+            if (ch == 27) return NULL;
+
+            move(y + 1, x);
+            clrtoeol();
+            mvprintw(y + 1, 0,
+                     "                                                                                                                                                        ");
+        }
+    } while (valor == NULL);
+
+    return valor;
+}
+
+void imprimirTextoMultilinea(int fila, int columna, const char *texto, int anchoMaximo) {
+    int len = strlen(texto);
+    int inicio = 0;
+
+    while (inicio < len) {
+        char buffer[anchoMaximo + 1];
+        int fin = inicio + anchoMaximo;
+
+        if (fin >= len) fin = len;
+        else {
+            while (fin > inicio && texto[fin] != ' ') fin--;
+            if (fin == inicio) fin = inicio + anchoMaximo;
+        }
+
+        int largoLinea = fin - inicio;
+        strncpy(buffer, texto + inicio, largoLinea);
+        buffer[largoLinea] = '\0';
+
+        mvprintw(fila++, columna, "%s", buffer);
+        while (texto[fin] == ' ') fin++;
+        inicio = fin;
+    }
+}
+
+void imprimirTextoMultilineaArchivo(FILE *archivo, const char *texto, int anchoMaximo) {
+    if (!texto || !archivo) return;
+
+    int len = strlen(texto);
+    int inicio = 0;
+
+    while (inicio < len) {
+        int longitudLinea = (len - inicio > anchoMaximo) ? anchoMaximo : len - inicio;
+        char linea[anchoMaximo + 1];
+        strncpy(linea, texto + inicio, longitudLinea);
+        linea[longitudLinea] = '\0';
+        fprintf(archivo, "%s\n", linea);
+        inicio += longitudLinea;
+    }
+}
+
+int arrayPiezasSize(ArrayPiezas *list) {
+    int tamanno = 0;
+    for (int i = 0; i < list->tamanno; i++) {
+        if (list->datos[i] != NULL) {
+            tamanno++;
+        }
+    }
+    return tamanno;
+}
+
+const char *tipoCombustibleToStr(TipoCombustible tipo) {
+    switch (tipo) {
+        case GASOLINA: return "Gasolina";
+        case DIESEL: return "Diesel";
+        case HIBRIDO: return "Híbrido";
+        default: return "Desconocido";
+    }
+}
+
+void mostrarUsuario(Usuario usr) {
+    mvprintw(10, 10, "ID Usuario: %d\n", usr.id_usuario);
+    mvprintw(10, 11, "Folio Usuario: %s\n", usr.folio);
+    mvprintw(10, 12, "Activo?: %d", usr.activo);
+    mvprintw(10, 13, "Nombre: %s\n", usr.nombreUsuario);
+    mvprintw(10, 14, "Apellido: %s\n", usr.apellido);
+    mvprintw(10, 15, "Celular: %lld\n", usr.celular);
+    mvprintw(10, 16, "Email: %s\n", usr.email);
+    mvprintw(10, 17, "Contacto: %s\n", usr.contacto);
+}
+
+char *obtenerNombreArchivo(const char *textoInicial) {
+    char fecha[50];
+    time_t t = time(NULL);
+    struct tm *tm_info = localtime(&t);
+    strftime(fecha, sizeof(fecha), "%Y-%m-%d_%H-%M-%S", tm_info);
+
+    char *nombreArchivo = malloc(200);
+    if (nombreArchivo == NULL) {
+        perror("Error al reservar memoria");
+        exit(EXIT_FAILURE);
+    }
+
+    strcpy(nombreArchivo, textoInicial);
+    strcat(nombreArchivo, fecha);
+    strcat(nombreArchivo, ".txt");
+
+    return nombreArchivo;
+}
+
+void cleanScreen() {
+    printf("\033[2J\033[H");
+}
+======================================================
+//Utils.h
+#ifndef Util_H
+#define Util_H
+#define RETURN_IF_ESC(x) if ((x) == -1) return -1
+#define LEERINT_ESC -1
+#define LEERINT_ERROR -2
+#define LEERINT_EMPTY -3
+#include <stddef.h>
+#include <stdio.h>
+#include "UsuarioDTO.h"
+
+int strEquals(const char* str1, const char* str2);
+int strIsEmpty(const char* str);
+int strContains(const char* src, const char* str);
+void asignString(char* dst, const char* src, size_t n);
+char* enterString(int length);
+
+char* generarFolio(const char* nombre);
+
+int validarString(const char* src);
+int leerIntSeguro(int y, int x, int maxLen, char* pregunta);
+float leerFloatSeguro(int y, int x, int maxLen, char* pregunta);
+char* leerStringSeguro(int y, int x, int maxLen, char* pregunta);
+void imprimirTextoMultilinea(int fila, int columna, const char* texto, int anchoMaximo);
+void imprimirTextoMultilineaArchivo(FILE* archivo, const char* texto, int anchoMaximo);
+
+void cleanBuffer();
+
+void cleanScreen();
+#endif
+======================================================

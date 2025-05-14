@@ -6,9 +6,9 @@
 #include <time.h>
 
 #include "UsuarioDTO.h"
-#include "Util.h"
-#include "LogicaNegocio.h"
-#include "UserInterface.h"
+#include "../ProyectoPE/Util.h"
+#include "../ProyectoPE/LogicaNegocio.h"
+#include "../ProyectoPE/UserInterface.h"
 
 
 const float precioRectificadoCulata = 850.0f;

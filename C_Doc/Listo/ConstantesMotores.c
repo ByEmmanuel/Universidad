@@ -1,5 +1,5 @@
 ///constantesMotores
-#include "LogicaNegocio.h"
+#include "../ProyectoPE/LogicaNegocio.h"
 #include "UsuarioDTO.h"
 
 PiezaAlmacen componentes_motor[CANTIDAD_PIEZASPRECARGADAS] = {

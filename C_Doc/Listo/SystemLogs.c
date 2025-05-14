@@ -1,8 +1,8 @@
 //SystemLogs
-#include "SystemLogs.h"
+#include "../ProyectoPE/SystemLogs.h"
 #include <stdio.h>
 #include <time.h>
-#include "Util.h"
+#include "../ProyectoPE/Util.h"
 
 #include <ctype.h>
 #include <limits.h>
@@ -12,7 +12,7 @@
 #include <string.h>
 #include <time.h>
 
-#include "UserInterface.h"
+#include "../ProyectoPE/UserInterface.h"
 #include "LogicaNegocio.h"
 
 void enviarLogsSistema(char *nombreArchivo, FILE *archivo) {

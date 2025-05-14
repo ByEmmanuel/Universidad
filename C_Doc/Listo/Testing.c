@@ -1,5 +1,5 @@
 //Testin
-#include "Testing.h"
+#include "../ProyectoPE/Testing.h"
 
 #include <curses.h>
 #include <stdio.h>
@@ -7,7 +7,7 @@
 
 #include "LogicaNegocio.h"
 #include "SystemLogs.h"
-#include "UserInterface.h"
+#include "../ProyectoPE/UserInterface.h"
 #include "UsuarioDTO.h"
 
 void testing(int tipoDeTesting) {

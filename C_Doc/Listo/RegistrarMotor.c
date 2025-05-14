@@ -4,11 +4,11 @@
 #include <tgmath.h>
 #include <time.h>
 
-#include "UsuarioDTO.h"
-#include "LogicaNegocio.h"
-#include "Testing.h"
-#include "UserInterface.h"
-#include "Util.h"
+#include "../ProyectoPE/UsuarioDTO.h"
+#include "../ProyectoPE/LogicaNegocio.h"
+#include "../ProyectoPE/Testing.h"
+#include "../ProyectoPE/UserInterface.h"
+#include "../ProyectoPE/Util.h"
 
 int registrarMotor() {
     int y = 2;

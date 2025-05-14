@@ -1,15 +1,15 @@
 //USuario DTO
-#include "UsuarioDTO.h"
+#include "../ProyectoPE/UsuarioDTO.h"
 
 #include <curses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "LogicaNegocio.h"
-#include "UserInterface.h"
+#include "../ProyectoPE/LogicaNegocio.h"
+#include "../ProyectoPE/UserInterface.h"
 
-#include "SystemLogs.h"
-#include "Util.h"
+#include "../ProyectoPE/SystemLogs.h"
+#include "../ProyectoPE/Util.h"
 int id_UsuarioGlobal = 0;
 int id_piezaGlobal = 0;
 int id_unicoLogs = 0;

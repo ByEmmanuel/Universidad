@@ -1,5 +1,5 @@
 //Reloj
-#include "reloj.h"
+#include "../ProyectoPE/reloj.h"
 
 #include <ncurses.h>
 #include <pthread.h>
