@@ -45,13 +45,13 @@ int cliente(){
         if (apellidoUsr == NULL) {
             return -1;
         }
-        const int celularUsr = leerIntSeguro(y+=2, 5, 15,"Ingrese Celular: ");
-        emailUsr = leerStringSeguro(y+=2, 5, 49, "Ingrese Email: ");
-        if (emailUsr == NULL) {
-            return -1;
-        }
+        const int celularUsr = leerIntSeguro(y+=2, 5, 10,"Ingrese Celular: ");
         const char* contactoUsr = leerStringSeguro(y+=2,5, 29,"Ingrese Contacto: ");
         if (contactoUsr == NULL) {
+            return -1;
+        }
+        emailUsr = leerStringSeguro(y+=2, 5, 49, "Ingrese Email: ");
+        if (emailUsr == NULL) {
             return -1;
         }
         while (!strContains(emailUsr, "@")) {

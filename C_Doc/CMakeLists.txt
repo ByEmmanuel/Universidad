@@ -25,12 +25,13 @@ add_executable(C_Doc
         ProyectoPE/RegistrarMotor.c
         ProyectoPE/Testing.c
         #ProyectoPE/Testing.h
-        ProyectoPE/ApartadoDudas.c
         ProyectoPE/Almacen.c
         ProyectoPE/UsuarioDAO.c
         ProyectoPE/ApartadoOtros.c
         ProyectoPE/ConstantesMotores.c
         ProyectoPE/SystemLogs.c
+        ProyectoPE/reloj.c
+        ProyectoPE/reloj.h
 )
 
 target_link_libraries(C_Doc ${CURSES_LIBRARIES})

@@ -162,27 +162,76 @@ void agregarPiezas() {
     const int id_usuario = 0, id_usuario_2 = 1;
     Motor* motorUsuario_1 = inicializarMotor(motores_registrados[0],id_usuario,0,0,0);
     Culata* pzc = inicializarCulata(16, 10, 2,2,.124f,.123f,.120f, id_usuario,-1);
-    //piezaUsuario.tipoPieza = CULATA;
+    float diametros_cilindro[] = {79.0f, 79.0f, 79.0f, 79.0f};  // en mm
+    float conicidades[] = {0.01f, 0.015f, 0.012f, 0.014f};      // en mm
+    float diametros_bancadas[] = {55.0f, 55.0f, 55.0f, 55.0f, 55.0f};
+    float desalineacion_bancadas[] = {0.01f, 0.008f, 0.009f, 0.007f, 0.01f};
 
+    Monoblock* mono = inicializarMonoblock(
+        -1,                     // id_pieza
+        1,                       // id_usuario
+        4,                       // numCilindros
+        diametros_cilindro,
+        conicidades,
+        5,                       // num_bancadas
+        diametros_bancadas,
+        desalineacion_bancadas,
+        0.02f,                    // ovalizacion_max (mm)
+        0.03f,                    // planitud_superficie (mm)
+        0b00000110,              // flags (e.g., bit 1 = necesita rectificado, bit 2 = sellado)
+        "1ZZFE-TRD-987654",      // numero_serie
+        "Se observó desgaste uniforme, requiere rectificado", // observaciones
+        1                        // estado_diagnostico (1 = necesita intervención)
+    );
+
+    //Guardar Motor
     guardarMotorArray(motorUsuario_1,id_usuario);
-    //agregarSystemLog(id_usuario, "Motor", "Registro", motores_registrados[0].numeroSerie, INFO, 1, "GuardarMotor", "Motor registrado en pruebas", "0");
+    //Guardar Culata
 
-    guardarPiezaArray(pzc,id_usuario,"culata");
-    //agregarSystemLog(id_usuario, "Pieza", "Registro", "Culata", INFO, 1, "GuardarPieza", "Culata registrada en pruebas", "0");
+    //guardarPiezaArray(pzc,id_usuario,"culata");
+
+    //Guardar Monoblock
+    guardarPiezaArray(mono,id_usuario,"monoblock");
 
     Usuario* usuario1 = obtenerUsuarioByIdUsuario(id_usuario);
     asignarMotorUsuario(usuario1, motorUsuario_1);
-    asignarPiezaMotor(usuario1,pzc, 1);
+    //asignarPiezaMotor(usuario1,pzc, 1);
+
+    asignarPiezaMotor(usuario1,mono, 2);
 
 
     Motor* motorUsuario_2 = inicializarMotor(motores_registrados[1], id_usuario_2,1,0,0);
     Culata* pzc2 = inicializarCulata(18, 12, 1,14,.340f,.338f,.339f, id_usuario_2,-2);
-    //piezaUsuario2.tipoPieza = CULATA;
+    float diametros_cilindroDos[] = {137.0f, 137.1f, 137.0f, 137.2f, 137.1f, 137.0f};
+    float conicidadesDos[] = {0.025f, 0.027f, 0.022f, 0.021f, 0.024f, 0.025f};
+    float diametros_bancadasDos[] = {78.0f, 78.0f, 78.0f, 78.0f, 78.0f, 78.0f, 78.0f};
+    float desalineacion_bancadasDos[] = {0.015f, 0.012f, 0.014f, 0.016f, 0.013f, 0.014f, 0.015f};
+
+    Monoblock* mono2 = inicializarMonoblock(
+        -1,                       // id_pieza
+        2,                         // id_usuario
+        6,                         // numCilindros
+        diametros_cilindroDos,
+        conicidadesDos,
+        7,                         // num_bancadas
+        diametros_bancadasDos,
+        desalineacion_bancadasDos,
+        0.035f,                     // ovalizacion_max (mm)
+        0.04f,                      // planitud_superficie (mm)
+        0b00001101,                // flags (e.g., bit 0, 2, 3 activados)
+        "ISX15-456789-CUMMINS",    // numero_serie
+        "Ovalización fuera de norma, bancadas desalineadas", // observaciones
+        2                          // estado_diagnostico (2 = necesita reemplazo)
+    );
     guardarMotorArray(motorUsuario_2, id_usuario_2);
-    guardarPiezaArray(pzc2, id_usuario_2,"culata");
+
+    //guardarPiezaArray(pzc2, id_usuario_2,"culata");
+
+    guardarPiezaArray(mono2, id_usuario_2,"monoblock");
     Usuario* usuario2 = obtenerUsuarioByIdUsuario(id_usuario_2);
     asignarMotorUsuario(usuario2, motorUsuario_2);
-    asignarPiezaMotor(usuario2,pzc2, 1);
+    //asignarPiezaMotor(usuario2,pzc2, 1);
+    asignarPiezaMotor(usuario2,mono2, 2);
 
     setIdPiezaGlobal(getIdPiezaGlobal()+2);
 

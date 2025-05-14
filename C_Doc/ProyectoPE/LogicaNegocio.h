@@ -56,7 +56,7 @@ const char* imprimirOperacionesEstadoPieza(int estado, int tipoPieza);
 int realizarOperacionesMotor();
 int realizarOperacionesPiezaMotor(int tipoPieza);
 
-int evaluarDiametrosCilindros(float* diametros, int numCilindros, int y, int* necesitaReconstruccion);
+int evaluarDiametrosCilindros(const float* diametros, int numCilindros, int y, int* necesitaReconstruccion);
 int evaluarConicidadCilindros(const float* conicidades, int numCilindros, int y);
 int evaluarDesalineacionCilindros(float* desalineaciones, int numCilindros, int y);
 int evaluarDiametrosBancadas(float* bancadas, int num_bancadas, int y);

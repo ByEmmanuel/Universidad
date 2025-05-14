@@ -15,51 +15,14 @@
 
 #include "UsuarioDTO.h"
 
-//Strigs y metodos no agregados
-/**@deprecated */
-char* strFill(const char* str);              // Elimina espacios al inicio y final
-//int porque no hay bool y
-int strEquals(const char* str1, const char* str2); // Compara dos cadenas
-int strIsEmpty(const char* str);            // Verifica si una cadena está vacía
+int strEquals(const char* str1, const char* str2);
+int strIsEmpty(const char* str);
 int strContains(const char* src, const char* str);
-//Metodo agregado
-void asignString(char *dst, const char *src, size_t n);
+
+void asignString(char* dst, const char* src, size_t n);
 char* enterString(int length);
 
-// ARRAYS
-/**@deprecated */
-ArrayList* arrayListNew(size_t capacidadInicial);
-
-/**@deprecated
- * Grupo de funciones en desuso
-void arrayListAdd(ArrayList* list, void* element);
-void* arrayListGet(ArrayList* list, size_t index);
-void arrayListFree(ArrayList* list);
-void arrayListClear(ArrayList* list);
-//int arrayListContains(ArrayList* list, void* element, bool (*equals)(void*, void*)); // Verifica si contiene un elemento
-void arrayListRemove(ArrayList* list, size_t index); // Elimina elemento por índice
- */
-//Solo se usa esta
-int arrayPiezasSize(ArrayPiezas* list);
-
-// FECHA
-/**@deprecated */
-typedef struct {
-    int year;
-    int month;
-    int day;
-    int hour;
-    int minute;
-    int second;
-} SimpleDate;
-
-/**@deprecated
- * Grupo de funciones en desuso
-SimpleDate* dateNow();                       // Obtiene la fecha y hora actual
-char* dateToString(SimpleDate* date);        // Convierte a cadena legible
-int dateCompare(SimpleDate* d1, SimpleDate* d2); // Compara dos fechas
- */
-char* generarFolio(const char *nombre);
+char* generarFolio(const char* nombre);
 
 // Estas funciones son para ncurses
 //Validar Campos
@@ -70,7 +33,7 @@ int leerIntSeguro(int y, int x, int maxLen, char* pregunta);
 float leerFloatSeguro(int y, int x, int maxLen, char* pregunta);
 char* leerStringSeguro(int y, int x, int maxLen, char* pregunta);
 void imprimirTextoMultilinea(int fila, int columna, const char* texto, int anchoMaximo);
-void imprimirTextoMultilineaArchivo(FILE *archivo, const char *texto, int anchoMaximo);
+void imprimirTextoMultilineaArchivo(FILE* archivo, const char* texto, int anchoMaximo);
 
 // Buffer
 /**@deprecated */

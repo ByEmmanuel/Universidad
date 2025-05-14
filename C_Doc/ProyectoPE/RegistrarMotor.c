@@ -86,15 +86,10 @@ int registrarMotor(){
     char* numeroSerie = leerStringSeguro(y += 2, 10, 50, "Ingrese Número de Serie - String");
     int tipoCombustible = mostrarMenu(6, "Seleccione Tipo de Combustible - Entero");
 
-    //float desgaste = leerFloatSeguro(y += 2, 10, 10, "Ingrese Desgaste (%) - Float") / 100.0f;
-    //float tolerancia = leerFloatSeguro(y += 2, 10, 10, "Ingrese Tolerancia (mm) - Float");
     float medidaOriginal = leerFloatSeguro(y += 2, 10, 10, "Ingrese Medida Original (mm) - Float");
     float medidaActual = leerFloatSeguro(y += 2, 10, 10, "Ingrese Medida Actual (mm) - Float");
 
-    // Variables que dependen de cálculo y tienen que ir aparte
-
     // Ahora sí: inicializas la estructura
-    imprimirMensaje(5,5,"Depuracion 0");
     Paramsmotor paramsmotor = {
         .id_pieza = id_pieza,
         .id_usuario = id_usuario,
@@ -110,14 +105,9 @@ int registrarMotor(){
         .medidaOriginal = medidaOriginal,
         .medidaActual = medidaActual,
     };
-    imprimirMensaje(5,5,"Depuracion 1");
     Motor* motor = inicializarMotor(paramsmotor, id_usuario, getIdPiezaGlobal(), 0, 0);
-    imprimirMensaje(5,5,"Depuracion 2");
     guardarMotorArray(motor, id_usuario);
-    imprimirMensaje(5,5,"Depuracion 3");
     asignarMotorUsuario(obtenerUsuarioByIdUsuario(id_usuario), motor);
-    imprimirMensaje(5,5,"Depuracion 4");
-    //liberarMotor(motor);
 
     if (mostrarMenu(7, "¿Deseas guardar este motor en la base de datos?") == 1
         && obtenerMotorPorNumeroDeSerie(&arrayMotoresUsuarios, numeroSerie) != NULL){
@@ -125,7 +115,6 @@ int registrarMotor(){
         imprimirMensaje(10, 10, "El motor fue registrado al usuario y en la base de datos Correctamente");
         return 1;
     }
-    //Mensaje de exito
     imprimirMensaje(10, 10, "El motor fue registrado al usuario Correctamente");
     setIdPiezaGlobal(getIdPiezaGlobal()+1);
     return 1;
@@ -212,128 +201,18 @@ int registrarCulata(){
             mvprintw(y +=2, 55, "Tiene Fisuras?: %d", tieneFisuras);
             //mvprintw(y++, 55, "Tipo Combustible: %d", tipo_combustible);
             getch();
-            Culata* pzc = inicializarCulata(getIdPiezaGlobal(), numValvulas, presionPrueba, tieneFisuras, alturaOriginal,alturaActual, alturaMinima,id_usuario, estadoPieza);
+            Culata* pzc = inicializarCulata(getIdPiezaGlobal(), numValvulas, presionPrueba, tieneFisuras,
+                                            alturaOriginal, alturaActual, alturaMinima, id_usuario, estadoPieza);
             guardarPiezaArray(pzc,id_usuario, "culata");
             usuario->motor->culata = pzc;
             setIdPiezaGlobal(getIdPiezaGlobal()+1);
             imprimirMensaje(10,10,"Culata Creada correctamente :)");
             return 1;
         }
-        //clear();
-        //mvprintw(10,5,"el usuario NO tiene un motor asignado");
-        //mvprintw(11,5,"porfavor modifica los datos o intenta registrando un motor desde 0");
         imprimirMensaje(5,5,"El usuario no es NULL, El motor no es NULL, La culata no es NULL. YA TIENE TODO AGREGADO ¿?¿?¿");
-        //getch();
     }
-    /*
-     *else{
-        imprimirMensaje(10,10,"-> No tienes un motor registrado, no puedes ingresar una culata sin tener el numero de serie <-");
-    }
-    */
     return -1;
 }
-
-
-                //IF YA TENEMOS REGISTRADO EL MOTOR, CARGAR SOLO LOS VALORES DE NUEVAS MEDIDAS
-                // SI NO, COMPLETAR TODOS ESTOS CAMPOS
-
-                /*// Si es NO -> LLenar todos los campos, SI Si tiene numero de serie del motor (manual) agregar solo culata
-                    .culata = &culatasExistentes[3],
-            .monoblock = &monoblocksExistentes[3],
-                */
-/**
-int registrarMonoblock(){
-
-    //int numCilindros, num_bancadas;
-    int y = 5;
-
-    char* numeroDeSerieUsr = leerStringSeguro(10,10,25,"Ingrese numero de serie del motor asignado al cliente:");
-    if (obtenerMotorPorNumeroDeSerie(&arrayMotoresUsuarios, numeroDeSerieUsr)  != NULL){
-        //clear();
-        const int id_usuario = obtenerIdSiExisteUsuario(13,10);
-        RETURN_IF_ESC(id_usuario);
-        //Esta linea impide que si el usuario no existe no se hara nada
-
-        Usuario* usuario = obtenerUsuarioByIdUsuario(id_usuario);
-        if (usuario == NULL) {
-            imprimirMensaje(10, 10, "Ocurrió un problema al obtener los datos del usuario");
-            return -1;
-        }
-
-        Motor* motor = usuario->motor;
-        if (motor == NULL) {
-            imprimirMensaje(10, 10, "El motor del usuario es NULL, por favor asigna un motor al usuario");
-            return -1;
-        }
-
-        clear();
-        int numCilindros = leerIntSeguro(y++,5,10,"Ingrese numero de cilindros");
-        int num_bancadas = leerIntSeguro(y++,5,10,"Ingrese numero de bancadas");
-
-        float* diametros = malloc(numCilindros * sizeof(float));
-        float* conicidades = malloc(numCilindros * sizeof(float));
-        float* desalineaciones = malloc(numCilindros * sizeof(float));
-        float* bancadas = malloc(num_bancadas * sizeof(float));
-
-        for (int i = 0; i < numCilindros; i++) {
-            char mensajeUno[50];
-            sprintf(mensajeUno, "Diametro del cilindro %d", i+1);
-            diametros[i] = leerFloatSeguro(y++,5,10,mensajeUno);
-
-            char mensajeDos[50];
-            sprintf(mensajeDos, "Conicidad del cilindro %d", i+1);
-            conicidades[i] = leerFloatSeguro(y++,5,10,mensajeDos);
-
-            char mensajeTres[50];
-            sprintf(mensajeTres, "Desalineacion del cilindro %d", i+1);
-            desalineaciones[i] = leerFloatSeguro(y++,5,10,mensajeTres);
-        }
-
-        for (int i = 0; i < num_bancadas; i++) {
-            char mensajeCuatro[35];
-            sprintf(mensajeCuatro, "Diametro de bancada %d", i+1);
-            bancadas[i] = leerFloatSeguro(y++,5,10,mensajeCuatro);
-        }
-
-        // Otros valores de ejemplo
-
-        //int id_pieza = leerIntSeguro();
-        //int id_usuario = leerIntSeguro();
-        int flags = leerIntSeguro(y++,5,10,"Ingrese flag");
-        int estado = leerIntSeguro(y++,5,10,"Ingrese estado");
-        float oval = leerFloatSeguro(y++,5,10,"Ingrese oval");
-        float planitud = leerFloatSeguro(y++,5,10,"Ingrese planitud");
-
-        char* observaciones;
-        if (mostrarMenu(7,"¿Desea agregar observaciones?")){
-            observaciones = leerStringSeguro(y++,5,100,"Ingrese Observaciones");
-        }else{
-            observaciones = " ";
-        }
-
-
-        Monoblock* mono = inicializarMonoblock(
-            0, id_usuario, numCilindros, diametros,
-            conicidades, num_bancadas, bancadas ,
-            bancadas, oval, planitud, flags, numeroDeSerieUsr, observaciones, estado
-        );
-
-        //Crear monoblock
-        guardarPiezaArray(mono,id_usuario,"monoblock");
-        imprimirMensaje(10,10,"Monoblock creado correctamente :)");
-        usuario->motor->monoblock = mono;
-        setIdPiezaGlobal(getIdPiezaGlobal()+1);
-        imprimirMensaje(10,10,mono->numero_serie);
-
-        // Libera memoria si no se usará más
-        free(diametros); free(conicidades); free(desalineaciones); free(bancadas);
-        // Liberar dentro de estructura también si se destruye
-
-        return 0;
-    }
-    return 1;
-};
-*/
 
 void imprimirDetallesMotor(Motor* motor){
     int fila = 5;
@@ -485,7 +364,7 @@ int registrarMonoblock() {
 
         if (flags == -2 || necesitaReconstruccion) {
             mvprintw(y_2++, 5, "Monoblock requiere reconstruccion");
-            mono->operacionesMonoblock = 2;
+            mono->operacionesMonoblock = -2;
             if (necesitaLaina) {
                 actualizarStockLaina(grosorLaina, -1);
                 registrarUsoHerramienta("Micrometro", "Reconstrucción");
@@ -494,11 +373,11 @@ int registrarMonoblock() {
             actualizarStockLaina(0.0f, -1); // Simplificado, debería ser pistones/monoblock
         } else if (necesitaRectificacion) {
             mvprintw(y_2++, 5, "Monoblock requiere rectificacion");
-            mono->operacionesMonoblock = 1;
+            mono->operacionesMonoblock = -1;
             mvprintw(y_2++,5,"Regresar");
         } else if (necesitaLaina) {
             mvprintw(y_2++, 5, "Monoblock solo requiere ajuste con laina");
-            mono->operacionesMonoblock = 3; // Nuevo valor para lainas
+            mono->operacionesMonoblock = -3; // Nuevo valor para lainas
         } else {
             mvprintw(y_2++, 5, "Monoblock dentro de tolerancias, no requiere accion");
             mono->operacionesMonoblock = 0;
@@ -518,12 +397,9 @@ int registrarMonoblock() {
     return 1;
 }
 
-
-
-// Funciones modulares para validaciones
-int evaluarDiametrosCilindros(float* diametros, int numCilindros, int y, int* necesitaReconstruccion){
-    float toleranciaDiametro = 0.05f; // Tolerancia en mm
-    float diametroNominal = 80.00f;  // Valor nominal en mm
+int evaluarDiametrosCilindros(const float* diametros, int numCilindros, int y, int* necesitaReconstruccion){
+    float toleranciaDiametro = 0.05f;
+    float diametroNominal = 80.00f;
     int necesitaRectificacion = 0;
 
     for (int i = 0; i < numCilindros; i++) {
@@ -614,7 +490,6 @@ int evaluarJuegoAxial(int y, float* grosorLaina){
     if (*grosorLaina > 0) {
         necesitaLaina = 1;
         mvprintw(y++, 5, "Instalar laina de %.3f mm para bancada", *grosorLaina);
-        //actualizarStockLaina(*grosorLaina, -1); // Actualizar inventario.txt
     }
     return necesitaLaina;
 }

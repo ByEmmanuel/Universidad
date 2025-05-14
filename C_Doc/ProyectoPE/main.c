@@ -1,32 +1,21 @@
-/*
- * Hacer un programa de interface de usuario
- * Crear una constante de usuarios y contraseñas
- * Hacer logo
- * Esperar 3 segundos
- * Ingresar a interface de login
- * pasar a la pantalla de login y pedir usuario
- * si el usuario es valido entrar a la pantalla de contraseñas
- * maximo 3 intentos
- * si el usuario y contraseña son validos acceder al menu
- * si no salir y camniar el color de la terminal
- */
-
 #include <curses.h>
 #include <stdlib.h>
+#include <pthread.h>
+#include <time.h>
+#include <unistd.h>
 #include "LogicaNegocio.h"
+#include "reloj.h"
 #include "UserInterface.h"
-
 #include "Testing.h"
 
 // Simulación de base de datos de usuarios y contraseñas
-
 int id_Usuario;
 
 // Variable global para controlar el hilo del reloj
 volatile int running = 1;
 int testingMode;
 
-int main(){
+int main() {
     // Inicio del programa
     /** TESTING MODE
      *  motoresDB = CANTIDAD DE MOTORES QUE TIENE EN EL SISTEMA (Precargando su informacion total) USANDO NUMERO DE SERIE
@@ -41,16 +30,15 @@ int main(){
      *  6 = solo precargar motores (arrayMotoresPrecargados)
     precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
      */
-    testingMode = 0;
+    testingMode = 3;
     testing(testingMode);
     system("reset");
     clear();
     refresh();
     mostrarLogo();
-    // Borra toda la pantalla y mueve el cursor al inicio
 
-    //sleep(1);
-    if (loginUsuario() == 1){
+    //sleep(3);
+    if (loginUsuario() == 1) {
         cargarAlmacen();
         menuPrincipal();
     }
@@ -59,15 +47,28 @@ int main(){
     return 0;
 }
 
-void menuPrincipal(){
+void menuPrincipal() {
     initscr();
-    while (1){
-        const int opc = mostrarMenu(1," ");
-        if (opc != -1) {
-            ejecutarOpcion(opc);
+    cbreak();
+    noecho();
+    keypad(stdscr, TRUE);
+
+
+    ClockData clock_data;
+    clock_data.win = stdscr;
+    clock_data.running = 1;
+
+    pthread_t clock_tid;
+    pthread_create(&clock_tid, NULL, clock_thread, &clock_data);
+
+    while (1) {
+        const int opc = mostrarMenu(1, " ");
+        if (opc == -1) {
+            clock_data.running = 0;
+            pthread_join(clock_tid, NULL);
+            endwin();
+            break;
         }
+        ejecutarOpcion(opc);
     }
-
-};
-
-
+}
