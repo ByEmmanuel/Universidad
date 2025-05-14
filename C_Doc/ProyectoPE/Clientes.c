@@ -19,10 +19,6 @@ char contraseñasUsuarios[MAX_USUARIOS][MAX_LONGITUD] = {"123456789","987654321"
 char* empleado = 0;
 
 int cliente(){
-    //Funcion que crea a los clientes
-    //Agregar valores (Todo en un String A una lista)
-
-    // MENU CLIENTE
     int opcCliente = mostrarMenu(2," ") + 1;
     char* emailUsr;
     clear();
@@ -30,7 +26,7 @@ int cliente(){
 
     int y = 3;
     if (opcCliente == 4) {
-        return 1;  // Volver al menú principal
+        return 1;
     }
     if (opcCliente == 1) {
         cleanScreen();
@@ -104,14 +100,14 @@ int cliente(){
                 mvprintw(p++, 1, "Celular: %lld", arrayUsuarios.datos[i].celular);
                 mvprintw(p++, 1, "Email: %s", arrayUsuarios.datos[i].email);
                 mvprintw(p++, 1, "Contacto: %s", arrayUsuarios.datos[i].contacto);
-                p++; // Dejar una línea en blanco entre registros
+                p++;
             }
             getch();
             return 1;
         }
         mvprintw(10, 10, "Capacidad En El arrayUsuarios: %d", arrayUsuarios.capacidad);
         mvprintw(10, 10, "Presiona ENTER para continuar...");
-        getchar();  // Pausa antes de limpiar la pantalla
+        getchar();
     }
     cleanScreen();
     return 1;
@@ -123,8 +119,6 @@ int modificarCliente(){
     int id_Cliente = leerIntSeguro(11, 15, 2,"Ingrese ID, Folio o Numero de Cliente: ");
     RETURN_IF_ESC(id_Cliente);
 
-    //Esta funcion puede ser contraproducente ya que si algun campo del objeto Usuario, esta vacio,
-    //esta opcion nunca va a funcionar
     cleanScreen();
     Usuario* usuarioNuevo = obtenerUsuarioByIdUsuario(id_Cliente);
     if (usuarioNuevo == NULL) {

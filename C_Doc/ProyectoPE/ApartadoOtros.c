@@ -15,40 +15,25 @@
 #include "Testing.h"
 
 void historialTickets(){
-    char* nombreArchivo = obtenerNombreArchivo("Tickets_"); // malloc
+    char* nombreArchivo = obtenerNombreArchivo("Tickets_");
 
-    //Si existe por lo menos 1 ticket creara el archivo
     if (arrayTickets.tamanno < 1){
         imprimirMensaje(5, 5, "No existen Tickets Creados, porfavor crea nuevos tickets");
         return;
     }
-    FILE* archivo = fopen(nombreArchivo, "w"); //Abrir archivo
-
-    exportarDetallesTickets(nombreArchivo, archivo); // uso
-
-    fclose(archivo); //Cerrar archivo
-    free(nombreArchivo); // free -> string
+    FILE* archivo = fopen(nombreArchivo, "w");
+    exportarDetallesTickets(nombreArchivo, archivo);
+    fclose(archivo);
+    free(nombreArchivo);
 };
 
 void exportarDetallesTodoElSistema(){
     char* nombreArchivo = obtenerNombreArchivo("Detalles_SistemaCompleto");
-
     FILE* archivo = fopen(nombreArchivo, "w");
 
-    //Imprimir en el siguiente orden
-    /**
-     * Usuarios
-     * Motores Usuarios
-     * Piezas de los usuarios
-     * Tickets
-     * Motores precargados
-     */
     arrayUsuarios.tamanno > 0
         ? exportarDetallesUsuarios(nombreArchivo, archivo)
         : fprintf(archivo, "NO HAY USUARIOS EN LA BASE DE DATOS (arrayUsuarios)\n\n");
-    // Esto lo hace detalles usuarios por la gerarquia de relaciones de objetos
-    //arrayMotoresUsuarios.tamanno > 0 ? exportarMotoresUsuarios(nombreArchivo, archivo) : fprintf(archivo, "No hay MotoresUsuarios creados en la base de datos (arrayMotoresUsuarios)\n");
-    //arrayPiezas.tamanno > 0 ? exportarDetallesPiezas(nombreArchivo,archivo) : fprintf(archivo, "No hay Piezas creados en la base de datos (arrayPiezas)\n");
     arrayTickets.tamanno > 0
         ? exportarDetallesTickets(nombreArchivo, archivo)
         : fprintf(archivo, "NO HAY TICKETS CREADOS EN LA BASE DE DATOS (arrayTickets)\n\n");
@@ -59,24 +44,15 @@ void exportarDetallesTodoElSistema(){
     arrayPiezasAlmacen.tamanno > 0
         ? exportarDetallesPiezasAlmacen(nombreArchivo, archivo)
         : fprintf(archivo, "No hay Piezas en el almacen registradas en la base de datos (arrayPiezasAlmacen)\n");
-    //arrayAlmacen.tamanno > 0 ? exportarDetallesHerramientasAlmacen(nombreArchivo, archivo) : fprintf(archivo, "No hay Almacen creado en la base de datos (arrayAlmacen)\n");
     fclose(archivo);
     free(nombreArchivo);
 };
 
-
-/*
- * @param nombreArchivo
- * @param archivo
- * @return
- */
 int exportarDetallesUsuarios(const char* nombreArchivo, FILE* archivo){
     RETURN_IF_ESC(validarArchivo(archivo));
 
     fprintf(archivo, "EXPORTANDO DETALLES DE ARRAY USUARIOS\n");
     fprintf(archivo, "Tamaño del array: %d\n\n", arrayUsuarios.tamanno);
-    //Esto hace que por cada usuario valido imprima sus caracteristicas,
-    //Asi Esto obliga a que cada usuario solamente tenga un motor asignado
     for (int i = 0; i < arrayUsuarios.tamanno; i++){
         Usuario* usr = arrayUsuarios.datos;
         if (!usr) continue;
@@ -91,7 +67,6 @@ int exportarDetallesUsuarios(const char* nombreArchivo, FILE* archivo){
         fprintf(archivo, "Email: %s\n", usr->email);
         fprintf(archivo, "Contacto: %s\n", usr->contacto);
         fprintf(archivo, "Activo: %s\n", usr->activo ? "Si" : "No");
-        //fprintf(archivo, "Numero contacto: %ll\n", usr->numeroContacto);
 
         Motor* motor = usr->motor;
         if (!motor){

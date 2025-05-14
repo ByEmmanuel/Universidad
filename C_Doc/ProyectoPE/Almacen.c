@@ -92,16 +92,12 @@ Herramienta* incializarHerramienta(char* id_herramienta, char* tipo, int usos, c
 }
 
 int cargarAlmacen(){
-    //Hace referencia a los arrays, si se modifican en otros lados, almacen tambien sera modificado
-    almacenBaseDatos.array_list = &arrayTickets; // ArrayTickets* ← OK
-    //almacenBaseDatos.array_piezas = &arrayPiezas;       // ArrayPiezas* ← OK
-    almacenBaseDatos.array_usuarios = &arrayUsuarios; // ArrayUsuarios* ← OK
+    almacenBaseDatos.array_list = &arrayTickets;
+    almacenBaseDatos.array_usuarios = &arrayUsuarios;
     almacenBaseDatos.pieza_almacen = &arrayPiezasAlmacen;
-
     precargarPiezasAlmacen(componentes_motor, CANTIDAD_PIEZASPRECARGADAS);
     precargarPiezasAlmacen(componentes_culata, CANTIDAD_PIEZASPRECARGADAS);
     precargarPiezasAlmacen(componentes_monoblock, CANTIDAD_PIEZASPRECARGADAS);
-
     return 1;
 }
 
@@ -124,7 +120,6 @@ void precargarPiezasAlmacen(PiezaAlmacen pieza_almacen[], const int cantidad){
     //return ;
 }
 
-//???? si el monoblock y culata son identicos va a fallar esto
 PiezaAlmacen* buscarPiezaPorIdUnico(ArrayPiezasAlmacen* inventario, int numPiezas, char* id_unico){
     for (int i = 0; i < numPiezas; i++){
         if (strcmp(inventario->datos[i].id_unicoPieza, id_unico) == 0){
