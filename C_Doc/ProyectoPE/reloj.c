@@ -1,7 +1,4 @@
-//
-// Created by Jesus Emmanuel Garcia on 5/14/25.
-//
-
+//Reloj
 #include "reloj.h"
 
 #include <ncurses.h>
@@ -9,7 +6,6 @@
 #include <time.h>
 #include <string.h>
 #include <unistd.h>
-
 
 char *get_time_str() {
     time_t rawtime;
@@ -22,9 +18,9 @@ char *get_time_str() {
     return buffer;
 }
 
-// Función que corre en el hilo del reloj
+
 void *clock_thread(void *arg) {
-    ClockData *data = (ClockData *)arg;
+    ClockData *data = (ClockData *) arg;
     WINDOW *win = data->win;
 
     while (data->running) {

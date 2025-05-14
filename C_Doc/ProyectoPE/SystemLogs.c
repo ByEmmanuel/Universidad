@@ -1,7 +1,4 @@
-//
-// Created by Jesus Emmanuel Garcia on 5/12/25.
-//
-
+//SystemLogs
 #include "SystemLogs.h"
 #include <stdio.h>
 #include <time.h>
@@ -15,14 +12,10 @@
 #include <string.h>
 #include <time.h>
 
-
 #include "UserInterface.h"
 #include "LogicaNegocio.h"
 
-
-//-----------------------------------------------------Logs
-
-void enviarLogsSistema(char* nombreArchivo, FILE* archivo) {
+void enviarLogsSistema(char *nombreArchivo, FILE *archivo) {
     if (!archivo) {
         fprintf(stderr, "Error al abrir el archivo de logs: %s\n", nombreArchivo ? nombreArchivo : "NULL");
         return;
@@ -36,14 +29,14 @@ void enviarLogsSistema(char* nombreArchivo, FILE* archivo) {
     }
 
     for (int i = 0; i < arrayLogs.tamanno; i++) {
-        const SystemLogs* log = &arrayLogs.datos[i];
+        const SystemLogs *log = &arrayLogs.datos[i];
 
-        const char* fecha = log->fecha[0] ? log->fecha : "UNKNOWN";
-        const char* modulo = log->origen_modulo[0] ? log->origen_modulo : "UNKNOWN";
-        const char* objeto = log->objeto[0] ? log->objeto : "UNKNOWN";
-        const char* id_objeto = log->id_objeto[0] ? log->id_objeto : "UNKNOWN";
-        const char* accion = log->accion[0] ? log->accion : "UNKNOWN";
-        const char* ip = log->nombreFuncion[0] ? log->nombreFuncion : "UNKNOWN";
+        const char *fecha = log->fecha[0] ? log->fecha : "UNKNOWN";
+        const char *modulo = log->origen_modulo[0] ? log->origen_modulo : "UNKNOWN";
+        const char *objeto = log->objeto[0] ? log->objeto : "UNKNOWN";
+        const char *id_objeto = log->id_objeto[0] ? log->id_objeto : "UNKNOWN";
+        const char *accion = log->accion[0] ? log->accion : "UNKNOWN";
+        const char *ip = log->nombreFuncion[0] ? log->nombreFuncion : "UNKNOWN";
 
         if (fprintf(archivo, "[%s] [%s] ID_LOG: %d | USUARIO_ID: %d | OBJETO: %s | ID_OBJETO: %s | SEVERIDAD: %s\n",
                     fecha, modulo, log->id_unico, log->usuario_id, objeto, id_objeto,
@@ -65,7 +58,7 @@ void enviarLogsSistema(char* nombreArchivo, FILE* archivo) {
     printf("Logs escritos correctamente en el archivo: %s\n", nombreArchivo);
 }
 
-const char* obtenerNombreSeveridad(NivelSeveridad severidad) {
+const char *obtenerNombreSeveridad(NivelSeveridad severidad) {
     switch (severidad) {
         case INFO: return "INFO";
         case WARN: return "WARNING";
@@ -74,27 +67,27 @@ const char* obtenerNombreSeveridad(NivelSeveridad severidad) {
     }
 }
 
-const char* obtenerMensajeHttp(HttpStatusCode code) {
+const char *obtenerMensajeHttp(HttpStatusCode code) {
     switch (code) {
-    case HTTP_OK: return "Éxito (200 OK)";
-    case HTTP_CREATED: return "Recurso creado (201 Created)";
-    case HTTP_ACCEPTED: return "Petición aceptada (202 Accepted)";
-    case HTTP_NO_CONTENT: return "Sin contenido (204 No Content)";
-    case HTTP_BAD_REQUEST: return "Solicitud incorrecta (400 Bad Request)";
-    case HTTP_UNAUTHORIZED: return "No autorizado (401 Unauthorized)";
-    case HTTP_FORBIDDEN: return "Prohibido (403 Forbidden)";
-    case HTTP_NOT_FOUND: return "No encontrado (404 Not Found)";
-    case HTTP_CONFLICT: return "Conflicto (409 Conflict)";
-    case HTTP_UNPROCESSABLE_ENTITY: return "Entidad no procesable (422 Unprocessable Entity)";
-    case HTTP_INTERNAL_SERVER_ERROR: return "Error interno (500 Internal Server Error)";
-    case HTTP_NOT_IMPLEMENTED: return "No implementado (501 Not Implemented)";
-    case HTTP_SERVICE_UNAVAILABLE: return "Servicio no disponible (503 Service Unavailable)";
-    default: return "Código desconocido";
+        case HTTP_OK: return "Éxito (200 OK)";
+        case HTTP_CREATED: return "Recurso creado (201 Created)";
+        case HTTP_ACCEPTED: return "Petición aceptada (202 Accepted)";
+        case HTTP_NO_CONTENT: return "Sin contenido (204 No Content)";
+        case HTTP_BAD_REQUEST: return "Solicitud incorrecta (400 Bad Request)";
+        case HTTP_UNAUTHORIZED: return "No autorizado (401 Unauthorized)";
+        case HTTP_FORBIDDEN: return "Prohibido (403 Forbidden)";
+        case HTTP_NOT_FOUND: return "No encontrado (404 Not Found)";
+        case HTTP_CONFLICT: return "Conflicto (409 Conflict)";
+        case HTTP_UNPROCESSABLE_ENTITY: return "Entidad no procesable (422 Unprocessable Entity)";
+        case HTTP_INTERNAL_SERVER_ERROR: return "Error interno (500 Internal Server Error)";
+        case HTTP_NOT_IMPLEMENTED: return "No implementado (501 Not Implemented)";
+        case HTTP_SERVICE_UNAVAILABLE: return "Servicio no disponible (503 Service Unavailable)";
+        default: return "Código desconocido";
     }
 }
 
-void generarSystemLog(int usuario_id, char* accion, char* objeto, char* id_objeto,
-                      NivelSeveridad severidad, int exito, char* modulo, char* nombreFuncion,
+void generarSystemLog(int usuario_id, char *accion, char *objeto, char *id_objeto,
+                      NivelSeveridad severidad, int exito, char *modulo, char *nombreFuncion,
                       HttpStatusCode codigoEstado) {
     char fecha[50];
     time_t t = time(NULL);
@@ -102,10 +95,10 @@ void generarSystemLog(int usuario_id, char* accion, char* objeto, char* id_objet
     strftime(fecha, sizeof(fecha), "%Y-%m-%d %H:%M:%S", tm_info);
 
     int log_id = getIdLog();
-    setIdLog(log_id + 1); // Incrementar ID único
+    setIdLog(log_id + 1);
 
     SystemLogs log = inicializarLogs(fecha, log_id, accion, objeto, id_objeto, severidad, exito, modulo,
-        nombreFuncion, codigoEstado);
+                                     nombreFuncion, codigoEstado);
     log.usuario_id = usuario_id;
 
     if (guardarSystemLogs(log) == -1) {
@@ -115,14 +108,14 @@ void generarSystemLog(int usuario_id, char* accion, char* objeto, char* id_objet
     }
 }
 
-SystemLogs inicializarLogs(char* fecha, int log_id, char* accion, char* objeto, char* id_objeto,
-                           NivelSeveridad severidad, int exito, char* modulo, char* nombreFuncion,
+SystemLogs inicializarLogs(char *fecha, int log_id, char *accion, char *objeto, char *id_objeto,
+                           NivelSeveridad severidad, int exito, char *modulo, char *nombreFuncion,
                            HttpStatusCode codigoEstado) {
     SystemLogs log = {0};
 
     asignString(log.fecha, fecha, sizeof(log.fecha));
     asignString(log.accion, accion, sizeof(log.accion));
-    log.usuario_id = 1; // Valor fijo, ajusta según necesidad
+    log.usuario_id = 1;
     log.id_unico = log_id;
     asignString(log.objeto, objeto, sizeof(log.objeto));
     asignString(log.id_objeto, id_objeto, sizeof(log.id_objeto));
@@ -137,11 +130,11 @@ SystemLogs inicializarLogs(char* fecha, int log_id, char* accion, char* objeto, 
 
 int guardarSystemLogs(SystemLogs log) {
     if (log.accion[0] == '\0') {
-        return -1; // No se necesita liberar nada, todos los campos son estáticos
+        return -1;
     }
     if (arrayLogs.tamanno >= arrayLogs.capacidad) {
         int nuevaCapacidad = arrayLogs.capacidad == 0 ? 1 : arrayLogs.capacidad * 2;
-        SystemLogs* nuevoArray = realloc(arrayLogs.datos, nuevaCapacidad * sizeof(SystemLogs));
+        SystemLogs *nuevoArray = realloc(arrayLogs.datos, nuevaCapacidad * sizeof(SystemLogs));
         if (nuevoArray == NULL) {
             fprintf(stderr, "Error al redimensionar el array de logs.\n");
             return -1;

@@ -1,7 +1,4 @@
-//
-// Created by Jesus Emmanuel Garcia on 5/12/25.
-//
-
+//SystemLogs
 #ifndef SYSTEMLOGS_H
 #define SYSTEMLOGS_H
 
@@ -32,7 +29,7 @@ typedef enum {
 
 typedef struct {
     int id_unico;
-    char fecha[50]; // Arreglo estático en lugar de char*
+    char fecha[50];
     int usuario_id;
     char accion[50];
     char objeto[50];
@@ -45,27 +42,30 @@ typedef struct {
 } SystemLogs;
 
 
-// Array de logs
 typedef struct {
-    SystemLogs* datos; // Datos del sistema
-    int tamanno;    // tamanno actual de datos que hay en el array
-    int capacidad;  // tammano de la capacidad total del array disponible
-}ArrayLogs;
+    SystemLogs *datos;
+    int tamanno;
+    int capacidad;
+} ArrayLogs;
 
 
-void generarSystemLog(int usuario_id, char* accion, char* objeto, char* id_objeto,
-                      NivelSeveridad severidad, int exito, char* modulo, char* nombreFuncion, HttpStatusCode codigoEstado);
-SystemLogs inicializarLogs(char* fecha, int log_id, char* accion, char* objeto, char* id_objeto,
-                      NivelSeveridad severidad, int exito, char* modulo, char* nombreFuncion, HttpStatusCode codigoEstado);
+void generarSystemLog(int usuario_id, char *accion, char *objeto, char *id_objeto,
+                      NivelSeveridad severidad, int exito, char *modulo, char *nombreFuncion,
+                      HttpStatusCode codigoEstado);
+
+SystemLogs inicializarLogs(char *fecha, int log_id, char *accion, char *objeto, char *id_objeto,
+                           NivelSeveridad severidad, int exito, char *modulo, char *nombreFuncion,
+                           HttpStatusCode codigoEstado);
 
 int guardarSystemLogs(SystemLogs log);
 
 extern ArrayLogs arrayLogs;
 
 
-//LOGS
-const char* obtenerNombreSeveridad(NivelSeveridad severidad);
-const char* obtenerMensajeHttp(HttpStatusCode code);
-void enviarLogsSistema(char* nombreArchivo, FILE* archivo);
+const char *obtenerNombreSeveridad(NivelSeveridad severidad);
 
-#endif //SYSTEMLOGS_H
+const char *obtenerMensajeHttp(HttpStatusCode code);
+
+void enviarLogsSistema(char *nombreArchivo, FILE *archivo);
+
+#endif

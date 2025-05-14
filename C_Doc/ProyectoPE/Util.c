@@ -1,7 +1,4 @@
-//
-// Created by Jesus Emmanuel Garcia on 2/22/25.
-//
-
+//Utils
 #include "Util.h"
 
 #include <ctype.h>
@@ -12,78 +9,62 @@
 #include <string.h>
 #include <time.h>
 
-
 #include "UserInterface.h"
 #include "LogicaNegocio.h"
 
-
-//Funciones importantes para reducir la repeticion de codigo
-//  strcspn
-//  strncpy
-//  strstr
-//  fgets
-
-//  realloc, malloc
-
-char* strFill(const char* str) {
+char *strFill(const char *str) {
     if (str == NULL) return NULL;
 
-    // Encuentra el inicio (saltando espacios)
-    const char* start = str;
+    const char *start = str;
     while (*start == ' ') start++;
 
-    // Si la cadena es solo espacios o vacía
     if (*start == '\0') {
-        char* result = (char*)malloc(1);
+        char *result = (char *) malloc(1);
         result[0] = '\0';
         return result;
     }
 
-    // Encuentra el final (retrocediendo desde el último carácter no espacio)
-    const char* end = str + strlen(str) - 1;
+    const char *end = str + strlen(str) - 1;
     while (end > start && *end == ' ') end--;
 
-    // Calcula la longitud de la nueva cadena
     int len = end - start + 1;
-    char* result = (char*)malloc(len + 1); // +1 para el '\0'
+    char *result = (char *) malloc(len + 1);
     if (result == NULL) return NULL;
 
-    // Copia la subcadena
     strncpy(result, start, len);
     result[len] = '\0';
     return result;
 }
-// Compara dos cadenas
-int strEquals(const char* str1, const char* str2) {
+
+int strEquals(const char *str1, const char *str2) {
     if (str1 == NULL || str2 == NULL) {
-        return (str1 == str2); // Ambos NULL = iguales, uno NULL = diferentes
+        return (str1 == str2);
     }
-    return strcmp(str1, str2) == 0; // 1 si son iguales, 0 si no
+    return strcmp(str1, str2) == 0;
 }
-// Verifica si una cadena está vacía
-int strIsEmpty(const char* str) {
-    if (str == NULL) return 1;      // NULL se considera vacío
-    return str[0] == '\0';          // 1 si es "", 0 si no
+
+int strIsEmpty(const char *str) {
+    if (str == NULL) return 1;
+    return str[0] == '\0';
 }
-// Verifica si una cadena contiene a otra
-int strContains(const char* src, const char* str) {
+
+int strContains(const char *src, const char *str) {
     if (src == NULL || str == NULL) return 0;
-    return strstr(src, str) != NULL; // 1 si str está en src, 0 si no
+    return strstr(src, str) != NULL;
 }
-// Copiamos las cadenas asegurándonos de que terminen en '\0'
-// Funcion que Asigna una cadena a otra Es decir algo como
-// var1 = "idk" var2 = var1 sin paso por referencia y borra el ultimo caracter que deja fgets
+
+
 void asignString(char *dst, const char *src, const size_t n) {
     if (src == NULL) {
-        dst[0] = '\0'; // O dejar una cadena vacía si src no es válido
+        dst[0] = '\0';
         return;
     }
     strncpy(dst, src, n - 1);
     dst[n - 1] = '\0';
 }
 
-char* generarFolio(const char *nombre) {
-    char* folio = (char*)malloc(13);
+char *generarFolio(const char *nombre) {
+    char *folio = (char *) malloc(13);
 
     if (folio == NULL) {
         printf("Error de memoria al reservar %d bytes\n", 13);
@@ -92,60 +73,54 @@ char* generarFolio(const char *nombre) {
 
     int len = strlen(nombre);
 
-    // Usar las primeras 3 letras del nombre o rellenar con 'X' si es más corto
     for (int i = 0; i < 3; i++) {
         if (i < len) {
-            folio[i] = toupper(nombre[i]); // Convertir a mayúscula
+            folio[i] = toupper(nombre[i]);
         } else {
             folio[i] = 'X';
         }
     }
 
-    // Generar 9 números pseudo-aleatorios en base al nombre
-    srand(time(NULL) + len); // Semilla basada en el tiempo y longitud del nombre
+    srand(time(NULL) + len);
     for (int i = 3; i < 12; i++) {
         folio[i] = '0' + rand() % 10;
     }
 
-    // Fin de cadena
+
     folio[12] = '\0';
     return folio;
 }
-// Limpia cualquier residuo en el búfer
-void cleanBuffer(){
+
+void cleanBuffer() {
     int c;
-    while ((c = getchar()) != '\n' && c != EOF) {}
+    while ((c = getchar()) != '\n' && c != EOF) {
+    }
 }
 
-/**
- * Funcion Proxima a cambiar
- * @param src
- * @return
- */
-int validarString(const char* src) {
+
+int validarString(const char *src) {
     if (src == NULL) {
-        // usuario presionó ESC o no ingresó nada
         return -1;
     }
     return 1;
 }
 
-char* enterString(int length) {
-    char* buffer = (char*)malloc(length + 1); // Reservar espacio para la cadena
+char *enterString(int length) {
+    char *buffer = (char *) malloc(length + 1);
     if (buffer == NULL) {
         perror("Error al asignar memoria");
         exit(1);
     }
     if (fgets(buffer, length + 1, stdin) != NULL) {
-        buffer[strcspn(buffer, "\n")] = '\0'; // Eliminar el salto de línea al final
+        buffer[strcspn(buffer, "\n")] = '\0';
     }
     return buffer;
 }
 
-// Función auxiliar para leer una cadena con ncurses
-char* leerString(int y, int x, int maxLen, char* pregunta) {
+
+char *leerString(int y, int x, int maxLen, char *pregunta) {
     mvprintw(y, x, "%s  ", pregunta);
-    char* buffer = (char*)malloc(maxLen + 1);
+    char *buffer = (char *) malloc(maxLen + 1);
     if (!buffer) {
         mvprintw(y + 1, x, "Error: No se pudo asignar memoria.");
         refresh();
@@ -153,15 +128,15 @@ char* leerString(int y, int x, int maxLen, char* pregunta) {
     }
     memset(buffer, 0, maxLen + 1);
 
-    noecho(); // Desactivar echo para controlar manualmente
-    cbreak();  // Desactivar buffer de línea
-    keypad(stdscr, TRUE); // Permitir teclas especiales
+    noecho();
+    cbreak();
+    keypad(stdscr, TRUE);
 
     int ch, pos = 0;
     move(y, x + strlen(pregunta) + 2);
     while (1) {
         ch = getch();
-        if (ch == 27) { // ESC
+        if (ch == 27) {
             free(buffer);
             return NULL;
         } else if (ch == '\n' || ch == KEY_ENTER) {
@@ -191,8 +166,7 @@ char* leerString(int y, int x, int maxLen, char* pregunta) {
     return buffer;
 }
 
-int* leerInt(int y, int x, int maxLen, char* pregunta, int* codigoError) {
-    // Inicializar código de error a 0 (sin error)
+int *leerInt(int y, int x, int maxLen, char *pregunta, int *codigoError) {
     if (codigoError) *codigoError = 0;
 
     mvprintw(y, x, "%s  ", pregunta);
@@ -202,15 +176,13 @@ int* leerInt(int y, int x, int maxLen, char* pregunta, int* codigoError) {
     memset(buffer, 0, maxLen + 1);
     echo();
 
-    // Captura con detección de ESC directamente
     int ch = getch();
-    if (ch == 27) {  // ESC presionado antes de escribir
+    if (ch == 27) {
         noecho();
         if (codigoError) *codigoError = LEERINT_ESC;
         return NULL;
     }
 
-    // Si no es ESC, regresamos el carácter al buffer de entrada
     ungetch(ch);
 
     mvgetnstr(y, x + (int)strlen(pregunta) + 2, buffer, maxLen);
@@ -221,7 +193,6 @@ int* leerInt(int y, int x, int maxLen, char* pregunta, int* codigoError) {
         return NULL;
     }
 
-    // Validación numérica
     int i = 0;
     if (buffer[0] == '-') i++;
     for (; buffer[i] != '\0'; i++) {
@@ -233,8 +204,7 @@ int* leerInt(int y, int x, int maxLen, char* pregunta, int* codigoError) {
         }
     }
 
-    // Conversión con control de límites
-    char* endptr;
+    char *endptr;
     long numLong = strtol(buffer, &endptr, 10);
     if (*endptr != '\0' || numLong > INT_MAX || numLong < INT_MIN) {
         mvprintw(y + 1, x, "Error: número fuera de rango.");
@@ -243,7 +213,7 @@ int* leerInt(int y, int x, int maxLen, char* pregunta, int* codigoError) {
         return NULL;
     }
 
-    int* num = (int*)malloc(sizeof(int));
+    int *num = (int *) malloc(sizeof(int));
     if (!num) {
         mvprintw(y + 1, x, "Error al asignar memoria.");
         refresh();
@@ -251,11 +221,11 @@ int* leerInt(int y, int x, int maxLen, char* pregunta, int* codigoError) {
         return NULL;
     }
 
-    *num = (int)numLong;
+    *num = (int) numLong;
     return num;
 }
 
-float* leerFloat(int y, int x, int maxLen, char* pregunta) {
+float *leerFloat(int y, int x, int maxLen, char *pregunta) {
     mvprintw(y, x, "%s  ", pregunta);
     if (maxLen <= 0) {
         mvprintw(y + 1, x, "Error: Longitud máxima inválida.");
@@ -272,16 +242,16 @@ float* leerFloat(int y, int x, int maxLen, char* pregunta) {
     if (strlen(buffer) == 0) {
         return NULL;
     }
-    // Validación: permitir números con signo y punto decimal
+
     int i = 0, dotCount = 0;
     if (buffer[0] == '-') {
-        i++;  // Saltar el signo negativo
+        i++;
     }
 
     for (; buffer[i] != '\0'; i++) {
         if (buffer[i] == '.') {
             dotCount++;
-            if (dotCount > 1) { // Más de un punto decimal es inválido
+            if (dotCount > 1) {
                 mvprintw(y + 1, x, "Error: Número no válido.");
                 refresh();
                 return NULL;
@@ -292,16 +262,16 @@ float* leerFloat(int y, int x, int maxLen, char* pregunta) {
             return NULL;
         }
     }
-    // Convertir a float usando strtof
-    char* endptr;
+
+    char *endptr;
     float numFloat = strtof(buffer, &endptr);
     if (*endptr != '\0') {
         mvprintw(y + 1, x, "Error: Conversión inválida.");
         refresh();
         return NULL;
     }
-    // Reservar memoria para el número y devolverlo
-    float* num = (float*)malloc(sizeof(float));
+
+    float *num = (float *) malloc(sizeof(float));
     if (!num) {
         mvprintw(y + 1, x, "Error: No se pudo asignar memoria.");
         refresh();
@@ -312,24 +282,21 @@ float* leerFloat(int y, int x, int maxLen, char* pregunta) {
     return num;
 }
 
-int leerIntSeguro(int y, int x, int maxLen, char* pregunta) {
-    int* valor = NULL;
+int leerIntSeguro(int y, int x, int maxLen, char *pregunta) {
+    int *valor = NULL;
     int codigoError = 0;
 
     do {
-        // Limpiar la línea donde se mostrará el mensaje de error
         move(y + 1, x);
         clrtoeol();
         refresh();
 
         valor = leerInt(y, x, maxLen, pregunta, &codigoError);
 
-        // Si valor es NULL, verificamos el código de error
         if (valor == NULL) {
             if (codigoError == LEERINT_ESC) {
-                return -1; // Retornar -1 si se presionó ESC
+                return -1;
             }
-            // Para otros errores (entrada vacía o inválida), continuamos el bucle
         }
     } while (valor == NULL);
 
@@ -338,15 +305,16 @@ int leerIntSeguro(int y, int x, int maxLen, char* pregunta) {
     return resultado;
 }
 
-float leerFloatSeguro(int y, int x, int maxLen, char* pregunta) {
-    float* valor = NULL;
+float leerFloatSeguro(int y, int x, int maxLen, char *pregunta) {
+    float *valor = NULL;
     do {
         valor = leerFloat(y, x, maxLen, pregunta);
         if (valor == NULL) {
-            mvprintw(y+1, x , "X Entrada invalida. Intentalo de nuevo.");
+            mvprintw(y + 1, x, "X Entrada invalida. Intentalo de nuevo.");
             getch();
             refresh();
-            mvprintw(y+1, 0, "                                                                                                                                                        ");
+            mvprintw(y + 1, 0,
+                     "                                                                                                                                                        ");
         }
     } while (valor == NULL);
 
@@ -356,26 +324,27 @@ float leerFloatSeguro(int y, int x, int maxLen, char* pregunta) {
 }
 
 
-char* leerStringSeguro(int y, int x, int maxLen, char* pregunta) {
-    char* valor = NULL;
+char *leerStringSeguro(int y, int x, int maxLen, char *pregunta) {
+    char *valor = NULL;
     do {
         valor = leerString(y, x, maxLen, pregunta);
         if (valor == NULL) {
             mvprintw(y + 1, x, "Entrada inválida o cancelada con (ESC). Presione ESC de nuevo.");
             refresh();
             int ch = getch();
-            if (ch == 27) return NULL;  // salir si presiona ESC
+            if (ch == 27) return NULL;
 
             move(y + 1, x);
-            clrtoeol();  // Limpia la línea del mensaje
-            mvprintw(y+1, 0, "                                                                                                                                                        ");
-            // volverá a repetir el do-while
+            clrtoeol();
+            mvprintw(y + 1, 0,
+                     "                                                                                                                                                        ");
         }
     } while (valor == NULL);
 
     return valor;
 }
-void imprimirTextoMultilinea(int fila, int columna, const char* texto, int anchoMaximo) {
+
+void imprimirTextoMultilinea(int fila, int columna, const char *texto, int anchoMaximo) {
     int len = strlen(texto);
     int inicio = 0;
 
@@ -385,8 +354,8 @@ void imprimirTextoMultilinea(int fila, int columna, const char* texto, int ancho
 
         if (fin >= len) fin = len;
         else {
-            while (fin > inicio && texto[fin] != ' ') fin--;  // retrocede al espacio anterior
-            if (fin == inicio) fin = inicio + anchoMaximo;    // palabra larga sin espacios
+            while (fin > inicio && texto[fin] != ' ') fin--;
+            if (fin == inicio) fin = inicio + anchoMaximo;
         }
 
         int largoLinea = fin - inicio;
@@ -394,12 +363,12 @@ void imprimirTextoMultilinea(int fila, int columna, const char* texto, int ancho
         buffer[largoLinea] = '\0';
 
         mvprintw(fila++, columna, "%s", buffer);
-        while (texto[fin] == ' ') fin++;  // saltar espacios múltiples
+        while (texto[fin] == ' ') fin++;
         inicio = fin;
     }
 }
 
-void imprimirTextoMultilineaArchivo(FILE *archivo, const char *texto, int anchoMaximo){
+void imprimirTextoMultilineaArchivo(FILE *archivo, const char *texto, int anchoMaximo) {
     if (!texto || !archivo) return;
 
     int len = strlen(texto);
@@ -415,7 +384,7 @@ void imprimirTextoMultilineaArchivo(FILE *archivo, const char *texto, int anchoM
     }
 }
 
-int arrayPiezasSize(ArrayPiezas* list) {
+int arrayPiezasSize(ArrayPiezas *list) {
     int tamanno = 0;
     for (int i = 0; i < list->tamanno; i++) {
         if (list->datos[i] != NULL) {
@@ -425,34 +394,33 @@ int arrayPiezasSize(ArrayPiezas* list) {
     return tamanno;
 }
 
-const char* tipoCombustibleToStr(TipoCombustible tipo) {
+const char *tipoCombustibleToStr(TipoCombustible tipo) {
     switch (tipo) {
-    case GASOLINA: return "Gasolina";
-    case DIESEL:   return "Diesel";
-    case HIBRIDO:  return "Híbrido";
-    default:       return "Desconocido";
+        case GASOLINA: return "Gasolina";
+        case DIESEL: return "Diesel";
+        case HIBRIDO: return "Híbrido";
+        default: return "Desconocido";
     }
 }
 
 void mostrarUsuario(Usuario usr) {
-    mvprintw(10,10,"ID Usuario: %d\n", usr.id_usuario);
-    mvprintw(10,11,"Folio Usuario: %s\n", usr.folio);
-    mvprintw(10,12, "Activo?: %d", usr.activo);
-    mvprintw(10,13,"Nombre: %s\n", usr.nombreUsuario);
-    mvprintw(10,14,"Apellido: %s\n", usr.apellido);
-    mvprintw(10,15,"Celular: %lld\n", usr.celular);
-    mvprintw(10,16,"Email: %s\n", usr.email);
-    mvprintw(10,17,"Contacto: %s\n", usr.contacto);
+    mvprintw(10, 10, "ID Usuario: %d\n", usr.id_usuario);
+    mvprintw(10, 11, "Folio Usuario: %s\n", usr.folio);
+    mvprintw(10, 12, "Activo?: %d", usr.activo);
+    mvprintw(10, 13, "Nombre: %s\n", usr.nombreUsuario);
+    mvprintw(10, 14, "Apellido: %s\n", usr.apellido);
+    mvprintw(10, 15, "Celular: %lld\n", usr.celular);
+    mvprintw(10, 16, "Email: %s\n", usr.email);
+    mvprintw(10, 17, "Contacto: %s\n", usr.contacto);
 }
 
-char* obtenerNombreArchivo(const char* textoInicial){
+char *obtenerNombreArchivo(const char *textoInicial) {
     char fecha[50];
     time_t t = time(NULL);
     struct tm *tm_info = localtime(&t);
     strftime(fecha, sizeof(fecha), "%Y-%m-%d_%H-%M-%S", tm_info);
 
-
-    char* nombreArchivo = malloc(200);
+    char *nombreArchivo = malloc(200);
     if (nombreArchivo == NULL) {
         perror("Error al reservar memoria");
         exit(EXIT_FAILURE);
@@ -465,7 +433,6 @@ char* obtenerNombreArchivo(const char* textoInicial){
     return nombreArchivo;
 }
 
-void cleanScreen(){
-    //clear();
+void cleanScreen() {
     printf("\033[2J\033[H");
 }

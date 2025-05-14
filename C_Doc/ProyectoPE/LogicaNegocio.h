@@ -1,8 +1,4 @@
-//
-// Created by Jesus Emmanuel Garcia on 2/17/25.
-// Interface principal: Declaración de funciones del sistema de rectificación
-//
-
+//LOGICANEGOCIO_H
 #ifndef LOGICANEGOCIO_H
 #define LOGICANEGOCIO_H
 
@@ -103,4 +99,4 @@ void imprimirArrayPiezasAlmacenArchivo(FILE* archivo);
 Herramienta* incializarHerramienta(char* id_herramienta, char* tipo, int usos, char* compatibilidad,
     float rango, char* material, int cantidad);
 
-#endif //LOGICANEGOCIO_H
+#endif

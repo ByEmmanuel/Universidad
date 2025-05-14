@@ -1,6 +1,5 @@
-//
-// Created by Jesus Emmanuel Garcia on 5/7/25.
-//
+//ApartadoOtros
+
 #include <curses.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,22 +13,22 @@
 
 #include "Testing.h"
 
-void historialTickets(){
-    char* nombreArchivo = obtenerNombreArchivo("Tickets_");
+void historialTickets() {
+    char *nombreArchivo = obtenerNombreArchivo("Tickets_");
 
-    if (arrayTickets.tamanno < 1){
+    if (arrayTickets.tamanno < 1) {
         imprimirMensaje(5, 5, "No existen Tickets Creados, porfavor crea nuevos tickets");
         return;
     }
-    FILE* archivo = fopen(nombreArchivo, "w");
+    FILE *archivo = fopen(nombreArchivo, "w");
     exportarDetallesTickets(nombreArchivo, archivo);
     fclose(archivo);
     free(nombreArchivo);
 };
 
-void exportarDetallesTodoElSistema(){
-    char* nombreArchivo = obtenerNombreArchivo("Detalles_SistemaCompleto");
-    FILE* archivo = fopen(nombreArchivo, "w");
+void exportarDetallesTodoElSistema() {
+    char *nombreArchivo = obtenerNombreArchivo("Detalles_SistemaCompleto");
+    FILE *archivo = fopen(nombreArchivo, "w");
 
     arrayUsuarios.tamanno > 0
         ? exportarDetallesUsuarios(nombreArchivo, archivo)
@@ -40,7 +39,7 @@ void exportarDetallesTodoElSistema(){
     arrayMotoresPrecargados.tamanno > 0
         ? exportarDetallesMotoresPrecargados(nombreArchivo, archivo)
         : fprintf(archivo, "NO HAY MOTORES PRECARCAGOS EN LA BASE DE DATOS (arrayMotoresPrecargados)\n\n");
-    //Almacen
+
     arrayPiezasAlmacen.tamanno > 0
         ? exportarDetallesPiezasAlmacen(nombreArchivo, archivo)
         : fprintf(archivo, "No hay Piezas en el almacen registradas en la base de datos (arrayPiezasAlmacen)\n");
@@ -48,13 +47,13 @@ void exportarDetallesTodoElSistema(){
     free(nombreArchivo);
 };
 
-int exportarDetallesUsuarios(const char* nombreArchivo, FILE* archivo){
+int exportarDetallesUsuarios(const char *nombreArchivo, FILE *archivo) {
     RETURN_IF_ESC(validarArchivo(archivo));
 
     fprintf(archivo, "EXPORTANDO DETALLES DE ARRAY USUARIOS\n");
     fprintf(archivo, "Tamaño del array: %d\n\n", arrayUsuarios.tamanno);
-    for (int i = 0; i < arrayUsuarios.tamanno; i++){
-        Usuario* usr = arrayUsuarios.datos;
+    for (int i = 0; i < arrayUsuarios.tamanno; i++) {
+        Usuario *usr = arrayUsuarios.datos;
         if (!usr) continue;
 
         fprintf(archivo, "==============================================\n");
@@ -68,8 +67,8 @@ int exportarDetallesUsuarios(const char* nombreArchivo, FILE* archivo){
         fprintf(archivo, "Contacto: %s\n", usr->contacto);
         fprintf(archivo, "Activo: %s\n", usr->activo ? "Si" : "No");
 
-        Motor* motor = usr->motor;
-        if (!motor){
+        Motor *motor = usr->motor;
+        if (!motor) {
             fprintf(archivo, "Motor: No asignado.\n\n");
             continue;
         }
@@ -91,8 +90,8 @@ int exportarDetallesUsuarios(const char* nombreArchivo, FILE* archivo){
         fprintf(archivo, "Medida Original (mm) : %.2f\n", motor->medidaOriginal);
         fprintf(archivo, "Medida Actual (mm) : %.2f\n", motor->medidaActual);
 
-        if (motor->culata){
-            Culata* culata = motor->culata;
+        if (motor->culata) {
+            Culata *culata = motor->culata;
             fprintf(archivo, "\n----------- CULATA -----------\n");
             fprintf(archivo, "ID Pieza: %d\n", culata->id_pieza);
             fprintf(archivo, "ID Usuario: %d\n", culata->id_usuario);
@@ -108,15 +107,15 @@ int exportarDetallesUsuarios(const char* nombreArchivo, FILE* archivo){
             fprintf(archivo, "Estado de la Pieza: %s\n", estadoPiezaTexto(culata->operacionesMotor));
         }
 
-        if (motor->monoblock && motor->monoblock->numCilindros){
-            Monoblock* mono = motor->monoblock;
+        if (motor->monoblock && motor->monoblock->numCilindros) {
+            Monoblock *mono = motor->monoblock;
             fprintf(archivo, "\n----------- MONOBLOCK -----------\n");
             fprintf(archivo, "ID Pieza: %d\n", mono->id_pieza);
             fprintf(archivo, "ID Usuario: %d\n", mono->id_usuario);
             fprintf(archivo, "Numero Cilindros: %d\n", mono->numCilindros);
             fprintf(archivo, "Ovalizacion: %.2f mm\n", mono->ovalizacion_max);
-            for (int j = mono->numCilindros; j < mono->numCilindros; j++){
-                fprintf(archivo, "Diametro Cilindro %d : %.2f mm \n", j , mono->diametroCilindro[j]);
+            for (int j = mono->numCilindros; j < mono->numCilindros; j++) {
+                fprintf(archivo, "Diametro Cilindro %d : %.2f mm \n", j, mono->diametroCilindro[j]);
                 fprintf(archivo, "Desalineacion Bancada: %.2f mm\n", mono->desalineacion_bancadas[j]);
             }
             fprintf(archivo, "Estado de la Pieza: %s\n", estadoPiezaTexto(mono->estado_diagnostico));
@@ -130,14 +129,14 @@ int exportarDetallesUsuarios(const char* nombreArchivo, FILE* archivo){
     return 1;
 }
 
-int exportarDetallesMotoresPrecargados(const char* nombreArchivo, FILE* archivo){
+int exportarDetallesMotoresPrecargados(const char *nombreArchivo, FILE *archivo) {
     RETURN_IF_ESC(validarArchivo(archivo));
 
     fprintf(archivo, "EXPORTANDO DETALLES DE MOTORES PRECARGADOS\n");
     fprintf(archivo, "Tamaño del array: %d\n\n", arrayMotoresPrecargados.tamanno);
 
-    for (int i = 0; i < arrayMotoresPrecargados.tamanno; i++){
-        Motor* m = arrayMotoresPrecargados.datos[i];
+    for (int i = 0; i < arrayMotoresPrecargados.tamanno; i++) {
+        Motor *m = arrayMotoresPrecargados.datos[i];
 
         fprintf(archivo, "Motor #%d\n", i + 1);
         fprintf(archivo, "  ID de pieza: %d\n", m->id_pieza);
@@ -160,15 +159,15 @@ int exportarDetallesMotoresPrecargados(const char* nombreArchivo, FILE* archivo)
     return 1;
 }
 
-int exportarDetallesPiezasAlmacen(const char* nombreArchivo, FILE* archivo){
+int exportarDetallesPiezasAlmacen(const char *nombreArchivo, FILE *archivo) {
     RETURN_IF_ESC(validarArchivo(archivo));
 
     fprintf(archivo, "==============================================\n\n");
     fprintf(archivo, "EXPORTANDO DETALLES DE MOTORES PRECARGADOS\n");
     fprintf(archivo, "Tamaño del array: %d\n\n", arrayPiezasAlmacen.tamanno);
 
-    for (int i = 0; i < arrayPiezasAlmacen.tamanno; i++){
-        PiezaAlmacen* p = &arrayPiezasAlmacen.datos[i];
+    for (int i = 0; i < arrayPiezasAlmacen.tamanno; i++) {
+        PiezaAlmacen *p = &arrayPiezasAlmacen.datos[i];
 
         fprintf(archivo, "===== INVENTARIO DE PIEZAS EN ALMACEN =====");
         fprintf(archivo, "Pieza #%d\n", i + 1);
@@ -187,8 +186,8 @@ int exportarDetallesPiezasAlmacen(const char* nombreArchivo, FILE* archivo){
     return 1;
 }
 
-int validarArchivo(FILE* archivo){
-    if (!archivo){
+int validarArchivo(FILE *archivo) {
+    if (!archivo) {
         perror("No se pudo abrir el archivo");
         return -1;
     }

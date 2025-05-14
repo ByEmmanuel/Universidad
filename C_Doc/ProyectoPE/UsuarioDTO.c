@@ -1,7 +1,4 @@
-//
-// Created by Jesus Emmanuel Garcia on 2/17/25.
-//
-
+//USuario DTO
 #include "UsuarioDTO.h"
 
 #include <curses.h>
@@ -12,16 +9,13 @@
 #include "UserInterface.h"
 
 #include "SystemLogs.h"
-
 #include "Util.h"
-//Variable encapsulada -> Private
 int id_UsuarioGlobal = 0;
 int id_piezaGlobal = 0;
 int id_unicoLogs = 0;
-//int id_Pieza = 0;
-// Declaración global de array's
+
 ArrayUsuarios arrayUsuarios = {0};
-ArrayTickets arrayTickets = {0};  // ← variable global
+ArrayTickets arrayTickets = {0};
 ArrayList array_list;
 ArrayPiezas arrayMotoresPrecargados = {0};
 ArrayPiezas arrayMotoresUsuarios = {0};
@@ -30,11 +24,8 @@ ArrayPiezasAlmacen arrayPiezasAlmacen = {0};
 Almacen almacenBaseDatos = {0};
 ArrayLogs arrayLogs = {0};
 
-
-//Funciones Importantes para la ejecucion detodo el programa y evitar la reutilizacion de codigo
-
-Usuario inicializarUsuario(const int id_usuario, char* folio, const char* nombreUsuario, const char* apellido,
-                          long long celular, const char* email, const char* contacto) {
+Usuario inicializarUsuario(const int id_usuario, char *folio, const char *nombreUsuario, const char *apellido,
+                           long long celular, const char *email, const char *contacto) {
     Usuario usr = {0};
     usr.id_usuario = id_usuario;
     asignString(usr.folio, folio, sizeof(usr.folio));
@@ -54,20 +45,10 @@ Usuario inicializarUsuario(const int id_usuario, char* folio, const char* nombre
     return usr;
 }
 
-/**
- * Solo se pasaran commo variables estaticas
- * Las variables que no pertenecen unicamente del motor
- * @param params
- * @param paramsmotor
- * @param id_usuario,
- * @param id_pieza,
- * @param numero_serie
- * @param tipoDePieza
- * @param tipoPieza -> MONOBLOCK = 0, CULATA = 1.
- *
- */
-Motor* inicializarMotor(Paramsmotor params, const int id_usuario, const int id_pieza, void* tipoDePieza, const int tipoPieza) {
-    Motor* pz = (Motor*)malloc(sizeof(Motor));
+
+Motor *inicializarMotor(Paramsmotor params, const int id_usuario, const int id_pieza, void *tipoDePieza,
+                        const int tipoPieza) {
+    Motor *pz = (Motor *) malloc(sizeof(Motor));
     if (pz == NULL) {
         generarSystemLog(id_usuario, "Inicializar Motor", "Motor", params.numeroSerie, ERROR, 0,
                          "UsuarioDTO.c", "inicializarMotor", HTTP_INTERNAL_SERVER_ERROR);
@@ -97,9 +78,10 @@ Motor* inicializarMotor(Paramsmotor params, const int id_usuario, const int id_p
     return pz;
 }
 
-Culata* inicializarCulata(int id_pieza, int numValvulas, double presionPrueba, int fisuras,
-                          float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario, int estadoPieza) {
-    Culata* culata = malloc(sizeof(Culata));
+Culata *inicializarCulata(int id_pieza, int numValvulas, double presionPrueba, int fisuras,
+                          float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario,
+                          int estadoPieza) {
+    Culata *culata = malloc(sizeof(Culata));
     if (culata == NULL) {
         generarSystemLog(id_usuario, "Inicializar Culata", "Culata", "UNKNOWN", ERROR, 0,
                          "UsuarioDTO.c", "inicializarCulata", HTTP_INTERNAL_SERVER_ERROR);
@@ -117,10 +99,10 @@ Culata* inicializarCulata(int id_pieza, int numValvulas, double presionPrueba, i
     culata->alturaMinima = alturaMinima;
     culata->estadoTemporalPieza = -1;
     culata->operacionesMotor = estadoPieza;
-    setIdPiezaGlobal(getIdPiezaGlobal()+1);
+    setIdPiezaGlobal(getIdPiezaGlobal() + 1);
 
     char id_objeto[50];
-    snprintf(id_objeto, sizeof(id_objeto), "CULATA_%d", id_pieza); // Generar ID único para el log
+    snprintf(id_objeto, sizeof(id_objeto), "CULATA_%d", id_pieza);
 
     generarSystemLog(id_usuario, "Inicializar Culata", "Culata", id_objeto, INFO, 1,
                      "UsuarioDTO.c", "inicializarCulata", HTTP_CREATED);
@@ -128,12 +110,13 @@ Culata* inicializarCulata(int id_pieza, int numValvulas, double presionPrueba, i
     return culata;
 }
 
-Monoblock* inicializarMonoblock(int id_pieza, int id_usuario, int numCilindros, const float* diametroCilindro,
-    const float* conicidad_max, int num_bancadas, const float* diametro_bancadas, const float* desalineacion_bancadas,
-    float ovalizacion_max, float planitud_superficie, int flags, char* numero_serie, char* observaciones,
-    int estado_diagnostico){
-
-    Monoblock* mono = malloc(sizeof(Monoblock));
+Monoblock *inicializarMonoblock(int id_pieza, int id_usuario, int numCilindros, const float *diametroCilindro,
+                                const float *conicidad_max, int num_bancadas, const float *diametro_bancadas,
+                                const float *desalineacion_bancadas,
+                                float ovalizacion_max, float planitud_superficie, int flags, char *numero_serie,
+                                char *observaciones,
+                                int estado_diagnostico) {
+    Monoblock *mono = malloc(sizeof(Monoblock));
     if (!mono) {
         perror("Fallo al asignar memoria para Monoblock");
         exit(EXIT_FAILURE);
@@ -176,37 +159,40 @@ Monoblock* inicializarMonoblock(int id_pieza, int id_usuario, int numCilindros, 
     return mono;
 }
 
-//Getters y setters
-void setIdUsuarioLogico(const int nuevoId){
+
+void setIdUsuarioLogico(const int nuevoId) {
     id_UsuarioGlobal = nuevoId;
 };
-int getIdUsuarioLogico(){
+
+int getIdUsuarioLogico() {
     return id_UsuarioGlobal;
 };
+
 void setIdLog(const int id) {
     id_unicoLogs = id;
 }
+
 int getIdLog() {
     return id_unicoLogs;
 }
+
 void setIdPiezaGlobal(const int id) {
-        id_piezaGlobal = id;
+    id_piezaGlobal = id;
 }
+
 int getIdPiezaGlobal() {
     return id_piezaGlobal;
 }
 
 
-//Funcion para clonar el contenido de una variable a otra nueva variable
-//-> Esto no pasaria con POO ya que cada nuevo objeto es una nueva direccion en memoria, y si quiero asignar, se asignan los valores de esa direccion PROPIA
-Motor* clonarMotor(Motor* original, int nuevoIdUsuario) {
+Motor *clonarMotor(Motor *original, int nuevoIdUsuario) {
     if (original == NULL) {
         generarSystemLog(nuevoIdUsuario, "Clonar Motor", "Motor", "NULL", ERROR, 0,
                          "UsuarioDTO.c", "clonarMotor", HTTP_UNPROCESSABLE_ENTITY);
         return NULL;
     }
 
-    Motor* copia = malloc(sizeof(Motor));
+    Motor *copia = malloc(sizeof(Motor));
     if (!copia) {
         generarSystemLog(nuevoIdUsuario, "Clonar Motor", "Motor", "NULL", ERROR, 0,
                          "UsuarioDTO.c", "clonarMotor", HTTP_INTERNAL_SERVER_ERROR);
@@ -228,7 +214,7 @@ Motor* clonarMotor(Motor* original, int nuevoIdUsuario) {
     return copia;
 }
 
-void liberarMonoblock(Monoblock* mono) {
+void liberarMonoblock(Monoblock *mono) {
     if (!mono) return;
 
     free(mono->diametroCilindro);
