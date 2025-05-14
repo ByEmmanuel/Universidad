@@ -14,7 +14,7 @@
 #include "UsuarioDTO.h"
 
 void testing(int tipoDeTesting) {
-    agregarSystemLog(1,"Login","Ninguno","-1",INFO, 1, "Login", "testing", HTTP_OK);
+    generarSystemLog(1,"Login","Ninguno","-1",INFO, 1, "Login", "testing", HTTP_OK);
     if (tipoDeTesting){
         //usleep(200);
         int cantidadMotores = sizeof(motoresExistentesSINCulatasAsignadas) / sizeof(Motor);
@@ -91,13 +91,13 @@ int precargarMotoresDB(Motor motores[], int cantidad) {
             void** nuevoArray = realloc(arrayMotoresPrecargados.datos, nuevaCapacidad * sizeof(void*));
             if (!nuevoArray) {
                 imprimirMensaje(10,10,"Error al redimensionar el array de motores precargados");
-                agregarSystemLog(motores[i].id_usuario, "Add Motor arrayMotores", "Precarga", motores[i].numeroSerie, WARN, 0, "PrecargarMotor", "precargarMotoresDB", HTTP_BAD_REQUEST);
+                generarSystemLog(motores[i].id_usuario, "Add Motor arrayMotores", "Precarga", motores[i].numeroSerie, WARN, 0, "PrecargarMotor", "precargarMotoresDB", HTTP_BAD_REQUEST);
                 return -1;
             }
             arrayMotoresPrecargados.datos = nuevoArray;
             arrayMotoresPrecargados.capacidad = nuevaCapacidad;
         }
-        agregarSystemLog(motores[i].id_usuario, "Add Motor arrayMotores", "Precarga", motores[i].numeroSerie, INFO, 1, "PrecargarMotor", "precargarMotoresDB", HTTP_OK);
+        generarSystemLog(motores[i].id_usuario, "Add Motor arrayMotores", "Precarga", motores[i].numeroSerie, INFO, 1, "PrecargarMotor", "precargarMotoresDB", HTTP_OK);
         arrayMotoresPrecargados.datos[arrayMotoresPrecargados.tamanno++] = &motores[i];
         setIdPiezaGlobal(getIdPiezaGlobal()+1);
     }
@@ -334,7 +334,7 @@ void inicializarMonoblocksExistentes() {
             .planitud_superficie = 0.06f,
             .flags = FLAG_FISURAS_DETECTADAS, // 0b0100 = 4
             .numero_serie = serie2,
-            .observaciones = "Fisuras detectadas, requiere reconstrucción",
+            .observaciones = "Fisuras detectadas, requiere reconstruccion",
             .estado_diagnostico = 2
         };
     }

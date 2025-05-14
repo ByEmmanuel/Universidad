@@ -52,8 +52,19 @@ void imprimirDetallesMotor(Motor* motor);
 int asignarMotorUsuario(Usuario* usuario, Motor* motor);
 int asignarPiezaMotor(Usuario* usuario, void* pieza, int tipoDePieza);
 int evaluarEstadoCulata(float alturaOriginal, float alturaActual, float alturaMinima, float tolerancia);
-char* imprimirOperacionesCulata(int operacion);
+const char* imprimirOperacionesEstadoPieza(int estado, int tipoPieza);
 int realizarOperacionesMotor();
+int realizarOperacionesPiezaMotor(int tipoPieza);
+
+int evaluarDiametrosCilindros(float* diametros, int numCilindros, int y, int* necesitaReconstruccion);
+int evaluarConicidadCilindros(const float* conicidades, int numCilindros, int y);
+int evaluarDesalineacionCilindros(float* desalineaciones, int numCilindros, int y);
+int evaluarDiametrosBancadas(float* bancadas, int num_bancadas, int y);
+int evaluarOvalidad(float oval, int y);
+int evaluarPlanitud(float planitud, int y);
+int evaluarJuegoAxial(int y, float* grosorLaina);
+void actualizarStockLaina(float grosor, int cantidad);
+void registrarUsoHerramienta(char* idHerramienta, char* etapa);
 
 // -------------------------------------  Utilidades
 const char* tipoCombustibleToStr(TipoCombustible tipo);

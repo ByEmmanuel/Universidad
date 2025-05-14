@@ -84,7 +84,16 @@ int cliente(){
                 mvprintw(p++, 1, "ID: %d", arrayUsuarios.datos[i].id_usuario);
                 if (arrayUsuarios.datos[i].motor != NULL) {
                     mvprintw(p++, 1, "Pieza: %s", arrayUsuarios.datos[i].motor->material);
+                    mvprintw(p++, 1, "Num Serie: %s", arrayUsuarios.datos[i].motor->numeroSerie);
                     //mvprintw(y++, 1, "Pieza: %s", arrayUsuarios.datos[i].motor->nombre);
+                    if (arrayUsuarios.datos[i].motor->culata != NULL) {
+                        mvprintw(p++, 1, "Culata asignada -> ID - Pieza: %d",
+                            arrayUsuarios.datos[i].motor->culata->id_pieza);
+                    }
+                    if (arrayUsuarios.datos[i].motor->monoblock != NULL) {
+                        mvprintw(p++, 1, "Monoblock asignado -> ID - Pieza: %d",
+                            arrayUsuarios.datos[i].motor->monoblock->id_pieza);
+                    }
                 } else {
                     mvprintw(p++, 1, "Motor: (no asignada)");
                 }
@@ -302,7 +311,7 @@ void listarPiezas(){
         mvprintw(fila++, 2, "Fabricante: %s", pieza->fabricante);
         mvprintw(fila++, 2, "Cilindrada: %.2f L", pieza->cilindrada);
         mvprintw(fila++, 2, "Compresión Original: %.2f psi", pieza->compresionOriginal);
-        mvprintw(fila++, 2, "Número de Serie: %s", pieza->numeroSerie);
+        mvprintw(fila++, 2, "Numero de Serie: %s", pieza->numeroSerie);
         mvprintw(fila++, 2, "Tipo de Combustible: %s", tipoCombustibleToStr(pieza->tipoCombustible));
         mvprintw(fila++, 2, "Material: %s", pieza->material);
         /*
@@ -315,20 +324,21 @@ void listarPiezas(){
 
         if (pieza->culata != NULL) {
             mvprintw(fila++, 4, "Tipo de Pieza: Culata");
-            mvprintw(fila++, 4, "N° Válvulas: %d", pieza->culata->numValvulas);
-            mvprintw(fila++, 4, "Presión Prueba: %.2f bar", pieza->culata->presionPrueba);
+            mvprintw(fila++, 4, "N Valvulas: %d", pieza->culata->numValvulas);
+            mvprintw(fila++, 4, "Presion Prueba: %.2f bar", pieza->culata->presionPrueba);
             mvprintw(fila++, 4, "Tiene Fisuras: %s", pieza->culata->tieneFisuras ? "Sí" : "No");
             mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(pieza->culata->operacionesMotor));
         }else{
             mvprintw(fila++, 4, "Culata : (NO Asignada)");
         }
         if (pieza->monoblock != NULL) {
-            Monoblock* monoblock = (Monoblock*)pieza;
             mvprintw(fila++, 4, "Tipo de Pieza: Monoblock");
-            mvprintw(fila++, 4, "N° Cilindros: %d", monoblock->numCilindros);
-            //mvprintw(fila++, 4, "Diámetro Cilindros: %.2f mm", monoblock->diametroCilindro);
-            //mvprintw(fila++, 4, "Alineación Cigüeñal: %.2f mm", monoblock->alineacionCiguenal);
-            //mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(monoblock->estadoPieza));
+            mvprintw(fila++, 4, "N Cilindros: %d",pieza->monoblock->numCilindros);
+            mvprintw(fila++, 4, "Ovalizacion Max: %.2f mm", pieza->monoblock->ovalizacion_max);
+            for (int j = 0; j < pieza->monoblock->numCilindros; j++) {
+                mvprintw(fila++, 4, "Diametro Cilindro %d : %.4f mm",pieza->monoblock->numCilindros, pieza->monoblock->diametroCilindro[j]);
+            }
+            mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(pieza->monoblock->operacionesMonoblock));
         }else{
             mvprintw(fila++, 4, "Monoblock : (NO Asignada)");
         }

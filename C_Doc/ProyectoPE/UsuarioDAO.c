@@ -16,13 +16,13 @@ int guardarUsuarioArray(Usuario usuario) {
         Usuario* nuevoArray = realloc(arrayUsuarios.datos, nuevaCapacidad * sizeof(Usuario));
         if (nuevoArray == NULL) {
             printf("Error al redimensionar el array de usuarios.\n");
-            agregarSystemLog(usuario.id_usuario, "Guardar", "Array", "Usuario", WARN, 0, "UsuarioDAO", "guardarUsuarioArray", HTTP_BAD_REQUEST);
+            generarSystemLog(usuario.id_usuario, "Guardar", "Array", "Usuario", WARN, 0, "UsuarioDAO", "guardarUsuarioArray", HTTP_BAD_REQUEST);
             return -1;
         }
         arrayUsuarios.datos = nuevoArray;
         arrayUsuarios.capacidad = nuevaCapacidad;
     }
-    agregarSystemLog(usuario.id_usuario, "Guardar", "Array", "Usuario", INFO, 1, "UsuarioDAO", "guardarUsuarioArray", HTTP_OK);
+    generarSystemLog(usuario.id_usuario, "Guardar", "Array", "Usuario", INFO, 1, "UsuarioDAO", "guardarUsuarioArray", HTTP_OK);
     arrayUsuarios.datos[arrayUsuarios.tamanno] = usuario;
     arrayUsuarios.tamanno++;
     return 1; // Retorna 1 si se guardó correctamente
@@ -33,21 +33,21 @@ int guardarMotorArray(void* motor, const int id_usuario) {
         const int nuevaCapacidad = arrayMotoresUsuarios.capacidad == 0 ? 1 : arrayMotoresUsuarios.capacidad * 2;
         void* nuevoArray = realloc(arrayMotoresUsuarios.datos, nuevaCapacidad * sizeof(void*));
         if (nuevoArray == NULL) {
-            agregarSystemLog(id_usuario, "Redimensionar Array", "Motor", "motor", ERROR, 0,
+            generarSystemLog(id_usuario, "Redimensionar Array", "Motor", "motor", ERROR, 0,
                              "UsuarioDAO", "guardarMotorArray", HTTP_INTERNAL_SERVER_ERROR);
             printf("Error al redimensionar el array de Piezas.\n");
             return -1;
         }
         arrayMotoresUsuarios.datos = nuevoArray;
         arrayMotoresUsuarios.capacidad = nuevaCapacidad;
-        agregarSystemLog(id_usuario, "Redimensionar Array", "Motor", "motor", INFO, 1,
+        generarSystemLog(id_usuario, "Redimensionar Array", "Motor", "motor", INFO, 1,
                          "UsuarioDAO", "guardarMotorArray", HTTP_OK);
     }
 
     arrayMotoresUsuarios.datos[arrayMotoresUsuarios.tamanno] = motor;
     arrayMotoresUsuarios.tamanno++;
     arrayMotoresUsuarios.id_usuario = id_usuario;
-    agregarSystemLog(id_usuario, "Guardar Motor", "Motor", "motor", INFO, 1,
+    generarSystemLog(id_usuario, "Guardar Motor", "Motor", "motor", INFO, 1,
                      "UsuarioDAO", "guardarMotorArray", HTTP_CREATED);
     return 1;
 }
@@ -57,21 +57,21 @@ int guardarPiezaArray(void* pieza, int id_usuario, char* tipoPieza){
         const int nuevaCapacidad = arrayPiezas.capacidad == 0 ? 1 : arrayPiezas.capacidad * 2;
         void** nuevoArray = realloc(arrayPiezas.datos, nuevaCapacidad * sizeof(void*));
         if (nuevoArray == NULL) {
-            agregarSystemLog(id_usuario, "Redimensionar Array", tipoPieza, "Pieza", ERROR, 0,
+            generarSystemLog(id_usuario, "Redimensionar Array", tipoPieza, "Pieza", ERROR, 0,
                              "UsuarioDAO", "guardarPiezaArray", HTTP_INTERNAL_SERVER_ERROR);
             printf("Error al redimensionar el array de Piezas.\n");
             return -1;
         }
         arrayPiezas.datos = nuevoArray;
         arrayPiezas.capacidad = nuevaCapacidad;
-        agregarSystemLog(id_usuario, "Redimensionar Array", "Pieza", tipoPieza, INFO, 1,
+        generarSystemLog(id_usuario, "Redimensionar Array", tipoPieza, tipoPieza, INFO, 1,
                          "UsuarioDAO", "guardarPiezaArray", HTTP_OK);
     }
 
     arrayPiezas.datos[arrayPiezas.tamanno] = pieza;
     arrayPiezas.tamanno++;
     arrayPiezas.id_usuario = id_usuario;
-    agregarSystemLog(id_usuario, "Guardar Pieza", "Pieza", "Pieza", INFO, 1,
+    generarSystemLog(id_usuario, "Guardar Pieza", tipoPieza, "Pieza", INFO, 1,
                      "UsuarioDAO", "guardarPiezaArray", HTTP_CREATED);
     return 1;
 }
@@ -83,20 +83,20 @@ int guardarTicket(Ticket ticket) {
         const int nuevaCapacidad = arrayTickets.capacidad == 0 ? 1 : arrayTickets.capacidad * 2;
         Ticket* nuevoArray = realloc(arrayTickets.datos, nuevaCapacidad * sizeof(Ticket));
         if (nuevoArray == NULL) {
-            agregarSystemLog(usuario_id, "Redimensionar Array", "Ticket", "Ticket", ERROR, 0,
+            generarSystemLog(usuario_id, "Redimensionar Array", "Ticket", "Ticket", ERROR, 0,
                              "UsuarioDAO", "guardarTicket", HTTP_INTERNAL_SERVER_ERROR);
             printf("Error al redimensionar el array de tickets.\n");
             return -1;
         }
         arrayTickets.datos = nuevoArray;
         arrayTickets.capacidad = nuevaCapacidad;
-        agregarSystemLog(usuario_id, "Redimensionar Array", "Ticket", "Ticket", INFO, 1,
+        generarSystemLog(usuario_id, "Redimensionar Array", "Ticket", "Ticket", INFO, 1,
                          "UsuarioDAO", "guardarTicket", HTTP_OK);
     }
 
     arrayTickets.datos[arrayTickets.tamanno] = ticket;
     arrayTickets.tamanno++;
-    agregarSystemLog(usuario_id, "Guardar Ticket", "Ticket", "Ticket", INFO, 1,
+    generarSystemLog(usuario_id, "Guardar Ticket", "Ticket", "Ticket", INFO, 1,
                      "UsuarioDAO", "guardarTicket", HTTP_CREATED);
     return 1;
 }

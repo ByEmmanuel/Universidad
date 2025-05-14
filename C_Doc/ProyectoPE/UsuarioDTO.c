@@ -48,7 +48,7 @@ Usuario inicializarUsuario(const int id_usuario, char* folio, const char* nombre
     usr.activo = 1;
     setIdUsuarioLogico(getIdUsuarioLogico() + 1);
 
-    agregarSystemLog(id_usuario, "Inicializar Usuario", "Usuario", folio, INFO, 1,
+    generarSystemLog(id_usuario, "Inicializar Usuario", "Usuario", folio, INFO, 1,
                      "UsuarioDTO.c", "inicializarUsuario", HTTP_CREATED);
 
     return usr;
@@ -69,7 +69,7 @@ Usuario inicializarUsuario(const int id_usuario, char* folio, const char* nombre
 Motor* inicializarMotor(Paramsmotor params, const int id_usuario, const int id_pieza, void* tipoDePieza, const int tipoPieza) {
     Motor* pz = (Motor*)malloc(sizeof(Motor));
     if (pz == NULL) {
-        agregarSystemLog(id_usuario, "Inicializar Motor", "Motor", params.numeroSerie, ERROR, 0,
+        generarSystemLog(id_usuario, "Inicializar Motor", "Motor", params.numeroSerie, ERROR, 0,
                          "UsuarioDTO.c", "inicializarMotor", HTTP_INTERNAL_SERVER_ERROR);
         perror("Error al asignar memoria para Motor");
         exit(EXIT_FAILURE);
@@ -91,7 +91,7 @@ Motor* inicializarMotor(Paramsmotor params, const int id_usuario, const int id_p
     pz->culata = NULL;
     pz->monoblock = NULL;
 
-    agregarSystemLog(id_usuario, "Inicializar Motor", "Motor", params.numeroSerie, INFO, 1,
+    generarSystemLog(id_usuario, "Inicializar Motor", "Motor", params.numeroSerie, INFO, 1,
                      "UsuarioDTO.c", "inicializarMotor", HTTP_CREATED);
 
     return pz;
@@ -101,7 +101,7 @@ Culata* inicializarCulata(int id_pieza, int numValvulas, double presionPrueba, i
                           float alturaOriginal, float alturaActual, float alturaMinima, int id_usuario, int estadoPieza) {
     Culata* culata = malloc(sizeof(Culata));
     if (culata == NULL) {
-        agregarSystemLog(id_usuario, "Inicializar Culata", "Culata", "UNKNOWN", ERROR, 0,
+        generarSystemLog(id_usuario, "Inicializar Culata", "Culata", "UNKNOWN", ERROR, 0,
                          "UsuarioDTO.c", "inicializarCulata", HTTP_INTERNAL_SERVER_ERROR);
         perror("Error al asignar memoria para Culata");
         exit(EXIT_FAILURE);
@@ -122,7 +122,7 @@ Culata* inicializarCulata(int id_pieza, int numValvulas, double presionPrueba, i
     char id_objeto[50];
     snprintf(id_objeto, sizeof(id_objeto), "CULATA_%d", id_pieza); // Generar ID único para el log
 
-    agregarSystemLog(id_usuario, "Inicializar Culata", "Culata", id_objeto, INFO, 1,
+    generarSystemLog(id_usuario, "Inicializar Culata", "Culata", id_objeto, INFO, 1,
                      "UsuarioDTO.c", "inicializarCulata", HTTP_CREATED);
 
     return culata;
@@ -201,14 +201,14 @@ int getIdPiezaGlobal() {
 //-> Esto no pasaria con POO ya que cada nuevo objeto es una nueva direccion en memoria, y si quiero asignar, se asignan los valores de esa direccion PROPIA
 Motor* clonarMotor(Motor* original, int nuevoIdUsuario) {
     if (original == NULL) {
-        agregarSystemLog(nuevoIdUsuario, "Clonar Motor", "Motor", "NULL", ERROR, 0,
+        generarSystemLog(nuevoIdUsuario, "Clonar Motor", "Motor", "NULL", ERROR, 0,
                          "UsuarioDTO.c", "clonarMotor", HTTP_UNPROCESSABLE_ENTITY);
         return NULL;
     }
 
     Motor* copia = malloc(sizeof(Motor));
     if (!copia) {
-        agregarSystemLog(nuevoIdUsuario, "Clonar Motor", "Motor", "NULL", ERROR, 0,
+        generarSystemLog(nuevoIdUsuario, "Clonar Motor", "Motor", "NULL", ERROR, 0,
                          "UsuarioDTO.c", "clonarMotor", HTTP_INTERNAL_SERVER_ERROR);
         return NULL;
     }
@@ -222,7 +222,7 @@ Motor* clonarMotor(Motor* original, int nuevoIdUsuario) {
     copia->id_usuario = nuevoIdUsuario;
     copia->culata = NULL;
 
-    agregarSystemLog(nuevoIdUsuario, "Clonar Motor", "Motor", copia->numeroSerie, INFO, 1,
+    generarSystemLog(nuevoIdUsuario, "Clonar Motor", "Motor", copia->numeroSerie, INFO, 1,
                      "UsuarioDTO.c", "clonarMotor", HTTP_CREATED);
 
     return copia;

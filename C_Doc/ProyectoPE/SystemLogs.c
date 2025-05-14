@@ -93,7 +93,7 @@ const char* obtenerMensajeHttp(HttpStatusCode code) {
     }
 }
 
-void agregarSystemLog(int usuario_id, char* accion, char* objeto, char* id_objeto,
+void generarSystemLog(int usuario_id, char* accion, char* objeto, char* id_objeto,
                       NivelSeveridad severidad, int exito, char* modulo, char* nombreFuncion,
                       HttpStatusCode codigoEstado) {
     char fecha[50];

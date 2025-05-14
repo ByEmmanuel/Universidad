@@ -53,7 +53,7 @@ typedef struct {
 }ArrayLogs;
 
 
-void agregarSystemLog(int usuario_id, char* accion, char* objeto, char* id_objeto,
+void generarSystemLog(int usuario_id, char* accion, char* objeto, char* id_objeto,
                       NivelSeveridad severidad, int exito, char* modulo, char* nombreFuncion, HttpStatusCode codigoEstado);
 SystemLogs inicializarLogs(char* fecha, int log_id, char* accion, char* objeto, char* id_objeto,
                       NivelSeveridad severidad, int exito, char* modulo, char* nombreFuncion, HttpStatusCode codigoEstado);

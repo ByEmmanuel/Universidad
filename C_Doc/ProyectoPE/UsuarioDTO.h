@@ -40,9 +40,9 @@ typedef struct {
     float alturaActual;        // Altura actual de la culata tras desgaste (mm)
     float alturaMinima;        // Altura mínima aceptable (según fabricante) (mm)
 
-    /* 0 = No intervención
+    /* 0 = No intervencion
      * 1 = Rectificación
-     * 2 = Reconstrucción
+     * 2 = Reconstruccion
      */
     int estadoTemporalPieza;
 
@@ -74,6 +74,9 @@ typedef struct {
     char* numero_serie;              // Número de serie del motor/monoblock
     char* observaciones;            // Notas del técnico
     int estado_diagnostico;           // 0: sin intervención, 1: rectificación, 2: reconstrucción
+    int operacionesMonoblock;
+    int estadoTemporalPieza;
+    int operacionesMotor;
 } Monoblock;
 
 typedef struct {
