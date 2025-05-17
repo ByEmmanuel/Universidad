@@ -101,7 +101,7 @@ int precargarMotoresDB(Motor motores[], int cantidad) {
         arrayMotoresPrecargados.datos[arrayMotoresPrecargados.tamanno++] = &motores[i];
         setIdPiezaGlobal(getIdPiezaGlobal()+1);
     }
-    return 1; // Éxito
+    return 1; // Exito
 }
 
 void agregarPiezas() {
@@ -180,7 +180,7 @@ void agregarPiezas() {
         0.03f,                    // planitud_superficie (mm)
         0b00000110,              // flags (e.g., bit 1 = necesita rectificado, bit 2 = sellado)
         "1ZZFE-TRD-987654",      // numero_serie
-        "Se observó desgaste uniforme, requiere rectificado", // observaciones
+        "Se observo desgaste uniforme, requiere rectificado", // observaciones
         1                        // estado_diagnostico (1 = necesita intervención)
     );
 
@@ -220,7 +220,7 @@ void agregarPiezas() {
         0.04f,                      // planitud_superficie (mm)
         0b00001101,                // flags (e.g., bit 0, 2, 3 activados)
         "ISX15-456789-CUMMINS",    // numero_serie
-        "Ovalización fuera de norma, bancadas desalineadas", // observaciones
+        "Ovalizacion fuera de norma, bancadas desalineadas", // observaciones
         2                          // estado_diagnostico (2 = necesita reemplazo)
     );
     guardarMotorArray(motorUsuario_2, id_usuario_2);
@@ -261,7 +261,7 @@ void listarMotoresPrecargados() {
         mvprintw(fila++, 5, "Año:              %d", motor->anno);
         mvprintw(fila++, 5, "Carro Asociado:   %s", motor->carroAsociado);
         mvprintw(fila++, 5, "Cilindrada:       %.2f L", motor->cilindrada);
-        mvprintw(fila++, 5, "Compresión:       %.2f psi", motor->compresionOriginal);
+        mvprintw(fila++, 5, "Compresion:       %.2f psi", motor->compresionOriginal);
         mvprintw(fila++, 5, "N° Serie:         %s", motor->numeroSerie);
         mvprintw(fila++, 5, "Combustible:      %s", tipoCombustibleToStr(motor->tipoCombustible));
         mvprintw(fila++, 5, "Material:         %s", motor->material);
@@ -270,12 +270,12 @@ void listarMotoresPrecargados() {
 
         if (motor->culata != NULL) {
             mvprintw(fila++, 7, "--- CULATA ---");
-            mvprintw(fila++, 7, "N° Válvulas:      %d", motor->culata->numValvulas);
-            mvprintw(fila++, 7, "Presión Prueba:   %.2f bar", motor->culata->presionPrueba);
-            mvprintw(fila++, 7, "Fisuras:          %s", motor->culata->tieneFisuras ? "Sí" : "No");
+            mvprintw(fila++, 7, "N° Valvulas:      %d", motor->culata->numValvulas);
+            mvprintw(fila++, 7, "Presion Prueba:   %.2f bar", motor->culata->presionPrueba);
+            mvprintw(fila++, 7, "Fisuras:          %s", motor->culata->tieneFisuras ? "Si" : "No");
             mvprintw(fila++, 7, "Altura Original:  %.2f mm", motor->culata->alturaOriginal);
             mvprintw(fila++, 7, "Altura Actual:    %.2f mm", motor->culata->alturaActual);
-            mvprintw(fila++, 7, "Altura Mínima:    %.2f mm", motor->culata->alturaMinima);
+            mvprintw(fila++, 7, "Altura Minima:    %.2f mm", motor->culata->alturaMinima);
         }
 
         if (motor->monoblock != NULL) {
@@ -360,7 +360,7 @@ void inicializarMonoblocksExistentes() {
             .planitud_superficie = 0.03f,
             .flags = FLAG_BANCADAS_OK | FLAG_SUPERFICIE_PLANA, // 0b1010 = 10
             .numero_serie = serie1,
-            .observaciones = "Cilindros con desgaste, requiere rectificación",
+            .observaciones = "Cilindros con desgaste, requiere rectificacion",
             .estado_diagnostico = 1
         };
     }
@@ -429,7 +429,7 @@ void inicializarMonoblocksExistentes() {
             .planitud_superficie = 0.04f,
             .flags = FLAG_BANCADAS_OK, // 0b0010 = 2
             .numero_serie = serie4,
-            .observaciones = "Superficie no plana, requiere rectificación",
+            .observaciones = "Superficie no plana, requiere rectificacion",
             .estado_diagnostico = 1
         };
     }
@@ -498,7 +498,7 @@ void inicializarMonoblocksExistentes() {
             .planitud_superficie = 0.02f,
             .flags = FLAG_CILINDROS_OK | FLAG_BANCADAS_OK | FLAG_SUPERFICIE_PLANA, // 0b1011 = 11
             .numero_serie = serie7,
-            .observaciones = "Monoblock en buen estado, sin intervención",
+            .observaciones = "Monoblock en buen estado, sin intervencion",
             .estado_diagnostico = 0
         };
     }
@@ -544,7 +544,7 @@ void inicializarMonoblocksExistentes() {
             .planitud_superficie = 0.05f,
             .flags = FLAG_FISURAS_DETECTADAS, // 0b0100 = 4
             .numero_serie = serie9,
-            .observaciones = "Fisuras detectadas, reconstrucción necesaria",
+            .observaciones = "Fisuras detectadas, reconstruccion necesaria",
             .estado_diagnostico = 2
         };
     }

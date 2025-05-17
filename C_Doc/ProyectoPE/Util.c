@@ -32,14 +32,14 @@ char* strFill(const char* str) {
     const char* start = str;
     while (*start == ' ') start++;
 
-    // Si la cadena es solo espacios o vacía
+    // Si la cadena es solo espacios o vacia
     if (*start == '\0') {
         char* result = (char*)malloc(1);
         result[0] = '\0';
         return result;
     }
 
-    // Encuentra el final (retrocediendo desde el último carácter no espacio)
+    // Encuentra el final (retrocediendo desde el ultimo caracter no espacio)
     const char* end = str + strlen(str) - 1;
     while (end > start && *end == ' ') end--;
 
@@ -60,22 +60,22 @@ int strEquals(const char* str1, const char* str2) {
     }
     return strcmp(str1, str2) == 0; // 1 si son iguales, 0 si no
 }
-// Verifica si una cadena está vacía
+// Verifica si una cadena esta vacia
 int strIsEmpty(const char* str) {
-    if (str == NULL) return 1;      // NULL se considera vacío
+    if (str == NULL) return 1;      // NULL se considera vacio
     return str[0] == '\0';          // 1 si es "", 0 si no
 }
 // Verifica si una cadena contiene a otra
 int strContains(const char* src, const char* str) {
     if (src == NULL || str == NULL) return 0;
-    return strstr(src, str) != NULL; // 1 si str está en src, 0 si no
+    return strstr(src, str) != NULL; // 1 si str esta en src, 0 si no
 }
-// Copiamos las cadenas asegurándonos de que terminen en '\0'
+// Copiamos las cadenas asegurandonos de que terminen en '\0'
 // Funcion que Asigna una cadena a otra Es decir algo como
 // var1 = "idk" var2 = var1 sin paso por referencia y borra el ultimo caracter que deja fgets
 void asignString(char *dst, const char *src, const size_t n) {
     if (src == NULL) {
-        dst[0] = '\0'; // O dejar una cadena vacía si src no es válido
+        dst[0] = '\0'; // O dejar una cadena vacia si src no es valido
         return;
     }
     strncpy(dst, src, n - 1);
@@ -92,16 +92,16 @@ char* generarFolio(const char *nombre) {
 
     int len = strlen(nombre);
 
-    // Usar las primeras 3 letras del nombre o rellenar con 'X' si es más corto
+    // Usar las primeras 3 letras del nombre o rellenar con 'X' si es mas corto
     for (int i = 0; i < 3; i++) {
         if (i < len) {
-            folio[i] = toupper(nombre[i]); // Convertir a mayúscula
+            folio[i] = toupper(nombre[i]); // Convertir a mayuscula
         } else {
             folio[i] = 'X';
         }
     }
 
-    // Generar 9 números pseudo-aleatorios en base al nombre
+    // Generar 9 numeros pseudo-aleatorios en base al nombre
     srand(time(NULL) + len); // Semilla basada en el tiempo y longitud del nombre
     for (int i = 3; i < 12; i++) {
         folio[i] = '0' + rand() % 10;
@@ -111,7 +111,7 @@ char* generarFolio(const char *nombre) {
     folio[12] = '\0';
     return folio;
 }
-// Limpia cualquier residuo en el búfer
+// Limpia cualquier residuo en el bufer
 void cleanBuffer(){
     int c;
     while ((c = getchar()) != '\n' && c != EOF) {}
@@ -124,7 +124,7 @@ void cleanBuffer(){
  */
 int validarString(const char* src) {
     if (src == NULL) {
-        // usuario presionó ESC o no ingresó nada
+        // usuario presiono ESC o no ingreso nada
         return -1;
     }
     return 1;
@@ -137,12 +137,12 @@ char* enterString(int length) {
         exit(1);
     }
     if (fgets(buffer, length + 1, stdin) != NULL) {
-        buffer[strcspn(buffer, "\n")] = '\0'; // Eliminar el salto de línea al final
+        buffer[strcspn(buffer, "\n")] = '\0'; // Eliminar el salto de linea al final
     }
     return buffer;
 }
 
-// Función auxiliar para leer una cadena con ncurses
+// Funcion auxiliar para leer una cadena con ncurses
 char* leerString(int y, int x, int maxLen, char* pregunta) {
     mvprintw(y, x, "%s  ", pregunta);
     char* buffer = (char*)malloc(maxLen + 1);
@@ -154,7 +154,7 @@ char* leerString(int y, int x, int maxLen, char* pregunta) {
     memset(buffer, 0, maxLen + 1);
 
     noecho(); // Desactivar echo para controlar manualmente
-    cbreak();  // Desactivar buffer de línea
+    cbreak();  // Desactivar buffer de linea
     keypad(stdscr, TRUE); // Permitir teclas especiales
 
     int ch, pos = 0;
@@ -192,7 +192,7 @@ char* leerString(int y, int x, int maxLen, char* pregunta) {
 }
 
 int* leerInt(int y, int x, int maxLen, char* pregunta, int* codigoError) {
-    // Inicializar código de error a 0 (sin error)
+    // Inicializar codigo de error a 0 (sin error)
     if (codigoError) *codigoError = 0;
 
     mvprintw(y, x, "%s  ", pregunta);
@@ -202,7 +202,7 @@ int* leerInt(int y, int x, int maxLen, char* pregunta, int* codigoError) {
     memset(buffer, 0, maxLen + 1);
     echo();
 
-    // Captura con detección de ESC directamente
+    // Captura con deteccion de ESC directamente
     int ch = getch();
     if (ch == 27) {  // ESC presionado antes de escribir
         noecho();
@@ -210,7 +210,7 @@ int* leerInt(int y, int x, int maxLen, char* pregunta, int* codigoError) {
         return NULL;
     }
 
-    // Si no es ESC, regresamos el carácter al buffer de entrada
+    // Si no es ESC, regresamos el caracter al buffer de entrada
     ungetch(ch);
 
     mvgetnstr(y, x + (int)strlen(pregunta) + 2, buffer, maxLen);
@@ -221,23 +221,23 @@ int* leerInt(int y, int x, int maxLen, char* pregunta, int* codigoError) {
         return NULL;
     }
 
-    // Validación numérica
+    // Validacion numerica
     int i = 0;
     if (buffer[0] == '-') i++;
     for (; buffer[i] != '\0'; i++) {
         if (!isdigit((unsigned char)buffer[i])) {
-            mvprintw(y + 1, x, "Entrada no válida: solo números.");
+            mvprintw(y + 1, x, "Entrada no valida: solo numeros.");
             refresh();
             if (codigoError) *codigoError = LEERINT_ERROR;
             return NULL;
         }
     }
 
-    // Conversión con control de límites
+    // Conversion con control de limites
     char* endptr;
     long numLong = strtol(buffer, &endptr, 10);
     if (*endptr != '\0' || numLong > INT_MAX || numLong < INT_MIN) {
-        mvprintw(y + 1, x, "Error: número fuera de rango.");
+        mvprintw(y + 1, x, "Error: numero fuera de rango.");
         refresh();
         if (codigoError) *codigoError = LEERINT_ERROR;
         return NULL;
@@ -258,7 +258,7 @@ int* leerInt(int y, int x, int maxLen, char* pregunta, int* codigoError) {
 float* leerFloat(int y, int x, int maxLen, char* pregunta) {
     mvprintw(y, x, "%s  ", pregunta);
     if (maxLen <= 0) {
-        mvprintw(y + 1, x, "Error: Longitud máxima inválida.");
+        mvprintw(y + 1, x, "Error: Longitud maxima invalida.");
         refresh();
         return NULL;
     }
@@ -272,7 +272,7 @@ float* leerFloat(int y, int x, int maxLen, char* pregunta) {
     if (strlen(buffer) == 0) {
         return NULL;
     }
-    // Validación: permitir números con signo y punto decimal
+    // Validacion: permitir numeros con signo y punto decimal
     int i = 0, dotCount = 0;
     if (buffer[0] == '-') {
         i++;  // Saltar el signo negativo
@@ -281,13 +281,13 @@ float* leerFloat(int y, int x, int maxLen, char* pregunta) {
     for (; buffer[i] != '\0'; i++) {
         if (buffer[i] == '.') {
             dotCount++;
-            if (dotCount > 1) { // Más de un punto decimal es inválido
-                mvprintw(y + 1, x, "Error: Número no válido.");
+            if (dotCount > 1) { // Mas de un punto decimal es invalido
+                mvprintw(y + 1, x, "Error: Numero no valido.");
                 refresh();
                 return NULL;
             }
         } else if (!isdigit((unsigned char)buffer[i])) {
-            mvprintw(y + 1, x, "Error: Solo números válidos.");
+            mvprintw(y + 1, x, "Error: Solo numeros validos.");
             refresh();
             return NULL;
         }
@@ -296,11 +296,11 @@ float* leerFloat(int y, int x, int maxLen, char* pregunta) {
     char* endptr;
     float numFloat = strtof(buffer, &endptr);
     if (*endptr != '\0') {
-        mvprintw(y + 1, x, "Error: Conversión inválida.");
+        mvprintw(y + 1, x, "Error: Conversion invalida.");
         refresh();
         return NULL;
     }
-    // Reservar memoria para el número y devolverlo
+    // Reservar memoria para el numero y devolverlo
     float* num = (float*)malloc(sizeof(float));
     if (!num) {
         mvprintw(y + 1, x, "Error: No se pudo asignar memoria.");
@@ -361,7 +361,7 @@ char* leerStringSeguro(int y, int x, int maxLen, char* pregunta) {
     do {
         valor = leerString(y, x, maxLen, pregunta);
         if (valor == NULL) {
-            mvprintw(y + 1, x, "Entrada inválida o cancelada con (ESC). Presione ESC de nuevo.");
+            mvprintw(y + 1, x, "Entrada invalida o cancelada con (ESC). Presione ESC de nuevo.");
             refresh();
             int ch = getch();
             if (ch == 27) return NULL;  // salir si presiona ESC
@@ -429,7 +429,7 @@ const char* tipoCombustibleToStr(TipoCombustible tipo) {
     switch (tipo) {
     case GASOLINA: return "Gasolina";
     case DIESEL:   return "Diesel";
-    case HIBRIDO:  return "Híbrido";
+    case HIBRIDO:  return "Hibrido";
     default:       return "Desconocido";
     }
 }

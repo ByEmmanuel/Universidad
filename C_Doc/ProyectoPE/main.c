@@ -8,7 +8,7 @@
 #include "UserInterface.h"
 #include "Testing.h"
 
-// Simulación de base de datos de usuarios y contraseñas
+// Simulacion de base de datos de usuarios y contraseñas
 int id_Usuario;
 
 // Variable global para controlar el hilo del reloj
@@ -30,7 +30,7 @@ int main() {
      *  6 = solo precargar motores (arrayMotoresPrecargados)
     precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
      */
-    testingMode = 3;
+    testingMode = 0;
     testing(testingMode);
     system("reset");
     clear();
@@ -54,19 +54,18 @@ void menuPrincipal() {
     keypad(stdscr, TRUE);
 
 
-    ClockData clock_data;
-    clock_data.win = stdscr;
-    clock_data.running = 1;
+    //ClockData clock_data;
+    //clock_data.win = stdscr;
+    //clock_data.running = 1;
 
-    pthread_t clock_tid;
-    pthread_create(&clock_tid, NULL, clock_thread, &clock_data);
+    //pthread_t clock_tid;
+    //pthread_create(&clock_tid, NULL, clock_thread, &clock_data);
 
     while (1) {
         const int opc = mostrarMenu(1, " ");
         if (opc == -1) {
-            clock_data.running = 0;
-            pthread_join(clock_tid, NULL);
-            endwin();
+    //        clock_data.running = 0;
+      //      pthread_join(clock_tid, NULL);
             break;
         }
         ejecutarOpcion(opc);

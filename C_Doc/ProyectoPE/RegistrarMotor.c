@@ -82,8 +82,8 @@ int registrarMotor(){
     if (material == NULL) return -1;
     int anno = leerIntSeguro(y += 2, 10, 10, "Ingrese Año del Motor - Entero");
     float cilindrada = leerFloatSeguro(y += 2, 10, 10, "Ingrese Cilindrada (L) - Float");
-    float compresionOriginal = leerFloatSeguro(y += 2, 10, 10, "Ingrese Compresión Original (psi) - Float");
-    char* numeroSerie = leerStringSeguro(y += 2, 10, 50, "Ingrese Número de Serie - String");
+    float compresionOriginal = leerFloatSeguro(y += 2, 10, 10, "Ingrese Compresion Original (psi) - Float");
+    char* numeroSerie = leerStringSeguro(y += 2, 10, 50, "Ingrese Numero de Serie - String");
     int tipoCombustible = mostrarMenu(6, "Seleccione Tipo de Combustible - Entero");
 
     float medidaOriginal = leerFloatSeguro(y += 2, 10, 10, "Ingrese Medida Original (mm) - Float");
@@ -143,7 +143,7 @@ int registrarCulata(){
 
         Usuario* usuario = obtenerUsuarioByIdUsuario(id_usuario);
         if (usuario == NULL) {
-            imprimirMensaje(10, 10, "Ocurrió un problema al obtener los datos del usuario");
+            imprimirMensaje(10, 10, "Ocurrio un problema al obtener los datos del usuario");
             return -1;
         }
 
@@ -279,7 +279,7 @@ int registrarMonoblock() {
 
         Usuario* usuario = obtenerUsuarioByIdUsuario(id_usuario);
         if (usuario == NULL) {
-            imprimirMensaje(10, 10, "Ocurrió un problema al obtener los datos del usuario");
+            imprimirMensaje(10, 10, "Ocurrio un problema al obtener los datos del usuario");
             return -1;
         }
 
@@ -367,7 +367,7 @@ int registrarMonoblock() {
             mono->operacionesMonoblock = -2;
             if (necesitaLaina) {
                 actualizarStockLaina(grosorLaina, -1);
-                registrarUsoHerramienta("Micrometro", "Reconstrucción");
+                registrarUsoHerramienta("Micrometro", "Reconstruccion");
             }
             // Actualizar inventario para pistones o monoblock
             actualizarStockLaina(0.0f, -1); // Simplificado, debería ser pistones/monoblock
@@ -406,10 +406,10 @@ int evaluarDiametrosCilindros(const float* diametros, int numCilindros, int y, i
         float deltaD = fabs(diametros[i] - diametroNominal);
         if (deltaD > toleranciaDiametro) {
             necesitaRectificacion = 1;
-            mvprintw(y++, 5, "Cilindro %d: Desgaste %.3f mm, requiere rectificación", i + 1, deltaD);
+            mvprintw(y++, 5, "Cilindro %d: Desgaste %.3f mm, requiere rectificacion", i + 1, deltaD);
             if (deltaD > 0.5) { // Desgaste severo
                 *necesitaReconstruccion = 1;
-                mvprintw(y++, 5, "Cilindro %d: Desgaste severo, considerar reconstrucción", i + 1);
+                mvprintw(y++, 5, "Cilindro %d: Desgaste severo, considerar reconstruccion", i + 1);
             }
         }
     }
@@ -424,7 +424,7 @@ int evaluarConicidadCilindros(const float* conicidades, int numCilindros, int y)
     for (int i = 0; i < numCilindros; i++) {
         if (conicidades[i] > conicidadMax) {
             necesitaRectificacion = 1;
-            mvprintw(y++, 5, "Cilindro %d: Conicidad %.3f mm, requiere rectificación", i + 1, conicidades[i]);
+            mvprintw(y++, 5, "Cilindro %d: Conicidad %.3f mm, requiere rectificacion", i + 1, conicidades[i]);
         }
     }
     return necesitaRectificacion;
@@ -438,7 +438,7 @@ int evaluarDesalineacionCilindros(float* desalineaciones, int numCilindros, int 
     for (int i = 0; i < numCilindros; i++) {
         if (desalineaciones[i] > desalineacionMax) {
             necesitaRectificacion = 1;
-            mvprintw(y++, 5, "Cilindro %d: Desalineación %.3f mm, requiere rectificación", i + 1, desalineaciones[i]);
+            mvprintw(y++, 5, "Cilindro %d: Desalineacion %.3f mm, requiere rectificacion", i + 1, desalineaciones[i]);
         }
     }
     return necesitaRectificacion;
@@ -453,7 +453,7 @@ int evaluarDiametrosBancadas(float* bancadas, int num_bancadas, int y){
         float deltaB = fabs(bancadas[i] - bancadaNominal);
         if (deltaB > toleranciaBancada) {
             necesitaRectificacion = 1;
-            mvprintw(y++, 5, "Bancada %d: Desgaste %.3f mm, requiere rectificación", i + 1, deltaB);
+            mvprintw(y++, 5, "Bancada %d: Desgaste %.3f mm, requiere rectificacion", i + 1, deltaB);
         }
     }
     return necesitaRectificacion;
@@ -465,7 +465,7 @@ int evaluarOvalidad(float oval, int y){
 
     if (oval > ovalidadMax) {
         necesitaRectificacion = 1;
-        mvprintw(y++, 5, "Ovalidad %.3f mm, requiere rectificación", oval);
+        mvprintw(y++, 5, "Ovalidad %.3f mm, requiere rectificacion", oval);
     }
     return necesitaRectificacion;
 }
@@ -476,7 +476,7 @@ int evaluarPlanitud(float planitud, int y){
 
     if (planitud > planitudMax) {
         necesitaRectificacion = 1;
-        mvprintw(y++, 5, "Planitud %.3f mm, requiere rectificación", planitud);
+        mvprintw(y++, 5, "Planitud %.3f mm, requiere rectificacion", planitud);
     }
     return necesitaRectificacion;
 }

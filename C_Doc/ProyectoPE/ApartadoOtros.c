@@ -172,8 +172,8 @@ int exportarDetallesMotoresPrecargados(const char* nombreArchivo, FILE* archivo)
         fprintf(archivo, "  Año: %d\n", m->anno);
         fprintf(archivo, "  Carro asociado: %s\n", m->carroAsociado ? m->carroAsociado : "N/A");
         fprintf(archivo, "  Cilindrada: %.2f L\n", m->cilindrada);
-        fprintf(archivo, "  Compresión original: %.2f psi\n", m->compresionOriginal);
-        fprintf(archivo, "  Número de serie: %s\n", m->numeroSerie);
+        fprintf(archivo, "  Compresion original: %.2f psi\n", m->compresionOriginal);
+        fprintf(archivo, "  Numero de serie: %s\n", m->numeroSerie);
         fprintf(archivo, "  Tipo de combustible: %s\n", tipoCombustibleToStr(m->tipoCombustible));
 
         fprintf(archivo, "  Material: %s\n", m->material);

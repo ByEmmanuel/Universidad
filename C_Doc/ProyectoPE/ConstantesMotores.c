@@ -26,7 +26,7 @@ PiezaAlmacen componentes_motor[CANTIDAD_PIEZASPRECARGADAS] = {
     {
         .id_pieza = "PISTON_05MM_101",
         .id_unicoPieza = "P101", // Pistón
-        .tipo = "Pistón sobremedida",
+        .tipo = "Piston sobremedida",
         .tolerancia = 0.5f, // +0.5 mm para rectificación de cilindro
         .material = "Aluminio",.estadoPieza = "Nueva",
         .compatibilidad = "FD123456, HND13579, MZD67890",.cantidad = 40
@@ -43,7 +43,7 @@ PiezaAlmacen componentes_motor[CANTIDAD_PIEZASPRECARGADAS] = {
     {
         .id_pieza = "ANILLO_1.0MM_103",
         .id_unicoPieza = "A103", // Anillo
-        .tipo = "Anillo de compresión",
+        .tipo = "Anillo de compresion",
         .tolerancia = 1.0f, // +1.0 mm para cilindro rectificado
         .material = "Acero",
         .estadoPieza = "Nueva",
@@ -52,7 +52,7 @@ PiezaAlmacen componentes_motor[CANTIDAD_PIEZASPRECARGADAS] = {
     {
         .id_pieza = "JUNTA_ADM_104",
         .id_unicoPieza = "J104", // Junta
-        .tipo = "Junta de admisión",
+        .tipo = "Junta de admision",
         .tolerancia = 0.0f, // Sin tolerancia específica
         .material = "Goma",
         .estadoPieza = "Nueva",
@@ -61,7 +61,7 @@ PiezaAlmacen componentes_motor[CANTIDAD_PIEZASPRECARGADAS] = {
     {
         .id_pieza = "RETEN_CIG_105",
         .id_unicoPieza = "R105", // Retén
-        .tipo = "Retén de cigüeñal",
+        .tipo = "Reten de cigüeñal",
         .tolerancia = 0.0f, // Sin tolerancia específica
         .material = "Nitrilo",
         .estadoPieza = "Nueva",
@@ -83,7 +83,7 @@ PiezaAlmacen componentes_culata[CANTIDAD_PIEZASPRECARGADAS] = {
     {
         .id_pieza = "VALVULA_EXH_202",
         .id_unicoPieza = "V202", // Válvula
-        .tipo = "Válvula de escape",
+        .tipo = "Valvula de escape",
         .tolerancia = 0.0f, // Estándar
         .material = "Acero inoxidable",
         .estadoPieza = "Nueva",
@@ -92,7 +92,7 @@ PiezaAlmacen componentes_culata[CANTIDAD_PIEZASPRECARGADAS] = {
     {
         .id_pieza = "GUIA_VAL_203",
         .id_unicoPieza = "G203", // Guía
-        .tipo = "Guía de válvula",
+        .tipo = "Guia de valvula",
         .tolerancia = 0.0f, // Sin tolerancia específica
         .material = "Bronce",
         .estadoPieza = "Nueva",
@@ -103,14 +103,14 @@ PiezaAlmacen componentes_culata[CANTIDAD_PIEZASPRECARGADAS] = {
         .id_unicoPieza = "J204", // Junta
         .tipo = "Junta de culata",
         .tolerancia = 1.4f, // Espesor de 1.4 mm
-        .material = "Multicapa metálica",
+        .material = "Multicapa metalica",
         .estadoPieza = "Nueva",
         .compatibilidad = "TYT56473, BMW24681",.cantidad = 15
     },
     {
         .id_pieza = "RESORTE_VAL_205",
         .id_unicoPieza = "R205", // Resorte
-        .tipo = "Resorte de válvula",
+        .tipo = "Resorte de valvula",
         .tolerancia = 0.0f, // Sin tolerancia específica
         .material = "Acero templado",
         .estadoPieza = "Nueva",
@@ -141,7 +141,7 @@ PiezaAlmacen componentes_monoblock[CANTIDAD_PIEZASPRECARGADAS] = {
     {
         .id_pieza = "PISTON_0.25MM_303",
         .id_unicoPieza = "P303", // Pistón
-        .tipo = "Pistón sobremedida",
+        .tipo = "Piston sobremedida",
         .tolerancia = 0.25f, // +0.25 mm para cilindro rectificado
         .material = "Aluminio",
         .estadoPieza = "Nueva",

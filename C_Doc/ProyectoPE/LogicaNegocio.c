@@ -264,12 +264,12 @@ int evaluarEstadoCulata(const float alturaOriginal, const float alturaActual, co
 
 const char* imprimirOperacionesEstadoPieza(int estado, int tipoPieza) {
     const char* mensajes[7] = {
-        "Montado inicial", "Desmontado", "Lavado inicial", "Rectificación/Reconstrucción",
+        "Montado inicial", "Desmontado", "Lavado inicial", "Rectificacion/Reconstruccion",
         "Pruebas Unitarias", "Lavado posterior", "Montado final"
     };
 
     if (estado < 0 || estado > 6) {
-        return strdup("Ocurrió un error al obtener el estado de la pieza - Ve al siguiente apartado");
+        return strdup("Ocurrio un error al obtener el estado de la pieza - Ve al siguiente apartado");
     }
     char* base = tipoPieza == 0 ? "El estado actual de la culata es: " : "El estado actual de la pieza es: " ;
     const char* adicional = " - Ve al siguiente apartado";
@@ -318,7 +318,7 @@ int realizarOperacionesPiezaMotor(int tipoPieza){
         mvprintw(0,0,"Operaciones culata");
 
         if (motor_usr->culata == NULL){
-            imprimirMensaje(10, 10, "Motor inválido o sin culata");
+            imprimirMensaje(10, 10, "Motor invalido o sin culata");
             return -1;
         }
 
@@ -333,7 +333,7 @@ int realizarOperacionesPiezaMotor(int tipoPieza){
             "Montando motor"
         };
         while (1){
-            int opcUsr = mostrarMenu(15, "Seleccione operación a realizar");
+            int opcUsr = mostrarMenu(15, "Seleccione operacion a realizar");
             RETURN_IF_ESC(opcUsr);
             if (opcUsr == 6) return -1;
             if (opcUsr < 0 || opcUsr > 5) continue;
@@ -345,7 +345,7 @@ int realizarOperacionesPiezaMotor(int tipoPieza){
                     motor_usr->culata->operacionesMotor = (operacionesLogicas == -1) ? 1 : 2;
             }
             else if (opcUsr < *estado){
-                imprimirMensaje(10, 10, "Operación ya realizada.");
+                imprimirMensaje(10, 10, "Operacion ya realizada.");
             }
             else{
                 clear();
@@ -366,7 +366,7 @@ int realizarOperacionesPiezaMotor(int tipoPieza){
         clear();
         mvprintw(0,0,"Operaciones Monoblock");
         if (motor_usr->monoblock == NULL){
-            imprimirMensaje(10, 10, "Motor inválido o sin Monoblock");
+            imprimirMensaje(10, 10, "Motor invalido o sin Monoblock");
             return -1;
         }
         int* estado = &motor_usr->monoblock->estadoTemporalPieza;
@@ -380,7 +380,7 @@ int realizarOperacionesPiezaMotor(int tipoPieza){
             "Montando Monoblock"
         };
         while (1){
-            int opcUsr = mostrarMenu(15, "Seleccione operación a realizar");
+            int opcUsr = mostrarMenu(15, "Seleccione operacion a realizar");
             RETURN_IF_ESC(opcUsr);
             if (opcUsr == 6) return -1;
             if (opcUsr < 0 || opcUsr > 5) continue;
@@ -392,7 +392,7 @@ int realizarOperacionesPiezaMotor(int tipoPieza){
                     motor_usr->monoblock->operacionesMotor = (operacionesLogicas == -1) ? 1 : 2;
             }
             else if (opcUsr < *estado){
-                imprimirMensaje(10, 10, "Operación ya realizada.");
+                imprimirMensaje(10, 10, "Operacion ya realizada.");
             }
             else{
                 clear();

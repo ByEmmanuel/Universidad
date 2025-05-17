@@ -53,8 +53,8 @@ void enviarLogsSistema(char* nombreArchivo, FILE* archivo) {
             return;
         }
 
-        if (fprintf(archivo, "└── ACCIÓN: %s | NAME_FUNC: %s | RESULTADO: %s | CÓDIGO: %d\n",
-                    accion, ip, log->exito ? "ÉXITO" : "ERROR", log->codigoEstado) < 0) {
+        if (fprintf(archivo, "└── ACCION: %s | NAME_FUNC: %s | RESULTADO: %s | CODIGO: %d\n",
+                    accion, ip, log->exito ? "EXITO" : "ERROR", log->codigoEstado) < 0) {
             fprintf(stderr, "Error al escribir detalles del log %d en el archivo: %s\n", log->id_unico, nombreArchivo);
             fclose(archivo);
             return;
@@ -76,9 +76,9 @@ const char* obtenerNombreSeveridad(NivelSeveridad severidad) {
 
 const char* obtenerMensajeHttp(HttpStatusCode code) {
     switch (code) {
-    case HTTP_OK: return "Éxito (200 OK)";
+    case HTTP_OK: return "Exito (200 OK)";
     case HTTP_CREATED: return "Recurso creado (201 Created)";
-    case HTTP_ACCEPTED: return "Petición aceptada (202 Accepted)";
+    case HTTP_ACCEPTED: return "Peticion aceptada (202 Accepted)";
     case HTTP_NO_CONTENT: return "Sin contenido (204 No Content)";
     case HTTP_BAD_REQUEST: return "Solicitud incorrecta (400 Bad Request)";
     case HTTP_UNAUTHORIZED: return "No autorizado (401 Unauthorized)";
@@ -89,7 +89,7 @@ const char* obtenerMensajeHttp(HttpStatusCode code) {
     case HTTP_INTERNAL_SERVER_ERROR: return "Error interno (500 Internal Server Error)";
     case HTTP_NOT_IMPLEMENTED: return "No implementado (501 Not Implemented)";
     case HTTP_SERVICE_UNAVAILABLE: return "Servicio no disponible (503 Service Unavailable)";
-    default: return "Código desconocido";
+    default: return "Codigo desconocido";
     }
 }
 
@@ -109,7 +109,7 @@ void generarSystemLog(int usuario_id, char* accion, char* objeto, char* id_objet
     log.usuario_id = usuario_id;
 
     if (guardarSystemLogs(log) == -1) {
-        mvprintw(5, 5, "Error al guardar el log. ID: %d, Acción: %s", log_id, accion);
+        mvprintw(5, 5, "Error al guardar el log. ID: %d, Accion: %s", log_id, accion);
         refresh();
         getch();
     }

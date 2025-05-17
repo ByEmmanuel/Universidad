@@ -22,13 +22,13 @@ char *get_time_str() {
     return buffer;
 }
 
-// Función que corre en el hilo del reloj
+// Funcion que corre en el hilo del reloj
 void *clock_thread(void *arg) {
     ClockData *data = (ClockData *)arg;
     WINDOW *win = data->win;
 
     while (data->running) {
-        wmove(win, 5, COLS - 30);
+        wmove(win, 0, COLS - 10);
         wprintw(win, "%s", get_time_str());
         wrefresh(win);
         sleep(1);

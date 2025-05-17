@@ -31,7 +31,7 @@ int cliente(){
     int y = 3;
     if (opcCliente == 4) {
         return 1;  // Volver al menú principal
-    }
+    }//Agregar cliente
     if (opcCliente == 1) {
         cleanScreen();
         clear();
@@ -46,7 +46,11 @@ int cliente(){
             return -1;
         }
         const int celularUsr = leerIntSeguro(y+=2, 5, 10,"Ingrese Celular: ");
-        const char* contactoUsr = leerStringSeguro(y+=2,5, 29,"Ingrese Contacto: ");
+        const char* contactoUsr = leerStringSeguro(y+=2,5, 29,"Ingrese Nombre Contacto: ");
+        if (contactoUsr == NULL) {
+            return -1;
+        }
+        int numContacto = leerIntSeguro(y+=2,5, 10,"Ingrese Numero Contacto: ");
         if (contactoUsr == NULL) {
             return -1;
         }
@@ -54,7 +58,7 @@ int cliente(){
         if (emailUsr == NULL) {
             return -1;
         }
-        while (!strContains(emailUsr, "@")) {
+        while (!strContains(emailUsr, "@gmail.com") && !strContains(emailUsr, "@outlook.com") && !strContains(emailUsr, "@yahoo.com") && !strContains(emailUsr, "@icloud.com")) {
             if (mostrarMenu(7,"Tu Email no es valido, ¿Deseas volver a ingresarlo?") == 1){
                 clear();
                 emailUsr = leerStringSeguro(y,5,49,"Ingrese Email");
@@ -62,7 +66,7 @@ int cliente(){
                     return -1;
                 }
             } else {
-                mvprintw(y+2,10,"Registro INVÁLIDO: Email Inválido");
+                mvprintw(y+2,10,"Registro INVALIDO: Email Invalido");
                 getch();
                 return -1;
             }
@@ -161,7 +165,7 @@ int modificarCliente(){
         reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Nombre: ");
         if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")) {
             asignString(usuarioNuevo->nombreUsuario, reemplazoUsuario, sizeof(usuarioNuevo->nombreUsuario));
-            mvprintw(12,15,"Modificación realizada con éxito.\n");
+            mvprintw(12,15,"Modificacion realizada con exito.\n");
             getch();
             break;
         }
@@ -173,7 +177,7 @@ int modificarCliente(){
         reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Apellido: ");
         if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
             asignString(usuarioNuevo->apellido, reemplazoUsuario, sizeof(usuarioNuevo->apellido));
-            imprimirMensaje(12,15,"Modificación realizada con éxito");
+            imprimirMensaje(12,15,"Modificacion realizada con exito");
             break;
         }
         printf("Error al leer entrada.\n");
@@ -181,8 +185,8 @@ int modificarCliente(){
     case 3:
         clear();
         refresh();
-        usuarioNuevo->celular = leerIntSeguro(10,15,10,"Ingrese nuevo Número Celular: ");
-        if (usuarioNuevo->celular != 0) imprimirMensaje(12,15,"Modificación realizada con éxito");
+        usuarioNuevo->celular = leerIntSeguro(10,15,10,"Ingrese nuevo Numero Celular: ");
+        if (usuarioNuevo->celular != 0) imprimirMensaje(12,15,"Modificacion realizada con exito");
         getch();
         break;
     case 4:
@@ -198,7 +202,7 @@ int modificarCliente(){
                     return 0;
                 }
             } else {
-                mvprintw(122,10,"Registro INVÁLIDO: Email Inválido");
+                mvprintw(122,10,"Registro INVALIDO: Email Invalido");
                 getch();
                 return 0;
             }
@@ -206,7 +210,7 @@ int modificarCliente(){
 
         if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
             asignString(usuarioNuevo->email, reemplazoUsuario, sizeof(usuarioNuevo->email));
-            mvprintw(12,15,"Modificación realizada con éxito.\n");
+            mvprintw(12,15,"Modificacion realizada con exito.\n");
             getch();
             break;
         };
@@ -219,7 +223,7 @@ int modificarCliente(){
         reemplazoUsuario = leerStringSeguro(10,15,50,"Ingrese nuevo Contacto: ");
         if (reemplazoUsuario != NULL && !strEquals(reemplazoUsuario, "")){
             asignString(usuarioNuevo->contacto, reemplazoUsuario, sizeof(usuarioNuevo->contacto));
-            mvprintw(12,15,"Modificación realizada con éxito.\n");
+            mvprintw(12,15,"Modificacion realizada con exito.\n");
             getch();
             break;
         };
@@ -233,11 +237,11 @@ int modificarCliente(){
         asignString(usuarioNuevo->contacto, "0", sizeof(usuarioNuevo->contacto));
         break;
     case 7:
-        mvprintw(2, 10, "Saliendo del menú...");  // Muestra mensaje de depuración
+        mvprintw(2, 10, "Saliendo del menu...");  // Muestra mensaje de depuración
         refresh();  // Asegúrate de que el mensaje se actualice
         return 0;
     default:
-        mvprintw(12,15,"Opción inválida.\n");
+        mvprintw(12,15,"Opcion invalida.\n");
         getch();
         return -1;
     }
@@ -272,7 +276,7 @@ int loginUsuario(){
             // Verificar contraseña
             if (strEquals(passwUsuario, contraseñasUsuarios[usuarioIndex])) {
                 empleado = usuarioID;
-                printf("Inicio de sesión exitoso.\n");
+                printf("Inicio de sesion exitoso.\n");
                 return 1;
             }
             printf("Contraseña incorrecta.\n");
@@ -310,7 +314,7 @@ void listarPiezas(){
         mvprintw(fila++, 2, "Nombre del Motor: %s", pieza->modelo);
         mvprintw(fila++, 2, "Fabricante: %s", pieza->fabricante);
         mvprintw(fila++, 2, "Cilindrada: %.2f L", pieza->cilindrada);
-        mvprintw(fila++, 2, "Compresión Original: %.2f psi", pieza->compresionOriginal);
+        mvprintw(fila++, 2, "Compresion Original: %.2f psi", pieza->compresionOriginal);
         mvprintw(fila++, 2, "Numero de Serie: %s", pieza->numeroSerie);
         mvprintw(fila++, 2, "Tipo de Combustible: %s", tipoCombustibleToStr(pieza->tipoCombustible));
         mvprintw(fila++, 2, "Material: %s", pieza->material);
@@ -326,7 +330,7 @@ void listarPiezas(){
             mvprintw(fila++, 4, "Tipo de Pieza: Culata");
             mvprintw(fila++, 4, "N Valvulas: %d", pieza->culata->numValvulas);
             mvprintw(fila++, 4, "Presion Prueba: %.2f bar", pieza->culata->presionPrueba);
-            mvprintw(fila++, 4, "Tiene Fisuras: %s", pieza->culata->tieneFisuras ? "Sí" : "No");
+            mvprintw(fila++, 4, "Tiene Fisuras: %s", pieza->culata->tieneFisuras ? "Si" : "No");
             mvprintw(fila++, 4, "Estado de la Pieza: %s", estadoPiezaTexto(pieza->culata->operacionesMotor));
         }else{
             mvprintw(fila++, 4, "Culata : (NO Asignada)");

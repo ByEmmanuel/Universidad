@@ -40,7 +40,7 @@ int pago() {
     clear();
     Motor* motor = obtenerMotorByIdUsuario(id_usuario);
     if (!motor) {
-        mvprintw(10, 10, "No se encontró ninguna pieza asociada al usuario con ID %d", id_usuario);
+        mvprintw(10, 10, "No se encontro ninguna pieza asociada al usuario con ID %d", id_usuario);
         getch();
         return -1;
     }
@@ -74,7 +74,7 @@ int pago() {
         }
 
         if (guardarTicket(ticket) != 1) {
-            imprimirMensaje(20, 10, "X Error al crear los ticket's. Inténtelo de nuevo.");
+            imprimirMensaje(20, 10, "X Error al crear los tickets. Intentelo de nuevo.");
             getch();
             return -1;
         }
@@ -83,7 +83,7 @@ int pago() {
         getch();
     }
 
-    const int opcUsr = mostrarMenu(14, "Por favor selecciona una opción");
+    const int opcUsr = mostrarMenu(14, "Por favor selecciona una opcion");
     RETURN_IF_ESC(opcUsr);
 
     char* nombreArchivo = NULL;
@@ -115,7 +115,7 @@ int pago() {
             break;
         }
         default: {
-            mvprintw(10, 10, "Opción no válida, Intente de nuevo -> Ticket");
+            mvprintw(10, 10, "Opcion no valida, Intente de nuevo -> Ticket");
             clear();
             getch();
             break;
@@ -158,10 +158,10 @@ int generarNota(int id_usuario, FILE *archivo) {
 
     // Assign details only if not already set
     if (ticket->detalles == NULL && ticket->detalles2 == NULL) {
-        char *detalles = leerStringSeguro(10, 5, 255, "Ingrese detalles de la operación para OPCION NOTA -MAX 255 & MIN 1 caracter-");
+        char *detalles = leerStringSeguro(10, 5, 255, "Ingrese detalles de la operacion para OPCION NOTA -MAX 255 & MIN 1 caracter-");
         char *detalles2 = leerStringSeguro(13, 5, 255, "Ingrese detalles adicionales -MAX 255 & MIN 1 caracter-");
         if (detalles == NULL || detalles2 == NULL) {
-            fprintf(archivo, "Ocurrió un error al crear la nota, intente de nuevo\n");
+            fprintf(archivo, "Ocurrio un error al crear la nota, intente de nuevo\n");
             mvprintw(10, 10, "Error: No se pudieron ingresar los detalles de la nota.");
             getch();
             free(detalles);  // Free if one was allocated
@@ -174,9 +174,9 @@ int generarNota(int id_usuario, FILE *archivo) {
 
     // Write note to file
     fprintf(archivo, "==============================================\n");
-    fprintf(archivo, "NOTA DE OPERACIÓN\n");
+    fprintf(archivo, "NOTA DE OPERACION\n");
     fprintf(archivo, "==============================================\n");
-    fprintf(archivo, "Le Atendió: %s\n", empleado ? empleado : "No especificado");
+    fprintf(archivo, "Le Atendio: %s\n", empleado ? empleado : "No especificado");
     fprintf(archivo, "ID Usuario: %d\n\n", usr->id_usuario);
 
     fprintf(archivo, "---------------- DATOS DEL CLIENTE ----------------\n");
@@ -185,11 +185,11 @@ int generarNota(int id_usuario, FILE *archivo) {
 
     fprintf(archivo, "\n---------------- DATOS DEL MOTOR -----------------\n");
     fprintf(archivo, "Fabricante: %s\n", motor->fabricante ? motor->fabricante : "No disponible");
-    fprintf(archivo, "Número de Serie: %s\n", motor->numeroSerie ? motor->numeroSerie : "No disponible");
+    fprintf(archivo, "Numero de Serie: %s\n", motor->numeroSerie ? motor->numeroSerie : "No disponible");
     fprintf(archivo, "Material: %s\n", motor->material ? motor->material : "No disponible");
     fprintf(archivo, "Modelo: %s\n", motor->modelo ? motor->modelo : "No disponible");
 
-    fprintf(archivo, "\n---------------- DETALLES DE LA OPERACIÓN --------\n");
+    fprintf(archivo, "\n---------------- DETALLES DE LA OPERACION --------\n");
     fprintf(archivo, "Detalles:\n");
     imprimirTextoMultilineaArchivo(archivo, ticket->detalles ? ticket->detalles : "No proporcionado", 60);
     fprintf(archivo, "\nDetalles Adicionales:\n");
@@ -259,7 +259,7 @@ int generarTicket(int id_usuario, FILE *archivo) {
 
     // Write ticket to file
     fprintf(archivo, "==================================================\n");
-    fprintf(archivo, "TICKET DE SERVICIO - Le Atendió: %s\n", empleado);
+    fprintf(archivo, "TICKET DE SERVICIO - Le Atendio: %s\n", empleado);
     fprintf(archivo, "ID USUARIO: %d\n", usr->id_usuario);
     fprintf(archivo, "==================================================\n");
     fprintf(archivo, "Cliente: %s %s\n", usr->nombreUsuario, usr->apellido);
@@ -281,9 +281,9 @@ int generarTicket(int id_usuario, FILE *archivo) {
     if (motor->culata != NULL) {
         fprintf(archivo, "Tipo: Culata\n");
         fprintf(archivo, "Estado: %s\n", estadoCulata);
-        fprintf(archivo, "N° Válvulas: %d\n", motor->culata->numValvulas);
-        fprintf(archivo, "Presión Prueba: %.2f bar\n", motor->culata->presionPrueba);
-        fprintf(archivo, "Fisuras: %s\n", motor->culata->tieneFisuras ? "Sí" : "No");
+        fprintf(archivo, "N° Valvulas: %d\n", motor->culata->numValvulas);
+        fprintf(archivo, "Presin Prueba: %.2f bar\n", motor->culata->presionPrueba);
+        fprintf(archivo, "Fisuras: %s\n", motor->culata->tieneFisuras ? "Si" : "No");
     } else {
         fprintf(archivo, "Culata: No asignada\n");
     }
@@ -307,7 +307,7 @@ int generarTicket(int id_usuario, FILE *archivo) {
     if (motor->monoblock != NULL) {
         fprintf(archivo, "Trabajo en Monoblock (%s): $ %.2f\n", estadoMonoblock, precioMonoblock);
     }
-    fprintf(archivo, "Prueba de Presión: $ %.2f\n", precioFinalPruebaPresion);
+    fprintf(archivo, "Prueba de Presion: $ %.2f\n", precioFinalPruebaPresion);
     fprintf(archivo, "Lavado de motor: $ %.2f\n", precioFinalLavado);
     fprintf(archivo, "------------------------------------------------------\n");
     fprintf(archivo, "Subtotal: $ %.2f\n", subtotal);
@@ -325,8 +325,8 @@ int generarFactura(int id_usuario, FILE *archivo) {
         fprintf(archivo, "==================================================\n");
         fprintf(archivo, "FACTURA NO DISPONIBLE: Ticket no encontrado\n");
         fprintf(archivo, "==================================================\n");
-        fprintf(archivo, "No existe información fiscal asociada al usuario.\n");
-        mvprintw(10, 10, "Error: No se encontró ticket para el usuario ID %d", id_usuario);
+        fprintf(archivo, "No existe informacion fiscal asociada al usuario.\n");
+        mvprintw(10, 10, "Error: No se encontro ticket para el usuario ID %d", id_usuario);
         getch();
         return -1;
     }
@@ -382,10 +382,10 @@ int generarFactura(int id_usuario, FILE *archivo) {
     const float total = subtotal + impuesto;
 
     fprintf(archivo, "============================================================\n");
-    fprintf(archivo, "FACTURA ELECTRÓNICA DE SERVICIO AUTOMOTRIZ\n");
+    fprintf(archivo, "FACTURA ELECTRONICA DE SERVICIO AUTOMOTRIZ\n");
     fprintf(archivo, "============================================================\n");
     fprintf(archivo, "Folio Interno: %s\n", usr->folio);
-    fprintf(archivo, "Fecha Emisión: %02d/%02d/%04d %02d:%02d\n",
+    fprintf(archivo, "Fecha Emision: %02d/%02d/%04d %02d:%02d\n",
             fecha.tm_mday, fecha.tm_mon + 1, fecha.tm_year + 1900,
             fecha.tm_hour, fecha.tm_min);
     fprintf(archivo, "RFC Cliente: %s\n", "CLI890123XYZ");
@@ -393,20 +393,20 @@ int generarFactura(int id_usuario, FILE *archivo) {
     fprintf(archivo, "Correo: %s\n", usr->email );
     //fprintf(archivo, "Domicilio Fiscal: %s\n", usr->domicilio ? usr->domicilio : "Calle Ficticia 123, Ciudad Ejemplo, MX");
     fprintf(archivo, "------------------------------------------------------------\n");
-    fprintf(archivo, "Descripción del Servicio:\n");
+    fprintf(archivo, "Descripcion del Servicio:\n");
 
     if (motor->culata != NULL && motor->culata->operacionesMotor == 1) {
-        fprintf(archivo, "  - Rectificación de culata              $ %.2f\n", precioCulata);
+        fprintf(archivo, "  - Rectificacion de culata              $ %.2f\n", precioCulata);
     } else if (motor->culata != NULL && motor->culata->operacionesMotor == 2) {
-        fprintf(archivo, "  - Reconstrucción de culata             $ %.2f\n", precioCulata);
+        fprintf(archivo, "  - Reconstruccion de culata             $ %.2f\n", precioCulata);
     }
     if (motor->monoblock != NULL && motor->monoblock->estado_diagnostico == 1) {
-        fprintf(archivo, "  - Rectificación de monoblock           $ %.2f\n", precioMonoblock);
+        fprintf(archivo, "  - Rectificacion de monoblock           $ %.2f\n", precioMonoblock);
     } else if (motor->monoblock != NULL && motor->monoblock->estado_diagnostico == 2) {
-        fprintf(archivo, "  - Reconstrucción de monoblock          $ %.2f\n", precioMonoblock);
+        fprintf(archivo, "  - Reconstruccion de monoblock          $ %.2f\n", precioMonoblock);
     }
     if (motor->culata != NULL) {
-        fprintf(archivo, "  - Prueba de presión en culata          $ %.2f\n", precioFinalPruebaPresion);
+        fprintf(archivo, "  - Prueba de presion en culata          $ %.2f\n", precioFinalPruebaPresion);
     }
     if (ticket->lavado) {
         fprintf(archivo, "  - Lavado general                       $ %.2f\n", precioFinalLavado);
@@ -421,7 +421,7 @@ int generarFactura(int id_usuario, FILE *archivo) {
     fprintf(archivo, "Condiciones de pago: Contado\n");
     fprintf(archivo, "Forma de pago: Efectivo / Transferencia\n");
     fprintf(archivo, "Uso CFDI: G03 - Gastos en general\n");
-    fprintf(archivo, "Método de pago: PUE - Pago en una sola exhibición\n");
+    fprintf(archivo, "Metodo de pago: PUE - Pago en una sola exhibicion\n");
     fprintf(archivo, "============================================================\n");
     fprintf(archivo, "Gracias por confiar en nuestros servicios.\n");
 
@@ -548,9 +548,9 @@ int exportarDetallesTickets(const char* nombreArchivo, FILE* archivo) {
         fprintf(archivo, "Medida Actual: %.2f mm\n", motor->medidaActual);
         if (motor->culata) {
             fprintf(archivo, "Estado de la Pieza: %s\n", estadoPiezaTexto(motor->culata->operacionesMotor));
-            fprintf(archivo, "N° Válvulas: %d\n", motor->culata->numValvulas);
-            fprintf(archivo, "Presión Prueba: %.2f bar\n", motor->culata->presionPrueba);
-            fprintf(archivo, "Fisuras: %s\n", motor->culata->tieneFisuras ? "Sí" : "No");
+            fprintf(archivo, "N° Valvulas: %d\n", motor->culata->numValvulas);
+            fprintf(archivo, "Presion Prueba: %.2f bar\n", motor->culata->presionPrueba);
+            fprintf(archivo, "Fisuras: %s\n", motor->culata->tieneFisuras ? "Si" : "No");
         }
 
         fprintf(archivo, "\n----------------- RESUMEN DE COSTOS ------------------\n");
@@ -558,7 +558,7 @@ int exportarDetallesTickets(const char* nombreArchivo, FILE* archivo) {
             fprintf(archivo, "Estado de la Pieza: %s\n", estadoPiezaTexto(motor->culata->operacionesMotor));
         const char* estado = motor->culata ? estadoPiezaTexto(motor->culata->operacionesMotor) : "No definido";
         fprintf(archivo, "Trabajo requerido - %s: $ %.2f\n", estado, precioFinalEstadoPieza);
-        fprintf(archivo, "Prueba de Presión:   $ %.2f\n", precioFinalPruebaPresion);
+        fprintf(archivo, "Prueba de Presion:   $ %.2f\n", precioFinalPruebaPresion);
         fprintf(archivo, "Lavado de motor:     $ %.2f\n", precioFinalLavado);
         fprintf(archivo, "------------------------------------------------------\n");
         fprintf(archivo, "Subtotal:            $ %.2f\n", subtotal);
@@ -580,8 +580,8 @@ const char* estadoPiezaTexto(int estadoPieza) {
     switch (estadoPieza) {
     case -2: return "Falta trabajo en la pieza, (Reconstruccion) ve al apartado de Servicio-Operaciones";
     case -1: return "Falta trabajo en la pieza, (Rectificacion) ve al apartado de Servicio-Operaciones";
-    case 1: return "Rectificación";
-    case 2: return "Reconstrucción";
-    default: return "Verificación";
+    case 1: return "Rectificacion";
+    case 2: return "Reconstruccion";
+    default: return "Verificacion";
     }
 }

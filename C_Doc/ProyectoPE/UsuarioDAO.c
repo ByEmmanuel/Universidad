@@ -143,7 +143,7 @@ Motor* obtenerMotorByIdUsuario(const int id) {
     }
     // Retorna NULL si no encuentra
     clear();
-    mvprintw(12, 10, "X Motor no encontrado o ID de usuario inválido");
+    mvprintw(12, 10, "X Motor no encontrado o ID de usuario invalido");
     getch();
     return NULL;
 }
@@ -156,7 +156,7 @@ Motor* obtenerMotorPorNumeroDeSerie(const ArrayPiezas* array, const char* numero
         }
     }
     clear();
-    mvprintw(12, 10, "El número de serie ingresado no coincide con ningún registro.");
+    mvprintw(12, 10, "El numero de serie ingresado no coincide con ningun registro.");
     getch();
     return NULL;
 }

@@ -35,7 +35,7 @@ void ejecutarOpcion(int opcion) {
         refresh();
         funcionesSistema[opcion]();  // Ejecuta la función de la opción
     } else {
-        mvprintw(10, 10, "Opción %d no implementada aún.", opcion+1);
+        mvprintw(10, 10, "Opcion %d no implementada aun.", opcion+1);
         refresh();
         getch();
     }
@@ -108,10 +108,10 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     char* menuAlmacenUno[SIZE_CUATRO] = {"Inventario General / Stock","Herramientas y Equipos","Proveedores y Compras","Reportes"};
 
     char* menuAlmacenDos[SIZE_TRES] = {"Ver piezas", "Buscar / Filtrar","Agregar / Editar / Eliminar"};
-    char* menuAlmacenTres[SIZE_TRES] = {"Entradas / Salidas","Alertas de stock mínimo","Historial de movimientos"};
-    char* menuAlmacenCuatro[SIZE_TRES] = {"Estado de herramientas", "Registro de mantenimiento","Asignación"};
+    char* menuAlmacenTres[SIZE_TRES] = {"Entradas / Salidas","Alertas de stock minimo","Historial de movimientos"};
+    char* menuAlmacenCuatro[SIZE_TRES] = {"Estado de herramientas", "Registro de mantenimiento","Asignacion"};
     char* menuAlmacenCinco[SIZE_TRES] = {"Registro de proveedor","Historial de compras","Pedidos pendientes"};
-    char* menuAlmacenSeis[SIZE_TRES] = {"Movimientos","Piezas más usadas","Piezas inactivas"};
+    char* menuAlmacenSeis[SIZE_TRES] = {"Movimientos","Piezas mas usadas","Piezas inactivas"};
 
     //Pago
     char* menuPagoUno[SIZE_CUATRO] = {"Generar Nota", "Generar Ticket" , "Generar Factura", "Listar detalles del usuario"};
@@ -146,7 +146,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     case 17: menuActual = menuDudasUno; numOpciones = SIZE_CINCO; break;
 
     default:
-        mvprintw(10, 10, "Opción no válida o ocurrió un error");
+        mvprintw(10, 10, "Opcion no valida o ocurrio un error");
         refresh();
         getch();
         return -1;

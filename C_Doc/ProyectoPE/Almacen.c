@@ -18,7 +18,7 @@ int (*funcionesHerramientas[3])() = {
 };
 
 int (*funcionesProveedores[3])() = {
-    //"estadoHerramientas, registroMantenimiento, asignación
+    //"estadoHerramientas, registroMantenimiento, asignacion
 };
 
 int (*funcionesReportes[3])() = {
