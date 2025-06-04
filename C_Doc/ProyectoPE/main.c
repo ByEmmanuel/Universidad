@@ -30,7 +30,7 @@ int main() {
      *  6 = solo precargar motores (arrayMotoresPrecargados)
     precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
      */
-    testingMode = 0;
+    testingMode = 3;
     testing(testingMode);
     system("reset");
     clear();
@@ -66,6 +66,11 @@ void menuPrincipal() {
         if (opc == -1) {
     //        clock_data.running = 0;
       //      pthread_join(clock_tid, NULL);
+            /*
+            clock_data.running = 0;
+            pthread_join(clock_tid, NULL);
+            */
+            endwin();
             break;
         }
         ejecutarOpcion(opc);

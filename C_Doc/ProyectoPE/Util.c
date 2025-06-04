@@ -206,6 +206,7 @@ int* leerInt(int y, int x, int maxLen, char* pregunta, int* codigoError) {
     int ch = getch();
     if (ch == 27) {  // ESC presionado antes de escribir
         noecho();
+        curs_set(0); // Ocultar el cursor
         if (codigoError) *codigoError = LEERINT_ESC;
         return NULL;
     }
@@ -215,6 +216,7 @@ int* leerInt(int y, int x, int maxLen, char* pregunta, int* codigoError) {
 
     mvgetnstr(y, x + (int)strlen(pregunta) + 2, buffer, maxLen);
     noecho();
+    curs_set(0);
 
     if (strlen(buffer) == 0) {
         if (codigoError) *codigoError = LEERINT_EMPTY;
