@@ -4,7 +4,7 @@
 
 #include "reloj.h"
 
-#include <ncurses.h>
+#include <curses.h>
 #include <pthread.h>
 #include <time.h>
 #include <string.h>

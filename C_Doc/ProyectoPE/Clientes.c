@@ -13,8 +13,8 @@
 #define MAX_USUARIOS 6
 #define MAX_LONGITUD 50
 
-char usuariosRegistrados[MAX_USUARIOS][MAX_LONGITUD] =  {"David","Jose","Admin","Pepe","Luis",""};
-char contraseñasUsuarios[MAX_USUARIOS][MAX_LONGITUD] = {"123456789","987654321","01","24680",""};
+char usuariosRegistrados[MAX_USUARIOS][MAX_LONGITUD] =  {"Tecnico","Jose","Admin","Pepe","Luis",""};
+char contraseñasUsuarios[MAX_USUARIOS][MAX_LONGITUD] = {"0001","987654321","01","24680",""};
 
 char* empleado = 0;
 
@@ -74,7 +74,9 @@ int cliente(){
         const Usuario usuario = inicializarUsuario(getIdUsuarioLogico(), folio, nombreUsr, apellidoUsr, celularUsr, emailUsr, contactoUsr);
         mostrarUsuario(usuario);
         guardarUsuarioArray(usuario);
-        imprimirMensaje(10,13,"Registro Correcto, Presione Enter");
+        clear();
+        mvprintw(10,13,"Registro Correcto, El ID DEL USUARIO ES: %d    Presione Enter", usuario.id_usuario);
+        getch();
 
     } else if (opcCliente == 2){
         modificarCliente();
@@ -277,6 +279,14 @@ int loginUsuario(){
             if (strEquals(passwUsuario, contraseñasUsuarios[usuarioIndex])) {
                 empleado = usuarioID;
                 printf("Inicio de sesion exitoso.\n");
+                if (strcmp(usuarioID, usuariosRegistrados[usuarioIndex]) == 0 && strEquals(passwUsuario,contraseñasUsuarios[2])) {
+                    printf("Usted ha ingresado como Admin");
+                    return 2;
+                }
+                if (strcmp(usuarioID, usuariosRegistrados[usuarioIndex]) == 0 && strEquals(passwUsuario,contraseñasUsuarios[0])) {
+                    printf("Usted ha ingresado como Tecnico");
+                    return 3;
+                }
                 return 1;
             }
             printf("Contraseña incorrecta.\n");

@@ -12,7 +12,7 @@
 #include "SystemLogs.h"
 #include "UserInterface.h"
 #include "UsuarioDTO.h"
-
+void abrirNavegador(const char *url);
 void testing(int tipoDeTesting) {
     generarSystemLog(1,"Login","Ninguno","-1",INFO, 1, "Login", "testing", HTTP_OK);
     if (tipoDeTesting){
@@ -258,7 +258,7 @@ void listarMotoresPrecargados() {
         mvprintw(fila++, 5, "ID Usuario:       %d", motor->id_usuario);
         mvprintw(fila++, 5, "Modelo:           %s", motor->modelo);
         mvprintw(fila++, 5, "Fabricante:       %s", motor->fabricante);
-        mvprintw(fila++, 5, "Año:              %d", motor->anno);
+        mvprintw(fila++, 5, "Anio:              %d", motor->anno);
         mvprintw(fila++, 5, "Carro Asociado:   %s", motor->carroAsociado);
         mvprintw(fila++, 5, "Cilindrada:       %.2f L", motor->cilindrada);
         mvprintw(fila++, 5, "Compresion:       %.2f psi", motor->compresionOriginal);
@@ -327,7 +327,9 @@ void inicializarMonoblocksExistentes() {
         monoblocksExistentes[0] = (Monoblock){
             .id_pieza = 100,
             .id_usuario = 1,
+            /**/
             .numCilindros = 4,
+            /**/
             .diametroCilindro = cilindros0,
             .num_bancadas = 5,
             .diametro_bancadas = bancadas0,

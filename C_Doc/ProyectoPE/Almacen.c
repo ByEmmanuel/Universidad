@@ -8,6 +8,7 @@
 
 #include "UserInterface.h"
 #include "LogicaNegocio.h"
+#include "Util.h"
 
 int (*funcionesInventarioAlmacen[4])() = {
     listarPiezasAlmacen, buscarPiezasAlmacen, agregarPizasAlmacen, eliminarPiezasAlmacen
@@ -40,6 +41,7 @@ void ejecutarOpcionAlmacen(int opcionMenu, int opcionSubMenu){
         break;
     case 3:
         funcionesReportes[opcionSubMenu]();
+
         break;
     default:
         imprimirMensaje(5, 5, "Opcion no valida -> Ocurrio un problema");
@@ -59,16 +61,86 @@ int listarPiezasAlmacen(){
     fclose(archivo);
     return 0;
 };
-
+//No implementadas
 int buscarPiezasAlmacen(){
     imprimirMensaje(1, 5, "====== BUSQUEDA DE PIEZAS EN ALMACEN ======");
     return 0;
 };
 
 int agregarPizasAlmacen(){
-    imprimirMensaje(1, 5, "====== AGREGAR PIEZAS EN ALMACEN ======");
+    clear();
+    mvprintw(1, 5, "=======================================");
+    mvprintw(2, 5, "=== AGREGAR HERRAMIENTAS ===");
+    mvprintw(3, 5, "=======================================");
+
+    int y = 5; // Espacio inicial para la interfaz
+
+    // Entrada de la cantidad de herramientas
+    int numHerramientas = leerIntSeguro(y++, 5, 10, "Numero de herramientas a registrar: ");
+
+    // Estructura para almacenar los datos de cada herramienta
+    typedef struct {
+        char* nombre;
+        char* tipo;
+        char* marca;
+        float tamanoCapacidad; // Para tamaño (ej. 10 pulgadas) o capacidad (ej. 2 toneladas)
+        int cantidad;
+        int estado; // 1: Nuevo, 2: Usado, 3: Dañado
+    } Herramienta;
+
+    // Reservar memoria para el arreglo de herramientas
+    Herramienta* herramientas = malloc(numHerramientas * sizeof(Herramienta));
+
+    // Entrada de datos para cada herramienta
+    mvprintw(y++, 5, "---- Registro de Herramientas ----");
+    for (int i = 0; i < numHerramientas; i++) {
+        char mensaje[60];
+        sprintf(mensaje, "Herramienta %d", i + 1);
+        imprimirMensaje(y++, 5, mensaje);
+
+        sprintf(mensaje, "Nombre de la herramienta %d (ej. Gato hidraulico): ", i + 1);
+        herramientas[i].nombre = leerStringSeguro(y++, 5, 100, mensaje);
+
+        sprintf(mensaje, "Tipo de herramienta %d (ej. Hidraulica, Manual): ", i + 1);
+        herramientas[i].tipo = leerStringSeguro(y++, 5, 50, mensaje);
+
+        sprintf(mensaje, "Marca de la herramienta %d (ej. Truper): ", i + 1);
+        herramientas[i].marca = leerStringSeguro(y++, 5, 50, mensaje);
+
+        sprintf(mensaje, "Tamanno/Capacidad de la herramienta %d (ej. 2 toneladas, 10 pulgadas): ", i + 1);
+        herramientas[i].tamanoCapacidad = leerFloatSeguro(y++, 5, 10, mensaje);
+
+        sprintf(mensaje, "Cantidad de la herramienta %d: ", i + 1);
+        herramientas[i].cantidad = leerIntSeguro(y++, 5, 10, mensaje);
+
+        sprintf(mensaje, "Estado de la herramienta %d (1: Nuevo, 2: Usado, 3: Dannado): ", i + 1);
+        herramientas[i].estado = leerIntSeguro(y++, 5, 10, mensaje);
+    }
+
+    // Entrada de observaciones
+    char* observaciones;
+    mvprintw(y++, 5, "---- Observaciones ----");
+    if (mostrarMenu(7, "¿Desea agregar observaciones? (S/N)")) {
+        observaciones = leerStringSeguro(y++, 5, 100, "Observaciones: ");
+    } else {
+        observaciones = strdup("Sin observaciones");
+    }
+
+    // Liberar memoria
+    for (int i = 0; i < numHerramientas; i++) {
+        free(herramientas[i].nombre);
+        free(herramientas[i].tipo);
+        free(herramientas[i].marca);
+    }
+    free(herramientas);
+    if (strcmp(observaciones, "Sin observaciones") != 0) {
+        free(observaciones);
+    }
+
+    mvprintw(y++, 5, "=======================================");
+    mvprintw(y, 5, "Herramientas registradas exitosamente.");
     return 0;
-};
+}
 
 int eliminarPiezasAlmacen(){
     imprimirMensaje(1, 5, "====== ELIMINAR PIEZAS EN ALMACEN ======");

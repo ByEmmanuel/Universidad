@@ -198,9 +198,9 @@ int registrarCulata(){
             }
             //Hacer operaciones aritmeticas para ver si necesita una rectificacion
 
-            mvprintw(y +=2, 55, "Tiene Fisuras?: %d", tieneFisuras);
+            //mvprintw(y +=2, 55, "Tiene Fisuras?: %d", tieneFisuras);
             //mvprintw(y++, 55, "Tipo Combustible: %d", tipo_combustible);
-            getch();
+            //getch();
             Culata* pzc = inicializarCulata(getIdPiezaGlobal(), numValvulas, presionPrueba, tieneFisuras,
                                             alturaOriginal, alturaActual, alturaMinima, id_usuario, estadoPieza);
             guardarPiezaArray(pzc,id_usuario, "culata");
@@ -503,7 +503,7 @@ void actualizarStockLaina(float grosor, int cantidad){
 
 void registrarUsoHerramienta(char* idHerramienta, char* etapa){
     FILE* archivo = fopen("herramientas.txt", "a");
-    fprintf(archivo, "%s,%s,%ld\n", idHerramienta, etapa, time(NULL));
+    fprintf(archivo, "z\n", idHerramienta, etapa, time(NULL));
     fclose(archivo);
 }
 

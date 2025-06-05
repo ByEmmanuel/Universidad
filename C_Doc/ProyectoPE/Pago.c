@@ -39,7 +39,7 @@ int pago() {
 
     clear();
     Motor* motor = obtenerMotorByIdUsuario(id_usuario);
-    if (!motor) {
+    if (!motor){
         mvprintw(10, 10, "No se encontro ninguna pieza asociada al usuario con ID %d", id_usuario);
         getch();
         return -1;
@@ -271,7 +271,7 @@ int generarTicket(int id_usuario, FILE *archivo) {
     fprintf(archivo, "---------------- DATOS DEL MOTOR -----------------\n");
     fprintf(archivo, "Nombre: %s\n", motor->modelo);
     fprintf(archivo, "Fabricante: %s\n", motor->fabricante);
-    fprintf(archivo, "Serie: %s\n", motor->numeroSerie);
+    fprintf(archivo, "Numero de serie: %s\n", motor->numeroSerie);
     fprintf(archivo, "Combustible: %s\n", tipoCombustibleToStr(motor->tipoCombustible));
     fprintf(archivo, "Material: %s\n", motor->material);
     fprintf(archivo, "Medida Original: %.2f mm\n", motor->medidaOriginal);
@@ -284,6 +284,10 @@ int generarTicket(int id_usuario, FILE *archivo) {
         fprintf(archivo, "N° Valvulas: %d\n", motor->culata->numValvulas);
         fprintf(archivo, "Presin Prueba: %.2f bar\n", motor->culata->presionPrueba);
         fprintf(archivo, "Fisuras: %s\n", motor->culata->tieneFisuras ? "Si" : "No");
+        fprintf(archivo, "Desgaste %.3f", motor->culata->desgaste);
+        fprintf(archivo, "Altura Original Fabricante: %.3f", motor->culata->alturaOriginal);
+        fprintf(archivo, "Altura Actual: %.3f", motor->culata->alturaActual);
+        fprintf(archivo, "Altura minima fabricante: %.3f", motor->culata->alturaMinima);
     } else {
         fprintf(archivo, "Culata: No asignada\n");
     }

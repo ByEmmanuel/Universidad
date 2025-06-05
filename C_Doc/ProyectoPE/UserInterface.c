@@ -20,9 +20,8 @@ int numOpciones = 0;
 
 //Define para la barra de carga
 #define BAR_WIDTH 50      // Longitud de la barra de carga
-#define DELAY 100000       // Microsegundos entre cada avance
+#define drivedrive 100000       // Microsegundos entre cada avance
 #define BAR_WIDTH 50  // Ancho de la barra de carga
-
 
 int (*funcionesSistema[SIZE_SIETE])() = {
     cliente, servicio,pago , almacen, otro, dudas, salir // Solo "Clientes" está implementado
@@ -105,7 +104,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     char* menuServicioTres[SIZE_TRES] = {"1 : Gasolina","2: Diesel","3: Electrico"};
     char* menuServicioCuatro[SIZE_DOS] = {"NO","SI"};
     //Almacen
-    char* menuAlmacenUno[SIZE_CUATRO] = {"Inventario General / Stock","Herramientas y Equipos","Proveedores y Compras","Reportes"};
+    char* menuAlmacenUno[1] = {"Inventario General / Stock"/*,"Herramientas y Equipos","Proveedores y Compras","Reportes"*/};
 
     char* menuAlmacenDos[SIZE_TRES] = {"Ver piezas", "Buscar / Filtrar","Agregar / Editar / Eliminar"};
     char* menuAlmacenTres[SIZE_TRES] = {"Entradas / Salidas","Alertas de stock minimo","Historial de movimientos"};
@@ -134,7 +133,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     case 5: menuActual = menuServicioDos; numOpciones = SIZE_DOS; break;
     case 6: menuActual = menuServicioTres; numOpciones = SIZE_TRES; break;
     case 7: menuActual = menuServicioCuatro; numOpciones = SIZE_DOS; break;
-    case 8: menuActual = menuAlmacenUno; numOpciones = SIZE_CUATRO; break;
+    case 8: menuActual = menuAlmacenUno; numOpciones = 1; break;
     case 9: menuActual = menuAlmacenDos; numOpciones = SIZE_TRES; break;
     case 10: menuActual = menuAlmacenTres; numOpciones = SIZE_TRES; break;
     case 11: menuActual = menuAlmacenCuatro; numOpciones = SIZE_TRES; break;
@@ -153,7 +152,7 @@ int mostrarMenu(int menuventana, const char* pregunta) {
     }
 
 
-    ESCDELAY = 25;
+    //ESCDELAY = 25;
     noecho();
     cbreak();
     keypad(stdscr, TRUE);

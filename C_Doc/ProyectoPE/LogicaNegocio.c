@@ -17,6 +17,13 @@
 #include "SystemLogs.h"
 #include "Testing.h"
 
+void abrirNavegador(const char *url) {
+    // Comando para abrir el navegador en Windows
+    char comando[256];
+    snprintf(comando, sizeof(comando), "xdg-open %s", url);
+    system(comando);
+}
+
 int servicio() {
     int opc = mostrarMenu(4, " ");
     RETURN_IF_ESC(opc);
@@ -104,7 +111,8 @@ int otro(){
     int opcUsr = mostrarMenu(16, " ");
     switch (opcUsr) {
         case 0:
-            imprimirMensaje(10,10,"Reportar Bug");
+            //imprimirMensaje(10,10,"Reportar Bug");
+            abrirNavegador("https://github.com/ByEmmanuel/Universidad/issues");
             //reportarBug();
             break;
         case 1:
@@ -151,20 +159,22 @@ int dudas(){
     int opcUsr = mostrarMenu(17, " ");
     switch (opcUsr) {
         case 0:
-            imprimirMensaje(10,10,"Consulta Tecnica");
+            //imprimirMensaje(10,10,"Consulta Tecnica");
             //consultaTecnica();
+            abrirNavegador("https://docs.google.com/document/d/1uGNkWU91Esh4DQGV9IiGydWwkyvqfXVg/edit");
         break;
         case 1:
-            imprimirMensaje(10,10,"Consultar Version");
-            //imprimirVersion(versionSoftware);
+            imprimirMensaje(10,10,"Version del software 10.1.2 BETA");
         break;
         case 2:
-            imprimirMensaje(10,10,"Manual de usuario");
+            //imprimirMensaje(10,10,"Manual de usuario");
+            abrirNavegador("https://docs.google.com/document/d/1nQivTo59u-JI_8KSmsQRjwvyIY_iXHQqdTSgG5jUUR8/edit?tab=t.0");
             //manualUsuario();
         break;
         case 3:
-            imprimirMensaje(10,10,"Documentacion");
+            //imprimirMensaje(10,10,"Documentacion");
             //documentacion();-> Redireccionamiento al navegador
+            abrirNavegador("https://docs.google.com/document/d/1TZjKrFVgJ-J2YtJI_1McndPDDxoIOc4026urhE71mPc/edit?tab=t.0");
         break;
         case 4:
             return -1;

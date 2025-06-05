@@ -31,7 +31,7 @@ add_executable(C_Doc
         ProyectoPE/ConstantesMotores.c
         ProyectoPE/SystemLogs.c
         ProyectoPE/reloj.c
-        ProyectoPE/reloj.h
+        #ProyectoPE/reloj.h
 )
 
 target_link_libraries(C_Doc ${CURSES_LIBRARIES})

@@ -31,17 +31,54 @@ int main() {
     precargarMotoresDB(motoresExistentesSINCulatasAsignadas, cantidadMotores);
      */
     testingMode = 0;
-    testing(testingMode);
+
     system("reset");
+    printf("Las credenciales son:\n Usuario ADMIN(Testing Mode) : 'Admin' \n Password : '01'\n Usuario (Empleado): 'Pepe' \n Password : '24680',\n Usuario (Tecnico) : 'Tecnico' \n Password : '0001'");
+    testing(testingMode);
     clear();
     refresh();
     mostrarLogo();
 
     //sleep(3);
-    if (loginUsuario() == 1) {
-        cargarAlmacen();
-        menuPrincipal();
+    switch (loginUsuario()) {
+        case 1:
+            //sleep(1);
+            cargarAlmacen();
+            menuPrincipal();
+        break;
+        case 2:
+            testingMode = 4;
+            printf("\nTesting Mode: %d",testingMode);
+            printf("\nCargando...");
+            testing(testingMode);
+            sleep(3);
+            cargarAlmacen();
+            menuPrincipal();
+            break;
+        case 3:
+            testingMode = 5;
+            printf("\nTesting Mode: %d",testingMode);
+            printf("\nCargando...");
+            testing(testingMode);
+            sleep(3);
+            cargarAlmacen();
+            menuPrincipal();
+            break;
+        default:
+            printf("Opcion no valida");
+            break;
     }
+    printf("\033[31m\n\033[0m\n");
+    printf("\033[31m\n\033[0m\n");
+    printf("\033[31m\n\033[0m\n");
+    printf("\033[31m\n\033[0m\n");
+    printf("\033[31m\n\033[0m\n");
+    printf("\033[31m\n\033[0m\n");
+    printf("\033[31m\nLogin Invalido\033[0m\n");
+    printf("\033[31m\n\033[0m\n");
+    printf("\033[31m\n\033[0m\n");
+    printf("\033[31m\n\033[0m\n");
+    printf("\033[31m\n\033[0m\n");
     //imprimirPiezasPorUsuario(0);
 
     return 0;
