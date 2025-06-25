@@ -57,9 +57,11 @@ public class EvaluacionCurso {
     public static void main(String[] args) {
         // Definir las formas de evaluación
         List<FormaEvaluacion> formas = new ArrayList<>();
-        formas.add(new FormaEvaluacion("Exámen 1", 25));
-        formas.add(new FormaEvaluacion("Exámen 2", 25));
-        formas.add(new FormaEvaluacion("Tareas", 50));
+        formas.add(new FormaEvaluacion("Exámen 1", 20));
+        formas.add(new FormaEvaluacion("Exámen 2", 20));
+        formas.add(new FormaEvaluacion("Tareas", 20));
+        formas.add(new FormaEvaluacion("Actividades", 30));
+        formas.add(new FormaEvaluacion("Participacion", 10));
         //formas.add(new FormaEvaluacion("Proyecto", 20));
 
         int valorMinimo = 80; // Valor mínimo deseado
