@@ -14,7 +14,6 @@ import javafx.util.Duration;
 
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 public class _1_SnakeGame extends Application {
 
@@ -38,7 +37,7 @@ public class _1_SnakeGame extends Application {
         Runnable runnable = () -> {
             while (true){
                 try {
-                    Thread.sleep(20);
+                    Thread.sleep(10);
                     //System.out.println("Corriendo desde otro hilo");
                     double POS_X = iniciarJuego.obtenerPosiciones_X_Y()[0];
                     double POS_Y = iniciarJuego.obtenerPosiciones_X_Y()[1];
@@ -73,11 +72,11 @@ class iniciarJuego{
     int largo_cuadrado = 20;
     int ancho_cuadrado = 20;
     Rectangle rectangle ;
-    int tick_tiempo = 50;
+    int tick_tiempo = 15;
 
     private String direccion = "DERECHA";
     private final int VELOCIDAD = 10; // pixeles por frame
-    private int velocidadCuadrado = 1000;
+    private int velocidadCuadrado = 100;
     private int tiempoTranscurrido = 0;
     private Dimension dimension = null;
     private Scene scene = null;
@@ -86,6 +85,10 @@ class iniciarJuego{
     private Vector<Rectangle> vector_snake = new Vector<>();
 
     private Queue< Rectangle > cola_snake = new LinkedList<>();
+    //Logixa Manzana
+    boolean hay_manzana = false;
+    //0 == X, 1 == Y
+    int[] POS_Manzana = new int[2];
 
     //private Queue<ArrayList> cola_snake_copia = cola_snake;
 
@@ -135,6 +138,13 @@ class iniciarJuego{
             };
             if (key == KeyCode.SPACE){
                 snakelarge(new Rectangle(20,20, Color.RED));
+                generarManzana();
+            }
+            if (key == KeyCode.C){
+                salir();
+            }
+            if (key == KeyCode.F){
+
             }
             //Por el momento cada que toco una tecla se colocara un nuevo cuadro
 
@@ -156,7 +166,8 @@ class iniciarJuego{
             KeyFrame nuevoFrame = new KeyFrame(Duration.millis(tick_tiempo), e -> {
                 moverSnake();
                 noSalirse();
-
+                generarManzana();
+                //generarCampoManzanas();
             });
 
             timeline.getKeyFrames().add(nuevoFrame);
@@ -220,7 +231,7 @@ class iniciarJuego{
             case "ARRIBA":
                 rectangle.setLayoutY(rectangle.getLayoutY() - VELOCIDAD);
 
-                System.out.printf("Hay %d rectangulos", vector_snake.size());
+                //System.out.printf("Hay %d rectangulos", vector_snake.size());
                 break;
             case "ABAJO":
                 rectangle.setLayoutY(rectangle.getLayoutY() + VELOCIDAD);
@@ -257,11 +268,75 @@ class iniciarJuego{
         }
     }
 
-    public Vector<?> getVector_snake() {
-        return vector_snake;
+    Deque<Rectangle> cola_manzanas = new ArrayDeque();
+    public void generarManzana(){
+
+        if (!hay_manzana){
+            //System.out.println("Dimension : " + (int)(Math.random()*scene.getHeight()));
+
+            int valor_random_X = (int) (Math.random() * (mainPane.getWidth() - 50 ));
+            int valor_random_Y = (int) (Math.random() * (mainPane.getHeight() - 100));
+            int main_layour_width = (int) mainPane.getWidth();
+            int main_layour_height = (int) mainPane.getHeight();
+            if ( valor_random_X > main_layour_width || valor_random_Y > main_layour_height){
+                return;
+            }
+
+            Rectangle manzana = new Rectangle(40,40, Color.GREEN);
+            POS_Manzana[0] = valor_random_X;
+            POS_Manzana[1] = valor_random_Y;
+
+            manzana.setLayoutX(valor_random_X);
+            manzana.setLayoutY(valor_random_Y);
+            mainPane.getChildren().add(manzana);
+            cola_manzanas.add(manzana);
+
+            System.out.println(POS_Manzana[0]);
+            System.out.println(POS_Manzana[1]);
+
+
+            hay_manzana = true;
+        }
+
+        //por cada posicion en X si esta en el rango de la posicion de la manzana
+        // aumentar uno
+
+        int pos_head_X = obtenerPosiciones_X_Y()[0];
+        int pos_head_Y = obtenerPosiciones_X_Y()[1];
+        // supongamos que la posicion de la manzana es 100, 100 (x,y)
+        //entonces seria >= 80, <= 120
+        if (pos_head_X >= POS_Manzana[0]-30 && pos_head_X <= POS_Manzana[0]+30 && pos_head_Y >= POS_Manzana[1]-30 && pos_head_Y <= POS_Manzana[1]+40){
+            //System.out.println("esta en el rango");
+
+            snakelarge(new Rectangle(20,20, Color.RED));
+            hay_manzana = false;
+
+            mainPane.getChildren().remove(cola_manzanas.getFirst());
+            cola_manzanas.pollLast();
+        }
+
+        //System.out.println(obtenerPosiciones_X_Y()[0]);
+        //System.out.println(obtenerPosiciones_X_Y()[1]);
     }
 
-    public void setVector_snake(Vector<?> vector_snake) {
-        this.vector_snake = (Vector<Rectangle>) vector_snake;
+    public void generarCampoManzanas(){
+        int valor_random_X = (int) (Math.random() * (mainPane.getWidth() - 50 ));
+        int valor_random_Y = (int) (Math.random() * (mainPane.getHeight() - 100));
+        int main_layour_width = (int) mainPane.getWidth();
+        int main_layour_height = (int) mainPane.getHeight();
+        if ( valor_random_X > main_layour_width || valor_random_Y > main_layour_height){
+            return;
+        }
+
+        Rectangle manzana = new Rectangle(40,40, Color.CADETBLUE);
+        POS_Manzana[0] = valor_random_X;
+        POS_Manzana[1] = valor_random_Y;
+
+        manzana.setLayoutX(valor_random_X);
+        manzana.setLayoutY(valor_random_Y);
+        mainPane.getChildren().add(manzana);
+        cola_manzanas.add(manzana);
+
     }
+
 }
