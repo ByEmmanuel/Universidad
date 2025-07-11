@@ -31,7 +31,7 @@ public class _1_SnakeGame extends Application {
     public void start(Stage stage) throws InterruptedException {
         Pane main = new Pane();
 
-        Scene scene = new Scene(main, screenSize.width - 500, screenSize.height - 500);
+        Scene scene = new Scene(main, screenSize.width - 800, screenSize.height - 500);
         iniciarJuego iniciarJuego = new iniciarJuego(scene, main, screenSize, new Rectangle(20,20, Color.RED));
 
         Runnable runnable = () -> {
@@ -44,6 +44,7 @@ public class _1_SnakeGame extends Application {
                     //System.out.printf(" X %d : Y %d \n" ,(int) POS_X ,(int) POS_Y );
 
                     //iniciarJuego.iterar_cuerpo(POS_X,POS_Y);
+
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -52,6 +53,7 @@ public class _1_SnakeGame extends Application {
                     iniciarJuego.subirVelocidad();
                     iniciarJuego.timeline.play();
                     iniciarJuego.iterar_cuerpo(iniciarJuego.obtenerPosiciones_X_Y()[0], iniciarJuego.obtenerPosiciones_X_Y()[1]);
+
                 });
             }
 
@@ -72,7 +74,7 @@ class iniciarJuego{
     int largo_cuadrado = 20;
     int ancho_cuadrado = 20;
     Rectangle rectangle ;
-    int tick_tiempo = 15;
+    int tick_tiempo = 20;
 
     private String direccion = "DERECHA";
     private final int VELOCIDAD = 10; // pixeles por frame
@@ -167,11 +169,16 @@ class iniciarJuego{
                 moverSnake();
                 noSalirse();
                 generarManzana();
+
+                generarEstructuras();
                 //generarCampoManzanas();
             });
 
+
+
             timeline.getKeyFrames().add(nuevoFrame);
             timeline.play(); // reiniciar
+            System.out.println(timeline.getKeyFrames().get(0).getTime());
         }
     }
 
@@ -185,7 +192,7 @@ class iniciarJuego{
 
     private void noSalirse(){
         if (    rectangle.getLayoutX() < 0 ||
-                rectangle.getLayoutX() > dimension.height + 320 ||
+                rectangle.getLayoutX() > dimension.height + 20 ||
                 rectangle.getLayoutY() < 0 ||
                 rectangle.getLayoutY() > dimension.width - 1360
         ){
@@ -245,6 +252,7 @@ class iniciarJuego{
                 rectangle.setLayoutX(rectangle.getLayoutX() + VELOCIDAD);
                 break;
         }
+
     }
 
 
@@ -266,11 +274,13 @@ class iniciarJuego{
                 i++;
             }
         }
+        if (tick_tiempo <= 20 )tick_tiempo -= 100;
     }
 
     Deque<Rectangle> cola_manzanas = new ArrayDeque();
     public void generarManzana(){
 
+        Rectangle manzana = new Rectangle(40,40, Color.GREEN);
         if (!hay_manzana){
             //System.out.println("Dimension : " + (int)(Math.random()*scene.getHeight()));
 
@@ -282,7 +292,6 @@ class iniciarJuego{
                 return;
             }
 
-            Rectangle manzana = new Rectangle(40,40, Color.GREEN);
             POS_Manzana[0] = valor_random_X;
             POS_Manzana[1] = valor_random_Y;
 
@@ -305,14 +314,13 @@ class iniciarJuego{
         int pos_head_Y = obtenerPosiciones_X_Y()[1];
         // supongamos que la posicion de la manzana es 100, 100 (x,y)
         //entonces seria >= 80, <= 120
-        if (pos_head_X >= POS_Manzana[0]-30 && pos_head_X <= POS_Manzana[0]+30 && pos_head_Y >= POS_Manzana[1]-30 && pos_head_Y <= POS_Manzana[1]+40){
-            //System.out.println("esta en el rango");
 
+        Rectangle apl = cola_manzanas.peekFirst();
+        if (apl != null && rectangle.getBoundsInParent().intersects(apl.getBoundsInParent())) {
             snakelarge(new Rectangle(20,20, Color.RED));
             hay_manzana = false;
-
-            mainPane.getChildren().remove(cola_manzanas.getFirst());
-            cola_manzanas.pollLast();
+            mainPane.getChildren().remove(apl);
+            cola_manzanas.pollFirst();
         }
 
         //System.out.println(obtenerPosiciones_X_Y()[0]);
@@ -336,6 +344,28 @@ class iniciarJuego{
         manzana.setLayoutY(valor_random_Y);
         mainPane.getChildren().add(manzana);
         cola_manzanas.add(manzana);
+
+    }
+
+    boolean hay_pared = false;
+    private ArrayList<Integer> lista_ubi_objetos = new ArrayList<>();
+    public void generarEstructuras(){
+        int valor_random_Y = (int) (Math.random() * (mainPane.getHeight() - 100));
+        int valor_random_X = (int) (Math.random() * (mainPane.getWidth() - 50 ));
+
+        Rectangle pared = new Rectangle(20,70, Color.gray(0.8));
+        pared.setLayoutX(valor_random_X);
+        pared.setLayoutY(valor_random_Y);
+
+        if (!hay_pared){
+            int system_time = (int) System.nanoTime();
+            if (system_time % 3 == 0){
+                mainPane.getChildren().add(pared);
+            }
+
+            hay_pared = true;
+        }
+
 
     }
 
