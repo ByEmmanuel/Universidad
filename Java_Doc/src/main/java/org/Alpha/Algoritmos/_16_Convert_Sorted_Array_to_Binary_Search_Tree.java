@@ -1,5 +1,11 @@
 package org.Alpha.Algoritmos;
 
+
+// NOTA, NO PUDE RESOLVER ESTE ALGORITMO POR MI PROPIA CUENTA ME AYUDO GPT CON CONCEPTOS DE RECURSIVIDAD
+// ESTUDIAR RECURSIVIDAD
+// NO SE IMPRIME CORRECTAMENTE EL ARBOL
+
+
 class TreeNode {
     int val;
     TreeNode left;
@@ -17,61 +23,65 @@ public class _16_Convert_Sorted_Array_to_Binary_Search_Tree {
 
     // len 5
     public static TreeNode sortedArrayToBST(int[] nums) {
-        TreeNode root = new TreeNode(0);
 
-        int i = 0;
+        //indice del medio del arreglo
+        int mitad = (nums.length-1) / 2;
+
+        TreeNode root = new TreeNode(nums[mitad]);
+        TreeNode dummy_left = root;
+        TreeNode dummy_right = root;
+        //System.out.println(mitad);
 
 
-        for (int j = 1; j <= nums.length; j++){
-            TreeNode idk = new TreeNode();
+            //root.left = helper(nums, 0 , mitad - 1 );
+            //root.right = helper(nums, mitad + 1  , nums.length - 1);
+            return helper(nums, 0, nums.length-1);
 
-            if (j < nums.length && nums[i] < nums[j]){
-                if (idk.left == null){
-                    idk.left = new TreeNode(nums[i]);
-                }
-            }else {
-                idk.left = new TreeNode(nums[i]);
-            }
 
-            if (idk.left.val < idk.right.val){
-                root.left = idk;
-            }else {
-                root.right = idk;
-            }
+        /*int i = 0;
+        while(i < mitad ){
+            root.left = helper(nums, i , mitad - 1 );
 
+            System.out.println(nums[i]);
             i++;
         }
+        i++;
+        while (i < nums.length){
+            root.right = helper(nums, mitad + 1  , nums.length );
+
+            System.out.println(nums[i]);
+            i++;
+        }*/
+
+
+        //return root;
+    }
+    static int a = 0;
+    public static TreeNode helper(int[] nums, int inicio, int fin){
+
+        if (inicio > fin)return null;
+        int mid = (inicio + fin)/2;
+        TreeNode root =  new TreeNode(nums[mid]);
+        root.left = helper(nums, inicio, mid -1);
+        root.right = helper(nums, mid + 1, fin);
+
 
         return root;
     }
 
-
-
     // esto imprimira cada rama de izquierda a derecha
     public static void imprimirArbol(TreeNode arbol){
-        TreeNode dummyLeft = arbol;
-        TreeNode dummyRight = arbol;
-
-        TreeNode head = arbol;
-        int pisos = 0;
-
-        while(dummyLeft.left != null){
-            System.out.println(dummyLeft.val);
-            dummyLeft = dummyLeft.left;
-            pisos++;
+        try{
+            System.out.println("Valor: " + arbol.val);
+            if (arbol.left != null){
+            }
+                imprimirArbol(arbol.left);
+            if (arbol.right != null){
+            }
+                imprimirArbol(arbol.right);
+        }catch (NullPointerException ex){
+            System.out.println("null");
         }
-        System.out.println(dummyLeft.val);
-
-        System.out.println("otro nodo");
-
-        while (dummyRight.right != null){
-            System.out.println(dummyRight.val);
-            dummyRight = dummyRight.right;
-        }
-        System.out.println(dummyRight.val);
-
-        System.out.println("pisos " + pisos);
-
 
     }
 
@@ -92,8 +102,8 @@ public class _16_Convert_Sorted_Array_to_Binary_Search_Tree {
 
 
 
-        //imprimirArbol(sortedArrayToBST(new int[]{-10,-3,0,5,9}));
-        imprimirArbol(root);
+        imprimirArbol(sortedArrayToBST(new int[]{-10,-3,0,5,9}));
+        //imprimirArbol(root);
     }
 
 }
