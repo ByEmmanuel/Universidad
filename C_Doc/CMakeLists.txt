@@ -9,29 +9,35 @@ include_directories(${CURSES_INCLUDE_DIR})
 # Enlazar la librería ncurses
 
 add_executable(C_Doc
+        Algoritmos/_1_Add_Two_Numbers.c
 
+        #[[#Proyecto PE
         ProyectoPE/main.c
-        #ProyectoPE/LogicaNegocio.h
         ProyectoPE/LogicaNegocio.c
         ProyectoPE/UsuarioDTO.c
-        #ProyectoPE/UsuarioDTO.h
         ProyectoPE/Util.c
-        #ProyectoPE/Util.h
         ProyectoPE/UserInterface.c
-        #ProyectoPE/UserInterface.h
         ProyectoPE/Pago.c
         ProyectoPE/Clientes.c
-        #ProyectoPE/ConstantesMotores.h
         ProyectoPE/RegistrarMotor.c
         ProyectoPE/Testing.c
-        #ProyectoPE/Testing.h
         ProyectoPE/Almacen.c
         ProyectoPE/UsuarioDAO.c
         ProyectoPE/ApartadoOtros.c
         ProyectoPE/ConstantesMotores.c
         ProyectoPE/SystemLogs.c
-        ProyectoPE/reloj.c
+        ProyectoPE/reloj.c]]
+
+        ProyectoPE/LogicaNegocio.h
+        #ProyectoPE/UsuarioDTO.h
+        #ProyectoPE/Util.h
+        #ProyectoPE/UserInterface.h
+        #ProyectoPE/ConstantesMotores.h
+        #ProyectoPE/Testing.h
         #ProyectoPE/reloj.h
+
+        #Logica de programacion
+
 )
 
 target_link_libraries(C_Doc ${CURSES_LIBRARIES})

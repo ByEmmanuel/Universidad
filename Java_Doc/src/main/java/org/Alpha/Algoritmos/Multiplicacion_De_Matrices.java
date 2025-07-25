@@ -55,6 +55,18 @@ public class Multiplicacion_De_Matrices extends Throwable {
                 { 5 , 6 },
                 { 7 , 8 }
         };
+
+        int[][] sumar_diagonales = {
+                { 6,   6,   7, -10,  9, -3,  8,  9, -1 },
+                { 9,   7, -10,  6,  4,  1,  6,  1,  1 },
+                { -1, -2,  4, -6,  1, -4, -6,  3,  9 },
+                { -8,  7,  6, -1, -6, -6,  6, -7,  2 },
+                { -10, -4, 9,  1, -7,  8, -5,  3, -5 },
+                { -8, -3, -4, 2, -3,  7, -5,  1, -5 },
+                { -2, -7, -4, 8,  3, -1,  8,  2,  3 },
+                { -3,  4,  6, -7, -7, -8, -3,  9, -6 },
+                { -2,  0,  5,  4,  4,  4, -3,  3,  0 }
+        };
         // La multiplicacion seria 1 X 5 + 2 X 7 , 1 X 6 + 2 X 8 == 5 + 14 , 6 + 16     == 19 , 22
         //                         4 X 5 + 5 X 7 , 4 X 6 + 5 X 8 == 20 + 35 , 24 + 40   == 55 , 64
 
@@ -73,12 +85,19 @@ public class Multiplicacion_De_Matrices extends Throwable {
 
         //imprimir_Matriz(transpuesta(matriz_1_));
         //imprimir_Matriz(generarMatrizAleatoria(5,2));
-        int aleatorio = (int) (Math.random()*10);
+
+        /*int aleatorio = (int) (Math.random()*10);
         try {
             imprimir_Matriz(multiplicado(generarMatrizAleatoria(8,8),generarMatrizAleatoria(8, 8)));
         }catch (Exception ex){
             System.out.println("Ha ocurrido un error ; " + ex.getMessage());
-        }
+        }*/
+
+        //la suma es 1+4+1+3+5 = 14
+        // la segunda diagonal es : 5+2+1+3+9 = 20
+        suma_diagonales(matriz_5x5_A);
+
+        suma_diagonales(sumar_diagonales);
     }
 
     // mxn * n*p
@@ -174,6 +193,25 @@ public class Multiplicacion_De_Matrices extends Throwable {
             }
         }
         return matriz;
+    }
+
+    public static int suma_diagonales(int[][] a){
+        int diagonal = 0;
+        int valor_a = 0;
+        int valor_b = 0;
+        for (int[] num : a){
+            //System.out.println(num[diagonal]);
+            valor_a += num[diagonal];
+            diagonal++;
+        }
+        diagonal--;
+        for (int[] num : a){
+            //System.out.println(num[diagonal]);
+            valor_b += num[diagonal];
+            diagonal--;
+        }
+        System.out.println(Math.abs(valor_a-valor_b));
+    return (valor_b-valor_a);
     }
 
 }
