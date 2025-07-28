@@ -14,4 +14,8 @@ def prueba_lista(objeto):
 if __name__ == '__main__':
     print(prueba_lista([0,1,2,3,4,5,6,7,8,9]))
     print(type(prueba_lista([0,1,2,3,4,5,6,7,8,9])))
+    lista_1 = [{1,1},{1,0},{0,1}]
+
+    print(type(lista_1))
+
 
