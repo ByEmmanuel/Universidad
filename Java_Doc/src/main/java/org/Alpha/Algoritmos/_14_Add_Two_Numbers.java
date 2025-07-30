@@ -34,42 +34,35 @@ public class _14_Add_Two_Numbers {
             copia_l2 = copia_l2.next;
             l2_len++;
         }
-        int i = 0;
-        int variable_arbitraria = 0;
-        ListNode result = null;
-        // esto se va a ejecutar la longitud de las 2 listas
+
+        ListNode dummy = new ListNode();
+        ListNode resul = dummy;
         int sobra = 0;
-        while (i < (l1_len+l2_len)){
-            //System.out.println(i);
-            int res = 0;
-            if (l1 != null){
-                System.out.println(l1.val);
-                res += l1.val;
+        while (true){
+            int resultado = 0;
+            ListNode nodo = new ListNode();
+            if (l1.next != null){
+                resultado += l1.val;
                 l1 = l1.next;
             }
-            if (l2 != null){
-                System.out.println(l2.val);
-                res += l2.val;
+            if (l2.next != null){
+                resultado += l2.val;
                 l2 = l2.next;
             }
-            if (res % 10  != 0){
-                res = (res / 10);
-                sobra ++;
+            if (resultado % 10 != 0){
+                dummy.next = new ListNode(resultado % 10);
+            }else {
+                sobra = 1;
+                dummy.next = new ListNode(sobra);
+            }
+            if(sobra == 1){
+                dummy = dummy.next;
             }
 
-            result = new ListNode(res);
-
-            if (sobra > 0){
-                result.next = new ListNode(res+sobra);
+            if(l1.next == null && l2.next == null){
+                return resul;
             }
-
-            i++;
         }
-
-
-        System.out.println("longitud l1 es " +  l1_len);
-        System.out.println("longitud l2 es " +  l2_len);
-        return result;
     }
 
     public static ListNode helper(ListNode listNode, int valor){
@@ -127,9 +120,9 @@ public class _14_Add_Two_Numbers {
 
 
         //imprimirLista(addTwoNumbers(d,dd));
-        //imprimirLista(addTwoNumbers(gg,jj));
+        imprimirLista(addTwoNumbers(gg,jj));
 
-        imprimirLista(addTwoNumbers(_7,__4));
+        //imprimirLista(addTwoNumbers(_7,__4));
 
         //imprimirLista(gg);
         System.out.println();

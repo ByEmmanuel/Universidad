@@ -12,8 +12,13 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import javax.print.attribute.standard.RequestingUserName;
+import java.io.IOException;
+import java.net.http.*;
+
 import java.awt.*;
 import java.util.*;
+
 
 public class _1_SnakeGame extends Application {
 
@@ -59,9 +64,33 @@ public class _1_SnakeGame extends Application {
 
         };
 
+        Runnable runable_2 = () ->{
+            _2_Llamadas_API_Python API_Python = new _2_Llamadas_API_Python();
+            while(true){
+                try{
+                    Thread.sleep(10);
+
+                    double POS_X = iniciarJuego.obtenerPosiciones_X_Y()[0];
+                    double POS_Y = iniciarJuego.obtenerPosiciones_X_Y()[1];
+                    API_Python.peticion_POST_Coordenadas((int) POS_X, (int)POS_Y);
+                    System.out.printf(" X %d : Y %d \n" ,(int) POS_X ,(int) POS_Y );
+
+                }catch (InterruptedException e){
+                    API_Python.cerrar_conexion();
+                    throw new RuntimeException(e.getMessage());
+                } catch (IOException e) {
+                    API_Python.cerrar_conexion();
+                    throw new RuntimeException(e);
+                }
+            }
+        };
         Thread hilo_1_ = new Thread(runnable,"Hilo 1");
         hilo_1_.setDaemon(true);
         hilo_1_.start();
+
+        Thread hilo_2_ = new Thread(runable_2, "Hilo 2");
+        hilo_2_.setDaemon(true);
+        hilo_2_.start();
 
 
         stage.setTitle("Snake Game");

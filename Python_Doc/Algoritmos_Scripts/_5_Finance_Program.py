@@ -2,6 +2,9 @@
 # R_t, R_(t+1) = (P_(t+1) / P_t) -1
 from time import sleep
 
+def lista_prompts():
+    return ["Ingrese precio de venta:  ", "Ingrese precio de compra:  " ]
+
 #Logica del negocio
 def calcular_roi(precio_venta  : float , precio_compra : float):
     return (precio_venta / precio_compra) - 1
@@ -16,7 +19,7 @@ def pedir_datos_usuario(cantidad_de_datos : int, tipo_de_datos, lista_prompts : 
 
 def mostrar_calculo_roi():
     try:
-        array_respuestas = pedir_datos_usuario(2,float,["Ingrese precio de venta:  ","Ingrese precio de compra:  "])
+        array_respuestas = pedir_datos_usuario(2,float, lista_prompts())
         print("Calculando ROI%")
         for i in range(5):
             sleep(0.5)
@@ -51,7 +54,9 @@ def main():
     while True:
         try:
             opc_usr = menu(acciones)
-            acciones.get(opc_usr, ("Opcion invalida", lambda :print("opcion no valida")))[1]()
+            acciones.get(opc_usr, ("Opcion invalida",
+                                   lambda : print("opcion no valida"),
+                                   print("no \n")))[1]()
         except Exception as e:
             print(f"ERROR : {e}")
 
