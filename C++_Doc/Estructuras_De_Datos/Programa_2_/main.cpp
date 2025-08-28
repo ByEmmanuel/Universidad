@@ -6,8 +6,9 @@
 #include "Nodo.h"
 #include <iostream>
 
-int main(){
+using namespace std;
 
+int main() {
     Lista* lista = new Lista();
     lista->push_up(new Nodo(20));
     lista->push_up(new Nodo(44));
@@ -36,5 +37,49 @@ int main(){
     lista->print_aux();
     lista->print_aux_next();
 
+    cout << "El objeto esta en: " << lista->index_of(new Nodo(100))->valor << "\n";
+    cout << "El objeto esta en: " << lista->index_of(new Nodo(78))->valor << "\n";
+
+    // esta linea me causa un error porque estoy intentando acceder a una direccion invalida
+    // Eso deberia de causar un index_out_of_bounds o null_pinter_excepcion
+    /*
+     *try {
+        cout << "El objeto esta en: " << lista->index_of(new Nodo(109))->valor << "\n";
+    }catch (exception ex) {
+        cout << ex.what() << "\n";
+    }
+    */
+
+    cout << "El tamaño es: " << lista->size() << "\n";
+
+    cout << "Recorrer auxiliar: " << "\n";
+
+    lista->contemplate_aux();
+
+    //cout << "insert at 0 " << "\n";
+    //lista->insert_at(0,new Nodo(1));
+    //cout << "Error " << "\n";
+    //lista->print_elements();
+
+    lista->pop_up();
+
+    cout << "\n\n" ;
+    cout << "Insert at" << "\n";
+    //lista->insert_at(lista->size()-1,new Nodo(47));
+
+    //lista->print_elements();
+
+
+    cout << "Remove From Index ( n - 1 ) " << "\n";
+
+    //lista->remove(lista->size() -1);
+
+    //lista->print_elements();
+
+    cout << "Remove From Index ( 2 ) " << "\n";
+
+    //lista->remove(2);
+
+    //lista->print_elements();
 
 }

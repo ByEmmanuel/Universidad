@@ -18,4 +18,6 @@ add_executable(Estructuras_De_Datos
         Programa_2_/Lista.cpp
         Programa_2_/Lista.h
         Programa_2_/main.cpp
+        Programa_2_/_Clase_.cpp
+        Programa_2_/_Clase_.h
 )

@@ -72,6 +72,23 @@ void Lista::print_elements() const{
     }
 }
 
+//Retornar indice
+// Esto retorna un nodo ( objeto ) con el valor del indice a buscar
+Nodo* Lista::index_of(Nodo* nodo) {
+    int contador = 0;
+    Nodo* tmp = head;
+    while (tmp) {
+        if (tmp->valor == nodo->valor ) {
+            //cout << "El objeto esta en el indice: " << contador << "\n";
+            return new Nodo(contador);
+        }
+        contador++;
+        tmp = tmp->siguiente;
+    }
+    //cout << "El objeto no esta en la lista : ( " << nodo->valor << " )" << "\n";
+    return nullptr;
+}
+
 void Lista::print_first_element() const{
     cout << "First element " << head->valor << "\n";
 };
@@ -99,4 +116,111 @@ void Lista::print_aux_next() const{
     }else{
         cout << "Aux Next Has no value" << "\n";
     }
+}
+
+int Lista::size() {
+    Nodo* nodo = head;
+    int contador = 0;
+    while (nodo->siguiente != nullptr) {
+        nodo = nodo->siguiente;
+        contador++;
+    }
+    return contador+1;
+}
+
+    /*
+     * Logica
+     al llegar al punto ( i )
+     se insertara el nuevo elemento y los demas elementos se recorreran
+     */
+
+/*
+bool Lista::insert_at(int posicion, Nodo* nodo){
+    Nodo* tmp = head;
+    int contador_lista = 0;
+    while (tmp->siguiente != nullptr) {
+        if (contador_lista == posicion) {
+            Nodo* tmp_2_= tmp;
+            head = nodo;
+            while (tmp_2_->siguiente != nullptr) {
+                head->siguiente = tmp;
+                tmp_2_ = tmp_2_->siguiente;
+            };
+            //return true;
+            break;
+        }
+        contador_lista++;
+        tmp = tmp->siguiente;
+    }
+    return false;
+}
+*/
+bool Lista::insert_at(int posicion, Nodo* nodo){
+    if (posicion < 0)return false;
+    Nodo* tmp = head;
+    int contador_lista = 0;
+    while (tmp->siguiente != nullptr) {
+        if (contador_lista == posicion) {
+            while (nodo->siguiente){
+                nodo->siguiente = tmp;
+                head->siguiente = nodo;
+                //nodo = nodo->siguiente;
+            }
+            //aux = head;
+            //return true;
+            break;
+        }
+        //head = tmp->siguiente;
+        tmp = tmp->siguiente;
+        contador_lista++;
+    }
+    return false;
+}
+
+bool Lista::is_empty() const {
+    return head == nullptr;
+};
+// no terminado
+bool Lista::remove(int indice) {
+    Nodo* dummy = head;
+    int contador = 0;
+    while (dummy->siguiente) {
+        if (contador == indice) {
+            Nodo* aux_2_ = dummy;
+            while (aux->siguiente != nullptr) {
+                head = aux_2_->siguiente;
+                dummy = dummy->siguiente;
+            }
+            return true;
+        }
+        dummy = dummy->siguiente;
+        contador++;
+    }
+    return false;
+};
+
+//no terminado
+bool remove(Nodo* objeto) {
+
+};
+
+
+// este metodo no esta bien
+// esto recorre todos los nodos anteriores
+// aux apunta al ultimo elemento
+void Lista::contemplate_aux(){
+    Nodo* dummy = head;
+
+    while (dummy) {
+        cout << dummy->valor << "\n";
+        dummy = dummy->siguiente;
+    }
+}
+//no terminado
+void Lista::pop_up(){
+    Nodo* dummy = head;
+    if (head) {
+        head = dummy->siguiente;
+    }
+
 }
