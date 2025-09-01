@@ -56,12 +56,15 @@ int main() {
 
     lista->contemplate_aux();
 
-    //cout << "insert at 0 " << "\n";
-    //lista->insert_at(0,new Nodo(1));
-    //cout << "Error " << "\n";
-    //lista->print_elements();
+    lista->print_elements();
 
-    lista->pop_up();
+    cout << "insert at 0 " << "\n";
+    lista->insert_at(0,new Nodo(1));
+    cout << "El tamaño es: " << lista->size() << "\n";
+    //cout << "Error " << "\n";
+    lista->print_elements();
+
+    //lista->pop_up();
 
     cout << "\n\n" ;
     cout << "Insert at" << "\n";

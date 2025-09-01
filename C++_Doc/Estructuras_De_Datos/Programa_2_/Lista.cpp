@@ -120,12 +120,16 @@ void Lista::print_aux_next() const{
 
 int Lista::size() {
     Nodo* nodo = head;
-    int contador = 0;
-    while (nodo->siguiente != nullptr) {
+    int contador = 1;
+    while (nodo != nullptr) {
+        if (nodo->siguiente){
         nodo = nodo->siguiente;
         contador++;
+        }else{
+            break;
+        }
     }
-    return contador+1;
+    return contador;
 }
 
     /*
@@ -155,7 +159,7 @@ bool Lista::insert_at(int posicion, Nodo* nodo){
     return false;
 }
 */
-bool Lista::insert_at(int posicion, Nodo* nodo){
+/*bool Lista::insert_at(int posicion, Nodo* nodo){
     if (posicion < 0)return false;
     Nodo* tmp = head;
     int contador_lista = 0;
@@ -175,6 +179,22 @@ bool Lista::insert_at(int posicion, Nodo* nodo){
         contador_lista++;
     }
     return false;
+}*/
+
+bool Lista::insert_at(int posicion, Nodo* nodo){
+    if (posicion < 0)return false;
+    Nodo* tmp = head;
+    int contador = 0;
+    while (tmp->siguiente){
+        if (contador == posicion){
+            break;
+        }
+        tmp = tmp->siguiente;
+        contador++;
+    }
+    nodo->siguiente = tmp->siguiente;
+    tmp->siguiente = nodo;
+
 }
 
 bool Lista::is_empty() const {
@@ -209,7 +229,7 @@ bool remove(Nodo* objeto) {
 // esto recorre todos los nodos anteriores
 // aux apunta al ultimo elemento
 void Lista::contemplate_aux(){
-    Nodo* dummy = head;
+    Nodo* dummy = aux;
 
     while (dummy) {
         cout << dummy->valor << "\n";
