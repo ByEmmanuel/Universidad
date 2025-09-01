@@ -45,6 +45,10 @@ public:
     void contemplate_aux();
 
     void pop_up();
+
+    void pop_bottom();
+
+    void print_reverse();
 };
 
 

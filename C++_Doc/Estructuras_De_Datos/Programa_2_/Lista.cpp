@@ -32,38 +32,6 @@ void Lista::push_up(Nodo* nodo){
     }
 }
 
-
-/*
- *void Lista::push_bottom(Nodo* nodo){
-    Nodo* tmp = aux;
-    nodo->siguiente = nullptr;
-    if (aux){
-        cout << "aux value: " << aux->valor << "\n";
-    }
-    if (tmp){
-        cout << "tmp value: " << tmp->valor << "\n";
-    }
-    /*
-     *
-     * Logica
-     * Nodo ya tiene un valor asignado
-     * mientras tmp no sea null
-     * el link al siguiente nodo (valor) es igual a aux ( primera posicion )
-     * y tmp se actualiza al siguiente nodo
-     #1#
-    if (aux == nullptr){
-        aux = nodo;
-        head = nodo;
-    }else{
-        Nodo* tmp = aux;
-        while (tmp->siguiente){
-            tmp = tmp->siguiente;
-        }
-        tmp->siguiente = nodo;
-    }
-}
-*/
-
 void Lista::print_elements() const{
     Nodo* dummy = head;
     while (dummy != nullptr){
@@ -79,13 +47,11 @@ Nodo* Lista::index_of(Nodo* nodo) {
     Nodo* tmp = head;
     while (tmp) {
         if (tmp->valor == nodo->valor ) {
-            //cout << "El objeto esta en el indice: " << contador << "\n";
             return new Nodo(contador);
         }
         contador++;
         tmp = tmp->siguiente;
     }
-    //cout << "El objeto no esta en la lista : ( " << nodo->valor << " )" << "\n";
     return nullptr;
 }
 
@@ -120,8 +86,11 @@ void Lista::print_aux_next() const{
 
 int Lista::size() {
     Nodo* nodo = head;
+    if (!head){
+        return 0;
+    }
     int contador = 1;
-    while (nodo != nullptr) {
+    while (nodo->siguiente != nullptr) {
         if (nodo->siguiente){
         nodo = nodo->siguiente;
         contador++;
@@ -129,60 +98,28 @@ int Lista::size() {
             break;
         }
     }
-    return contador;
+    return contador ;
 }
-
-    /*
-     * Logica
-     al llegar al punto ( i )
-     se insertara el nuevo elemento y los demas elementos se recorreran
-     */
-
-/*
-bool Lista::insert_at(int posicion, Nodo* nodo){
-    Nodo* tmp = head;
-    int contador_lista = 0;
-    while (tmp->siguiente != nullptr) {
-        if (contador_lista == posicion) {
-            Nodo* tmp_2_= tmp;
-            head = nodo;
-            while (tmp_2_->siguiente != nullptr) {
-                head->siguiente = tmp;
-                tmp_2_ = tmp_2_->siguiente;
-            };
-            //return true;
-            break;
-        }
-        contador_lista++;
-        tmp = tmp->siguiente;
-    }
-    return false;
-}
-*/
-/*bool Lista::insert_at(int posicion, Nodo* nodo){
-    if (posicion < 0)return false;
-    Nodo* tmp = head;
-    int contador_lista = 0;
-    while (tmp->siguiente != nullptr) {
-        if (contador_lista == posicion) {
-            while (nodo->siguiente){
-                nodo->siguiente = tmp;
-                head->siguiente = nodo;
-                //nodo = nodo->siguiente;
-            }
-            //aux = head;
-            //return true;
-            break;
-        }
-        //head = tmp->siguiente;
-        tmp = tmp->siguiente;
-        contador_lista++;
-    }
-    return false;
-}*/
 
 bool Lista::insert_at(int posicion, Nodo* nodo){
     if (posicion < 0)return false;
+
+    if (posicion == 0){
+        nodo->siguiente = head;
+        head = nodo;
+        return true;
+    }
+
+    // este metodo siempre  devolvera true sin importar el resultado
+    if (posicion == size() -1){
+        Nodo* tmp = head;
+        while (tmp->siguiente){
+            tmp = tmp->siguiente;
+        }
+        tmp->siguiente = nodo;
+        return true;
+    }
+
     Nodo* tmp = head;
     int contador = 0;
     while (tmp->siguiente){
@@ -219,11 +156,6 @@ bool Lista::remove(int indice) {
     return false;
 };
 
-//no terminado
-bool remove(Nodo* objeto) {
-
-};
-
 
 // este metodo no esta bien
 // esto recorre todos los nodos anteriores
@@ -236,11 +168,41 @@ void Lista::contemplate_aux(){
         dummy = dummy->siguiente;
     }
 }
-//no terminado
+//Eliminar arriba ( en el head )
 void Lista::pop_up(){
-    Nodo* dummy = head;
-    if (head) {
-        head = dummy->siguiente;
+    if (head->siguiente){
+        Nodo* tmp = head;
+        head = tmp->siguiente;
+        delete tmp;
     }
+}
 
+void Lista::pop_bottom(){
+    if (head->siguiente){
+        Nodo* tmp = head;
+        Nodo* tmpR = tmp;
+        while (tmp->siguiente){
+            tmpR = tmp;
+            tmp = tmp->siguiente;
+        }
+        tmpR->siguiente = nullptr;
+    }
+}
+
+void Lista::print_reverse(){
+    // size n
+    int tamaño = size()-1;
+
+    Nodo* tmp = head;
+
+    while (tamaño >= 0){
+        for (int i = 0; i < tamaño; i++){
+            if (tmp->siguiente){
+                tmp = tmp->siguiente;
+            }
+        }
+        cout << "Print Reverse: " << tmp->valor << "\n";
+        tamaño--;
+        tmp = head;
+    }
 }

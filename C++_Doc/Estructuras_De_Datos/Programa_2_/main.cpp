@@ -15,6 +15,8 @@ int main() {
     lista->push_up(new Nodo(55));
     lista->push_up(new Nodo(78));
 
+    cout << "El tamaño es: " << lista->size() << "\n";
+
     lista->push_up(new Nodo(90));
 
     lista->push_bottom(new Nodo(10));
@@ -56,15 +58,50 @@ int main() {
 
     lista->contemplate_aux();
 
+    cout << "Print Hacia adelante: " << "\n";
     lista->print_elements();
+    cout << "Print Hacia Atras: " << "\n";
+    lista->print_reverse();
+
 
     cout << "insert at 0 " << "\n";
     lista->insert_at(0,new Nodo(1));
+
     cout << "El tamaño es: " << lista->size() << "\n";
-    //cout << "Error " << "\n";
+
     lista->print_elements();
 
-    //lista->pop_up();
+    cout << "\nBorrando 2 elementos de la lista " <<"\n\n" ;
+
+    lista->pop_up();
+    lista->pop_up();
+
+    /**
+     * Debe  borrar 1 y 100
+     */
+    cout << "El tamaño es: " << lista->size() << "\n";
+    lista->print_elements();
+
+    lista->pop_bottom();
+
+    cout << "\nDelete bottom" << "\n";
+
+    cout << "El tamaño es: " << lista->size() << "\n";
+    lista->print_elements();
+
+    lista->pop_bottom();
+    lista->pop_up();
+
+    /**
+     * Debe imprimir 78 - 55 - 44
+     */
+
+    cout << "El tamaño es: " << lista->size() << "\n";
+    lista->print_elements();
+
+    cout << "El tamaño es: PRINT REVERSA " << lista->size() << "\n";
+    lista->print_reverse();
+
 
     cout << "\n\n" ;
     cout << "Insert at" << "\n";
