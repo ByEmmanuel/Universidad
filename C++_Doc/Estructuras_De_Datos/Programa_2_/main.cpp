@@ -5,6 +5,7 @@
 #include "Lista.h"
 #include "Nodo.h"
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -34,8 +35,8 @@ int main() {
      */
 
     lista->print_elements();
-    lista->print_first_element();
-    lista->print_last_element();
+    lista->_first_element();
+    lista->_last_element();
     lista->print_aux();
     lista->print_aux_next();
 
@@ -104,22 +105,31 @@ int main() {
 
 
     cout << "\n\n" ;
-    cout << "Insert at" << "\n";
-    //lista->insert_at(lista->size()-1,new Nodo(47));
-
-    //lista->print_elements();
-
+    cout << "Insert at n-1 ( ultimo ) " << "\n";
+    lista->insert_at(lista->size()-1,new Nodo(47));
+    lista->print_elements();
+    cout << "Remove From Index ( n - 1 ) " << "\n";
+    lista->remove(lista->size() -1);
+    cout << "El tamaño es: " << lista->size() << "\n";
+    lista->print_elements();
 
     cout << "Remove From Index ( n - 1 ) " << "\n";
+    lista->remove(lista->size() -1);
+    cout << "El tamaño es: " << lista->size() << "\n";
+    lista->print_elements();
 
-    //lista->remove(lista->size() -1);
 
-    //lista->print_elements();
+    cout << "Remove From Index ( 0 ) " << "\n";
+    lista->remove(0);
+    lista->print_elements();
 
     cout << "Remove From Index ( 2 ) " << "\n";
 
     //lista->remove(2);
 
     //lista->print_elements();
+
+    lista->clear_all();
+    lista->print_elements();
 
 }

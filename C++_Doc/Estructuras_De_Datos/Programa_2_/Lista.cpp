@@ -33,6 +33,10 @@ void Lista::push_up(Nodo* nodo){
 }
 
 void Lista::print_elements() const{
+    if (head == nullptr){
+        cout << "La lista esta vacia" << "\n";
+        return;
+    }
     Nodo* dummy = head;
     while (dummy != nullptr){
         cout << "Print Elements : " << dummy->valor << "\n";
@@ -55,11 +59,11 @@ Nodo* Lista::index_of(Nodo* nodo) {
     return nullptr;
 }
 
-void Lista::print_first_element() const{
+void Lista::_first_element() const{
     cout << "First element " << head->valor << "\n";
 };
 
-void Lista::print_last_element() const{
+void Lista::_last_element() const{
     Nodo* tmp = head;
     while (tmp->siguiente){
         tmp = tmp->siguiente;
@@ -137,22 +141,64 @@ bool Lista::insert_at(int posicion, Nodo* nodo){
 bool Lista::is_empty() const {
     return head == nullptr;
 };
-// no terminado
+
 bool Lista::remove(int indice) {
     Nodo* dummy = head;
     int contador = 0;
-    while (dummy->siguiente) {
-        if (contador == indice) {
-            Nodo* aux_2_ = dummy;
-            while (aux->siguiente != nullptr) {
-                head = aux_2_->siguiente;
-                dummy = dummy->siguiente;
-            }
-            return true;
+    Nodo* tmpR = dummy;
+
+    if (indice == 0){
+        head = dummy->siguiente;
+        delete dummy;
+        return true;
+    }
+
+
+    while (dummy->siguiente){
+        dummy = dummy->siguiente;
+        if (dummy->siguiente){
+            tmpR = dummy;
+        }
+        contador++;
+    }
+    if (contador == indice){
+        /*
+        cout << "ultimo elemento from tmpR : " << tmpR->valor << endl;
+        cout << "ultimo elemento from dummy : " << dummy->valor << endl;
+        cout << "contador esta en :" << contador << endl;
+        */
+
+        tmpR->siguiente = nullptr;
+        delete tmpR->siguiente;
+        return true;
+    }
+
+
+    /*
+    if (contador == indice){
+        head = dummy->siguiente;
+        delete dummy;
+    }
+    else if (indice == contador){
+        cout << "es el ultimo elemento " << endl;
+        cout << "ultimo elemento from tmpR : " << tmpR->valor << endl;
+        cout << "ultimo elemento from dummy : " << dummy->valor << endl;
+
+        tmpR->siguiente = nullptr;
+        delete tmpR->siguiente;
+        return true;
+    }*/
+    /*
+    while (dummy->siguiente){
+        if (contador == indice){
+            tmpR->siguiente = dummy->siguiente;
         }
         dummy = dummy->siguiente;
         contador++;
+        tmpR = dummy;
     }
+    */
+
     return false;
 };
 
@@ -186,6 +232,14 @@ void Lista::pop_bottom(){
             tmp = tmp->siguiente;
         }
         tmpR->siguiente = nullptr;
+    }
+}
+
+void Lista::clear_all(){
+    while (head){
+        Nodo* tmp = head;
+        head = head->siguiente;
+        delete tmp;
     }
 }
 
