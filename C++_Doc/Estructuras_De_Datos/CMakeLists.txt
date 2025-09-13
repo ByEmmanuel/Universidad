@@ -14,10 +14,11 @@ add_executable(Estructuras_De_Datos
 ]]
 
 
-        Programa_2_/Nodo.cpp
-        Programa_2_/Lista.cpp
-        Programa_2_/Lista.h
-        Programa_2_/main.cpp
-        Programa_2_/_Clase_.cpp
-        Programa_2_/_Clase_.h
+        Programa_02_2/Nodo.cpp
+        Programa_02_2/Nodo.h
+        Programa_02_2/Lista.cpp
+        Programa_02_2/Lista.h
+        Programa_02_2/main.cpp
+        Programa_02_2/Alumno.cpp
+        Programa_02_2/Alumno.h
 )
