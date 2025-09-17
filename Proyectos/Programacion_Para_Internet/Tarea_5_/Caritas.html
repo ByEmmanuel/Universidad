@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Programación para Internet</title>
+    <style>
+        input{
+            height:50px;
+        }
+        
+        .campos{
+            width:250px;
+            left:75px;
+            margin-right: 100px;
+            position: relative;
+            font-size: 30px;
+        }
+        
+        .pass{
+            width: 250px;
+            display: inline-block;
+            font-size: 30px;
+        }
+        
+        #ojo{
+            padding: 0px;
+            margin: 0px;
+            position: absolute;
+        }
+        
+        #carita{
+            margin-left: 70px;
+            width: 160px;
+        }
+    </style>
+</head>
+<body align="center">
+    <div id="container">
+        
+        <div align="center" width="300px">
+            <img id="carita" src="2.webp"/>
+        </div>
+        
+        <div align="center">
+            <input type="text" placeholder="USER" class="campos"
+            onkeyup="mueveOjo()" onfocus="mueveOjo()" id="usuario"/>
+        </div>
+        
+        <div align="center" id="passdiv">
+            <input type="password" placeholder="PASS" class="pass"
+            onfocus="tapate()" id="pass"/>
+            <button id="ojo" onclick="cambiaTapar()">
+                <img id="ojito" src="open_eye.png"/>
+            </button>
+        </div>
+        
+    </div>
+
+<script>
+    var tapado=1;
+    function mueveOjo(){
+        let imagen=document.getElementById("carita");
+        let campoUsuario=document.getElementById("usuario");
+        let texto=campoUsuario.value;
+        let longitud=texto.length;
+        let posicion=Math.min(Math.floor(longitud/2.5+2),6);
+        imagen.src= posicion + ".webp";
+    }
+    
+    function tapate(){
+        let imagen=document.getElementById("carita");
+        imagen.src="hide.webp";
+        tapado=1;
+    }
+    
+    function cambiaTapar(){
+        let imagen=document.getElementById("carita");
+        let ojito=document.getElementById("ojito");
+        let password=document.getElementById("pass");
+
+        if(tapado==1){
+            password.type="text";
+            imagen.src="show.webp";
+            ojito.src="close_eye.png";
+            tapado=0;
+        }else{
+            password.type="password";
+            imagen.src="hide.webp";
+            ojito.src="open_eye.png";
+            tapado=1;
+        }
+    }
+</script>
+</body>
+</html>

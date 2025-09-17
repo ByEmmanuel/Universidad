@@ -6,6 +6,17 @@
 #include <iostream>
 using namespace std;
 
+void Lista::push_up(Nodo* nodo){
+    if (head == nullptr){
+        head = nodo;
+        head->siguiente = nullptr;
+        aux = head;
+    }else{
+        nodo->siguiente = head;
+        head = nodo;
+    }
+}
+
 void Lista::push_bottom(Nodo* nodo){
     if (head == nullptr){
             head = nodo;
@@ -18,29 +29,6 @@ void Lista::push_bottom(Nodo* nodo){
         }
         temp->siguiente = nodo;
         nodo->siguiente = nullptr;
-    }
-}
-
-void Lista::push_up(Nodo* nodo){
-    if (head == nullptr){
-        head = nodo;
-        head->siguiente = nullptr;
-        aux = head;
-    }else{
-        nodo->siguiente = head;
-        head = nodo;
-    }
-}
-
-void Lista::print_elements() const{
-    if (head == nullptr){
-        cout << "La lista esta vacia" << "\n";
-        return;
-    }
-    Nodo* dummy = head;
-    while (dummy != nullptr){
-        cout << "Print Elements : " << dummy->valor << "\n";
-        dummy = dummy->siguiente;
     }
 }
 
@@ -59,51 +47,6 @@ Nodo* Lista::index_of(Nodo* nodo) {
     return nullptr;
 }
 
-void Lista::_first_element() const{
-    cout << "First element " << head->valor << "\n";
-};
-
-void Lista::_last_element() const{
-    Nodo* tmp = head;
-    while (tmp->siguiente){
-        tmp = tmp->siguiente;
-    }
-    cout << "Last element " << tmp->valor << "\n";
-};
-
-
-void Lista::print_aux() const{
-    if (aux){
-        cout << "Aux Value  " << aux->valor << "\n";
-    }else{
-        cout << "Aux Has no value" << "\n";
-    }
-}
-
-void Lista::print_aux_next() const{
-    if (aux->siguiente){
-        cout << "Aux Next Value  " << aux->siguiente->valor << "\n";
-    }else{
-        cout << "Aux Next Has no value" << "\n";
-    }
-}
-
-int Lista::size() {
-    Nodo* nodo = head;
-    if (!head){
-        return 0;
-    }
-    int contador = 1;
-    while (nodo->siguiente != nullptr) {
-        if (nodo->siguiente){
-        nodo = nodo->siguiente;
-        contador++;
-        }else{
-            break;
-        }
-    }
-    return contador ;
-}
 
 bool Lista::insert_at(int posicion, Nodo* nodo){
     if (posicion < 0)return false;
@@ -136,6 +79,37 @@ bool Lista::insert_at(int posicion, Nodo* nodo){
     nodo->siguiente = tmp->siguiente;
     tmp->siguiente = nodo;
 
+}
+void Lista::_last_element() const{
+    Nodo* tmp = head;
+    while (tmp->siguiente){
+        tmp = tmp->siguiente;
+    }
+    cout << "Last element " << tmp->valor << "\n";
+};
+void Lista::_first_element() const{
+    if (head){
+        cout << "First element " << head->valor << "\n";
+    }else{
+        cout << " 'La lista no contiene elementos'  " << "\n";
+    }
+}
+
+int Lista::size() {
+    Nodo* nodo = head;
+    if (!head){
+        return 0;
+    }
+    int contador = 1;
+    while (nodo->siguiente != nullptr) {
+        if (nodo->siguiente){
+            nodo = nodo->siguiente;
+            contador++;
+        }else{
+            break;
+        }
+    }
+    return contador ;
 }
 
 bool Lista::is_empty() const {
@@ -173,47 +147,46 @@ bool Lista::remove(int indice) {
         return true;
     }
 
+    return false;
+}
 
-    /*
-    if (contador == indice){
-        head = dummy->siguiente;
-        delete dummy;
-    }
-    else if (indice == contador){
-        cout << "es el ultimo elemento " << endl;
-        cout << "ultimo elemento from tmpR : " << tmpR->valor << endl;
-        cout << "ultimo elemento from dummy : " << dummy->valor << endl;
-
-        tmpR->siguiente = nullptr;
-        delete tmpR->siguiente;
+// este metodo tambien elimina por defecto si esta al final
+bool Lista::remove(Nodo* objeto){
+    Nodo* tmp = head;
+    Nodo* tmpR = nullptr;
+    // si esta al inicio
+    if (head->valor == objeto->valor){
+        objeto->siguiente = head->siguiente;
+        head = objeto->siguiente;
         return true;
-    }*/
-    /*
-    while (dummy->siguiente){
-        if (contador == indice){
-            tmpR->siguiente = dummy->siguiente;
-        }
-        dummy = dummy->siguiente;
-        contador++;
-        tmpR = dummy;
     }
-    */
+    // si no esta al inicio
+    if (head->siguiente){
+        tmpR = tmp;
+        tmp = tmp->siguiente;
+    }
+    while (tmpR){
+        if (tmp->valor == objeto->valor){
+            tmpR->siguiente = tmp->siguiente;
+            delete tmp;
+            return true;
+        }
+        tmpR = tmp;
+        tmp = tmp->siguiente;
+    }
 
     return false;
-};
+}
 
 
-// este metodo no esta bien
-// esto recorre todos los nodos anteriores
-// aux apunta al ultimo elemento
-void Lista::contemplate_aux(){
-    Nodo* dummy = aux;
-
-    while (dummy) {
-        cout << dummy->valor << "\n";
-        dummy = dummy->siguiente;
+void Lista::clear_all(){
+    while (head){
+        Nodo* tmp = head;
+        head = head->siguiente;
+        delete tmp;
     }
 }
+
 //Eliminar arriba ( en el head )
 void Lista::pop_up(){
     if (head->siguiente){
@@ -235,11 +208,40 @@ void Lista::pop_bottom(){
     }
 }
 
-void Lista::clear_all(){
-    while (head){
-        Nodo* tmp = head;
-        head = head->siguiente;
-        delete tmp;
+void Lista::print_elements() const{
+    if (head == nullptr){
+        cout << "La lista esta vacia" << "\n";
+        return;
+    }
+    Nodo* dummy = head;
+    while (dummy != nullptr){
+        cout << "Print Elements : " << dummy->valor << "\n";
+        dummy = dummy->siguiente;
+    }
+}
+
+void Lista::print_aux() const{
+    if (aux){
+        cout << "Aux Value  " << aux->valor << "\n";
+    }else{
+        cout << "Aux Has no value" << "\n";
+    }
+}
+
+void Lista::print_aux_next() const{
+    if (aux->siguiente){
+        cout << "Aux Next Value  " << aux->siguiente->valor << "\n";
+    }else{
+        cout << "Aux Next Has no value" << "\n";
+    }
+}
+
+void Lista::contemplate_aux(){
+    Nodo* dummy = aux;
+
+    while (dummy) {
+        cout << dummy->valor << "\n";
+        dummy = dummy->siguiente;
     }
 }
 

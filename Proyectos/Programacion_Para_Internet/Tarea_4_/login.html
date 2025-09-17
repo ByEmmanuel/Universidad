@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Instagram Login</title>
+    <style>
+        body {
+            background-color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        table {
+            border-spacing: 40px;
+        }
+        .caja-login {
+            border: 1px solid #dbdbdb;
+            padding: 30px;
+            text-align: center;
+            width: 300px;
+            background: #fff;
+        }
+        .titulo-app {
+            font-size: 32px;
+            font-weight: normal;
+            margin-bottom: 20px;
+        }
+        .campo-texto {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #dbdbdb;
+            border-radius: 3px;
+            background: #fafafa;
+        }
+        .boton-entrar {
+            width: 100%;
+            padding: 10px;
+            background: #3897f0;
+            border: none;
+            border-radius: 3px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .boton-entrar:hover {
+            background: #318ce7;
+        }
+        .texto-extra {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .texto-extra a {
+            color: #385185;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .lado-imagen img {
+            max-width: 350px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <tr>
+            <td class="lado-imagen">
+                <img src="./foto_insta.png" alt="Imagen Instagram">
+            </td>
+            <td>
+
+                <div class="caja-login">
+                    <h1 class="titulo-app">Instagran</h1>
+
+                    <input type="text" class="campo-texto" placeholder="Teléfono, usuario o correo electrónico">
+
+                    <input type="password" class="campo-texto" placeholder="Contraseña">
+
+                    <button class="boton-entrar">Entrar</button>
+                    
+                    <div class="texto-extra">
+                        <p><a href="#">Iniciar sesión con Facebook</a></p>
+                        <p><a href="#">¿Has olvidado la contraseña?</a></p>
+                        <p>¿No tienes una cuenta? <a href="#">Regístrate</a></p>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
