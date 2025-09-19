@@ -29,6 +29,10 @@ public:
     void previous();
     void next();
     int size();
+    void print_tail_to_head();
+    void print_head_to_tail();
+    void print();
+    //void print_to_head(Nodo* nodo);
 
 };
 

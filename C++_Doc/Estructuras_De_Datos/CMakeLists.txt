@@ -27,11 +27,11 @@ add_executable(Estructuras_De_Datos
         Programa_02_2/Alumno.h
 ]]
 
-        Programa_3/Lista.cpp
+        #[[Programa_3/Lista.cpp
         Programa_3/Lista.h
         Programa_3/Nodo.cpp
         Programa_3/Lista.h
-        Programa_3/main.cpp
+        Programa_3/main.cpp]]
 
 
 )
