@@ -8,15 +8,15 @@ Nodo::Nodo(){
 
 }
 
-Nodo::Nodo(int tipo_dato){
+Nodo::Nodo(Alumno* tipo_dato){
     this->tipo_dato = tipo_dato;
 }
 
-Nodo::Nodo(int tipo_dato, Nodo* siguiente){
+Nodo::Nodo(Alumno* tipo_dato, Nodo* siguiente){
     this->tipo_dato = tipo_dato;
     this->siguiente = siguiente;
 }
 
-int Nodo::get_tipoDato_actual(){
+Alumno* Nodo::get_tipoDato_actual(){
     return this->tipo_dato;
 };

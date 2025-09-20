@@ -9,6 +9,8 @@ add_executable(Estructuras_De_Datos
         Programa_3/Nodo.cpp
         Programa_3/Nodo.h
         Programa_3/main.cpp
+        Programa_3/Alumno.cpp
+        Programa_3/Alumno.h
         #[[
                 Programa_1_/main.cpp
                 Programa_1_/Gato.cpp

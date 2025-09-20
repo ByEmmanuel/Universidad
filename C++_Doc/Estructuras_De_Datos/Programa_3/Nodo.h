@@ -5,20 +5,20 @@
 #ifndef NODO_H
 #define NODO_H
 
-
+#include "Alumno.h"
 
 class Nodo {
 public:
     Nodo* siguiente;
     Nodo* anterior;
-    int tipo_dato;
+    Alumno* tipo_dato;
     Nodo();
-    Nodo(int tipo_dato);
-    Nodo(int tipo_dato, Nodo* siguiente);
+    Nodo(Alumno* tipo_dato);
+    Nodo(Alumno* tipo_dato, Nodo* siguiente);
 
     /*Nodo* get_siguiente();
     Nodo* get_anterior();*/
-    int get_tipoDato_actual();
+    Alumno* get_tipoDato_actual();
 };
 
 
