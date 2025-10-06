@@ -3,47 +3,42 @@
 //
 
 #include "BubbleSort.h"
+#include <iostream>
 
 // el metodo bubbleSort debe estar inclouido en la propia TDA
 
 // aqui ya cayo en el caso de que es menor
-void BubbleSort::swap(Nodo* atras, Nodo* adelante){
+void BubbleSort::swap(Nodo* actual, Nodo* adelante){
+    // el actual se va ir para arriba ->
+    // y el de adelante = tipo de dato actual
+    int dato_adelante = adelante->get_tipoDato();
+    //int dato_actual = actual->get_tipoDato();
 
-    if (atras->anterior){
-        //el de atras es mayor que el de adelante y tenemos que hacer un swap
-
-
-        atras->anterior->siguiente = adelante;
-        adelante->anterior = atras->anterior;
-        atras->anterior = adelante;
-        atras->siguiente = adelante->siguiente;
-        adelante->siguiente = atras;
-        if (adelante->siguiente){
-            adelante->siguiente->anterior = atras;
-        }
-        //adelante->siguiente = atras
-    }else{
-        // algo
-    }
+    adelante->set_tipoDato(actual->get_tipoDato());
+    actual->set_tipoDato(dato_adelante);
 }
 
 void BubbleSort::sort(ListaDobleLigada* lista){
     int size_list = lista->size();
     int a = 0;
-    Nodo* aux = lista->head;
 
     // si auxiliar tiene parte siguiente ( hay almenos 2 elementos )
-    if (aux->siguiente){
-        Nodo* aux_Adelantado = aux->siguiente;
-        for (int i = 0; i < size_list; i++){
-            while (aux_Adelantado){
-                if (aux->get_tipoDato_actual() >= aux_Adelantado->get_tipoDato_actual()){
+    if (size_list > 1) {
+        for (int i = 0; i < size_list; i++) {
+            Nodo* aux = lista->head;
+            while (aux->siguiente) {
+                // si es mayor el tipo de dato actual lo va a mandar para atras ->
+                if (aux->get_tipoDato() > aux->siguiente->get_tipoDato()) {
                     // swap
-                    swap(aux, aux_Adelantado);
+                    // actual = 10 , sig = 9
+                    //swap(aux, aux->siguiente);
+                    int actual = aux->get_tipoDato();
+                    aux->set_tipoDato(aux->siguiente->get_tipoDato());
+                    aux->siguiente->set_tipoDato(actual);
                 }
-                aux_Adelantado = aux_Adelantado->siguiente;
+                aux = aux->siguiente;
+                std::cout << "si " << std::endl;
             }
-            aux = aux->siguiente;
         }
     }
 

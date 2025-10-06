@@ -7,6 +7,7 @@
 #include "Alumno.h"
 #include <iostream>
 #include <string>
+#include "../BubbleSort/BubbleSort.h"
 
 using namespace std;
 
@@ -31,6 +32,12 @@ int main(){
 
     lista->print();
 
+    BubbleSort* bubble = new BubbleSort;
+    bubble->sort(lista);
+
+    cout << "Burbuja" << endl;
+
+    lista->print_head_to_tail();
 
 
 }

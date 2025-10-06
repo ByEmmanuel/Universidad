@@ -72,11 +72,11 @@ void ListaDobleLigada::insert_at(int posicion, Nodo* nodo){
 
 
     if (posicion == 0){
-        push_top(nodo->get_tipoDato_actual());
+        push_top(nodo->get_tipoDato());
         return;
     }
     if (posicion == tamaño_lista){
-        push_bottom(nodo->get_tipoDato_actual());
+        push_bottom(nodo->get_tipoDato());
         return;
     }
     if (posicion > tamaño_lista){
@@ -237,22 +237,22 @@ bool ListaDobleLigada::is_empty(){
 }
 
 void ListaDobleLigada::top(){
-    cout << "Top: " << head->get_tipoDato_actual() << endl;
+    cout << "Top: " << head->get_tipoDato() << endl;
 }
 
 void ListaDobleLigada::last(){
-    cout << "Top: " << tail->get_tipoDato_actual() << endl;
+    cout << "Top: " << tail->get_tipoDato() << endl;
 }
 
 void ListaDobleLigada::previous(){
     if (tail->anterior)
-    cout << "Previous: " << tail->anterior->get_tipoDato_actual() << endl;
+    cout << "Previous: " << tail->anterior->get_tipoDato() << endl;
 
 }
 
 void ListaDobleLigada::next(){
     if (head->siguiente)
-        cout << "Next: " << head->siguiente->get_tipoDato_actual() << endl;
+        cout << "Next: " << head->siguiente->get_tipoDato() << endl;
 
 }
 
@@ -271,7 +271,7 @@ void ListaDobleLigada::print_tail_to_head(){
     Nodo* tmp = tail;
     cout << "t" << endl;
     while (tmp){
-        cout << tmp->get_tipoDato_actual() << endl;
+        cout << tmp->get_tipoDato() << endl;
         tmp = tmp->anterior;
     }
     cout << "h" << endl;
@@ -281,7 +281,7 @@ void ListaDobleLigada::print_head_to_tail(){
     Nodo* tmp = head;
     cout << "h" << endl;
     while (tmp){
-        cout << tmp->get_tipoDato_actual() << endl;
+        cout << tmp->get_tipoDato() << endl;
         tmp = tmp->siguiente;
     }
     cout << "t" << endl;
@@ -291,7 +291,7 @@ void ListaDobleLigada::print_head_to_tail(){
 void print_to_head(Nodo* nodo ){
     if (nodo == nullptr) return;
     print_to_head(nodo->anterior);
-    cout << nodo->get_tipoDato_actual() << endl;
+    cout << nodo->get_tipoDato() << endl;
 }
 
 void ListaDobleLigada::print(){

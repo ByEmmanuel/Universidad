@@ -63,6 +63,7 @@ add_executable(Estructuras_De_Datos
         Merge_Sort/ByEmmanuel/MergeSort.h
         ]]
 
+        #[[
         Programa_5_/Lista/Alumno.cpp
         Programa_5_/Lista/Alumno.h
         Programa_5_/Lista/Lista.cpp
@@ -73,5 +74,8 @@ add_executable(Estructuras_De_Datos
         Programa_5_/Lista/
         Programa_5_/BubbleSort/BubbleSort.cpp
         Programa_5_/BubbleSort/BubbleSort.h
+        ]]
+        Practica/
+        Practica/main.cpp
 
 )

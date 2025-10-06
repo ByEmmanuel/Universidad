@@ -18,7 +18,8 @@ public:
 
     /*Nodo* get_siguiente();
     Nodo* get_anterior();*/
-    int get_tipoDato_actual();
+    int get_tipoDato();
+    void set_tipoDato(int dato);
 };
 
 

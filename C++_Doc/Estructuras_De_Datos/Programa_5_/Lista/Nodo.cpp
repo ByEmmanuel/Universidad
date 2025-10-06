@@ -17,6 +17,10 @@ Nodo::Nodo(int tipo_dato, Nodo* siguiente){
     this->siguiente = siguiente;
 }
 
-int Nodo::get_tipoDato_actual(){
+int Nodo::get_tipoDato(){
     return this->tipo_dato;
+};
+
+void Nodo::set_tipoDato(int dato){
+    this->tipo_dato = dato;
 };
