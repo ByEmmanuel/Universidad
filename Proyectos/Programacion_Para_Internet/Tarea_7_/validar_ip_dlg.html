@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Ejemplo</title>
+<script type="text/javascript" src="jquery/jquery-3.6.3.min.js"></script>
+<style>
+.error {
+    color: #FF0000;
+    border: 1px solid red;
+}
+</style>
+</head>
+<body>
+<br/>
+<form action="validar_ip.php" id="miformulario" method="post">
+    <label for="idip">IP:</label>
+    <input type="text" id="idip" name="ip"><br/><br/>
+
+    <label for="idrfc">RFC:</label>
+    <input type="text" id="idrfc" name="rfc"><br/><br/>
+
+    <label for="idcorreo">Correo electrónico:</label>
+    <input type="text" id="idcorreo" name="correo"><br/><br/>
+
+    <label for="idtel">Teléfono (10 dígitos):</label>
+    <input type="text" id="idtel" name="telefono"><br/><br/>
+
+    <input type="submit" value="Enviar">
+</form>
+
+<script>
+$(document).ready(function() {
+    $('#miformulario').submit(function(e) {
+        // Obtener valores
+        var ip = $('#idip').val().trim();
+        var rfc = $('#idrfc').val().trim().toUpperCase();
+        var correo = $('#idcorreo').val().trim();
+        var tel = $('#idtel').val().trim();
+
+        // Expresiones regulares
+        var expParaIp = /^((([0-9])|([1-9][0-9])|(1[0-9][0-9])|(2[0-4][0-9])|(25[0-5]))\.){3}(([0-9])|([1-9][0-9])|(1[0-9][0-9])|(2[0-4][0-9])|(25[0-5]))$/;
+        var expParaRFC = /^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$/;
+        var expParaCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        var expParaTel = /^\d{10}$/;
+
+        // Validación IP
+        if (!expParaIp.test(ip)) {
+            e.preventDefault();
+            alert("IP inválida");
+            $('#idip').addClass("error");
+        } else {
+            $('#idip').removeClass("error");
+        }
+
+        // Validación RFC
+        if (!expParaRFC.test(rfc)) {
+            e.preventDefault();
+            alert("RFC inválido (Ejemplo válido: ABCD001122ABC)");
+            $('#idrfc').addClass("error");
+        } else {
+            $('#idrfc').removeClass("error");
+        }
+
+        // Validación correo
+        if (!expParaCorreo.test(correo)) {
+            e.preventDefault();
+            alert("Correo electrónico inválido");
+            $('#idcorreo').addClass("error");
+        } else {
+            $('#idcorreo').removeClass("error");
+        }
+
+        if (!expParaTel.test(tel)) {
+            e.preventDefault();
+            alert("Teléfono inválido (deben ser 10 dígitos)");
+            $('#idtel').addClass("error");
+        } else {
+            $('#idtel').removeClass("error");
+        }
+    });
+});
+</script>
+</body>
+</html>

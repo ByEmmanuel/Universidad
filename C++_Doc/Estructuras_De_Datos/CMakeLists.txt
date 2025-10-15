@@ -75,7 +75,21 @@ add_executable(Estructuras_De_Datos
         Programa_5_/BubbleSort/BubbleSort.cpp
         Programa_5_/BubbleSort/BubbleSort.h
         ]]
-        Practica/
+        #[[Practica/
         Practica/main.cpp
+        Repaso_1er_Examen/Nodo.cpp
+        Repaso_1er_Examen/Nodo.h]]
+
+        #[[
+        Repaso_1er_Examen/Lista.cpp
+        Repaso_1er_Examen/main.cpp
+        Repaso_1er_Examen/Nodo.cpp
+        ]]
+
+        Arboles/main.cpp
+        Arboles/Nodo.cpp
+        Arboles/Nodo.h
+        Arboles/Arbol.cpp
+        Arboles/Arbol.h
 
 )
