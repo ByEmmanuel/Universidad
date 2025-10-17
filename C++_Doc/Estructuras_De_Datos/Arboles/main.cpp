@@ -17,17 +17,19 @@ void funNum(int i){
 int main(){
    Arbol* arbol = new Arbol();
 
-   arbol->insertar(1);
-    arbol->insertar(5);
-   arbol->insertar(8);
-   arbol->insertar(78);
-   arbol->insertar(345);
-   arbol->insertar(2);
-   arbol->insertar(23);
-   arbol->insertar(124);
-   arbol->insertar(34);
-   arbol->insertar(56);
-   arbol->insertar(45);
+   arbol->insertar(1, arbol->raiz);
+    arbol->insertar(5, arbol->raiz);
+   arbol->insertar(8, arbol->raiz);
+   arbol->insertar(78, arbol->raiz);
+   arbol->insertar(345, arbol->raiz);
+   arbol->insertar(2, arbol->raiz);
+   arbol->insertar(23, arbol->raiz);
+   arbol->insertar(124, arbol->raiz);
+   arbol->insertar(34, arbol->raiz);
+   arbol->insertar(56, arbol->raiz);
+   arbol->insertar(45, arbol->raiz);
+    arbol->insertar(0, arbol->raiz);
+    arbol->insertar(7, arbol->raiz);
 
    arbol->mostrar(arbol->raiz);
 

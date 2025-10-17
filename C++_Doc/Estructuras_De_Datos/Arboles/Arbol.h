@@ -10,7 +10,8 @@ class Arbol
         Arbol();
         Nodo* raiz;
         // esto inserta un nodo -> no en entero
-        void insertar(Nodo* nodo);
+        //void insertar(Nodo* nodo);
+        void insertar(int valor, Nodo* raiz);
         void insertar(int valor);
         void mostrar(Nodo* raiz_sub_arbol);
         virtual ~Arbol();

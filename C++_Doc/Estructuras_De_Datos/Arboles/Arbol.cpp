@@ -13,6 +13,30 @@ void Arbol::mostrar(Nodo* raiz_sub_arbol){
 
 }
 
+void Arbol::insertar(int valor, Nodo* aux){
+	Nodo* tmp = new Nodo(valor);
+
+	if (raiz == nullptr){
+		// crear el arbol
+		this->raiz = tmp;
+	}else{
+		if (valor < aux->valor){
+			if (aux->izq == nullptr){
+				// crear la parte izq
+				aux->izq = tmp;
+			}else{
+				insertar(valor, aux->izq);
+			}
+		}else{
+			if (aux->der == nullptr){
+				// insertar en la derecha
+				aux->der = tmp;
+			}else{
+				insertar(valor, aux->der);
+			}
+		}
+	}
+};
 
 void Arbol::insertar(int valor){
     Nodo* nodo = new Nodo(valor);
