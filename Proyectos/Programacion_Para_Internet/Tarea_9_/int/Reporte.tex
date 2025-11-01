@@ -1,0 +1,95 @@
+%************AVISO*************************************
+%***Hay que definir las variables siguientes:**********
+%***\elalumno linea 34
+%***\tituloPractica 
+%***\fecha   para cambiar fecha
+%***\codigoalm 
+
+%***
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath,cancel}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{cite}
+\usepackage{background}
+\backgroundsetup{
+    scale=0.2,
+    firstpage=True,
+    angle=0,
+    opacity=1,
+    contents=   {\begin{tikzpicture}[remember picture, overlay]
+                    \node at ([xshift=45cm,yshift=-67cm]current page text area.south)
+                    {\includegraphics{DrErasmoNombre.eps}};
+                \end{tikzpicture}}
+}
+
+
+
+
+%Cambiar nombre del alumno
+\newcommand{\elalumno}{Nombre del alumno}
+%Codigo del estudiante
+\newcommand{\codigoalm}{3022145744}
+\newcommand{\director}{Erasmo Gabriel Martínez Soltero}
+%Cambiar fecha 28 agosto 2017
+\newcommand{\fecha}{28 agosto 2017}
+%Cambiar Titulo de la practica
+\newcommand{\tituloPractica}{Título de la práctica}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% ----> Esto dejarlo igual
+\addtolength{\textheight}{90pt}
+
+
+
+\begin{document}
+\begin{center}
+%\vspace*{-3.5cm}
+  {\Large \textbf{UNIVERSIDAD DE GUADALAJARA}}\\
+  \begin{figure} [H]
+	\begin{center}
+  		\includegraphics[width=0.6\textwidth]{udgEPS}
+	\end{center}
+  \end{figure}
+  {\large \textbf{CENTRO UNIVERSITARIO DE CIENCIAS EXACTAS E INGENIERÍAS}}\\
+  \vspace{0.25cm}
+{\large \textbf{Inteligencia Artificial}}\\
+\vspace{0.25cm}
+\vspace{0.5cm}
+{\large Reporte de práctica} \vspace{1cm} \\
+
+\begin{tabular}{p{4cm}p{8cm}}
+Nombre del alumno: & \elalumno \\
+Código del alumno: & \codigoalm \\
+Profesor: & \director \\
+T\'\i tulo de la práctica: &
+``{\tituloPractica}'' \\
+Fecha: & \fecha
+\end{tabular}
+\end{center}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Inician con el contenido de la información 
+\section*{Introducción}
+
+En esta sección se hace una breve descripción del problema a resolver.
+
+\section*{Metodología}
+
+Se describe el método para resolver la problemática (el algoritmo a implementar) haciendo uso de herramientas como diagramas de flujo, pseudocódigo, etc.
+
+\section*{Resultados}
+
+En esta sección se muestran los resultados obtenidos así como los datos de entrada utilizados para la ejecución del programa; incluya también capturas de pantalla.
+
+\section*{Conclusiones}
+
+Se redactan las conclusiones sobre el algoritmo implementado, mencionando ventajas y desventajas. También se pueden hacer observaciones personales sobre la metodología o el problema que se resolvió.
+
+\section*{Referencias}
+Se enumeran las fuentes bibliográficas utilizadas para la realización de la práctica.
+
+\end{document}

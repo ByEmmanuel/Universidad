@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="text/javascript" src="../js/jquery-3.7.1.min.js"></script>
+    <title>Document</title>
+  </head>
+  <style>
+    .impar {
+      background-color: #dddddd;
+    }
+    .error {
+      background-color: #e835d0;
+      color: #fff000;
+    }
+    .campo {
+      background-color: #000000;
+      color: #ffffff;
+    }
+  </style>
+  <body>
+    <table>
+      <tr id="fila0">
+        <td id="0_0">a</td>
+        <td id="0_1">b</td>
+        <td id="0_2">c</td>
+        <td id="0_3">d</td>
+      </tr>
+
+      <tr id="fila1">
+        <td id="1_0">a</td>
+        <td id="1_1">b</td>
+        <td id="1_2">c</td>
+        <td id="1_3">d</td>
+      </tr>
+
+      <tr id="fila2">
+        <td id="2_0">a</td>
+        <td id="2_1">b</td>
+        <td id="2_2">c</td>
+        <td id="2_3">d</td>
+      </tr>
+
+      <tr id="fila3">
+        <td id="3_0">a</td>
+        <td id="3_1">b</td>
+        <td id="3_2">c</td>
+        <td id="3_3">d</td>
+      </tr>
+    </table>
+
+    <div>
+      <button onclick="muestra0_0()">muestra0_0</button>
+      <button onclick="cambiafila1()">cambiafila1</button>
+      <button onclick="cambiafila2()">cambiafila2</button>
+      <button onclick="resetfilas()">resetfilas</button>
+    </div>
+
+    <hr />
+    <select name="" id="selectFrutas">
+      <option value="" selected></option>
+      <option value="1">Fresa</option>
+      <option value="2">Papaya</option>
+      <option value="3">Melon</option>
+      <option value="4">Jicama</option>
+    </select>
+  </body>
+  <div>
+    <input
+      type="text"
+      name="new_opt_value"
+      placeholder="valor"
+      id="new_opt_value"
+    />
+    <input
+      type="text"
+      name="new_opt_dsc"
+      placeholder="Descripcion"
+      id="new_opt_dsc"
+    />
+    <button onclick="agregaopcion()">Agrega opcion al select</button>
+  </div>
+
+  <hr />
+  <input class="campo" type="text" name="" placeholder="Campo1" id="" />
+  <input class="campo" type="text" name="" placeholder="Campo2" id="" />
+  <input class="campo" type="text" name="" placeholder="Campo3" id="" />
+  <input class="campo" type="text" name="" placeholder="Campo4" id="" />
+  <input class="campo" type="text" name="" placeholder="Campo5" id="" />
+
+  <input
+    class="campo"
+    type="text"
+    name=""
+    placeholder="Campo6"
+    id="campoCalls"
+  />
+
+  <button onclick="poneHoli()">pone "holi" en los campos</button>
+  <button onclick="cambiarError()">pone un campo con la clase error</button>
+
+  <script>
+    function muestra0_0() {
+      var contenidoDe0_0 = $("#1_3").html();
+
+      alert(contenidoDe0_0);
+    }
+
+    function cambiafila1() {
+      $("#fila1").attr("class", "impar");
+    }
+
+    function cambiafila2() {
+      $("#fila2").attr("class", "impar");
+    }
+
+    function resetfilas() {
+      $("tr").attr("class", "");
+    }
+
+    function agregaopcion() {
+      var valor = $("#new_opt_value").val();
+      var dsc = $("#new_opt_dsc").val();
+
+      var opcionNueva = $("<option>", { value: valor, text: dsc });
+
+      $("#selectFrutas").append(opcionNueva);
+    }
+
+    function poneHoli() {
+      $(".campo").val("Holi");
+    }
+
+    function cambiarError() {
+      $("#campoCalls").attr("class", "error");
+      $("#campoCalls").focus();
+    }
+  </script>
+</html>

@@ -4,34 +4,46 @@
 
 using namespace std;
 /// crear funcion insertar
-void funNum(int i){
-    if (i < 1000000){
-        cout << i << ",";
-        funNum(i + 1);
-        cout << " " ;
-        funNum(i + 2);
-
-    }
-}
 
 int main(){
-   Arbol* arbol = new Arbol();
+    Arbol* arbol = new Arbol();
 
-   arbol->insertar(1, arbol->raiz);
-    arbol->insertar(5, arbol->raiz);
-   arbol->insertar(8, arbol->raiz);
-   arbol->insertar(78, arbol->raiz);
-   arbol->insertar(345, arbol->raiz);
-   arbol->insertar(2, arbol->raiz);
-   arbol->insertar(23, arbol->raiz);
-   arbol->insertar(124, arbol->raiz);
-   arbol->insertar(34, arbol->raiz);
-   arbol->insertar(56, arbol->raiz);
-   arbol->insertar(45, arbol->raiz);
-    arbol->insertar(0, arbol->raiz);
-    arbol->insertar(7, arbol->raiz);
+    arbol->insertar(1);
+    arbol->insertar(5);
+    arbol->insertar(8);
+    arbol->insertar(78);
+    arbol->insertar(345);
+    arbol->insertar(2);
+    arbol->insertar(23);
+    arbol->insertar(124);
+    arbol->insertar(34);
+    arbol->insertar(56);
+    arbol->insertar(0);
+    arbol->insertar(45);
+    arbol->insertar(7);
 
-   arbol->mostrar(arbol->raiz);
+    arbol->mostrar(arbol->raiz);
 
-       return 0;
+    cout << "SUmatoria" << endl;
+
+    int veces_i = 0;
+
+    cin >> veces_i;
+    int resultado = 0;
+    for (int i = 0; i <= veces_i; i++){
+        // sumar los n numeros de la entrada i
+        resultado+= i;
+    }
+    cout << "Resultado sumatoria: " << resultado << endl;
+
+    cout << "Sin ciclos " <<((veces_i)/2)*(veces_i+1) << endl;
+
+    char abecedario = 97;
+
+    for (int i = 0; i < 26; i++){
+        cout << (char)abecedario << endl;
+        abecedario++;
+    }
+
+    return 0;
 }

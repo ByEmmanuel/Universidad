@@ -1,0 +1,22 @@
+* {
+    margin: 0px;
+    padding: 0px;
+  }
+
+  .altura {
+    margin-left: 10px;
+    
+}
+
+  .campos {
+    background-color: #111111;
+    color: #ffffff;
+    width: 80%;
+    border-style: 1px, solid;
+  }
+  .label {
+    font-style: italic;
+  }
+  #peso {
+    color: green;
+  }

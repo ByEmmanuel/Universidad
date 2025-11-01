@@ -1,0 +1,61 @@
+#   1
+select usc_calificacion, usuario.usu_nombre
+from usuario_calificacion
+join usuario
+where usu_id = usc_usu_id_fk;
+
+#2
+select usc_ser_id_Fk, usuario.usu_nombre
+from usuario_calificacion
+join usuario
+where usu_id = usc_usu_id_fk;
+
+#serie id de luismiguel = 1
+#3
+select capitulo.cap_nombre
+from capitulo
+where cap_temp_id_fk = 1;
+
+#4
+select serie.ser_nombre, capitulo.cap_nombre
+from capitulo
+join serie
+where serie.serie.ser_id = serie.capitulo.cap_temp_id_fk;
+
+#5
+select usuario.usu_nombre, serie.ser_nombre, usuario_calificacion.usc_calificacion
+from usuario_calificacion
+join usuario on usc_usu_id_Fk = usu_id
+join serie on usc_ser_id_Fk = ser_id;
+
+#6
+select usuario.usu_nombre, serie.ser_nombre, usuario_calificacion.usc_calificacion
+from usuario_calificacion
+join usuario on usc_usu_id_Fk = usu_id
+join serie on usc_ser_id_Fk = ser_id
+where usc_calificacion > 4;
+
+#7 -> 7 , 8 y 9 no tienen calificacion
+select serie.ser_nombre, serie.ser_id
+from serie
+left join usuario_calificacion on serie.ser_id = usuario_calificacion.usc_ser_id_Fk
+where usuario_calificacion.usc_ser_id_Fk is null;
+
+#8
+select serie.ser_nombre, serie.ser_fecha_ini
+from serie
+where serie.serie.ser_fecha_ini < '2019-01-01';
+
+#9
+select serie.ser_nombre, serie.ser_fecha_fin
+from serie
+left join usuario_calificacion on serie.ser_id = usuario_calificacion.usc_ser_id_Fk
+where serie.ser_fecha_fin > '2000-01-01'
+and serie.ser_fecha_fin < '2021-01-01';
+
+#10
+select serie.ser_nombre as nombre_serie, count(capitulo.cap_id) as capitulos_serie
+from serie
+left join capitulo on serie.ser_id = capitulo.cap_temp_id_fk
+group by serie.ser_nombre
+order by serie.ser_nombre asc;

@@ -91,5 +91,6 @@ add_executable(Estructuras_De_Datos
         Arboles/Nodo.h
         Arboles/Arbol.cpp
         Arboles/Arbol.h
+        Diccionario_Morse/Diccionario_Morse.cpp
 
 )

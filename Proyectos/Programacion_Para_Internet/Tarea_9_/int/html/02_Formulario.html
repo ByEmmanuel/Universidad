@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>mi primer pagina web</title>
+  </head>
+  <body>
+    <h1>Elementos de formulario</h1>
+
+    <form action="holis.php" method="post">
+      <fieldset>
+        <label for="texto">Aqui va un texto</label>
+        <input
+          type="text"
+          name="ntexto"
+          id="texto"
+          placeholder="Ingresa un texto"
+        />
+      </fieldset>
+      <div>
+        <label for="area">Area</label>
+        <textarea name="area" id="area" cols="30" rows="10" ></textarea>
+      </div>
+      <div>
+        <label for="correo">Correo</label>
+        <input type="email" id="correo" />
+      </div>
+      <div>
+        <label for="Contraseña">Contraseña</label>
+        <input type="Contraseña" id="Contraseña" />
+      </div>
+      <div>
+        <input type="radio" name="genero" id="mujer" value="mujer" />
+        <label for=",mujer">Mujer</label>
+        <input type="radio" name="genero" id="hombre" value="hombre" />
+        <label for="hombre">Hombre</label>
+      </div>
+      <div>
+        <label for="seleccion">Seleccion</label>
+        <select name="pelis" id="selecccion">
+          <option value="1">up</option>
+          <option value="2">increibles</option>
+          <option value="3">Chuerk</option>
+        </select>
+      </div>
+      <div>
+        <label for=""
+        <!-- value es lo que va a recibir el servidor -->
+          <input name="ingre" type="checkbox" value="1" />piña</label
+        >
+        <label for=""
+          ><input name="ingre" type="checkbox" value="2" />champiñon</label
+        >
+        <label for=""
+          ><input name="ingre" type="checkbox" value="3" />jamon</label
+        >
+        <label for=""
+          ><input name="ingre" type="checkbox" value="4" />salami</label
+        >
+      </div>
+      <div>
+        <label for="color">color</label>
+        <input type="color" value="color" id="color" /></label
+        >
+      </div>
+      <div>
+        <label for="fecha">Fecha</label>
+        <input type="date" value="fecha" id="fecha" />fecha</label
+        >
+      </div>
+      <div>
+        <label for="time">time</label>
+        <input type="time" value="time" id="time" />time</label
+        >
+      </div>
+      <div>
+        <label for="oculto">hidden</label>
+        <input type="hidden" name="oculto" value="oculto" id="oculto" /></label
+        >
+      </div>
+      <div>
+        <label for="numero"></label>
+        <input type="number" name="number" id="number" /></label
+        >
+      </div>
+      <div>
+        <label for="rango">rango</label>
+        <input type="range" name="range" id="range" /></label
+        >
+      </div>
+      <div>
+        <label for="busqueda">busqueda</label>
+        <input type="search" name="search" id="search" /></label
+        >
+      </div>
+      <div>
+        <label for="resetear">resetear</label>
+        <input type="reset" name="reset" id="reset" /></label
+        >
+      </div>
+      <div>
+        <label for="progreso">progreso</label>
+        <progress max="1000" value="500" name="progreso" id="progreso"/>
+      </div>
+      <div>
+        <label for="link">link</label>
+        <input type="url" name="link" id="link"/>    
+    </div>
+    <div>
+      <label for="imagen">imagen</label>
+      <input type="image" src="../img/yorch.jpg" name="imagen" id="hora">
+    </div>
+
+
+
+      <input type="submit" value="enviar">
+      <input type="button" value="tell me why"/>
+    </form>
+  </body>
+</html>
