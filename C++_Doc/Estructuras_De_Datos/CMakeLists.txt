@@ -86,11 +86,19 @@ add_executable(Estructuras_De_Datos
         Repaso_1er_Examen/Nodo.cpp
         ]]
 
+        #[[
         Arboles/main.cpp
         Arboles/Nodo.cpp
         Arboles/Nodo.h
         Arboles/Arbol.cpp
         Arboles/Arbol.h
         Diccionario_Morse/Diccionario_Morse.cpp
+        ]]
+        Proyecto/Grafo.h
+        Proyecto/Nodo.tpp
+        Proyecto/Nodo.h
+        Proyecto/Lista.tpp
+        Proyecto/Lista.h
+        Proyecto/main.cpp
 
 )
