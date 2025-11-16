@@ -37,6 +37,8 @@ public:
     void imprimir_vertices();
     void imprimir_aristas(string vertice);
 
+    NodoVertice* get_vertices();
+
 };
 
 #endif GRAFO_H

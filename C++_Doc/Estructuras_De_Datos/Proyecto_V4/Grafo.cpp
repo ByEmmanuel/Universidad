@@ -217,4 +217,6 @@ void Grafo::imprimir_aristas(std::string vertice) {
     cout << endl;
 }
 
-
+NodoVertice* Grafo::get_vertices(){
+    return this->vertice_h;
+}

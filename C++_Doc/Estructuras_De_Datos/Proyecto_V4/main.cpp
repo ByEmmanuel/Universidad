@@ -1,5 +1,5 @@
 #include "Grafo.h"
-//#include "Prim.h"
+#include "Prim.h"
 #include <iostream>
 #include <string>
 
@@ -46,6 +46,37 @@ void Testeo(){
 
 
     grafo->imprimir_grafo();
+}
+
+void Testeo_Prim(){
+    Grafo* grafo = new Grafo();
+
+    grafo->insertar_vertice("A");
+    grafo->insertar_vertice("B");
+    grafo->insertar_vertice("C");
+    grafo->insertar_vertice("D");
+    grafo->insertar_vertice("E");
+    grafo->insertar_vertice("F");
+    grafo->insertar_vertice("G");
+
+    grafo->insertar_arista("A", "B", 10);
+    grafo->insertar_arista("A", "C", 1);
+    grafo->insertar_arista("B", "C", 2);
+    grafo->insertar_arista("C", "D", 3);
+    grafo->insertar_arista("B", "D", 5);
+    grafo->insertar_arista("D", "E", 4);
+    grafo->insertar_arista("C", "E", 8);
+    grafo->insertar_arista("E", "F", 6);
+    grafo->insertar_arista("F", "G", 7);
+    grafo->insertar_arista("A", "G", 9);
+
+    Prim* prim = new Prim();
+    prim->calcular(grafo, "A");
+    
+    
+    grafo->imprimir_grafo();
+    cout << "--------------- PRIM ---------------" << endl;
+    prim->imprimir_arbol();
 }
 
 int main() {
@@ -198,11 +229,9 @@ int main() {
                     } else if (!grafo->existe_vertice(origen)) {
                         cout << "\nError: El vertice '" << origen << "' no existe." << endl;
                     } else {
-                        /*
-                        Prim prim;
-                        prim.calcular(&grafo, origen);
-                        prim.imprimir_arbol();
-                        */
+                        Prim* prim = new Prim();
+                        prim->calcular(grafo, origen);
+                        prim->imprimir_arbol();
                     }
                 }
                 
@@ -211,6 +240,11 @@ int main() {
             }
             case 7:{
                 Testeo();
+                pausa();
+                break;
+            }
+            case 8:{
+                Testeo_Prim();
                 pausa();
                 break;
             }
