@@ -106,3 +106,6 @@ void ListaAristas::imprimir(){
 NodoArista* ListaAristas::get_head(){
     return this->head;
 }
+
+// esto debe existir aun que este vacio
+ListaAristas::~ListaAristas(){}

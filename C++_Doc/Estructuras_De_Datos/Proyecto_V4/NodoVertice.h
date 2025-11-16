@@ -4,6 +4,7 @@
 
 #include <string>
 #include "ListaAristas.h"
+#include "Sucursal.h"
 
 class NodoVertice{
 public:
@@ -12,9 +13,12 @@ public:
     ListaAristas* aristas;
     // nodo vertice sera la lista principal
     NodoVertice* sig;
+    // cada vertice tendra una sucursal
+    Sucursal* sucursal;
 
     NodoVertice();
     NodoVertice(std::string nombre);
+    NodoVertice(std::string nombre, Sucursal* sucursal);
     ~NodoVertice();
 };
 

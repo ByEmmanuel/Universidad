@@ -220,3 +220,43 @@ void Grafo::imprimir_aristas(std::string vertice) {
 NodoVertice* Grafo::get_vertices(){
     return this->vertice_h;
 }
+
+
+// REQUERIMIENTOS DEL PROYECTO 
+
+void Grafo::insertar_vertice_sucursal(std::string nombre, Sucursal* sucursal){
+    if(existe_vertice(nombre)){
+        cout << "El vertice " << nombre << " ya existe " << endl;
+        return;
+    }
+
+    NodoVertice* nuevo = new NodoVertice(nombre, sucursal);
+
+    if (vertice_h == nullptr){
+        this->vertice_h = nuevo;
+    }else{
+        NodoVertice* act = vertice_h;
+        while (act->sig){
+            act = act->sig;
+        }
+        act->sig = nuevo;
+    }
+    cantidad_vertices++;
+}
+
+Sucursal* Grafo::obtener_sucursal(std::string nombre){
+    NodoVertice* tmp = buscar_nodo_vertice(nombre);
+    if(tmp != nullptr){
+        return tmp->sucursal;
+    }
+    return nullptr;
+}
+
+void Grafo::imprimir_info_sucursal(std::string nombre){
+    Sucursal* sucursal = obtener_sucursal(nombre);
+    if(sucursal != nullptr){
+        sucursal->imprimir_info();
+    }else{
+        cout << "Sucursal no encontrada." << endl;
+    }
+}

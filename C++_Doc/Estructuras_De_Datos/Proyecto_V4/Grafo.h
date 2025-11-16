@@ -39,6 +39,10 @@ public:
 
     NodoVertice* get_vertices();
 
+    void insertar_vertice_sucursal(std::string nombre, Sucursal* sucursal);
+    Sucursal* obtener_sucursal(std::string nombre);
+    void imprimir_info_sucursal(std::string nombre);
+
 };
 
 #endif GRAFO_H

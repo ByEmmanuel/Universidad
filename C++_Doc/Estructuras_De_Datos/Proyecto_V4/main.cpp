@@ -20,7 +20,9 @@ void imprimir_menu() {
     cout << "4) Eliminar arista" << endl;
     cout << "5) Imprimir grafo" << endl;
     cout << "6) Arbol minimo (PRIM)" << endl;
-    cout << "7) Testeo - imprimir el grafo " << endl;
+    cout << "7) Agregar sucursal" << endl;
+    cout << "8) Ver info sucursal" << endl;
+    cout << "9) Testeo - imprimir el grafo " << endl;
     cout << "0) Salir" << endl;
     cout << "\nSelecciona una opcion: ";
 }
@@ -238,13 +240,104 @@ int main() {
                 pausa();
                 break;
             }
-            case 7:{
-                Testeo();
+            case 7: {
+                limpiar_pantalla();
+                cout << "\n--- AGREGAR SUCURSAL ---\n" << endl;
+                
+                string nombre, direccion, telefono, horario;
+                
+                cout << "Nombre de la sucursal: ";
+                getline(cin, nombre);
+                
+                cout << "Direccion: ";
+                getline(cin, direccion);
+                
+                cout << "Telefono: ";
+                getline(cin, telefono);
+                
+                cout << "Horario (ej: 08:00-20:00): ";
+                getline(cin, horario);
+                
+                if (nombre.empty() || direccion.empty() || telefono.empty() || horario.empty()) {
+                    cout << "\nError: Todos los campos son obligatorios." << endl;
+                } else {
+                    Sucursal* nueva_sucursal = new Sucursal(nombre, direccion, telefono, horario);
+                    grafo->insertar_vertice_sucursal(nombre, nueva_sucursal);
+                    cout << "\nSucursal '" << nombre << "' agregada correctamente." << endl;
+                }
+                
                 pausa();
                 break;
             }
-            case 8:{
-                Testeo_Prim();
+
+            case 8: {
+                limpiar_pantalla();
+                cout << "\n--- VER INFORMACION DE SUCURSAL ---\n" << endl;
+                
+                grafo->imprimir_vertices();
+                
+                string nombre;
+                cout << "Nombre de la sucursal: ";
+                getline(cin, nombre);
+                
+                if (!nombre.empty()) {
+                    grafo->imprimir_info_sucursal(nombre);
+                }
+                
+                pausa();
+                break;
+            }
+
+            case 9: {
+                limpiar_pantalla();
+                cout << "\n--- DATOS DE PRUEBA - PAQUETERIA ---\n" << endl;
+                
+                Sucursal* s1 = new Sucursal("CENTRO", "Calle Principal 100", "555-0001", "08:00-20:00");
+                Sucursal* s2 = new Sucursal("NORTE", "Avenida Norte 250", "555-0002", "08:00-20:00");
+                Sucursal* s3 = new Sucursal("SUR", "Calle Sur 150", "555-0003", "08:00-20:00");
+                Sucursal* s4 = new Sucursal("ESTE", "Carrera Este 300", "555-0004", "08:00-20:00");
+                Sucursal* s5 = new Sucursal("OESTE", "Avenida Oeste 200", "555-0005", "08:00-20:00");
+                Sucursal* s6 = new Sucursal("AEROPUERTO", "Ruta Aeropuerto KM 5", "555-0006", "06:00-22:00");
+                Sucursal* s7 = new Sucursal("PUERTO", "Paseo Puerto 500", "555-0007", "07:00-19:00");
+                Sucursal* s8 = new Sucursal("ZONA_INDUSTRIAL", "Poligono Industrial 10", "555-0008", "08:00-18:00");
+                
+                grafo->insertar_vertice_sucursal("CENTRO", s1);
+                grafo->insertar_vertice_sucursal("NORTE", s2);
+                grafo->insertar_vertice_sucursal("SUR", s3);
+                grafo->insertar_vertice_sucursal("ESTE", s4);
+                grafo->insertar_vertice_sucursal("OESTE", s5);
+                grafo->insertar_vertice_sucursal("AEROPUERTO", s6);
+                grafo->insertar_vertice_sucursal("PUERTO", s7);
+                grafo->insertar_vertice_sucursal("ZONA_INDUSTRIAL", s8);
+                
+                grafo->insertar_arista("CENTRO", "NORTE", 12);
+                grafo->insertar_arista("CENTRO", "SUR", 15);
+                grafo->insertar_arista("CENTRO", "ESTE", 18);
+                grafo->insertar_arista("CENTRO", "OESTE", 14);
+                
+                grafo->insertar_arista("NORTE", "AEROPUERTO", 25);
+                grafo->insertar_arista("NORTE", "ZONA_INDUSTRIAL", 22);
+                grafo->insertar_arista("NORTE", "ESTE", 20);
+                
+                grafo->insertar_arista("SUR", "PUERTO", 30);
+                grafo->insertar_arista("SUR", "OESTE", 16);
+                grafo->insertar_arista("SUR", "ZONA_INDUSTRIAL", 28);
+                
+                grafo->insertar_arista("ESTE", "AEROPUERTO", 28);
+                grafo->insertar_arista("ESTE", "ZONA_INDUSTRIAL", 24);
+                grafo->insertar_arista("ESTE", "PUERTO", 35);
+                
+                grafo->insertar_arista("OESTE", "PUERTO", 32);
+                grafo->insertar_arista("OESTE", "ZONA_INDUSTRIAL", 26);
+                grafo->insertar_arista("OESTE", "AEROPUERTO", 29);
+                
+                grafo->insertar_arista("AEROPUERTO", "ZONA_INDUSTRIAL", 30);
+                grafo->insertar_arista("AEROPUERTO", "PUERTO", 45);
+                
+                grafo->insertar_arista("PUERTO", "ZONA_INDUSTRIAL", 40);
+                
+                cout << "Datos de prueba cargados.\n" << endl;
+                grafo->imprimir_grafo();
                 pausa();
                 break;
             }
