@@ -17,11 +17,15 @@ int main() {
     grafo->insertar_vertice("E");
 
 
-    /*grafo->insertar_arista("A", "B", 10);
     grafo->insertar_arista("A", "B", 10);
-    grafo->insertar_arista("A", "B", 10);*/
+    grafo->insertar_arista("A", "B", 10);
+    grafo->insertar_arista("A", "B", 10);
 
 
+    cout << grafo->list_adj->lista_aristas[2]->get(0) << endl;
 
-    grafo->print_vertices();
+
+    //grafo->print_vertices();
+
+    grafo->print_all();
 }

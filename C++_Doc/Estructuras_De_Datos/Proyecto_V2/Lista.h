@@ -21,6 +21,7 @@ public:
     virtual void insert_at(int pos, Nodo* value);
     virtual void delete_at(int pos);
     virtual Nodo* search(std::string value);
+    int search_index(std::string value);
     virtual int size();
     virtual bool is_empty();
     virtual void print_all();

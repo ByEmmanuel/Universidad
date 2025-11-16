@@ -80,6 +80,17 @@ Nodo* Lista::search(string value){
     return nullptr;
 };
 
+int Lista::search_index(string value){
+    Nodo* tmp = head;
+    int contador = 0;
+    while (tmp){
+        if (tmp->vertice_num == value){
+            return contador;
+        }
+        tmp = tmp->sig;
+    }
+    return -1;
+};
 
 int Lista::size(){
     Nodo* tmp = head;

@@ -96,6 +96,7 @@ add_executable(Estructuras_De_Datos
         ]]
 
 
+       #[[
         Proyecto_V2/Grafo.cpp
         Proyecto_V2/Grafo.h
         Proyecto_V2/Lista.cpp
@@ -105,4 +106,18 @@ add_executable(Estructuras_De_Datos
         Proyecto_V2/main.cpp
         Proyecto_V2/Lista_vertices.cpp
         Proyecto_V2/Lista_vertices.h
+        ]]
+        Proyecto_V3/Nodo.cpp
+        Proyecto_V3/Nodo.h
+        Proyecto_V3/ListaEnlazada.cpp
+        Proyecto_V3/ListaEnlazada.h
+        Proyecto_V3/NodoArista.cpp
+        Proyecto_V3/NodoArista.h
+        Proyecto_V3/ListaAristas.cpp
+        Proyecto_V3/ListaAristas.h
+        Proyecto_V3/NodoVertice.cpp
+        Proyecto_V3/NodoVertice.h
+        Proyecto_V3/Grafo.cpp
+        Proyecto_V3/Grafo.h
+        Proyecto_V3/main.cpp
 )

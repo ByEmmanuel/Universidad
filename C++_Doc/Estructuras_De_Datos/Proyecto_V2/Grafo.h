@@ -19,10 +19,9 @@ public:
     ~Grafo();
 
     void insertar_vertice(const std::string& vertice);
-    void insertar_arista(string origen, string destino, int peso);
+    void insertar_arista(string origen, string& destino, int peso);
     void print_vertices();
-
-
+    void print_all();
 };
 
 #endif //GRAFO_H
