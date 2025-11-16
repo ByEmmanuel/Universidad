@@ -7,6 +7,7 @@
 
 using namespace std;
 
+/*
 ListaEnlazada::ListaEnlazada() : head(nullptr), tail(nullptr), cantidad(0) {}
 
 ListaEnlazada::~ListaEnlazada() {
@@ -118,3 +119,4 @@ void ListaEnlazada::imprimir() {
 Nodo* ListaEnlazada::obtener_cabeza() {
     return head;
 }
+*/

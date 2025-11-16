@@ -5,12 +5,12 @@
 
 class ListaEnlazada {
 private:
-    Nodo* head;
-    Nodo* tail;
+    /*Nodo* head;
+    Nodo* tail;*/
     int cantidad;
 
 public:
-    ListaEnlazada();
+    /*ListaEnlazada();
     ~ListaEnlazada();
     
     void insertar(std::string valor);
@@ -22,7 +22,7 @@ public:
     bool esta_vacia();
     void imprimir();
     
-    Nodo* obtener_cabeza();
+    Nodo* obtener_cabeza();*/
 };
 
 #endif // LISTAENLAZADA_H
