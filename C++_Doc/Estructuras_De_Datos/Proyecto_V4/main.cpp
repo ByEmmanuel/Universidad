@@ -23,6 +23,7 @@ void imprimir_menu() {
     cout << "7) Agregar sucursal" << endl;
     cout << "8) Ver info sucursal" << endl;
     cout << "9) Testeo - imprimir el grafo " << endl;
+    cout << "10) Testeo - testeo prim " << endl;
     cout << "0) Salir" << endl;
     cout << "\nSelecciona una opcion: ";
 }
@@ -338,6 +339,12 @@ int main() {
                 
                 cout << "Datos de prueba cargados.\n" << endl;
                 grafo->imprimir_grafo();
+                pausa();
+                break;
+            }
+            // hardcodear elementos para testear
+            case 10:{
+                Testeo_Prim();
                 pausa();
                 break;
             }
