@@ -31,7 +31,7 @@ int main(){
 
     lista->insert_at(4,4);
 
-    lista->print_all();
+    // lista->print_all();
     cout << "Tamaño: " << lista->size() << endl;
 
     std::vector<int>* list = new std::vector<int>;
@@ -48,9 +48,31 @@ int main(){
 
     // Grafo
 
-    Grafo<int>* grafo = new Grafo<int>();
-    grafo->insert("A", 10);
-    grafo->insert("A", 23);
+    /*Grafo<int>* grafo = new Grafo<int>();
+    grafo->insert_vertice("A");
+    grafo->insert_vertice("B");
+    grafo->insert_vertice("C");
+    grafo->insert_vertice("D");
+
+    grafo->insert_arista("A", "C", 10);
+    grafo->insert_arista("A", "B", 3);
+    grafo->insert_arista("C", "D", 1);*/
+
+
+    // este es mi grafo
+    Grafo<int>* grafo = new Grafo<int>;
+    grafo->insert_vertice("A");
+    grafo->insert_vertice("B");
+    grafo->insert_vertice("C");
+    grafo->insert_vertice("D");
+    grafo->insert_vertice("E");
+
+
+    grafo->insert_arista("A","B", 10);
+    grafo->insert_arista("B","C", 10);
+    grafo->insert_arista("D","C", 10);
+    grafo->insert_arista("A","E", 10);
+    grafo->insert_arista("B","D", 10);
 
 
 }

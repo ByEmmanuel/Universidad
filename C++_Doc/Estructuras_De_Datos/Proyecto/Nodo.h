@@ -5,13 +5,18 @@
 #ifndef NODO_H
 #define NODO_H
 
+#include "Lista.h"
+
 template <typename T>
 class Nodo{
 public:
+
     T valor;
     Nodo<T>* sig;
+
     Nodo() : valor(), sig(nullptr) {}
-    Nodo(T valor) : valor(valor), sig(nullptr) {}
+    Nodo(const T& valor) : valor(valor), sig(nullptr) {}
+    //Nodo(T valor) : valor(valor), sig(nullptr) {}
     Nodo(Nodo<T>* sig) : valor(), sig(sig) {}
     Nodo(Nodo<T>* sig, T valor) : valor(valor), sig(sig) {}
 

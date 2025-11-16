@@ -5,12 +5,16 @@
 #ifndef LISTA_H
 #define LISTA_H
 #include "Nodo.h"
+#include "string"
 
 
 template <typename T>
 class Lista {
     Nodo<T>* head;
     Nodo<T>* aux = head;
+    // cada lista tiene su propia lista
+    // cuidado con crear listas, crear solo las necesarias
+    Lista<T>* listaInterna;
 
 public:
 
@@ -22,6 +26,11 @@ public:
     int size();
     bool is_empty();
     void print_all();
+    Nodo<T>* get(int posicion);
+    T* get_list(int pos);
+    Nodo<T>* get(std::string posicion);
+
+
 
 };
 

@@ -94,11 +94,15 @@ add_executable(Estructuras_De_Datos
         Arboles/Arbol.h
         Diccionario_Morse/Diccionario_Morse.cpp
         ]]
-        Proyecto/Grafo.h
-        Proyecto/Nodo.tpp
-        Proyecto/Nodo.h
-        Proyecto/Lista.tpp
-        Proyecto/Lista.h
-        Proyecto/main.cpp
 
+
+        Proyecto_V2/Grafo.cpp
+        Proyecto_V2/Grafo.h
+        Proyecto_V2/Lista.cpp
+        Proyecto_V2/Lista.h
+        Proyecto_V2/Nodo.cpp
+        Proyecto_V2/Lista.h
+        Proyecto_V2/main.cpp
+        Proyecto_V2/Lista_vertices.cpp
+        Proyecto_V2/Lista_vertices.h
 )

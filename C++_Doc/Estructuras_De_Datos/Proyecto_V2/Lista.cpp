@@ -7,12 +7,12 @@
 
 using namespace std;
 
-template <typename T>
-Lista<T>::Lista(){};
 
-template <typename T>
-void Lista<T>::insert(T value){
-    Nodo<T>* tmp = new Nodo(value);
+Lista::Lista(){};
+
+
+void Lista::insert(Nodo* tmp){
+    //Nodo* tmp = new Nodo(value);
     if (head == nullptr){
         aux = tmp;
         head = aux;
@@ -23,10 +23,11 @@ void Lista<T>::insert(T value){
     }
 };
 
-template <typename T>
-void Lista<T>::insert(T value){
-    Nodo<T>* tmp = new Nodo(value);
 
+/*
+void Lista::insert(Nodo* tmp){
+    //Nodo* tmp = new Nodo(value);
+    
     if (head == nullptr){
         aux = tmp;
         head = aux;
@@ -35,11 +36,11 @@ void Lista<T>::insert(T value){
         aux->sig = tmp;
         aux = aux->sig;
     }
-};
+};*/
 
-template <typename T>
-void Lista<T>::insert_at(int pos, T value){
-    Nodo<T>* tmp = new Nodo(value);
+
+void Lista::insert_at(int pos, Nodo* tmp){
+    //Nodo* tmp = new Nodo(value);
     int tamaño = size();
     // insertar arriba ( top )
     if (pos <= 0){
@@ -50,7 +51,7 @@ void Lista<T>::insert_at(int pos, T value){
         aux = aux->sig;
     }else{  // en posicion
         int contador_aux = 0;
-        Nodo<T>* tmp_h = head;
+        Nodo* tmp_h = head;
         while (contador_aux < pos - 1){ // recorre hasta llegar al indice de la posicion indicada
             tmp_h = tmp_h->sig;
             contador_aux++;
@@ -62,16 +63,16 @@ void Lista<T>::insert_at(int pos, T value){
 
 };
 
-template <typename T>
-void Lista<T>::delete_at(int pos){
+
+void Lista::delete_at(int pos){
 
 };
 
-template <typename T>
-Nodo<T>* Lista<T>::search(T value){
-    Nodo<T>* tmp = head;
+
+Nodo* Lista::search(string value){
+    Nodo* tmp = head;
     while (tmp){
-        if (tmp == value || tmp->valor == value){
+        if (tmp->vertice_num == value){
             return tmp;
         }
         tmp = tmp->sig;
@@ -79,9 +80,9 @@ Nodo<T>* Lista<T>::search(T value){
     return nullptr;
 };
 
-template <typename T>
-int Lista<T>::size(){
-    Nodo<T>* tmp = head;
+
+int Lista::size(){
+    Nodo* tmp = head;
     int size = 0;
     while (tmp){
         size++;
@@ -90,23 +91,23 @@ int Lista<T>::size(){
     return size;
 };
 
-template <typename T>
-bool Lista<T>::is_empty(){
+
+bool Lista::is_empty(){
  return head ? true : false;
 };
 
-template <typename T>
-void Lista<T>::print_all(){
-    Nodo<T>* tmp = head;
+
+void Lista::print_all(){
+    Nodo* tmp = head;
     while (tmp != nullptr){
-        cout << tmp->valor << endl;
+        cout << tmp->vertice_num << endl;
         tmp = tmp->sig;
     }
 }
 
-template <typename T>
-Nodo<T>* Lista<T>::get(int posicion) {
-    Nodo<T>* tmp = head;
+
+Nodo* Lista::get(int posicion){
+    Nodo* tmp = head;
     int contador = 0;
 
     while (tmp) {
@@ -120,12 +121,12 @@ Nodo<T>* Lista<T>::get(int posicion) {
     return nullptr; // por si no existe la posición
 }
 
-template <typename T>
-Nodo<T>* Lista<T>::get(std::string posicion) {
-    Nodo<T>* tmp = head;
+
+Nodo* Lista::get(std::string posicion) {
+    Nodo* tmp = head;
 
     while (tmp) {
-        if (tmp->valor == posicion) {
+        if (tmp->vertice_num == posicion) {
             return tmp;
         }
         tmp = tmp->sig;
@@ -134,9 +135,10 @@ Nodo<T>* Lista<T>::get(std::string posicion) {
     return nullptr;
 }
 
-template <typename T>
-T* Lista<T>::get_list(int pos) {
-    Nodo<T>* tmp = head;
+
+/*
+T* Lista::get_list(int pos) {
+    Nodo* tmp = head;
     int contador = 0;
 
     while (tmp) {
@@ -148,4 +150,4 @@ T* Lista<T>::get_list(int pos) {
     }
 
     return nullptr;
-}
+}*/
