@@ -5,7 +5,7 @@ import java.util.*;
 
 class Lotes{
     private String nombre_programador = null;
-    private Map<String, Integer[]> procesos = new HashMap<>();
+    private List<Map<String, Integer[]>> procesos = new ArrayList<>();
     private int num_proceso = Math.toIntExact(Math.round(Math.random()) * 100);
 
     public Lotes(String nombre_programador, Vector<String> procesos) {
@@ -45,12 +45,15 @@ class Lotes{
         return num_proceso;
     }
 
-    public Map<String, Integer[]> getProcesos() {
+    /*public Map<String, Integer[]> getProcesos() {
         return procesos;
     }
 
     public void setProcesos(String proceso, Integer[] operaciones) {
         this.procesos.put(proceso, operaciones);
+    }*/
+    public void setProcesos(Map<String, Integer[]> map) {
+        this.procesos.add(map);
     }
 }
 
@@ -86,43 +89,50 @@ public class Programa_01 {
         print_operaciones();
         Scanner teclado = new Scanner(System.in);
 
-        String tmp = null;
+        String str_op = null;
         int num_operacion = 0;
-        HashMap<String, Integer[]> operaciones = new HashMap<>();
+        // setear todas las operaciones
+
+
+        int contador = 1;
+        Lotes lote = new Lotes();
+
         for(int i = 0; i < n; i++){
+            HashMap<String, Integer[]> operaciones = new HashMap<>();
+
             System.out.printf("Ingresa una operacion despues presiona enter \nNumero de Operacion: %d \n", num_operacion);
-            tmp = teclado.next();
+            str_op = teclado.next();
 
             // validacion para que sea una operacion valida
-            while (!tmp.contains("+") || !tmp.contains("-") || !tmp.contains("*") || !tmp.contains("/") || !tmp.contains("%") || !tmp.contains("^")){
+            while (!str_op.contains("+") || !str_op.contains("-") || !str_op.contains("*") || !str_op.contains("/") || !str_op.contains("%") || !str_op.contains("^")){
                 System.out.println("Ingresa una operacion valida");
-                tmp = teclado.next();
+                str_op = teclado.next();
             }
 
             // se puede cambiar a double
             //Integer a = null, b = null;
             Integer[] valores = new Integer[2];
             operadores(teclado, valores);
+
             System.out.printf("\n operadores = %d , %d", valores[0] , valores[1]);
+            operaciones.put(str_op, valores);
+            lote.setProcesos(operaciones);
 
-            operaciones.put(tmp, valores);
-
-            //opreaciones.add(tmp);
-            tmp = null;
-            num_operacion++;
-        }
-
-        int contador = 1;
-        Lotes lote = new Lotes();
-        for (Map.Entry<String, Integer[]> entrada : operaciones.entrySet()){
-            String op = entrada.getKey();
-            Integer[] val = entrada.getValue();
             if (contador % 4 == 0){
                 pila_ejecucion.add(lote);
                 lote = new Lotes();
             }
-            lote.setProcesos(op, val);
+
+            //opreaciones.add(tmp);
+            str_op = null;
+            num_operacion++;
             contador++;
+
+        }
+        // Guardar último lote si quedaron operaciones
+        // Después del for
+        if ((contador - 1) % 4 != 0) {  // Si no terminó justo en múltiplo de 4
+            pila_ejecucion.add(lote);
         }
 
     }
