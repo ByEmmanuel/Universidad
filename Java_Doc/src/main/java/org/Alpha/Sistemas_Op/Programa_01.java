@@ -4,7 +4,6 @@ import java.util.*;
 class Tiempo{
 
     private long inicio = 0;
-
     private long fin = 0;
 
     public void init(){
@@ -23,7 +22,6 @@ class Tiempo{
     public long calculateTime_milis(){
         return (long) ((fin - inicio)/ 1_000_000.0);
     }
-
 }
 
 
@@ -50,28 +48,27 @@ class Procesos{
         try{
             switch (operacion){
                 case ("+"):{
-                    System.out.printf("Operacion + : %d \n%d , %d \n", (valores[0] + valores[1]) , valores[0], valores[1]);
+                    System.out.printf("Operacion %d + %d = %d \n", valores[0], valores[1], (valores[0] + valores[1]) );
                     break;
                 }
                 case ("-"):{
-                    System.out.printf("Operacion - : %d \n%d , %d \n", (valores[0] - valores[1]) , valores[0], valores[1]);
+                    System.out.printf("Operacion %d - %d = %d \n",  valores[0], valores[1], (valores[0] - valores[1]) );
                     break;
                 }
                 case ("*"):{
-                    System.out.printf("Operacion * : %d \n%d , %d \n", (valores[0] * valores[1]) , valores[0], valores[1]);
+                    System.out.printf("Operacion %d * %d = %d \n", valores[0], valores[1], (valores[0] * valores[1]) );
                     break;
                 }
                 case ("/"):{
-                    System.out.printf("Operacion / : %d \n%d , %d \n", (valores[0] / valores[1]) , valores[0], valores[1]);
+                    System.out.printf("Operacion %d / %d = %d \n", valores[0], valores[1], (valores[0] / valores[1]) );
                     break;
                 }
                 case ("%"):{
-                    System.out.printf("Operacion %% : %d \n%d , %d \n", (valores[0] % valores[1]) , valores[0], valores[1]);
+                    System.out.printf("Operacion %d %% %d = %d \n", valores[0], valores[1], (valores[0] % valores[1]) );
                     break;
                 }
                 case ("^"):{
-                    double resul = Math.pow(valores[0], valores[1]);
-                    System.out.printf("Operacion ^ : %f \n%d , %d \n", resul, valores[0], valores[1]);
+                    System.out.printf("Operacion %d ^ %d = %f \n",  valores[0], valores[1], Math.pow(valores[0], valores[1]));
                     break;
                 }
             }
@@ -208,7 +205,7 @@ public class Programa_01 {
 
                 tiempo.end();
 
-                System.out.printf("Tiempo del proceso en nanoseg: %d" +
+                System.out.printf("\nTiempo del proceso en nanoseg: %d" +
                                 "\nTiempo del proceso en miliseg: %d" +
                                 "\nProcesos en el lote Restantes: %d " +
                                 "\n Tiempo estimado del proceso: %f \n",
