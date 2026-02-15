@@ -1,45 +1,117 @@
 package org.Alpha.Sistemas_Op;
 
 import java.util.*;
+class Tiempo{
 
+    private long inicio = 0;
 
-class Lotes{
-    private String nombre_programador = null;
-    // cada lote contiene una lista con 4 elementos
-    private List<Map<String, Integer[]>> procesos = new ArrayList<>();
-    private int num_proceso = Math.toIntExact(Math.round(Math.random()) * 100);
+    private long fin = 0;
 
-    public Lotes(String nombre_programador, Vector<String> procesos) {
-        this.nombre_programador = nombre_programador;
-        //this.procesos = procesos;
+    public void init(){
+        inicio = System.nanoTime();
     }
 
-    public Lotes() {}
-    // un lote contiene solo 4 procesos
+    public void end(){
+        fin = System.nanoTime();
 
-    public String getNombre_programador() {
-        return nombre_programador;
+    }
+
+    public long calculateTime_nano(){
+        return fin - inicio;
+    }
+
+    public long calculateTime_milis(){
+        return (long) ((fin - inicio)/ 1_000_000.0);
+    }
+
+}
+
+
+class Procesos{
+    private Map<String, Integer[]> lista_procesos = new HashMap<>();
+    private String nombre_programador = null;
+    private final long num_proceso = Math.round(Math.random()*10000);
+
+    public Procesos(String proceso, Integer[] operadores, String nombre_programador) {
+        this.lista_procesos.put(proceso, operadores);
+        this.nombre_programador = nombre_programador;
+    }
+
+    public Procesos(Map<String, Integer[]> lista_procesos) {
+        this.lista_procesos = lista_procesos;
+    }
+
+    public Map<String, Integer[]> getLista_procesos() {
+        return lista_procesos;
     }
 
     public void setNombre_programador(String nombre_programador) {
         this.nombre_programador = nombre_programador;
     }
 
-    public int getNum_proceso() {
+    public long getNum_proceso() {
         return num_proceso;
     }
 
-    public List<Map<String, Integer[]>> getProcesos(){
+    public void procesar(){
+        System.out.printf("\nProgramador %s: \n", nombre_programador);
+        Map.Entry<String, Integer[]> entrada = lista_procesos.entrySet().iterator().next();
+        String operacion = entrada.getKey();
+        Integer[] valores = entrada.getValue();
+
+        try{
+            switch (operacion){
+                case ("+"):{
+                    System.out.printf("Operacion + : %d \n%d , %d \n", (valores[0] + valores[1]) , valores[0], valores[1]);
+                    break;
+                }
+                case ("-"):{
+                    System.out.printf("Operacion - : %d \n%d , %d \n", (valores[0] - valores[1]) , valores[0], valores[1]);
+                    break;
+                }
+                case ("*"):{
+                    System.out.printf("Operacion * : %d \n%d , %d \n", (valores[0] * valores[1]) , valores[0], valores[1]);
+                    break;
+                }
+                case ("/"):{
+                    System.out.printf("Operacion / : %d \n%d , %d \n", (valores[0] / valores[1]) , valores[0], valores[1]);
+                    break;
+                }
+                case ("%"):{
+                    System.out.printf("Operacion %% : %d \n%d , %d \n", (valores[0] % valores[1]) , valores[0], valores[1]);
+                    break;
+                }
+                case ("^"):{
+                    double resul = Math.pow(valores[0], valores[1]);
+                    System.out.printf("Operacion ^ : %f \n%d , %d \n", resul, valores[0], valores[1]);
+                    break;
+                }
+            }
+        }catch (ArithmeticException e){
+            System.out.println("No se puede divir por 0, intenta de nuevo");
+        }
+
+    }
+}
+
+class Lotes{
+
+    // cada lote contiene una lista con 4 elementos
+    private List<Procesos> procesos = new ArrayList<>();
+
+    public Lotes() {}
+    // un lote contiene solo 4 procesos
+
+    public List<Procesos> getProcesosList(){
         return this.procesos;
     }
-    public void setProcesos(Map<String, Integer[]> map) {
-        this.procesos.add(map);
+    public void setProcesos(Procesos proceso) {
+        this.procesos.add(proceso);
     }
 }
 
 public class Programa_01 {
-    static Stack<Lotes> pila_ejecucion = new Stack<>();
-
+    static ArrayDeque<Lotes> pila_ejecucion = new ArrayDeque<>();
 
     static void print_operaciones(){
         String[] opciones = {"+","-","*","/","%","^"};
@@ -72,13 +144,14 @@ public class Programa_01 {
         int num_operacion = 0;
         // setear todas las operaciones
 
-
         int contador = 1;
-
-
         Lotes lote = new Lotes();
+
         for(int i = 0; i < n; i++){
-            HashMap<String, Integer[]> operaciones = new HashMap<>();
+            //HashMap<String, Integer[]> operaciones = new HashMap<>();
+            System.out.print("Ingrese Nombre programador: ");
+            String nombre_programador = null;
+            nombre_programador = teclado.next();
 
             System.out.printf("Ingresa una operacion despues presiona enter \nNumero de Operacion: %d \n", num_operacion);
             str_op = teclado.next();
@@ -95,19 +168,20 @@ public class Programa_01 {
             operadores(teclado, valores);
 
             System.out.printf("\n operadores = %d , %d  \n", valores[0] , valores[1]);
-            operaciones.put(str_op, valores);
-            lote.setProcesos(operaciones);
+            Procesos proceso = new Procesos(str_op, valores, nombre_programador);
+            //procesos.putProceso(str_op, valores);
+            //operaciones.put(str_op, valores);
+            lote.setProcesos(proceso);
 
-            if (contador % 4 == 0){
+            // por cuantos procesos contendra un lote
+            if (contador % 2 == 0){
                 pila_ejecucion.add(lote);
                 lote = new Lotes();
             }
 
             //opreaciones.add(tmp);
-            str_op = null;
             num_operacion++;
             contador++;
-
         }
         // Guardar último lote si quedaron operaciones
         // Después del for
@@ -117,60 +191,49 @@ public class Programa_01 {
     }
 
     static void ejecucion(){
-        int contador = 0;
+        //int contador = 0;
+        int contador_lotes = 1;
         for (Lotes l : pila_ejecucion){
-            if (contador > 4){contador = 0;}
-            List<Map<String, Integer[]>> operaciones = l.getProcesos();
-            System.out.printf("Ejecucion %d \n", l.getNum_proceso());
-            for (Map<String, Integer[]> mapa : operaciones){
-                Map.Entry<String, Integer[]> entrada = mapa.entrySet().iterator().next();
+            System.out.printf("\nLOTE N: %d \n", contador_lotes);
+            System.out.println("----------------------------------------------------------------");
+            contador_lotes++;
 
-                String operacion = entrada.getKey();
-                Integer[] valores = entrada.getValue();
+            //if (contador > 2){contador = 0;}
+            List<Procesos> operaciones = l.getProcesosList();
+
+            int contador_procesos = 1;
+            for (Procesos proceso : operaciones){
+                Tiempo tiempo = new Tiempo();
+                tiempo.init();
+
+                System.out.printf("En Ejecucion PID: %d \n", proceso.getNum_proceso());
+                proceso.procesar();
+                //proceso.get .entrySet().iterator().next();
 
                 //System.out.println(operacion + ": " + valores[0] + ", " + valores[1]);
 
-                //String operacion = l.getProcesos().;
-                //List<String> claves = new ArrayList<>(l.getProcesos().keySet());
+                //String operacion = l.getProcesosList().;
+                //List<String> claves = new ArrayList<>(l.getProcesosList().keySet());
                 //String string_unico_claves = map.entrySet(); // indice
-                try{
-                    switch (operacion){
-                        case ("+"):{
-                            System.out.printf("Operacion + : %d \n%d , %d \n", (valores[0] + valores[1]) , valores[0], valores[1]);
-                            break;
-                        }
-                        case ("-"):{
-                            System.out.printf("Operacion - : %d \n%d , %d \n", (valores[0] - valores[1]) , valores[0], valores[1]);
-                            break;
-                        }
-                        case ("*"):{
-                            System.out.printf("Operacion * : %d \n%d , %d \n", (valores[0] * valores[1]) , valores[0], valores[1]);
-                            break;
-                        }
-                        case ("/"):{
-                            System.out.printf("Operacion / : %d \n%d , %d \n", (valores[0] / valores[1]) , valores[0], valores[1]);
-                            break;
-                        }
-                        case ("%"):{
-                            System.out.printf("Operacion %% : %d \n%d , %d \n", (valores[0] % valores[1]) , valores[0], valores[1]);
-                            break;
-                        }
-                        case ("^"):{
-                            double resul = Math.pow(valores[0], valores[1]);
-                            System.out.printf("Operacion ^ : %f \n%d , %d \n", resul, valores[0], valores[1]);
-                            break;
-                        }
-                    }
-                }catch (ArithmeticException e){
-                    System.out.println("No se puede divir por 0, intenta de nuevo");
-                }
+
+                tiempo.end();
+
+                System.out.printf("Tiempo del proceso en nanoseg: %d" +
+                                "\nTiempo del proceso en miliseg: %d" +
+                                "\nProcesos en el lote Restantes: %d " +
+                                "\n Tiempo estimado del proceso: %f \n",
+                        tiempo.calculateTime_nano(),
+                        tiempo.calculateTime_milis(),
+                        (operaciones.size()-contador_procesos),
+                        Math.random()*10
+                );
+                System.out.println("----------------------------------------------------------------");
+                contador_procesos++;
             }
-            contador++;
+            pila_ejecucion.pop();
+            System.out.printf("\nLotes pendientes: %d \n", pila_ejecucion.size());
+            //contador++;
         }
-
-    }
-
-    static void tiempo(){
 
     }
 
@@ -179,6 +242,8 @@ public class Programa_01 {
         Scanner teclado = new Scanner(System.in);
         int procesos = 0;
 
+        Tiempo tiempo = new Tiempo();
+        tiempo.init();
         while (true){
             System.out.println("Introduce numero de procesos");
             try{
@@ -196,5 +261,14 @@ public class Programa_01 {
             }
         }
         teclado.close();
+        tiempo.end();
+        System.out.printf("Tiempo del programa en nanoseg: %d" +
+                        "\nTiempo del programa en miliseg: %d",
+                tiempo.calculateTime_nano(),
+                tiempo.calculateTime_milis());
+
+        // funcion para imprimir numeros random que simulara el PID del proceso
+        //System.out.println(Math.round(Math.random()*10000));
+
     }
 }
