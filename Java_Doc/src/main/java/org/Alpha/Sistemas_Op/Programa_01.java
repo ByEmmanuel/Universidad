@@ -37,18 +37,6 @@ class Procesos{
         this.nombre_programador = nombre_programador;
     }
 
-    public Procesos(Map<String, Integer[]> lista_procesos) {
-        this.lista_procesos = lista_procesos;
-    }
-
-    public Map<String, Integer[]> getLista_procesos() {
-        return lista_procesos;
-    }
-
-    public void setNombre_programador(String nombre_programador) {
-        this.nombre_programador = nombre_programador;
-    }
-
     public long getNum_proceso() {
         return num_proceso;
     }
@@ -111,6 +99,8 @@ class Lotes{
 }
 
 public class Programa_01 {
+
+
     static ArrayDeque<Lotes> pila_ejecucion = new ArrayDeque<>();
 
     static void print_operaciones(){
