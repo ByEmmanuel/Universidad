@@ -5,6 +5,7 @@ import java.util.*;
 
 class Lotes{
     private String nombre_programador = null;
+    // cada lote contiene una lista con 4 elementos
     private List<Map<String, Integer[]>> procesos = new ArrayList<>();
     private int num_proceso = Math.toIntExact(Math.round(Math.random()) * 100);
 
@@ -15,23 +16,6 @@ class Lotes{
 
     public Lotes() {}
     // un lote contiene solo 4 procesos
-
-    // suma y resta
-    public int suma(int a, int b){return a+b;}
-    public int  multiplicacion(int a, int b){return a * b;}
-    public double division(int a, int b){
-        try {
-            if (b == 0){
-                throw new RuntimeException();
-            };
-            return ((double) a / b);
-        }catch (RuntimeException e){
-            System.out.println("No se puede divir entre 0");
-            return 0;
-        }
-    }
-    public int residuo(int a, int b){return a % b;}
-    public double potencia(int a, int b){return Math.pow(a,b);}
 
     public String getNombre_programador() {
         return nombre_programador;
@@ -45,13 +29,9 @@ class Lotes{
         return num_proceso;
     }
 
-    /*public Map<String, Integer[]> getProcesos() {
-        return procesos;
+    public List<Map<String, Integer[]>> getProcesos(){
+        return this.procesos;
     }
-
-    public void setProcesos(String proceso, Integer[] operaciones) {
-        this.procesos.put(proceso, operaciones);
-    }*/
     public void setProcesos(Map<String, Integer[]> map) {
         this.procesos.add(map);
     }
@@ -70,11 +50,11 @@ public class Programa_01 {
 
     static void operadores(Scanner teclado, Integer[] valores){
         try {
-            if (valores[0] != null){
+            if (valores[0] == null){
                 System.out.println("Ingresa el valor de a");
                 valores[0] = teclado.nextInt();
             }
-            if (valores[1] != null){
+            if (valores[1] == null){
                 System.out.println("Ingresa el valor de b");
                 valores[1] = teclado.nextInt();
             }
@@ -85,9 +65,8 @@ public class Programa_01 {
     }
 
 
-    static void procesos(int n){
+    static void procesos(Scanner teclado,int n){
         print_operaciones();
-        Scanner teclado = new Scanner(System.in);
 
         String str_op = null;
         int num_operacion = 0;
@@ -95,8 +74,9 @@ public class Programa_01 {
 
 
         int contador = 1;
-        Lotes lote = new Lotes();
 
+
+        Lotes lote = new Lotes();
         for(int i = 0; i < n; i++){
             HashMap<String, Integer[]> operaciones = new HashMap<>();
 
@@ -104,7 +84,7 @@ public class Programa_01 {
             str_op = teclado.next();
 
             // validacion para que sea una operacion valida
-            while (!str_op.contains("+") || !str_op.contains("-") || !str_op.contains("*") || !str_op.contains("/") || !str_op.contains("%") || !str_op.contains("^")){
+            while (!str_op.contains("+") && !str_op.contains("-") && !str_op.contains("*") && !str_op.contains("/") && !str_op.contains("%") && !str_op.contains("^")){
                 System.out.println("Ingresa una operacion valida");
                 str_op = teclado.next();
             }
@@ -114,7 +94,7 @@ public class Programa_01 {
             Integer[] valores = new Integer[2];
             operadores(teclado, valores);
 
-            System.out.printf("\n operadores = %d , %d", valores[0] , valores[1]);
+            System.out.printf("\n operadores = %d , %d  \n", valores[0] , valores[1]);
             operaciones.put(str_op, valores);
             lote.setProcesos(operaciones);
 
@@ -134,24 +114,56 @@ public class Programa_01 {
         if ((contador - 1) % 4 != 0) {  // Si no terminó justo en múltiplo de 4
             pila_ejecucion.add(lote);
         }
-
     }
 
     static void ejecucion(){
         int contador = 0;
         for (Lotes l : pila_ejecucion){
             if (contador > 4){contador = 0;}
-            //String operacion = l.getProcesos().;
-            List<String> claves = new ArrayList<>(l.getProcesos().keySet());
-            String string_unico_claves = claves.get(contador); // indice
-            Integer[] valores = l.getProcesos().get(string_unico_claves);
-            switch (string_unico_claves){
-                case ("+"): l.suma();
-                case ("-"):
-                case ("*"):
-                case ("/"):
-                case ("%"):
-                case ("^"):
+            List<Map<String, Integer[]>> operaciones = l.getProcesos();
+            System.out.printf("Ejecucion %d \n", l.getNum_proceso());
+            for (Map<String, Integer[]> mapa : operaciones){
+                Map.Entry<String, Integer[]> entrada = mapa.entrySet().iterator().next();
+
+                String operacion = entrada.getKey();
+                Integer[] valores = entrada.getValue();
+
+                //System.out.println(operacion + ": " + valores[0] + ", " + valores[1]);
+
+                //String operacion = l.getProcesos().;
+                //List<String> claves = new ArrayList<>(l.getProcesos().keySet());
+                //String string_unico_claves = map.entrySet(); // indice
+                try{
+                    switch (operacion){
+                        case ("+"):{
+                            System.out.printf("Operacion + : %d \n%d , %d \n", (valores[0] + valores[1]) , valores[0], valores[1]);
+                            break;
+                        }
+                        case ("-"):{
+                            System.out.printf("Operacion - : %d \n%d , %d \n", (valores[0] - valores[1]) , valores[0], valores[1]);
+                            break;
+                        }
+                        case ("*"):{
+                            System.out.printf("Operacion * : %d \n%d , %d \n", (valores[0] * valores[1]) , valores[0], valores[1]);
+                            break;
+                        }
+                        case ("/"):{
+                            System.out.printf("Operacion / : %d \n%d , %d \n", (valores[0] / valores[1]) , valores[0], valores[1]);
+                            break;
+                        }
+                        case ("%"):{
+                            System.out.printf("Operacion %% : %d \n%d , %d \n", (valores[0] % valores[1]) , valores[0], valores[1]);
+                            break;
+                        }
+                        case ("^"):{
+                            double resul = Math.pow(valores[0], valores[1]);
+                            System.out.printf("Operacion ^ : %f \n%d , %d \n", resul, valores[0], valores[1]);
+                            break;
+                        }
+                    }
+                }catch (ArithmeticException e){
+                    System.out.println("No se puede divir por 0, intenta de nuevo");
+                }
             }
             contador++;
         }
@@ -172,13 +184,17 @@ public class Programa_01 {
             try{
                 procesos = teclado.nextInt();
                 if (procesos > 0){
-
+                    procesos(teclado, procesos);
+                    ejecucion();
+                    break;
+                }else{
+                    System.out.println("Ingresa un numero mayor a 0");
                 }
-            }catch (IllegalFormatConversionException e){
-                System.out.println("Ingresa un numero entero");
+            }catch (InputMismatchException e){
+                System.out.println("Ingresa un numero entero positivo");
+                teclado.nextLine();
             }
-
         }
-
+        teclado.close();
     }
 }
