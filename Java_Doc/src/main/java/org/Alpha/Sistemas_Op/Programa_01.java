@@ -25,17 +25,20 @@ class Tiempo{
 }
 
 
-class Procesos{
+class Proceso {
     private Map<String, Integer[]> lista_procesos = new HashMap<>();
     private String nombre_programador = null;
-    private final long num_proceso = Math.round(Math.random()*10000);
+    //private final long num_proceso = Math.round(Math.random()*10000);
 
-    public Procesos(String proceso, Integer[] operadores, String nombre_programador) {
+    private String num_proceso = null;
+    public Proceso(String proceso, Integer[] operadores, String nombre_programador) {
         this.lista_procesos.put(proceso, operadores);
         this.nombre_programador = nombre_programador;
     }
-
-    public long getNum_proceso() {
+    /*
+    *
+    * */
+    public String getNum_proceso() {
         return num_proceso;
     }
 
@@ -77,20 +80,24 @@ class Procesos{
         }
 
     }
+
+    public void setNum_proceso(String n){
+        this.num_proceso = n;
+    }
 }
 
 class Lotes{
 
     // cada lote contiene una lista con 4 elementos
-    private List<Procesos> procesos = new ArrayList<>();
+    private List<Proceso> procesos = new ArrayList<>();
 
     public Lotes() {}
     // un lote contiene solo 4 procesos
 
-    public List<Procesos> getProcesosList(){
+    public List<Proceso> getProcesosList(){
         return this.procesos;
     }
-    public void setProcesos(Procesos proceso) {
+    public void setProcesos(Proceso proceso) {
         this.procesos.add(proceso);
     }
 }
@@ -99,6 +106,7 @@ public class Programa_01 {
 
 
     static ArrayDeque<Lotes> pila_ejecucion = new ArrayDeque<>();
+    static ArrayList<String> id_procesos = new ArrayList<>();
 
     static void print_operaciones(){
         String[] opciones = {"+","-","*","/","%","^"};
@@ -136,11 +144,26 @@ public class Programa_01 {
 
         for(int i = 0; i < n; i++){
             //HashMap<String, Integer[]> operaciones = new HashMap<>();
-            System.out.print("Ingrese Nombre programador: ");
+            System.out.println("Ingrese Nombre programador: ");
             String nombre_programador = null;
             nombre_programador = teclado.next();
 
-            System.out.printf("Ingresa una operacion despues presiona enter \nNumero de Operacion: %d \n", num_operacion);
+            System.out.println("Ingrese Num proceso: ");
+            String num_proceso = teclado.next();
+            while (!num_proceso.matches("^[+]?\\d+$")){
+                System.out.println("Ingrese un numero valido");
+                num_proceso = teclado.next();
+            }
+            id_procesos.add(num_proceso);
+
+            for(Proceso proceso : lote.getProcesosList()){
+                while (proceso.getNum_proceso().equals(num_proceso) || !num_proceso.matches("^[+]?\\d+$")) {
+                    System.out.println("El numero que ingresaste ya existe; Ingresa otro");
+                    num_proceso = teclado.next();
+                }
+            }
+
+            System.out.printf("\nNumero de Operacion: %d \nIngresa una operacion despues presiona enter \n", num_operacion);
             str_op = teclado.next();
 
             // validacion para que sea una operacion valida
@@ -155,13 +178,26 @@ public class Programa_01 {
             operadores(teclado, valores);
 
             System.out.printf("\n operadores = %d , %d  \n", valores[0] , valores[1]);
-            Procesos proceso = new Procesos(str_op, valores, nombre_programador);
+            Proceso proceso = new Proceso(str_op, valores, nombre_programador);
+            proceso.setNum_proceso(num_proceso);
+
+            if (str_op.equals("/") || str_op.equals("%")) {
+                while(valores[1] == 0){
+                    valores[1] = null;
+                    System.out.println("No se puede dividir entre 0");
+                    // La opreacion nunca se estaba realizando porque en los condicionales esra que si valore[n] == null;
+                    // entonces NO era null y nunca pedia repetir el numero
+                    operadores(teclado,valores);
+                }
+            }
+
+
             //procesos.putProceso(str_op, valores);
             //operaciones.put(str_op, valores);
             lote.setProcesos(proceso);
 
             // por cuantos procesos contendra un lote
-            if (contador % 2 == 0){
+            if (contador % 5 == 0){
                 pila_ejecucion.add(lote);
                 lote = new Lotes();
             }
@@ -186,14 +222,14 @@ public class Programa_01 {
             contador_lotes++;
 
             //if (contador > 2){contador = 0;}
-            List<Procesos> operaciones = l.getProcesosList();
+            List<Proceso> operaciones = l.getProcesosList();
 
             int contador_procesos = 1;
-            for (Procesos proceso : operaciones){
+            for (Proceso proceso : operaciones){
                 Tiempo tiempo = new Tiempo();
                 tiempo.init();
 
-                System.out.printf("En Ejecucion PID: %d \n", proceso.getNum_proceso());
+                System.out.printf("En Ejecucion PID: %s \n", proceso.getNum_proceso());
                 proceso.procesar();
                 //proceso.get .entrySet().iterator().next();
 
