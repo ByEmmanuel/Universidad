@@ -1,4 +1,4 @@
-package org.Alpha.Sistemas_Op.Programa_02;
+//package org.Alpha.Sistemas_Op.Programa_02;
 
 /*
 * Programa 2. Simular el procesamiento por lotes con Multiprogramación.
@@ -160,13 +160,16 @@ public class Programa_02 {
         int procesoActual = 1;
 
         Lotes loteTerminado = new Lotes();
-        ArrayList<Procesos> procesosTerminados = new ArrayList<>();
 
-        for (Lotes l : colaLotes){
+        // for (Lotes l : colaLotes)
+        while (!colaLotes.isEmpty()){
+            Lotes loteActual = colaLotes.pop();
+            ArrayList<Procesos> procesosTerminados = new ArrayList<>();
+
             clearScreen();
             System.out.printf("\n>>>Lote N: %d \n", lotesActuales);
             int procesoLote = 1;
-            for(Procesos p : l.getListaProcesos()){
+            for(Procesos p : loteActual.getListaProcesos()){
 
                 // MUY IMPORTANTE AQUI; EL HILO PRINCIPAL TIENE QUE ESCUCHAR RESPUESTAS DEL USUARIO
                 synchronized (monitor){
@@ -187,8 +190,27 @@ public class Programa_02 {
                 //System.out.println(p.getResultado_operacion());
                 // proceso terminado
                 procesosTerminados.add(p);
-                imprimirProcesosDetalles(procesosTerminados);
+                //imprimirProcesosDetalles(procesosTerminados);
                 // imprimir lotes proximos
+
+
+                System.out.println("---------- LOTES ANTERIORES CONCLUIDOS ----------");
+                for (int i = 0; i < lotesCompletados.size(); i++ ){
+                    System.out.println("Lote #" + (i + 1));
+                    for (Procesos proConcluido : lotesCompletados.get(i).getListaProcesos()){
+                        System.out.printf(
+                                "PID: %d" +
+                                        "Operacion : %s" +
+                                        "Valor A: %d" +
+                                        "Valor B: %d" +
+                                        "Resultado : %s" +
+                                        "TME: %d",
+                                proConcluido.getPID(), proConcluido.getOperacion(),
+                                proConcluido.getValores()[0], proConcluido.getValores()[1],
+                                proConcluido.getResultado_operacion(), proConcluido.getTiempoMax());
+                    }
+                }
+
                 procesoLote++;
                 procesoActual++;
 
@@ -202,9 +224,11 @@ public class Programa_02 {
 
 
             // principio de simply linked list
+            /*
             ArrayDeque<Lotes> tmp = colaLotes;
             tmp.pop();
             colaLotes = tmp;
+            */
             lotesActuales++;
         }
     }

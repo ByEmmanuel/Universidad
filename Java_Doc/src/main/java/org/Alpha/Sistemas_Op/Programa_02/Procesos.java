@@ -1,4 +1,4 @@
-package org.Alpha.Sistemas_Op.Programa_02;
+//package org.Alpha.Sistemas_Op.Programa_02;
 
 public class Procesos implements Runnable{
 
