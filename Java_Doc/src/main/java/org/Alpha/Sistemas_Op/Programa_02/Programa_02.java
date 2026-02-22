@@ -8,7 +8,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Programa_02 {
+public class Programa_02{
     private static ArrayDeque<Lotes> colaLotes = new ArrayDeque<>();
     private static ArrayList<Lotes> lotesCompletados = new ArrayList<>();
     private static ArrayList<String> procesosCompletados = new ArrayList<>();
@@ -20,7 +20,6 @@ public class Programa_02 {
         Scanner teclado = new Scanner(System.in);
 
         int numProcesos;
-
 
         /*
         * LOGICA DEL SEGUNDO HILO
@@ -164,11 +163,14 @@ public class Programa_02 {
         // for (Lotes l : colaLotes)
         while (!colaLotes.isEmpty()){
             Lotes loteActual = colaLotes.pop();
+            // pendientes toda via no se usa
+            ArrayList<Procesos> pendientes = new ArrayList<>(loteActual.getListaProcesos());
             ArrayList<Procesos> procesosTerminados = new ArrayList<>();
-
-            clearScreen();
+    
             System.out.printf("\n>>>Lote N: %d \n", lotesActuales);
+
             int procesoLote = 1;
+            
             for(Procesos p : loteActual.getListaProcesos()){
 
                 // MUY IMPORTANTE AQUI; EL HILO PRINCIPAL TIENE QUE ESCUCHAR RESPUESTAS DEL USUARIO
@@ -185,42 +187,38 @@ public class Programa_02 {
                 }
 
                 //System.out.printf("\n> Procesos Totales N: %d \n", procesoActual);
-                System.out.printf("\n>Proceso en el lote N: %d \n", procesoLote);
+                System.out.printf("\n>Proceso N:%d En el lote: %d \n", procesoLote, lotesActuales);
                 p.run();
                 //System.out.println(p.getResultado_operacion());
                 // proceso terminado
                 procesosTerminados.add(p);
                 //imprimirProcesosDetalles(procesosTerminados);
                 // imprimir lotes proximos
+                
 
+                // lote terminado
+                loteTerminado.setListaProcesos(procesosTerminados);
+                // reiniciar la lista sin perder el puntero
+                procesosTerminados = new ArrayList<>();
+                lotesCompletados.add(loteTerminado);
+                loteTerminado = new Lotes();
 
-                System.out.println("---------- LOTES ANTERIORES CONCLUIDOS ----------");
-                for (int i = 0; i < lotesCompletados.size(); i++ ){
-                    System.out.println("Lote #" + (i + 1));
-                    for (Procesos proConcluido : lotesCompletados.get(i).getListaProcesos()){
-                        System.out.printf(
-                                "PID: %d" +
-                                        "Operacion : %s" +
-                                        "Valor A: %d" +
-                                        "Valor B: %d" +
-                                        "Resultado : %s" +
-                                        "TME: %d",
-                                proConcluido.getPID(), proConcluido.getOperacion(),
-                                proConcluido.getValores()[0], proConcluido.getValores()[1],
-                                proConcluido.getResultado_operacion(), proConcluido.getTiempoMax());
-                    }
-                }
+                
+
+                // System.out.println("---------- LOTES ANTERIORES CONCLUIDOS ----------");
+                // for (int i = 0; i < lotesCompletados.size(); i++){
+                //     System.out.println("Lote   AS #" + (i + 1));
+                //     for (Procesos proConcluido : lotesCompletados.get(i).getListaProcesos()){
+                        
+                //     }
+                //     System.out.println("");
+                // }
 
                 procesoLote++;
                 procesoActual++;
+                
 
             }
-            // lote terminado
-            loteTerminado.setListaProcesos(procesosTerminados);
-            // reiniciar la lista sin perder el puntero
-            procesosTerminados = new ArrayList<>();
-            lotesCompletados.add(loteTerminado);
-            loteTerminado = new Lotes();
 
 
             // principio de simply linked list
@@ -248,7 +246,33 @@ public class Programa_02 {
                 j++;
             }
         }
-    };
+    }
+
+    static void pruebaImpresion(){
+        // while (!pendientes.isEmpty()) {
+        //         clearScreen();
+
+        //         if (!lotesCompletados.isEmpty()) {
+        //             System.out.println("---------- LOTES ANTERIORES CONCLUIDOS ----------");
+        //             for(int i = 0; i < lotesCompletados.size(); i++){
+        //                 System.out.println("Lote #" + (i + 1));
+        //                 for (Procesos pross : lotesCompletados.get(i).getListaProcesos()) {
+        //                     System.out.printf(
+        //                                 "\nPID: %d " +
+        //                                 "Operacion : %s " +
+        //                                 "Valor A: %d " +
+        //                                 "Valor B: %d " +
+        //                                 "Resultado : %s " +
+        //                                 "TME: %d \n",
+        //                         pross.getPID(), pross.getOperacion(),
+        //                         pross.getValores()[0], pross.getValores()[1],
+        //                         pross.getResultado_operacion(), pross.getTiempoMax());
+        //                 }
+        //             }
+
+        //         }
+        //     }
+    }
 
     public static void mostrarProcesosEnCola(){
         clearScreen();

@@ -77,6 +77,7 @@ public class Procesos implements Runnable{
             System.out.println("Ocurrio un problema con el delay del hilo actual ");
         }
         // Impresión solicitada
+        // esto no debe ir aqui 
         System.out.printf("PID: %d | Operacion: %s\n", PID, resultado_operacion);
     }
 
