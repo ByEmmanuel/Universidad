@@ -1,4 +1,4 @@
-//package org.Alpha.Sistemas_Op.Programa_02;
+package org.Alpha.Sistemas_Op.Programa_02;
 
 public class Procesos implements Runnable{
 
@@ -67,8 +67,14 @@ public class Procesos implements Runnable{
                     resultado_operacion = String.format("%d ^ %d = %d", valores[0], valores[1], (int) Math.pow(valores[0], valores[1]));
                     break;
             }
-        } catch (ArithmeticException e) {
+            int tiempoReal = 1400;
+            int tiempoTest = 800;
+            Thread.sleep((int) ( Math.random()  * tiempoTest ));
+
+        } catch (ArithmeticException ex) {
             resultado_operacion = "Error: División por 0";
+        }catch (InterruptedException e){
+            System.out.println("Ocurrio un problema con el delay del hilo actual ");
         }
         // Impresión solicitada
         System.out.printf("PID: %d | Operacion: %s\n", PID, resultado_operacion);
