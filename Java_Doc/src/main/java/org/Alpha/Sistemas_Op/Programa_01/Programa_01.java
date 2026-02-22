@@ -1,4 +1,4 @@
-//package org.Alpha.Sistemas_Op;
+package org.Alpha.Sistemas_Op.Programa_01;
 
 import java.util.*;
 
@@ -72,7 +72,7 @@ public class Programa_01 {
         Lotes lote = new Lotes();
 
         for (int i = 0; i < n; i++) {
-            System.out.printf("\n Registro de Proceso N: %d ", n+1);
+            System.out.printf("\n Registro de Proceso N: %d ", i+1);
             System.out.print("Nombre Usuario: ");
             String nombre = teclado.next();
 
@@ -191,6 +191,7 @@ public class Programa_01 {
                 nProcesos = teclado.nextInt();
                 if (nProcesos > 0) break;
             } catch (Exception e) {
+                System.out.println("Error");
                 teclado.next();
             }
         }
