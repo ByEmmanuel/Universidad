@@ -81,6 +81,38 @@ public class Procesos implements Runnable{
         //System.out.printf("PID: %d | Operacion: %s\n", PID, resultado_operacion);
     }
 
+    public void run(int opcionUsr) {
+        if (opcionUsr == 0) {
+            this.operacion = "Error";
+            return;
+        }
+        try {
+            switch (operacion) {
+                case "+": resultado_operacion = String.format("%d + %d = %d", valores[0], valores[1], (valores[0] + valores[1])); break;
+                case "-": resultado_operacion = String.format("%d - %d = %d", valores[0], valores[1], (valores[0] - valores[1])); break;
+                case "*": resultado_operacion = String.format("%d * %d = %d", valores[0], valores[1], (valores[0] * valores[1])); break;
+                case "/": resultado_operacion = String.format("%d / %d = %d", valores[0], valores[1], (valores[0] / valores[1])); break;
+                case "%": resultado_operacion = String.format("%d %% %d = %d", valores[0], valores[1], (valores[0] % valores[1])); break;
+                case "^":
+                    valores[0] = (int) Math.round(Math.sqrt(valores[0]));
+                    valores[1] = (int) Math.round(Math.sqrt(valores[1]));
+                    resultado_operacion = String.format("%d ^ %d = %d", valores[0], valores[1], (int) Math.pow(valores[0], valores[1]));
+                    break;
+            }
+            int tiempoReal = 1400;
+            int tiempoTest = 500;
+            Thread.sleep((int) ( Math.random()  * tiempoMax * 700 ));
+
+        } catch (ArithmeticException ex) {
+            resultado_operacion = "Error: División por 0";
+        }catch (InterruptedException e){
+            System.out.println("Ocurrio un problema con el delay del hilo actual ");
+        }
+        // Impresión solicitada
+        // esto no debe ir aqui 
+        //System.out.printf("PID: %d | Operacion: %s\n", PID, resultado_operacion);
+    }
+
     public String getOperacion() {
         return operacion;
     }
@@ -99,6 +131,10 @@ public class Procesos implements Runnable{
 
     public int getPID() {
         return PID;
+    }
+
+    public void setResultado_operacion(String res){
+        this.resultado_operacion = res;
     }
 
     public String getResultado_operacion() {

@@ -15,17 +15,14 @@ public class Programa_02{
 
     private static final Object monitor = new Object();
     private static volatile boolean pausa = false;
+    private static volatile boolean interrupcionIO = false;
+    private static volatile boolean errorProceso = false;
 
     public static void main(String[] args) {
         Scanner teclado = new Scanner(System.in);
 
         int numProcesos;
 
-        /*
-        * LOGICA DEL SEGUNDO HILO
-        * */
-
-        // comprobar si tiene que estar dentro del bucle para ser parte del hilo
         while (true){
             try {
                 System.out.println("Introduce numero de procesos: ");
@@ -35,10 +32,8 @@ public class Programa_02{
                 System.out.println("Introduce un numero valido de procesos");
                 teclado.next();
             }
-
         }
 
-        // limpiar buffer
         teclado.nextLine();
         llenarProcesos(numProcesos);
 
@@ -52,11 +47,8 @@ public class Programa_02{
                 System.exit(-1);
             }
         }
-        //System.out.println(numProcesos);
-
 
         Thread hiloTeclado = new Thread(() -> {
-           //Scanner scanner = new Scanner(System.in);
             System.out.println("Comandos: 'p' (Pausar) | 'c' (Continuar) | 'e' (Interrupcion I/O) | 'w' (Error)");
 
             while (true){
@@ -64,40 +56,37 @@ public class Programa_02{
                 switch (respuestaUsr){
                     case "p":
                         pausa = true;
-                        System.out.println("Pausa");
+                        System.out.println("Pausa solicitada...");
                         break;
                     case "c":
                         pausa = false;
-                        System.out.println("Continuar");
+                        System.out.println("Continuando...");
                         synchronized (monitor){
                             monitor.notify();
                         }
                         break;
                     case "e":
-                        System.out.println("Interrupcion");
+                        System.out.println("Interrupcion solicitada...");
+                        interrupcionIO = true;
                         break;
                     case "w":
-                        System.out.println("Error");
+                        System.out.println("Error provocado...");
+                        errorProceso = true;
                         break;
                     default:
-                        System.out.println("Opcion no valida:");
+                        System.out.println("Opcion no valida");
                         break;
                 }
             }
-
         });
 
         hiloTeclado.setDaemon(true);
         hiloTeclado.start();
 
-        // EJECUTAR PROCESOS UNICAMENTE CUANDO YA NO SE REQUIERA INTRODUCIR MAS
         ejecutarProcesos();
-
-
     }
 
     private static void llenarProcesos(int numProcesos){
-
         int contadorProcesos = 0;
         int numProcesosPorLote = 3;
 
@@ -106,32 +95,24 @@ public class Programa_02{
 
         int lotes = Math.floorDiv(numProcesos, numProcesosPorLote);
 
-        int procesosPares = lotes * numProcesosPorLote;
-
         for (int i = 0; i < lotes; i++) {
             for (int j = 0; j < numProcesosPorLote; j++) {
                 procesos.add(new Procesos());
-
                 clearScreen();
-
                 for (Procesos p : procesos){
                     System.out.printf("\nProceso N: %d || Tiempo estimado: %d || Operacion: %s || Valor A: %d || Valor B: %d",p.getPID(), p.getTiempoMax(), p.getOperacion(), p.getValores()[0], p.getValores()[1]);
                 }
-
-
                 try { Thread.sleep((int) ( Math.random()  * 700 )); } catch (InterruptedException e) { }
                 contadorProcesos++;
             }
             l.setListaProcesos(procesos);
             colaLotes.add(l);
-            // cambiar el puntero de datos
             l = new Lotes();
             procesos = new ArrayList<>();
         }
         mostrarProcesosEnCola();
 
         if (contadorProcesos < numProcesos){
-            // esto es menor que numProcesosPorLote
             procesos = new ArrayList<>();
             for (int i = contadorProcesos; i < numProcesos; i++) {
                 procesos.add(new Procesos());
@@ -140,7 +121,6 @@ public class Programa_02{
             l_2.setListaProcesos(procesos);
             colaLotes.add(l_2);
         }
-
         ordenarProcesos();
     }
 
@@ -160,122 +140,126 @@ public class Programa_02{
 
         Lotes loteTerminado = new Lotes();
 
-        // for (Lotes l : colaLotes)
         while (!colaLotes.isEmpty()){
             Lotes loteActual = colaLotes.pop();
-            // procesoPendientes toda via no se usa
             ArrayList<Procesos> procesoPendientes = new ArrayList<>(loteActual.getListaProcesos());
             ArrayList<Procesos> procesosTerminados = new ArrayList<>();
 
             int procesoLote = 1;
 
             while (!procesoPendientes.isEmpty()){
-
                 int tamañoPendientes = procesoPendientes.size();
-
                 Procesos p = procesoPendientes.remove(tamañoPendientes - 1);
 
-
-                // informacion de los completados
+                // --- BLOQUE 2: RENDERIZADO DE PANTALLA ---
+                clearScreen();
+                
                 if(!lotesCompletados.isEmpty()){
-                    clearScreen();
                     System.out.println("---------- LOTES ANTERIORES CONCLUIDOS ----------");
-
                     for (int i = 0; i < lotesCompletados.size(); i++) {
-                        System.out.println("Operacion #" + (i + 1));
+                        System.out.println("Lote #" + (i + 1));
                         for (Procesos pp : lotesCompletados.get(i).getListaProcesos()) {
-                            System.out.println("  [PID: " + pp.getPID() + " | Res: " + pp.getResultado_operacion() + "]");
+                            // CORRECCIÓN 1: Aquí imprimías 'p.getPID()'. 'p' es el proceso actual.
+                            // Cambié todas las 'p' por 'pp' para que imprima la información de los procesos ya guardados.
+                            System.out.printf(
+                            "  [PID: %d] | Op: %s | Val A: %d Val B: %d | Res: %s | TME: %d \n",
+                            pp.getPID(), pp.getOperacion(),
+                            pp.getValores()[0], pp.getValores()[1],
+                            pp.getResultado_operacion() == null ? "N/A" : pp.getResultado_operacion(), pp.getTiempoMax());
                         }
                     }
-                    System.out.println("-----------------------------------");
+                    System.out.println("-------------------------------------------------");
                 }
 
-                /*try{
-                    Thread.sleep(p.getTiempoMax()* 100L);
-                }catch (InterruptedException ex){}*/
-                for (int i = 0; i < procesoPendientes.size() ; i++) {
-                    System.out.printf(
-                            "\nPID: %d " +
-                                    "Operacion : %s " +
-                                    "Valor A: %d " +
-                                    "Valor B: %d " +
-                                    "Resultado : %s " +
-                                    "TME: %d \n",
-                            p.getPID(), p.getOperacion(),
-                            p.getValores()[0], p.getValores()[1],
-                            p.getResultado_operacion() == null ? "La operacion no ha sido realizada" : p.getResultado_operacion(), p.getTiempoMax());
-                }
+                // CORRECCIÓN 2: Eliminé el bucle for(int i=0...) que tenías aquí.
+                // Ese bucle estaba imprimiendo el MISMO proceso actual 'p' repetidas veces 
+                // dependiendo del tamaño de la lista. Solo necesitamos imprimirlo una vez:
+                System.out.println("\n[ PROCESO EN EJECUCIÓN (Lote actual: " + lotesActuales + ") ]");
+                System.out.printf(
+                        "  ▶ PID: %d | Op: %s | Val A: %d | Val B: %d | TME: %d \n",
+                        p.getPID(), p.getOperacion(), p.getValores()[0], p.getValores()[1], p.getTiempoMax());
 
-                // Sub-sección: Terminados del lote actual
                 System.out.println("\n[ PROCESOS CONCLUIDOS DE ESTE LOTE ]");
                 if (procesosTerminados.isEmpty()) System.out.println("  (Ninguno)");
                 for (Procesos pp : procesosTerminados) {
-                    System.out.println("  ✔ ID: " + pp.getPID() + " Operacion: " + pp.getOperacion());
+                    System.out.println("  ✔ ID: " + pp.getPID() + " Operacion: " + pp.getOperacion() + " | Res: " + pp.getResultado_operacion());
                 }
 
-                // Sub-sección: Pendientes del lote actual
                 System.out.println("\n[ POR CONCLUIR (PENDIENTES DEL LOTE) ]");
                 if (procesoPendientes.isEmpty()) System.out.println("  (Es el último del lote)");
                 for (Procesos pp : procesoPendientes) {
-                    System.out.println("  ⌛ PID: " + pp.getPID());
+                    System.out.println("  ⌛ PID: " + pp.getPID() + " | TME Estimado: " + pp.getTiempoMax());
                 }
 
-                // MUY IMPORTANTE AQUI; EL HILO PRINCIPAL TIENE QUE ESCUCHAR RESPUESTAS DEL USUARIO
+
+                // --- BLOQUE 3: EL SEMÁFORO (PAUSA) ---
+                // La pantalla ya está dibujada. Si el usuario pausó, se queda viendo la información correcta.
                 synchronized (monitor){
                     while (pausa){
                         try{
-                            System.out.println("Systema pausado");
+                            System.out.println("\n[ SISTEMA PAUSADO - Esperando comando 'c' ]");
                             monitor.wait();
                         }catch (InterruptedException ex){
                             Thread.currentThread().interrupt();
-                            System.err.println("Hilo interrumpido inesperadamente");
                         }
                     }
                 }
 
-                //System.out.printf("\n> Procesos Totales N: %d \n", procesoActual);
-                System.out.printf("\n>Proceso N:%d En el lote: %d \n", procesoLote, lotesActuales);
-                p.run();
-                //System.out.println(p.getResultado_operacion());
+                // --- BLOQUE 4: EJECUCIÓN Y TIEMPO ---
+                // CORRECCIÓN 3: Movemos la simulación de tiempo de procesamiento AQUÍ.
+                // Se ejecuta DESPUÉS de comprobar la pausa, así el programa responde rápido.
+                // Multiplico por 1000L asumiendo que el TME está en segundos. Ajusta si son milisegundos.
 
-                // proceso terminado
+                // Ejecutar logica interna
+                if (!errorProceso) {
+                    p.run();
+                    try {
+                    Thread.sleep(p.getTiempoMax() * 10L);
+                } catch (InterruptedException ex) {}
+                }else{
+                    p.setResultado_operacion("ERROR");
+                    p.run(0);
+                    errorProceso = false;
+                }
+
+
+                
+                
                 procesosTerminados.add(p);
-                //imprimirProcesosDetalles(procesosTerminados);
-                // imprimir lotes proximos
-
-                try{Thread.sleep(1000);}catch (InterruptedException ex){}
-
-                // System.out.println("---------- LOTES ANTERIORES CONCLUIDOS ----------");
-                // for (int i = 0; i < lotesCompletados.size(); i++){
-                //     System.out.println("Lote   AS #" + (i + 1));
-                //     for (Procesos proConcluido : lotesCompletados.get(i).getListaProcesos()){
-                        
-                //     }
-                //     System.out.println("");
-                // }
-
                 procesoLote++;
                 procesoActual_int++;
-                
-
             }
-            // lote terminado
 
-            // reiniciar la lista sin perder el puntero
+            // Lote terminado, guardar en histórico
             loteTerminado.setListaProcesos(procesosTerminados);
-            //procesosTerminados = new ArrayList<>();
             lotesCompletados.add(loteTerminado);
             loteTerminado = new Lotes();
-
-
-            // principio de simply linked list
-            /*
-            ArrayDeque<Lotes> tmp = colaLotes;
-            tmp.pop();
-            colaLotes = tmp;
-            */
             lotesActuales++;
         }
+        
+        clearScreen();
+        System.out.println("=========================================");
+        System.out.println(" TODOS LOS LOTES HAN SIDO PROCESADOS ");
+        System.out.println("=========================================");
+
+        imprimirDetallesTerminados(lotesCompletados);
+    }
+
+    static void imprimirDetallesTerminados(ArrayList<Lotes> l){
+        System.out.println("---------- LOTES ANTERIORES CONCLUIDOS ----------");
+        for (int i = 0; i < lotesCompletados.size(); i++) {
+            System.out.println("Lote #" + (i + 1));
+            for (Procesos pp : lotesCompletados.get(i).getListaProcesos()) {
+                // CORRECCIÓN 1: Aquí imprimías 'p.getPID()'. 'p' es el proceso actual.
+                // Cambié todas las 'p' por 'pp' para que imprima la información de los procesos ya guardados.
+                System.out.printf(
+                "  [PID: %d] | Op: %s | Val A: %d Val B: %d | Res: %s | TME: %d \n",
+                pp.getPID(), pp.getOperacion(),
+                pp.getValores()[0], pp.getValores()[1],
+                pp.getResultado_operacion() == null ? "N/A" : pp.getResultado_operacion(), pp.getTiempoMax());
+            }
+        }
+        System.out.println("-------------------------------------------------");
     }
 
     static void imprimirProcesosDetalles(ArrayList<Procesos> terminados){
@@ -288,7 +272,7 @@ public class Programa_02{
                         "Operacion : %s" +
                         "Valor A: %d" +
                         "Valor B: %d" +
-                        "Resultado : %d" +
+                        "Resultado : %s" +
                         "TME: %d", p.getPID(),p.getOperacion(), p.getValores()[0], p.getValores()[1],terminados.get(j).getResultado_operacion(), p.getTiempoMax());
                 j++;
             }
@@ -300,7 +284,6 @@ public class Programa_02{
         for (Lotes l : colaLotes){
             ArrayList<Procesos> lista = l.getListaProcesos();
             for (Procesos p : lista){
-                // limpiar la pantalla, mostrar procesos acumulandose
                 System.out.printf("\nProceso N: %d || Tiempo estimado: %d || Operacion: %s || Valor A: %d || Valor B: %d",p.getPID(), p.getTiempoMax(), p.getOperacion(), p.getValores()[0], p.getValores()[1]);
             }
         }
@@ -311,5 +294,4 @@ public class Programa_02{
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
-
 }
