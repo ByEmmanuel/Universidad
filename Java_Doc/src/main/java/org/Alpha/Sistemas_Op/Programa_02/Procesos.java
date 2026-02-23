@@ -68,8 +68,8 @@ public class Procesos implements Runnable{
                     break;
             }
             int tiempoReal = 1400;
-            int tiempoTest = 800;
-            Thread.sleep((int) ( Math.random()  * tiempoTest ));
+            int tiempoTest = 500;
+            Thread.sleep((int) ( Math.random()  * tiempoMax * 700 ));
 
         } catch (ArithmeticException ex) {
             resultado_operacion = "Error: División por 0";
@@ -78,7 +78,7 @@ public class Procesos implements Runnable{
         }
         // Impresión solicitada
         // esto no debe ir aqui 
-        System.out.printf("PID: %d | Operacion: %s\n", PID, resultado_operacion);
+        //System.out.printf("PID: %d | Operacion: %s\n", PID, resultado_operacion);
     }
 
     public String getOperacion() {
