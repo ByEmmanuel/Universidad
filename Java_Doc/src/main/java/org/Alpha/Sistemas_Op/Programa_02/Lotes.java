@@ -1,4 +1,4 @@
-//package org.Alpha.Sistemas_Op.Programa_02;
+package org.Alpha.Sistemas_Op.Programa_02;
 
 import java.util.*;
 
@@ -23,7 +23,7 @@ public class Lotes {
 
     public void ordenarProcesos(){
         ArrayList<Procesos> arr = listaProcesos;
-        listaProcesos.sort(Comparator.comparingInt(Procesos::getPID));
+        listaProcesos.sort(Comparator.comparingInt(Procesos::getPID).reversed());
     }
 
     public void comprobarOrdenamiento(){

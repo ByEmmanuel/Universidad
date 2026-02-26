@@ -1,4 +1,4 @@
-//package org.Alpha.Sistemas_Op.Programa_02;
+package org.Alpha.Sistemas_Op.Programa_02;
 
 /*
 * Programa 2. Simular el procesamiento por lotes con Multiprogramación.
@@ -88,7 +88,7 @@ public class Programa_02{
 
     private static void llenarProcesos(int numProcesos){
         int contadorProcesos = 0;
-        int numProcesosPorLote = 3;
+        int numProcesosPorLote = 5;
 
         Lotes l = new Lotes();
         ArrayList<Procesos> procesos = new ArrayList<>();
@@ -153,14 +153,13 @@ public class Programa_02{
 
                 // --- BLOQUE 2: RENDERIZADO DE PANTALLA ---
                 clearScreen();
-                
+
+                // este bloque puede ser una funcion en otra clase o despues en una funcion
                 if(!lotesCompletados.isEmpty()){
                     System.out.println("---------- LOTES ANTERIORES CONCLUIDOS ----------");
                     for (int i = 0; i < lotesCompletados.size(); i++) {
                         System.out.println("Lote #" + (i + 1));
                         for (Procesos pp : lotesCompletados.get(i).getListaProcesos()) {
-                            // CORRECCIÓN 1: Aquí imprimías 'p.getPID()'. 'p' es el proceso actual.
-                            // Cambié todas las 'p' por 'pp' para que imprima la información de los procesos ya guardados.
                             System.out.printf(
                             "  [PID: %d] | Op: %s | Val A: %d Val B: %d | Res: %s | TME: %d \n",
                             pp.getPID(), pp.getOperacion(),
@@ -171,9 +170,6 @@ public class Programa_02{
                     System.out.println("-------------------------------------------------");
                 }
 
-                // CORRECCIÓN 2: Eliminé el bucle for(int i=0...) que tenías aquí.
-                // Ese bucle estaba imprimiendo el MISMO proceso actual 'p' repetidas veces 
-                // dependiendo del tamaño de la lista. Solo necesitamos imprimirlo una vez:
                 System.out.println("\n[ PROCESO EN EJECUCIÓN (Lote actual: " + lotesActuales + ") ]");
                 System.out.printf(
                         "  ▶ PID: %d | Op: %s | Val A: %d | Val B: %d | TME: %d \n",
@@ -191,9 +187,7 @@ public class Programa_02{
                     System.out.println("  ⌛ PID: " + pp.getPID() + " | TME Estimado: " + pp.getTiempoMax());
                 }
 
-
                 // --- BLOQUE 3: EL SEMÁFORO (PAUSA) ---
-                // La pantalla ya está dibujada. Si el usuario pausó, se queda viendo la información correcta.
                 synchronized (monitor){
                     while (pausa){
                         try{
@@ -205,25 +199,34 @@ public class Programa_02{
                     }
                 }
 
-                // --- BLOQUE 4: EJECUCIÓN Y TIEMPO ---
-                // CORRECCIÓN 3: Movemos la simulación de tiempo de procesamiento AQUÍ.
-                // Se ejecuta DESPUÉS de comprobar la pausa, así el programa responde rápido.
-                // Multiplico por 1000L asumiendo que el TME está en segundos. Ajusta si son milisegundos.
+                
+                // En lugar de un solo sleep largo, hacemos muchos cortitos
+                
+                boolean canceladoPorError = false;
+                
+                int ticksTotales = p.getTiempoMax() * 10; 
 
-                // Ejecutar logica interna
-                if (!errorProceso) {
-                    p.run();
+                for (int i = 0; i < ticksTotales; i++) {
                     try {
-                    Thread.sleep(p.getTiempoMax() * 10L);
-                } catch (InterruptedException ex) {}
-                }else{
-                    p.setResultado_operacion("ERROR");
-                    p.run(0);
-                    errorProceso = false;
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                    }
+
+                    // Despues de cada fracción de segundo revisamos si se oprimio 'w'
+                    if (errorProceso) {
+                        canceladoPorError = true;
+                        errorProceso = false; 
+                        break; 
+                    }
                 }
 
-
-                
+                if (canceladoPorError) {
+                    p.setResultado_operacion("ERROR");
+                    p.run(0); // Tu lógica para cuando hay error
+                } else {
+                    p.run();  // Ejecución normal si no hubo errores
+                }
                 
                 procesosTerminados.add(p);
                 procesoLote++;
@@ -250,7 +253,7 @@ public class Programa_02{
         for (int i = 0; i < lotesCompletados.size(); i++) {
             System.out.println("Lote #" + (i + 1));
             for (Procesos pp : lotesCompletados.get(i).getListaProcesos()) {
-                // CORRECCIÓN 1: Aquí imprimías 'p.getPID()'. 'p' es el proceso actual.
+                // CORRECCIÓN 1: Aquí imprimía 'p.getPID()'. 'p' es el proceso actual.
                 // Cambié todas las 'p' por 'pp' para que imprima la información de los procesos ya guardados.
                 System.out.printf(
                 "  [PID: %d] | Op: %s | Val A: %d Val B: %d | Res: %s | TME: %d \n",
