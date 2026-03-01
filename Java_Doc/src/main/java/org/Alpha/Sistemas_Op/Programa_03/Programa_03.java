@@ -23,7 +23,6 @@ public class Programa_03 extends AbstractProcesos implements SoInterface{
     private static ArrayList<Procesos> colaProcesos = new ArrayList<>();
     private static ArrayDeque<Procesos> colaProcesosPrioritario = new ArrayDeque<>();
     private static final short ticksTiempoMilis = 300;
-    private static int tiempoTranscurridoTicks= 0;
     private static int indiceParaNuevos = 0;
     int contadorGlobalProceos = 0;
     int procesosListos = 5;
@@ -67,9 +66,6 @@ public class Programa_03 extends AbstractProcesos implements SoInterface{
     private static void ejecutarProcesos(){
 
         while (!colaProcesosPrioritario.isEmpty()){
-            // actualizar el tiempo gloobal
-            //
-            tiempoTranscurridoTicks+=ticksTiempoMilis;
             clearScreen();
             imprimirProcesos();
             try{Thread.sleep(ticksTiempoMilis);}catch (InterruptedException ex){

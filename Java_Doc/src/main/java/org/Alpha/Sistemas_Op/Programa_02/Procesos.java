@@ -1,13 +1,15 @@
-package org.Alpha.Sistemas_Op.Programa_02;
+//package org.Alpha.Sistemas_Op.Programa_02;
 
 public class Procesos implements Runnable{
 
     // cada proceso esta conformado por una operacion y sus valores
     private String operacion = null;
-    private Integer[] valores = valores = new Integer[2];;
+    private Integer[] valores = valores = new Integer[2];
     private int PID = ((int) Math.round(Math.random() * 100));
     private String resultado_operacion = null;
     private int tiempoMax = (int) (Math.random() * (20 - 6 + 1)) + 6;;
+    private int tiempoEjecutado = 0;
+
 
     Procesos(){
         calcularOperacion();
@@ -51,6 +53,20 @@ public class Procesos implements Runnable{
         valores[1] = (int) ( Math.random()*100 );
     }
 
+    private final int tiempoReal = 1400;
+    private final int tiempoTest = 500;
+
+    private void dormirProceso(){
+        while (this.tiempoMax > 0) {
+            try {
+                Thread.sleep((int) ( 300 ));
+            } catch (InterruptedException e){
+                System.out.println("Ocurrio un problema con el delay del hilo actual ");
+            }    
+            this.tiempoMax--;
+        }
+    }
+
 
     @Override
     public void run() {
@@ -67,14 +83,9 @@ public class Procesos implements Runnable{
                     resultado_operacion = String.format("%d ^ %d = %d", valores[0], valores[1], (int) Math.pow(valores[0], valores[1]));
                     break;
             }
-            int tiempoReal = 1400;
-            int tiempoTest = 500;
-            Thread.sleep((int) ( Math.random()  * tiempoMax * 700 ));
 
         } catch (ArithmeticException ex) {
             resultado_operacion = "Error: División por 0";
-        }catch (InterruptedException e){
-            System.out.println("Ocurrio un problema con el delay del hilo actual ");
         }
         // Impresión solicitada
         // esto no debe ir aqui 
@@ -99,14 +110,10 @@ public class Procesos implements Runnable{
                     resultado_operacion = String.format("%d ^ %d = %d", valores[0], valores[1], (int) Math.pow(valores[0], valores[1]));
                     break;
             }
-            int tiempoReal = 1400;
-            int tiempoTest = 500;
-            Thread.sleep((int) ( Math.random()  * tiempoMax * 700 ));
+            //dormirProceso();
 
         } catch (ArithmeticException ex) {
             resultado_operacion = "Error: División por 0";
-        }catch (InterruptedException e){
-            System.out.println("Ocurrio un problema con el delay del hilo actual ");
         }
         // Impresión solicitada
         // esto no debe ir aqui 
@@ -143,5 +150,17 @@ public class Procesos implements Runnable{
 
     public int getTiempoMax() {
         return tiempoMax;
+    }
+
+    public void setTiempoMax(int tiempoMax){
+        this.tiempoMax = tiempoMax;
+    }
+
+    public int getTiemopEjecucion() {
+        return tiempoEjecutado;
+    }
+
+    public void setTiemopEjecucion(int ticksEjecucion){
+        this.tiempoEjecutado = ticksEjecucion;
     }
 }
