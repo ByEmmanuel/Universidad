@@ -1,4 +1,4 @@
-//package org.Alpha.Sistemas_Op.Programa_03;
+package org.Alpha.Sistemas_Op.Programa_03;
 
 import java.util.Random;
 

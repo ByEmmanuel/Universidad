@@ -157,19 +157,6 @@ public class Programa_02{
 
                 //imprimirDetallesProcesos(lotesActuales, procesosTerminados, procesoPendientes, p);
 
-                // --- BLOQUE 3: EL SEMÁFORO (PAUSA) ---
-                synchronized (monitor){
-                    while (pausa){
-                        try{
-                            System.out.println("\n[ SISTEMA PAUSADO - Esperando comando 'c' ]");
-                            monitor.wait();
-                        }catch (InterruptedException ex){
-                            Thread.currentThread().interrupt();
-                        }
-                    }
-                }
-
-                
                 // En lugar de un solo sleep largo, hacemos muchos cortitos
                 
                 boolean canceladoPorError = false;
@@ -179,8 +166,20 @@ public class Programa_02{
                 
 
                 // despues de este for para revisar si se presiono una tecla se ejecuta el proceso
-                
                 while (p.getTiempoMax() > 0) {
+
+                    // --- BLOQUE 3: EL SEMÁFORO (PAUSA) ---
+                    synchronized (monitor){
+                        while (pausa){
+                            try{
+                                System.out.println("\n[ SISTEMA PAUSADO - Esperando comando 'c' ]");
+                                monitor.wait();
+                            }catch (InterruptedException ex){
+                                Thread.currentThread().interrupt();
+                            }
+                        }
+                    }
+
                     try {
                         Thread.sleep(300);
                     } catch (InterruptedException ex) {
@@ -201,12 +200,12 @@ public class Programa_02{
                         procesoPendientes.add(0, p);
                         canceladoPorInterrupcion = true;
                         interrupcionIO = false;
-                        continue;
+                        break;
                     }
                 }
                 p.setTiemopEjecucion(ticksEjecucion);
                 if (canceladoPorError) {
-                    p.setResultado_operacion("ERROR");
+                    p.setResultado_operacion`("ERROR");
                     p.run(0); // lógica para cuando hay error
                     //canceladoPorError = false; -> esto no es necesario ya que cada while se crea la variable
                 }
@@ -256,13 +255,13 @@ public class Programa_02{
 
                 System.out.println("\n[ PROCESO EN EJECUCIÓN (Lote actual: " + lotesActuales + ") ] TIEMPO EN EJECUCION GLOBAL: " + ticksEjecucion);
                 System.out.printf(
-                        "  ▶ PID: %d | Op: %s | Val A: %d | Val B: %d | TME: %d \n",
+                        "  >> PID: %d | Op: %s | Val A: %d | Val B: %d | TME: %d \n",
                         p.getPID(), p.getOperacion(), p.getValores()[0], p.getValores()[1], p.getTiempoMax());
 
                 System.out.println("\n[ PROCESOS CONCLUIDOS DE ESTE LOTE ]");
                 if (procesosTerminados.isEmpty()) System.out.println("  (Ninguno)");
                 for (Procesos pp : procesosTerminados) {
-                    System.out.println("  ✔ ID: " + pp.getPID() + " Operacion: " + pp.getOperacion() + " | Res: " + pp.getResultado_operacion() + "| TE: " + pp.getTiemopEjecucion());
+                    System.out.println("  >> ID: " + pp.getPID() + " Operacion: " + pp.getOperacion() + " | Res: " + pp.getResultado_operacion() + "| TEJ: " + pp.getTiemopEjecucion() + "| TME: " + pp.getTiempoMax());
                 }
 
                 System.out.println("\n[ PROCESOS PENDIENTES DEL LOTE ]");
@@ -289,23 +288,6 @@ public class Programa_02{
             }
         }
         System.out.println("-------------------------------------------------");
-    }
-
-    static void imprimirProcesosDetalles(ArrayList<Procesos> terminados){
-        clearScreen();
-        for (int i = 0; i < lotesCompletados.size()+1; i++){
-            int j = 0;
-            for (Procesos p : terminados){
-                System.out.printf(
-                        "PID: %d" +
-                        "Operacion : %s" +
-                        "Valor A: %d" +
-                        "Valor B: %d" +
-                        "Resultado : %s" +
-                        "TME: %d", p.getPID(),p.getOperacion(), p.getValores()[0], p.getValores()[1],terminados.get(j).getResultado_operacion(), p.getTiempoMax());
-                j++;
-            }
-        }
     }
 
     public static void mostrarProcesosEnCola(){

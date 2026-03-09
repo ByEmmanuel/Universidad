@@ -1,4 +1,5 @@
-//package org.Alpha.Sistemas_Op.Programa_03;
+package org.Alpha.Sistemas_Op.Programa_03;
+
 
 /*
 * Algoritmo de planificacion FCFS
@@ -75,8 +76,8 @@ public class Programa_03 extends AbstractProcesos implements SoInterface{
         //esto les va a poner "Nuevo" a todos los procesos
         for (int i = 0; i < nProcesos; i++) {
             Procesos p = new Procesos();
-            colaProcesos.add(p);
             p.setEstado("Nuevo");
+            colaNuevos.add(p);
         }
     }
 
@@ -154,31 +155,38 @@ public class Programa_03 extends AbstractProcesos implements SoInterface{
          * En ejecucion
          * Bloqueados
          */
-        while (!colaListos.isEmpty()) {
-            if (colaListos.size() < 5 && colaNuevos.size() > 1 ) {
+        while (!colaNuevos.isEmpty() || !colaListos.isEmpty() || enEjecucion.get() != null || !colaBloqueados.isEmpty()){
+            while (colaListos.size() <= 5 && !colaNuevos.isEmpty()) {
                 // llenar la cola de listos
                 Procesos p = colaNuevos.poll();
                 p.setTiempoLlegada(contadorGlobalProcesos);
+                p.setEstado("Listo");
                 colaListos.add(p);
             }
-            Procesos p = colaListos.poll();
+            //Procesos p = colaListos.poll();
+            enEjecucion.set(colaListos.poll());
+            Procesos p = enEjecucion.get();
 
-            imprimirDetallesProcesos();
-            
+            if (p == null) continue;
+            p.setEstado("Ejecucion");
+
             int tiempoEjecucion = p.getTiempoMax();
             while (tiempoEjecucion > 0) {
+                imprimirDetallesProcesos();
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(ticksTiempoMilis);
                 } catch (InterruptedException e) {
                     // TODO: handle exception
                     Thread.currentThread().interrupt();
                 }
                 tiempoEjecucion--;
+                contadorGlobalProcesos++;
             }
 
             // ya acabo de procesar
+            p.setEstado("Terminado");
             listaTerminados.add(p);
-
+            enEjecucion.set(null);
         }
     }    
 
@@ -195,7 +203,7 @@ public class Programa_03 extends AbstractProcesos implements SoInterface{
                 "╔══════════════════════════════════════════════════╗\n" +
                 "║       ALGORITMO           -        FCFS          ║\n" +
                 "╚══════════════════════════════════════════════════╝" + RESET);
-        System.out.printf(BOLD + "  🕐 Reloj: %d ticks%s\n", 0, RESET);
+        System.out.printf(BOLD + "  🕐 Reloj: %d ticks%s\n", contadorGlobalProcesos, RESET);
         System.out.printf(WHITE + "  Teclas: [E] Bloquear  [W] Error  [P] Pausar  [C] Continuar%s\n\n", RESET);
 
         // NUEVOS
@@ -209,8 +217,18 @@ public class Programa_03 extends AbstractProcesos implements SoInterface{
         }
         System.out.println();
 
+        // Listos
+        System.out.println(barra("📋 COLA DE LISTOS  (" + colaListos.size() + " procesos)", GREEN));
+        if (colaListos.isEmpty()) {
+            System.out.println("  (vacía)");
+        } else {
+            System.out.printf("  %-6s %-6s %-8s %-10s%n", "PID","TME","Llegada","Operación");
+            for (Procesos p : colaListos)
+                System.out.printf("  %-6d %-6d %-8d %-10s%n", p.getPID(), p.getTiempoMax(), p.getTiempoLlegada(), p.getOperacion());
+        }
+        System.out.println();
+
         // Terminados
-        // ── TERMINADOS ──────────────────────────────────────────────────────
         System.out.println(barra("✅ PROCESOS TERMINADOS", PURPLE));
         if (listaTerminados.isEmpty()) {
             System.out.println("  (ninguno)");
@@ -219,6 +237,20 @@ public class Programa_03 extends AbstractProcesos implements SoInterface{
             for (Procesos p : listaTerminados)
                 System.out.printf("  %-6d %-14s %-8s%n", p.getPID(), p.getOperacion(), p.getEstado());
         }
+
+        // En ejecucion
+        System.out.println(
+            barra("En ejecucion", RED)
+            );    
+
+        Procesos p = enEjecucion.get();
+        if (enEjecucion.get() == null) {
+            System.out.println("No hay proceso en ejecucion");
+        }else{
+            System.out.printf("  %-6s %-6s %-8s %-10s%n", "PID","TME","Llegada","Operación");
+            System.out.printf("  %-6d %-6d %-8d %-10s%n", p.getPID(), p.getTiempoMax(), p.getTiempoLlegada(), p.getOperacion());
+        }
+        
 
 
     }
@@ -242,17 +274,10 @@ public class Programa_03 extends AbstractProcesos implements SoInterface{
 
         teclado.nextLine();
         llenarProcesos(nProcesos);
-        etiquetarProcesos();
+        //etiquetarProcesos();
         //imprimirProcesos();
         ejecutarProcesos();
 
-    }
-
-    private static void imprimirProcesos(){
-        for (Procesos p: colaProcesos){
-            System.out.printf("\nPID: %d | TME: %d | Operacion: %s | Valor A: %d, Valor B: %d | Estado: %s"
-                    ,p.getPID(), p.getTiempoMax(), p.getOperacion(), p.getOperadores()[0], p.getOperadores()[1], p.getEstado());
-        }
     }
 
     static void clearScreen() {
