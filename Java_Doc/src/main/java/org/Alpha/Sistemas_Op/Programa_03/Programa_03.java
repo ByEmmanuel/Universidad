@@ -1,6 +1,8 @@
 package org.Alpha.Sistemas_Op.Programa_03;
 
 
+import java.io.FileInputStream;
+
 /*
 * Algoritmo de planificacion FCFS
 * Basado en el diagrama de 5 estados
@@ -259,20 +261,54 @@ public class Programa_03 extends AbstractProcesos implements SoInterface{
     }
 
     static volatile char teclaPresionada = 0;
-    static void iniciarLectorTeclado() {
-        Thread t = new Thread(() -> {
-            Scanner sc = new Scanner(System.in);
-            while (!terminar.get()) {
-                if (sc.hasNextLine()) {
-                    String linea = sc.nextLine().trim().toUpperCase();
-                    if (!linea.isEmpty()) {
-                        teclaPresionada = linea.charAt(0);
-                    }
+    // static void iniciarLectorTeclado() {
+    //     Thread t = new Thread(() -> {
+    //         Scanner sc = new Scanner(System.in);
+    //         while (!terminar.get()) {
+    //             if (sc.hasNextLine()) {
+    //                 String linea = sc.nextLine().trim().toUpperCase();
+    //                 if (!linea.isEmpty()) {
+    //                     teclaPresionada = linea.charAt(0);
+    //                 }
+    //             }
+    //         }
+    //     });
+    //     t.setDaemon(true);
+    //     t.start();
+    // }
+
+    private static void iniciarLectorTecladoFileInput(){
+        Thread hilo = new Thread( () -> {
+            try {
+                FileInputStream sc = new FileInputStream("/dev/tty");   
+                while (!terminar.get()) {
+                    int c = sc.read();
+                    if(c == -1)break;
+                    teclaPresionada = Character.toUpperCase((char) c);
                 }
+                sc.close();
+            } catch (Exception e) {
+                // TODO: handle exception
             }
-        });
-        t.setDaemon(true);
-        t.start();
+          }
+        );
+
+        hilo.setDaemon(true);
+        hilo.start();
+    }
+
+    private static void activarRawMode() throws Exception{
+        new ProcessBuilder("/bin/sh", "-c", "stty -icanon -echo < /dev/tty")
+        .inheritIO()
+        .start()
+        .waitFor();
+    }
+
+    private static void desactivarRawMode() throws Exception{
+        new ProcessBuilder("/bin/sh", "-c", "stty sane < /dev/tty")
+        .inheritIO()
+        .start()
+        .waitFor();
     }
 
     public static void main(String[] args) {
@@ -296,8 +332,16 @@ public class Programa_03 extends AbstractProcesos implements SoInterface{
 
 
         teclado.nextLine();
+
+        // activar raw mode
+        try { activarRawMode();} catch (Exception e) {}
+        Runtime.getRuntime().addShutdownHook(
+                new Thread(()-> {
+                    try { desactivarRawMode();} catch (Exception ex) {
+                }
+            }));
         llenarProcesos(nProcesos);
-        iniciarLectorTeclado();
+        iniciarLectorTecladoFileInput();
 
         //etiquetarProcesos();
         //imprimirProcesos();
@@ -309,7 +353,7 @@ public class Programa_03 extends AbstractProcesos implements SoInterface{
             imprimirDetallesProcesos();
             
             try {
-                Thread.sleep(ticksTiempoMilis);
+                Thread.sleep(300);
             } catch (InterruptedException e) {
                 // TODO: handle exception
             }
@@ -377,6 +421,9 @@ public class Programa_03 extends AbstractProcesos implements SoInterface{
                 "╚══════════════════════════════════════════════════╝" + RESET);
         System.out.printf(BOLD + "Reloj: %d ticks%s\n", contadorGlobalProcesos, RESET);
         System.out.printf(WHITE + "  Teclas: [E] Bloquear  [W] Error  [P] Pausar  [C] Continuar%s\n\n", RESET);
+        if (pausado.get()) {
+            System.out.println("\n" + barra("El sistema esta pausado: ", RED + "\n" + "\n"));
+        }
 
         // NUEVOS
         System.out.println(barra("COLA DE NUEVOS  (" + colaNuevos.size() + " procesos)", YELLOW));
