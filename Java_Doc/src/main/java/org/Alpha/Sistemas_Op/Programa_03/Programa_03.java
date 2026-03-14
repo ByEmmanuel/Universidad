@@ -1,48 +1,13 @@
 package org.Alpha.Sistemas_Op.Programa_03;
 
-
 import java.io.FileInputStream;
-
-/*
-* Algoritmo de planificacion FCFS
-* Basado en el diagrama de 5 estados
-* Se admiten solo 5 estados en pendientes por el procesador
-* */
-
-
-/**
- * Pipeline de ejecucion
- * El usuario ingresa numero de procesos a ejecutar
- * Se crean -> se asignan sus atributos corresponientes
- * Se ordenan 
- * Se ingresan todos a una cola "A"
- * Solo 5 procesos de esa cola "A", pasan a la cola "B" y esos mismos se elminan de la cola A
- * Cada que termina un proceso de la cola "A",
- *       ingresa un proceso de la cola B con el tiempo de llegada = contador global (Reloj)
- * 
- * Se muestran los 5 estados por pantalla en secciones
- * 
- * Nuevos pero no admitidos por el procesador
- * Listos para ser ejecutados 
- * En ejecucion
- * Bloqueado
- * Interrupcion
- * Procesos terminados
- * 
- */
-
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+public class Programa_03 extends AbstractProcesos implements SoInterface {
 
-
-public class Programa_03 extends AbstractProcesos implements SoInterface{
-
-    /**
-     * COLORES
-     * 
-     */
+    // ── Colores ───────────────────────────────────────────────────────────────
     static final String RESET  = "\033[0m";
     static final String BOLD   = "\033[1m";
     static final String CYAN   = "\033[36m";
@@ -53,32 +18,25 @@ public class Programa_03 extends AbstractProcesos implements SoInterface{
     static final String PURPLE = "\033[35m";
     static final String WHITE  = "\033[37m";
 
-    private static final Object monitor = new Object();
-    private static volatile boolean pausa = false;
-
-
-
+    // ── Colas ─────────────────────────────────────────────────────────────────
     private static PriorityQueue<Procesos> colaNuevos = new PriorityQueue<>(
             Comparator.comparingInt(Procesos::getPID)
     );
-    private static Queue<Procesos> colaListos = new LinkedList<>();
-    private static Queue<Procesos> colaBloqueados = new LinkedList<>();
-    private static AtomicReference<Procesos> enEjecucion = new AtomicReference<>();
+    private static Queue<Procesos>           colaListos    = new LinkedList<>();
+    private static Queue<Procesos>           colaBloqueados= new LinkedList<>();
+    private static AtomicReference<Procesos> enEjecucion   = new AtomicReference<>();
+    private static ArrayList<Procesos>       listaTerminados = new ArrayList<>();
+
+    // ── Control ───────────────────────────────────────────────────────────────
     static final AtomicBoolean pausado  = new AtomicBoolean(false);
     static final AtomicBoolean terminar = new AtomicBoolean(false);
-    private static ArrayList<Procesos> listaTerminados = new ArrayList<>();
+    static volatile char teclaPresionada = 0;
 
-    private static final short ticksTiempoMilis = 350;
-    private static int indiceParaNuevos = 0;
-    private static int contadorGlobalProcesos = 0;
-    private static int procesosListos = 5;
+    private static final short ticksTiempoMilis      = 350;
+    private static int         contadorGlobalProcesos = 0;
 
-
-
-    // definitivo
-    private static void llenarProcesos(int nProcesos){
-        // esto esta más facil ahora, solo hay que llenar la cola de procesos y los primeros 5 son en nuevo
-        //esto les va a poner "Nuevo" a todos los procesos
+    // ── Llenar cola de nuevos ─────────────────────────────────────────────────
+    private static void llenarProcesos(int nProcesos) {
         for (int i = 0; i < nProcesos; i++) {
             Procesos p = new Procesos();
             p.setEstado("Nuevo");
@@ -86,319 +44,124 @@ public class Programa_03 extends AbstractProcesos implements SoInterface{
         }
     }
 
-    // Solo se va a ejecutar los 5 procesos admitidos por el procesador
-    private static void etiquetarProcesos(){
-        // etiquetar los primeros 5 con tiempo de llegada de 0
-        // y con estados de listo, los demas son nuevos
-        // cada 5 procesos se estara
-
-        /*
-        * Algoritmo
-        * Los primeros 5 procesos, tendran etiqueta de listos, listos para ser atendidos pero aun no en ejecucion por el sistema
-        * todos los demas tendran etiqueta de "NUEVO"
-        * Algunos procesos tendran la etiqueta de ejecucion
-        * Algunos procesos tendran la etiqueta de bloqueado ( I/O por el usuario ) y se desbloquearan en 8 ticks de tiempo
-        * Algunos procesos tendran la etiqueta de terminado
-        * */
-
-        // llenar la cola de procesos la primera vez
-        int pos = 0;
-
-        while (colaListos.size() < 5){
-            if (!colaProcesos.isEmpty()){
-                Procesos p = colaProcesos.poll();
-                colaListos.add(p);
-            }
-        }
-
-    }
-
-    private static Thread ejecutarProcesosBloqueados = new Thread( () -> {
-        
-        while (true) {
-        //Queue<Procesos> copiaColaBloqueados = new LinkedList<>(colaBloqueados);
-            try{
-                Thread.sleep(ticksTiempoMilis);
-            }catch(InterruptedException ex){
-                break;
-            };
-
-            synchronized (colaBloqueados){
-                Iterator<Procesos> it = colaBloqueados.iterator();
-                while(it.hasNext()){
-                    Procesos p = it.next();
-                    p.setTiempoBloqueado(p.getTiempoBloqueado()-1);
-                        if (p.getTiempoBloqueado() <= 0) {
-                            it.remove();
-                            p.setEstado("Listo");
-                            colaListos.add(p);
-                        }
-                }
-            }
-            
-        }
-    });
-
-    /**
-     * Cambio de pipeline ->
-     * Ahora en el bucle principal del programa se ejecutaran los procesos por medios de "Ticks"
-     * Para que los estados de bloqueados se muestren correctamente
-     */
-    private static void ejecutarProcesos(){
-        /**
-         * imprimir detalles 
-         * Nuevos
-         * Listos
-         * En ejecucion
-         * Bloqueados
-         */
-
-        // veamos si funciona
+    // ── Tick principal: admitir, despachar, ejecutar ──────────────────────────
+    private static void tickProcesos() {
+        // Admitir nuevos → listos (máx 4 en memoria: listos + ejecucion + bloqueados)
         while (colaListos.size() <= 5 && !colaNuevos.isEmpty()) {
-                // llenar la cola de listos
-                Procesos p = colaNuevos.poll();
-                p.setTiempoLlegada(contadorGlobalProcesos);
-                p.setEstado("Listo");
-                colaListos.add(p);
-        }
-            //Procesos p = colaListos.poll();
-            enEjecucion.set(colaListos.poll());
-            Procesos p = enEjecucion.get();
-
-        if (p != null){
-                p.setEstado("Ejecucion");
-
-                int tiempoEjecucion = p.getTiempoMaxEjecucion();
-                while (tiempoEjecucion > 0) {
-                    imprimirDetallesProcesos();
-                    try {
-                        Thread.sleep(ticksTiempoMilis);
-                    } catch (InterruptedException e) {
-                        // TODO: handle exception
-                        Thread.currentThread().interrupt();
-                    }
-                    tiempoEjecucion--;
-                    contadorGlobalProcesos++;
-                }
-
-                // ya acabo de procesar
-                p.setEstado("Terminado");
-                listaTerminados.add(p);
-                enEjecucion.set(null);
-        
-            };
-            
-    
-    }    
-
-    private static void tickProcesos(){
-        // esta condicional puede ser cambiada a un if
-        while (colaListos.size() < 5 && !colaNuevos.isEmpty()) {
-                // llenar la cola de listos
-                Procesos p = colaNuevos.poll();
-                p.setTiempoLlegada(contadorGlobalProcesos);
-                p.setEstado("Listo");
-                colaListos.add(p);
+            int enMemoria = colaListos.size()
+                          + colaBloqueados.size()
+                          + (enEjecucion.get() != null ? 1 : 0);
+            if (enMemoria >= 5) break;
+            Procesos p = colaNuevos.poll();
+            p.setTiempoLlegada(contadorGlobalProcesos);
+            p.setTickEntroListos(contadorGlobalProcesos);
+            p.setEstado("Listo");
+            colaListos.add(p);
         }
 
         Procesos p = enEjecucion.get();
-        if (p == null) {
-            if (!colaListos.isEmpty()) {
-                enEjecucion.set(colaListos.poll());    
+
+        // Despachar si no hay proceso en ejecución
+        if (p == null && !colaListos.isEmpty()) {
+            p = colaListos.poll();
+
+            // Acumular tiempo de espera desde que entró a listos
+            p.acumularEspera(contadorGlobalProcesos - p.getTickEntroListos());
+
+            // Registrar primera atención (tiempo de respuesta)
+            if (p.isPrimeraVez()) {
+                p.setTRespuesta(contadorGlobalProcesos - p.getTiempoLlegada());
+                p.setPrimeraVez(false);
             }
-            System.out.println("La cola de listos esta vacia");
-        }else{
-            // ineficiente
+
             p.setEstado("Ejecucion");
+            enEjecucion.set(p);
+        }
+
+        // Avanzar ejecución
+        if (p != null) {
+            p.setEstado("Ejecucion");
+            p.setTiempoEjecucion(p.getTiempoejecucion() + 1);
 
             if (p.getTiempoejecucion() >= p.getTiempoMaxEjecucion()) {
-                p.setEstado("Terminado");    
+                // Terminó normalmente
+                p.setTFinalizacion(contadorGlobalProcesos + 1);
+                p.setEstado("Terminado");
                 listaTerminados.add(p);
-
-                // Al terminar un proceso enviamos null para que al siguiente tick se forme un nuevo proceso
                 enEjecucion.set(null);
-                return;
             }
-            p.setTiempoEjecucion(p.getTiempoejecucion()+1);
-            
         }
-    };
+    }
 
-
-
-    private static void tickBloqueados(){
+    // ── Tick bloqueados ───────────────────────────────────────────────────────
+    private static void tickBloqueados() {
         Iterator<Procesos> it = colaBloqueados.iterator();
         while (it.hasNext()) {
             Procesos p = it.next();
-            p.setTiempoBloqueado(p.getTiempoBloqueado()-1);
+            p.setTiempoBloqueado(p.getTiempoBloqueado() - 1);
             if (p.getTiempoBloqueado() <= 0) {
-                //colaBloqueados.poll();
                 it.remove();
+                p.setTiempoBloqueado(8);       // resetear para futuros bloqueos
+                p.setTickEntroListos(contadorGlobalProcesos);
+                p.setEstado("Listo");
                 colaListos.add(p);
             }
         }
-        
-    };
+    }
 
-    static synchronized void interrumpirIO(){
-
-        // El proceso en ejecucion se interrumpe
+    // ── Interrupciones ────────────────────────────────────────────────────────
+    static synchronized void interrumpirIO() {
         Procesos bloqueado = enEjecucion.get();
-        if (bloqueado == null) {
-            System.out.println("NO HAY PROCESOS EN ESTADO DE BLOQUEADOS");
-            return;
-        }
+        if (bloqueado == null) return;
         enEjecucion.set(null);
+        bloqueado.setTiempoBloqueado(8);
+        bloqueado.setEstado("Bloqueado");
         colaBloqueados.add(bloqueado);
-        //ej.entroListosEn = reloj.get(); // para calcular espera futura
-        
     }
 
-    static String barra(String titulo, String color) {
-        return color + BOLD + "══════════════════════════════════════════════════\n"
-                + "  " + titulo + "\n"
-                + "══════════════════════════════════════════════════" + RESET;
+    static synchronized void terminarPorError() {
+        Procesos p = enEjecucion.get();
+        if (p == null) return;
+        enEjecucion.set(null);
+        p.setTerminadoPorError(true);
+        p.setTFinalizacion(contadorGlobalProcesos);
+        p.setEstado("Terminado");
+        listaTerminados.add(p);
     }
 
-    static volatile char teclaPresionada = 0;
-    // static void iniciarLectorTeclado() {
-    //     Thread t = new Thread(() -> {
-    //         Scanner sc = new Scanner(System.in);
-    //         while (!terminar.get()) {
-    //             if (sc.hasNextLine()) {
-    //                 String linea = sc.nextLine().trim().toUpperCase();
-    //                 if (!linea.isEmpty()) {
-    //                     teclaPresionada = linea.charAt(0);
-    //                 }
-    //             }
-    //         }
-    //     });
-    //     t.setDaemon(true);
-    //     t.start();
-    // }
+    // ── Raw mode ──────────────────────────────────────────────────────────────
+    private static void activarRawMode() throws Exception {
+        new ProcessBuilder("/bin/sh", "-c", "stty -icanon -echo < /dev/tty")
+                .inheritIO().start().waitFor();
+    }
 
-    private static void iniciarLectorTecladoFileInput(){
-        Thread hilo = new Thread( () -> {
+    private static void desactivarRawMode() throws Exception {
+        new ProcessBuilder("/bin/sh", "-c", "stty sane < /dev/tty")
+                .inheritIO().start().waitFor();
+    }
+
+    private static void iniciarLectorTecladoFileInput() {
+        Thread hilo = new Thread(() -> {
             try {
-                FileInputStream sc = new FileInputStream("/dev/tty");   
+                FileInputStream sc = new FileInputStream("/dev/tty");
                 while (!terminar.get()) {
                     int c = sc.read();
-                    if(c == -1)break;
+                    if (c == -1) break;
                     teclaPresionada = Character.toUpperCase((char) c);
                 }
                 sc.close();
-            } catch (Exception e) {
-                // TODO: handle exception
-            }
-          }
-        );
-
+            } catch (Exception ignored) {}
+        });
         hilo.setDaemon(true);
         hilo.start();
     }
 
-    private static void activarRawMode() throws Exception{
-        new ProcessBuilder("/bin/sh", "-c", "stty -icanon -echo < /dev/tty")
-        .inheritIO()
-        .start()
-        .waitFor();
-    }
-
-    private static void desactivarRawMode() throws Exception{
-        new ProcessBuilder("/bin/sh", "-c", "stty sane < /dev/tty")
-        .inheritIO()
-        .start()
-        .waitFor();
-    }
-
-    public static void main(String[] args) {
-
-        int nProcesos = 0;
-        while (true){
-            System.out.println("Ingrese numero de PROCESOS: ");
-            try{
-                nProcesos = teclado.nextInt();
-                if (nProcesos == -1){
-                    modoTest();
-                }
-                if (nProcesos > 0) break;
-            } catch (InputMismatchException ex){
-                System.out.println("Introduce un numero valido de procesos");
-                teclado.next();
-            }
-        }
-
-
-
-
-        teclado.nextLine();
-
-        // activar raw mode
-        try { activarRawMode();} catch (Exception e) {}
-        Runtime.getRuntime().addShutdownHook(
-                new Thread(()-> {
-                    try { desactivarRawMode();} catch (Exception ex) {
-                }
-            }));
-        llenarProcesos(nProcesos);
-        iniciarLectorTecladoFileInput();
-
-        //etiquetarProcesos();
-        //imprimirProcesos();
-
-        boolean simulacionTerminada = false;
-        // !colaNuevos.isEmpty() || !colaListos.isEmpty() || enEjecucion.get() != null || !colaBloqueados.isEmpty()
-        //ejecutarProcesosBloqueados.start();
-        while (!simulacionTerminada){
-            imprimirDetallesProcesos();
-            
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-                // TODO: handle exception
-            }
-
-            char tecla = teclaPresionada;
-            teclaPresionada = 0;
-
-            switch (tecla) {
-                case 'E': 
-                if (pausado.get()) {
-                    System.out.println("El sistema esta pausado no se puede bloquear un proceso ");
-                    break;
-                }else{
-                    interrumpirIO();
-                    break;
-                }
-                //case 'W': terminarPorError(); break;
-                case 'P': pausado.set(true);  break;
-                case 'C': pausado.set(false); break;
-            }
-
-            if (!pausado.get()) {
-                //ejecutarProcesos();
-
-                tickProcesos();
-                tickBloqueados();
-            }else{
-                // try {
-                //     monitor.wait();
-                // } catch (InterruptedException e) {
-                //     Thread.currentThread().interrupt();
-                // }
-                continue;
-            }
-
-            // if (pausado.get()) {
-            //     System.out.println(YELLOW + BOLD + "PAUSADO  presione C + ENTER para continuar" + RESET);
-            // }
-
-            boolean todo = colaBloqueados.isEmpty() && colaListos.isEmpty()
-            && enEjecucion.get() == null && colaBloqueados.isEmpty();
-            if (todo) simulacionTerminada = true;
-            contadorGlobalProcesos++;
-        }
-
+    // ── Impresión ─────────────────────────────────────────────────────────────
+    static String barra(String titulo, String color) {
+        return color + BOLD
+                + "══════════════════════════════════════════════════\n"
+                + "  " + titulo + "\n"
+                + "══════════════════════════════════════════════════" + RESET;
     }
 
     static void clearScreen() {
@@ -406,105 +169,201 @@ public class Programa_03 extends AbstractProcesos implements SoInterface{
         System.out.flush();
     }
 
-    int tiempoDelay = 500;
-    private static void modoTest(){
-        llenarProcesos(24);
-    }
-
-
-    private static void imprimirDetallesProcesos(){
+    private static void imprimirDetallesProcesos() {
         clearScreen();
 
         System.out.println(BOLD + CYAN +
                 "╔══════════════════════════════════════════════════╗\n" +
-                "║       ALGORITMO           -        FCFS          ║\n" +
+                "║         ALGORITMO  -  FCFS  -  5 ESTADOS        ║\n" +
                 "╚══════════════════════════════════════════════════╝" + RESET);
-        System.out.printf(BOLD + "Reloj: %d ticks%s\n", contadorGlobalProcesos, RESET);
-        System.out.printf(WHITE + "  Teclas: [E] Bloquear  [W] Error  [P] Pausar  [C] Continuar%s\n\n", RESET);
-        if (pausado.get()) {
-            System.out.println("\n" + barra("El sistema esta pausado: ", RED + "\n" + "\n"));
-        }
+        System.out.printf(BOLD + "  Reloj: %d ticks%s\n", contadorGlobalProcesos, RESET);
+        System.out.printf(WHITE + "  [E] Bloquear  [W] Error  [P] Pausar  [C] Continuar%s\n\n", RESET);
+
+        if (pausado.get())
+            System.out.println(RED + BOLD + "  ⏸  SISTEMA PAUSADO — presione C para continuar\n" + RESET);
 
         // NUEVOS
         System.out.println(barra("COLA DE NUEVOS  (" + colaNuevos.size() + " procesos)", YELLOW));
         if (colaNuevos.isEmpty()) {
             System.out.println("  (vacía)");
         } else {
-            System.out.printf("  %-6s %-6s %-8s %-10s%n", "PID","TME","Llegada","Operación");
+            System.out.printf("  %-6s %-6s %-8s %-14s%n", "PID", "TME", "Llegada", "Operación");
             for (Procesos p : colaNuevos)
-                System.out.printf("  %-6d %-6d %-8d %-10s%n", p.getPID(), p.getTiempoMaxEjecucion(), p.getTiempoLlegada(), p.getOperacion());
+                System.out.printf("  %-6d %-6d %-8d %-14s%n",
+                        p.getPID(), p.getTiempoMaxEjecucion(),
+                        p.getTiempoLlegada(), p.getOperacionCompleta());
         }
         System.out.println();
 
-        // Listos
+        // LISTOS
         System.out.println(barra("COLA DE LISTOS  (" + colaListos.size() + " procesos)", GREEN));
         if (colaListos.isEmpty()) {
             System.out.println("  (vacía)");
         } else {
-            System.out.printf("  %-6s %-6s %-8s %-10s%n", "PID","TME","Llegada","Operación");
+            System.out.printf("  %-6s %-6s %-8s %-12s %-14s%n",
+                    "PID", "TME", "Llegada", "T.Ejecutado", "Operación");
             for (Procesos p : colaListos)
-                System.out.printf("  %-6d %-6d %-8d %-10s%n", p.getPID(), p.getTiempoMaxEjecucion(), p.getTiempoLlegada(), p.getOperacion());
+                System.out.printf("  %-6d %-6d %-8d %-12d %-14s%n",
+                        p.getPID(), p.getTiempoMaxEjecucion(),
+                        p.getTiempoLlegada(), p.getTiempoejecucion(),
+                        p.getOperacionCompleta());
         }
-
-        // Bloqueados
-        System.out.println(barra("COLA DE BLOQUEADOS  (" + colaBloqueados.size() + " procesos)", RED));
-        if (!colaBloqueados.isEmpty()) {
-            System.out.printf("  %-8s %-6s %-6s %-8s %-10s%n", "T.Bloqueado", "PID", "TME", "Llegada", "Estado");
-            for (Procesos p : colaBloqueados) {
-                if (p != null) {
-                    p.setEstado("BLOQUEADO");
-                    System.out.printf("  %-8d %-8d %-11d %-13d %-15s%n",
-                        p.getTiempoBloqueado(),
-                        p.getPID(),
-                        p.getTiempoMaxEjecucion(),
-                        p.getTiempoLlegada(),
-                        p.getEstado()
-                    );
-                }
-            }
-        }
-
-
         System.out.println();
 
-        // Terminados
+        // BLOQUEADOS
+        System.out.println(barra("COLA DE BLOQUEADOS  (" + colaBloqueados.size() + " procesos)", RED));
+        if (colaBloqueados.isEmpty()) {
+            System.out.println("  (vacía)");
+        } else {
+            System.out.printf("  %-10s %-6s %-6s %-8s%n", "T.Bloqueado", "PID", "TME", "Llegada");
+            for (Procesos p : colaBloqueados) {
+                if (p != null)
+                    System.out.printf("  %-10d %-6d %-6d %-8d%n",
+                            p.getTiempoBloqueado(), p.getPID(),
+                            p.getTiempoMaxEjecucion(), p.getTiempoLlegada());
+            }
+        }
+        System.out.println();
+
+        // EN EJECUCIÓN
+        System.out.println(barra("EN EJECUCIÓN", CYAN));
+        Procesos ej = enEjecucion.get();
+        if (ej == null) {
+            System.out.println("  (ninguno)");
+        } else {
+            System.out.printf("  PID          : %d%n",  ej.getPID());
+            System.out.printf("  Operación    : %s%n",  ej.getOperacionCompleta());
+            System.out.printf("  TME          : %d%n",  ej.getTiempoMaxEjecucion());
+            System.out.printf("  T.Ejecutado  : %d%n",  ej.getTiempoejecucion());
+            System.out.printf("  T.Restante   : %d%n",  ej.getTiempoMaxEjecucion() - ej.getTiempoejecucion());
+            System.out.printf("  T.Llegada    : %d%n",  ej.getTiempoLlegada());
+            System.out.printf("  T.Respuesta  : %d%n",  ej.getTRespuesta());
+            System.out.printf("  T.Espera     : %d%n",  ej.getTEspera());
+        }
+        System.out.println();
+
+        // TERMINADOS
         System.out.println(barra("PROCESOS TERMINADOS", PURPLE));
         if (listaTerminados.isEmpty()) {
             System.out.println("  (ninguno)");
         } else {
-            System.out.printf("  %-6s %-14s %-8s%n", "PID","Operación","Resultado");
+            System.out.printf("  %-6s %-14s %-10s %-8s %-10s %-8s %-10s %-10s%n",
+                    "PID", "Operación", "Resultado", "TLleg", "TFin", "TRetorno", "TRespuesta", "TEspera");
             for (Procesos p : listaTerminados)
-                System.out.printf("  %-6d %-14s %-8s%n", p.getPID(), p.getOperacion(), p.getEstado());
+                System.out.printf("  %-6d %-14s %-10s %-8d %-10d %-8d %-10d %-10d%n",
+                        p.getPID(),
+                        p.getOperacionCompleta(),
+                        p.getResultado(),
+                        p.getTiempoLlegada(),
+                        p.getTFinalizacion(),
+                        p.getTRetorno(),
+                        p.getTRespuesta(),
+                        p.getTEspera());
         }
-
-        // En ejecucion
-        System.out.println(
-            barra("En ejecucion", RED)
-            );    
-
-        Procesos p = enEjecucion.get();
-        if (enEjecucion.get() == null) {
-            System.out.println("No hay proceso en ejecucion");
-        }else{
-            System.out.printf("  %-6s %-6s %-8s %-10s%n", "PID","TME","Llegada","Operación");
-            System.out.printf("  %-6d %-6d %-8d %-10s%n", p.getPID(), p.getTiempoMaxEjecucion(), p.getTiempoLlegada(), p.getOperacion());
-        }
-        
-
-
     }
 
-}
+    // ── Reporte final ─────────────────────────────────────────────────────────
+    private static void reporteFinal() {
+        clearScreen();
+        System.out.println(BOLD + CYAN +
+                "╔══════════════════════════════════════════════════════════════════╗\n" +
+                "║                    REPORTE FINAL DE SIMULACIÓN                  ║\n" +
+                "╚══════════════════════════════════════════════════════════════════╝" + RESET);
+        System.out.printf("  Tiempo total: %d ticks%n%n", contadorGlobalProcesos);
 
+        System.out.printf(BOLD + "  %-6s %-14s %-10s %-6s %-6s %-8s %-8s %-8s %-8s %-8s%n" + RESET,
+                "PID", "Operación", "Resultado",
+                "TLleg", "TFin", "TRetorno", "TResp", "TEspera", "TServicio", "Estado");
+        System.out.println("  " + "─".repeat(100));
 
+        for (Procesos p : listaTerminados) {
+            System.out.printf("  %-6d %-14s %-10s %-6d %-6d %-8d %-8d %-8d %-8d %-8s%n",
+                    p.getPID(),
+                    p.getOperacionCompleta(),
+                    p.getResultado(),
+                    p.getTiempoLlegada(),
+                    p.getTFinalizacion(),
+                    p.getTRetorno(),
+                    p.getTRespuesta(),
+                    (p.getTRetorno() - p.getTServicio()),
+                    p.getTServicio(),
+                    p.isTerminadoPorError()
+                            ? RED + "ERROR" + RESET
+                            : GREEN + "NORMAL" + RESET);
+        }
 
-class Tiempo {
-    private long inicio = 0;
-    private long fin = 0;
+        System.out.println("\n" + BOLD + "  Leyenda:" + RESET);
+        System.out.println("  TLleg     = Tiempo de Llegada");
+        System.out.println("  TFin      = Tiempo de Finalización");
+        System.out.println("  TRetorno  = TFin - TLleg");
+        System.out.println("  TResp     = Primera atención - TLleg");
+        System.out.println("  TEspera   = Ticks esperando en cola de Listos");
+        System.out.println("  TServicio = Ticks dentro del CPU");
+    }
 
-    public void init() { inicio = System.nanoTime(); }
-    public void end() { fin = System.nanoTime(); }
-    public long calculateTime_milis() {
-        return (long) ((fin - inicio) / 1_000_000.0);
+    // ── Main ──────────────────────────────────────────────────────────────────
+    public static void main(String[] args) {
+
+        int nProcesos = 0;
+        while (true) {
+            System.out.println("Ingrese número de PROCESOS: ");
+            try {
+                nProcesos = teclado.nextInt();
+                if (nProcesos == -1) { llenarProcesos(24); break; }
+                if (nProcesos > 0) break;
+            } catch (InputMismatchException ex) {
+                System.out.println("Introduce un número válido.");
+                teclado.next();
+            }
+        }
+        teclado.nextLine();
+
+        try { activarRawMode(); } catch (Exception ignored) {}
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try { desactivarRawMode(); } catch (Exception ignored) {}
+        }));
+
+        llenarProcesos(nProcesos);
+        iniciarLectorTecladoFileInput();
+
+        boolean simulacionTerminada = false;
+
+        while (!simulacionTerminada) {
+
+            imprimirDetallesProcesos();
+
+            try { Thread.sleep(ticksTiempoMilis); }
+            catch (InterruptedException ignored) {}
+
+            // Leer tecla
+            char tecla = teclaPresionada;
+            teclaPresionada = 0;
+
+            switch (tecla) {
+                case 'I':
+                    if (!pausado.get()) interrumpirIO();
+                    break;
+                case 'E':
+                    if (!pausado.get()) terminarPorError();
+                    break;
+                case 'P': pausado.set(true);  break;
+                case 'C': pausado.set(false); break;
+            }
+
+            if (!pausado.get()) {
+                tickProcesos();
+                tickBloqueados();
+                contadorGlobalProcesos++;
+            }
+
+            boolean todo = colaNuevos.isEmpty()    &&
+                           colaListos.isEmpty()    &&
+                           enEjecucion.get() == null &&
+                           colaBloqueados.isEmpty();
+            if (todo) simulacionTerminada = true;
+        }
+
+        terminar.set(true);
+        reporteFinal();
     }
 }
