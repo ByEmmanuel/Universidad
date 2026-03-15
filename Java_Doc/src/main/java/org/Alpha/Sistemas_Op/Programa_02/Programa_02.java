@@ -1,4 +1,4 @@
-//package org.Alpha.Sistemas_Op.Programa_02;
+package org.Alpha.Sistemas_Op.Programa_02;
 
 /*
 * Programa 2. Simular el procesamiento por lotes con Multiprogramación.
@@ -205,7 +205,7 @@ public class Programa_02{
                 }
                 p.setTiemopEjecucion(ticksEjecucion);
                 if (canceladoPorError) {
-                    p.setResultado_operacion`("ERROR");
+                    p.setResultado_operacion("ERROR");
                     p.run(0); // lógica para cuando hay error
                     //canceladoPorError = false; -> esto no es necesario ya que cada while se crea la variable
                 }

@@ -1,7 +1,5 @@
 package org.Alpha.Algoritmos.Algoritmos_Busquedas.HuntTheWump;
 import javax.management.RuntimeErrorException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 
@@ -12,42 +10,8 @@ import java.util.Scanner;
 *
 * */
 
-class Vertices  {
 
-
-}
-
-
-class ProcesosJuego{
-    List<Vertices> listaVertices = new ArrayList<>();
-
-    private void facil(){
-        System.out.println("FACIL");
-    }
-
-    private void medio(){
-        System.out.println("MEDIO");
-    }
-
-    private void dificil(){
-        System.out.println("DIFICIL");
-    }
-
-
-    void ejecucionDificultad(String dificultad){
-        switch (dificultad){
-            case "f": facil(); break;
-            case "m": medio(); break;
-            case "d": dificil(); break;
-        }
-    }
-
-}
-
-
-
-
-public class Game {
+public class HuntTheWumpus {
 
     public static void main(String[] args) {
         Scanner teclado = new Scanner(System.in);
