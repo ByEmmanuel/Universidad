@@ -3,9 +3,9 @@ package org.Alpha.JavaFX;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
@@ -17,92 +17,92 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.Alpha.JavaFX.HuntTheWumpusLogic.Utilidades;
 
-import java.util.HashMap;
-
 public class _3_HuntTheWumpus extends Application {
 
     private Pane mainPane = new Pane();
 
     Utilidades utilidades = new Utilidades();
 
-    HashMap<Node, String> mapaElementosPane_1 = new HashMap<>();
-
     @Override
     public void start(Stage stage) {
 
         Rectangle2D screen = Screen.getPrimary().getVisualBounds();
 
-        // game escene
-        VBox vBox_1_facil = utilidades.barraSuperior (8,5,Pos.CENTER,"Hunt The Wumpus", "Dificultad Facil", new int[]{30,25});
-        VBox vBox_2_facil = utilidades.botonInferior(8,5, Pos.CENTER, "Presione", 100, 200);
-
-        BorderPane mainPane = new BorderPane();
-        mainPane.setTop(vBox_1_facil);
-        mainPane.setBottom(vBox_2_facil);
-        mainPane.setCenter(this.mainPane);
-
-        // menu
+        // MENU --------------------------
         BorderPane menuPane = new BorderPane();
         Scene menuScene = new Scene(menuPane, screen.getWidth()-400, screen.getHeight()-150);
 
-        VBox vBox_1_menu = utilidades.barraSuperior (8,5,Pos.CENTER,"Hunt The Wumpus", "Seleccione dificultad", new int[]{40,30});
-        VBox vBox_2_menu = utilidades.botonInferior(8,5, Pos.CENTER, "Presione", 100, 200);
-        HBox hBox_01 = utilidades.botones(50,50, Pos.CENTER);
+        VBox barraSuperior = utilidades.barraSuperior(new Utilidades.ConfigHeader(8,5,Pos.CENTER,"Hunt The Wumpus", "Seleccione dificultad", new int[]{35,30}));
+        HBox hBox_01 = new HBox(
+                utilidades.botones(new Utilidades.ConfigBoton_01(100,50, Pos.CENTER, "Facil", "009900","PaneBotonesDificultad", 200, 100, "BotonFacil")),
+                utilidades.botones(new Utilidades.ConfigBoton_01(100,50, Pos.CENTER, "Medio", "FFD000","PaneBotonesDificultad", 200, 100, "BotonMedio")),
+                utilidades.botones(new Utilidades.ConfigBoton_01(100,50, Pos.CENTER, "Dificil", "CC0000","PaneBotonesDificultad", 200, 100, "BotonDificil"))
+        );
+        hBox_01.setAlignment(Pos.BASELINE_CENTER);
+        hBox_01.setMaxWidth(Double.MAX_VALUE);  // esto abarca todo el ancho
+        hBox_01.setPadding(new Insets(15));
+        hBox_01.setStyle("-fx-background-color: #2c3e50;");
+        menuPane.setTop(barraSuperior);
+        menuPane.setBottom(hBox_01);
 
-        menuPane.setTop(vBox_1_menu);
-        menuPane.setCenter(hBox_01);
+        // GAME ESCENE  -> EASY -----------------------
+        BorderPane easyPane = new BorderPane();
+        Scene easyEscene = new Scene(easyPane, screen.getWidth() - 400, screen.getHeight() - 150);
+
+        VBox vBox_1_facil = utilidades.barraSuperior (
+                new Utilidades.ConfigHeader(8,5,Pos.CENTER,"Hunt The Wumpus", "Dificultad Facil", new int[]{30,25})
+        );
+
+        /*Button b_salir = (Button) vBox_1_facil.lookup("#BotonSalir");
+        b_salir.setOnAction(e -> System.exit(-1));*/
+
+        VBox vBox_2_facil = utilidades.botonInferior(new Utilidades.ConfigBoton(8,5, Pos.CENTER, "Presione", 100, 200));
+        easyPane.setTop(vBox_1_facil);
+        easyPane.setBottom(vBox_2_facil);
+        easyPane.setCenter(this.mainPane);
 
 
-        Scene easyEscene = new Scene(mainPane, screen.getWidth() - 400, screen.getHeight() - 150);
 
-        //Scene mediumEscene = new Scene(mainPane, screen.getWidth() - 400, screen.getHeight() - 150);
+        //Scene mediumEscene = new Scene(easyPane, screen.getWidth() - 400, screen.getHeight() - 150);
 
-        //Scene hardEscene = new Scene(mainPane, screen.getWidth() - 400, screen.getHeight() - 150);
+        //Scene hardEscene = new Scene(easyPane, screen.getWidth() - 400, screen.getHeight() - 150);
 
         stage.setTitle("Hunt The Wumpus");
         stage.setScene(menuScene);
         stage.show();
 
-        Button b_01 = (Button) hBox_01.lookup("#BotonFacil");
-        b_01.setOnAction( e -> {
-            System.out.println("DIficiltad facil");
+        // botones de dificultad (lookup seguro, ya está en Scene visible)
+        ((Button) hBox_01.lookup("#BotonFacil")).setOnAction(e -> {
             stage.setScene(easyEscene);
-            stage.show();
+
+            System.out.println("HOAKSd");
         });
 
+        ((Button) hBox_01.lookup("#BotonMedio")).setOnAction(e -> {
+            System.out.println("Dificultad media — pendiente");
+        });
 
-        Button bo = (Button) vBox_2_facil.lookup("#Boton_01");
-        bo.setOnAction(
-                e -> {
-                    System.out.println("ASJDkJA");
-                    //stage.setScene(scene);
-                    stage.show();
-                }
-        );
+        ((Button) hBox_01.lookup("#BotonDificil")).setOnAction(e -> {
+            System.out.println("Dificultad difícil — pendiente");
+        });
+
+        ((Button) vBox_2_facil.lookup("#Boton_01")).setOnAction(e -> {
+            System.out.println("Botón inferior presionado");
+        });
+
+        ((Button) vBox_1_facil.lookup("#BotonMenu")).setOnAction(e -> {
+            stage.setScene(menuScene);
+        });
+
+        ((Button) barraSuperior.lookup("#BotonSalir")).setOnAction(e -> {
+            System.exit(0);
+        });
 
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
 
     }
 
-    // aqui van todos los elementos a mostrar en el pane
-    /*private void cargarElementosPanePrincipal(BorderPane pane){
-        pane.setStyle("-fx-background-color: #fff;");
-
-        Label title = new Label("Hunt The Wumpus");
-        title.setStyle("-fx-text-fill: #c20d0d; -fx-font-size: 20px; -fx-font-weight: bold;");
-        pane.setTop(eventLabel);
-
-        //mapaElementosPane_1.put(title, "");
-
-
-        eventLabel = new Label("Evento actual: 0");
-        eventLabel.setStyle("-fx-text-fill: #11caf8; -fx-font-size: 14px;");
-        pane.setLeft(eventLabel);
-        //mapaElementosPane_1.put(eventLabel, "");
-
-        //pane.setTop(utilidades.newVbox(8, 5,"FF0000FF",Pos.CENTER_LEFT, eventLabel));
-    }*/
 
     // abstraer elementos para que este archivo se vea limpio
     // Instancia a una clase de objetos
