@@ -29,7 +29,7 @@ public class HuntTheWumpus {
                 }
 
                 ProcesosJuego procesosJuego = new ProcesosJuego();
-                procesosJuego.ejecucionDificultad(dif_Usr);
+                procesosJuego.ejecucionDificultad(dif_Usr, teclado);
             }catch (RuntimeErrorException e){
                 System.out.println("Error en la funcion");
             }
