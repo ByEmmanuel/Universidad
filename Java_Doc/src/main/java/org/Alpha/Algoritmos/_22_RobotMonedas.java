@@ -1,6 +1,6 @@
 package org.Alpha.Algoritmos;
 
-public class _21_RobotMonedas {
+public class _22_RobotMonedas {
     public static void main(String[] args){
         System.out.println("Hola myundo");
         calcularRuta();
@@ -8,7 +8,7 @@ public class _21_RobotMonedas {
 
     public static boolean movimientoValido(int[][] arr, int x, int y){
 
-        return x > 0 && y > 0 && 
+        return x >= 0 && y >= 0 &&
         x < arr.length && y < arr[0].length
         && arr[x][y] != -1; 
     } 
@@ -35,9 +35,7 @@ public class _21_RobotMonedas {
 
         
         // mapear el mapa
-        int ptr = 0;
-        int inicio = 0;
-        int[] final_r = {4,5};
+        int[][] resultado = new int[mapa.length][mapa[0].length];
         
         for(int filas = 0; filas < mapa.length; filas++){
 
@@ -47,20 +45,43 @@ public class _21_RobotMonedas {
                  * Ejemplo mapa[1][1] = 1
                  * Ejemplo mapa[1][2] = 1
                  */
+                // tanto si para la derecha como para abajo son movimientos validos
                 System.out.print( " " + mapa[filas][columnas] + "\t");
-                if (movimientoValido(mapa, filas+1, columnas+1)) {
-                    if (mapa[filas][columnas] > 0) {
-                        mapa[filas][columnas+1] += mapa[filas][columnas];
-                    }else{
-                        //mapa[filas][columnas] = mapa[filas][columnas];
-                    }                    
 
-                    
-                }else{
+                // caso base 1
+                if (filas == 0 && columnas == 0){
                     continue;
+
+                // caso base 2
+                    // solo se puede mover a la derecha
+                }else if(filas == 0) {
+                    if (movimientoValido(mapa, filas, columnas-1)){
+                        //mapa[0][columnas] += mapa[0][columnas-1];
+                        mapa[0][columnas] = mapa[0][columnas] + Math.max(mapa[0][columnas], mapa[0][columnas-1]);
+
+                        resultado[0][columnas] += mapa[0][columnas-1];
+                    }
+                    //caso base 3
+                    // solo se puede mover hacia abajo
+                }else if(columnas == 0){
+                    if (movimientoValido(mapa, filas-1, columnas)){
+                        // la posicion de abajo es igual a la suma de arriba
+                        //mapa[filas][0] += mapa[filas-1][0];
+                        mapa[filas][0] = mapa[filas][0] + Math.max(mapa[filas-1][0], mapa[filas][0]);
+
+                        resultado[filas][0] += mapa[filas-1][0];
+                    }
+                    // caso general
+                }else{
+                    if (movimientoValido(mapa,filas ,columnas )){
+                        mapa[filas][columnas] = mapa[filas][columnas]
+                                + Math.max(mapa[filas][columnas-1], mapa[filas-1][columnas]);
+
+                        resultado[filas][columnas] = mapa[filas][columnas]
+                                + Math.max(mapa[filas][columnas-1], mapa[filas-1][columnas]);
+                    }
                 }
 
-                
                 try {
                     Thread.sleep(10);
                 } catch (Exception e) {
