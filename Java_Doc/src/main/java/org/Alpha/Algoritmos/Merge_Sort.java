@@ -55,7 +55,7 @@ public class Merge_Sort {
         int[] vector = {3,5,2,1,4,6,34,5,345,23,234};
 
         for (int a : vector){
-            System.out.println(a);
+            //System.out.println(a);
         }
 
         vector = MergeSort(vector);
@@ -63,9 +63,65 @@ public class Merge_Sort {
         System.out.println("  ");
 
         for (int a : vector){
-            System.out.println(a);
+            //System.out.println(a);
         }
 
+        int[] vector_2 = {3,5,2,1,4,6,34,5,345,23,234};
 
+        merge_2(vector_2);
+
+        for (int i : vector_2){
+            System.out.println(i);
+        }
+
+    }
+
+    public static void merge_2(int[] v){
+        if (v.length <= 1)return;
+
+        int tamaño = v.length;
+        int[] a = new int[tamaño/2];
+        int[] b = null;
+        if (tamaño % 2 == 0) {
+            b = new int[tamaño/2];
+        }else {
+            b = new int[tamaño/2 +1];
+        }
+
+        int indice = 0;
+        int r = 0;
+        while (indice < v.length){
+            if (indice < a.length){
+                a[indice] = v[indice];
+            }else {
+                b[r] = v[indice];
+                r++;
+            }
+            indice++;
+        }
+
+        merge_2(a);
+        merge_2(b);
+        sort(v,a,b);
+    }
+
+    public static int[] sort(int[] v, int[] a, int[] b){
+        int i = 0;
+        while ( i < v.length){
+            if (i < a.length ){
+                if (a[i] > b[i]){
+                    int aux = a[i];
+                    a[i] = b[i];
+                    b[i] = aux;
+
+                }
+            }
+            i++;
+        }
+
+        // esto los va a mezclar
+        for (int c = 0; c<a.length; c++)v[c]=a[c];
+        for (int c = 0; c<b.length; c++)v[c]=b[c];
+        return v;
     }
 }
