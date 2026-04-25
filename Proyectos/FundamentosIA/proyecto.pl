@@ -1,7 +1,7 @@
 % ============================================================
 %  SISTEMA EXPERTO: CLASIFICACION DE DINOSAURIOS
 %  Materia: Fundamentos de IA — CUCEI, UDG
-%  Autor  : ByEmmanuel
+%  Autor  : Jesus Emmanuel
 % ============================================================
 %
 %  BASE DE CONOCIMIENTO
@@ -487,20 +487,3 @@ por_grupo(Grupo) :-
     sort(L, S),
     format("Grupo ~w: ~w~n", [Grupo, S]).
 
-% ============================================================
-%  EJEMPLOS DE USO (ejecutar en SWI-Prolog)
-% ============================================================
-%
-%  ?- ficha(tyrannosaurus_rex).
-%  ?- ficha(velociraptor).
-%  ?- listar_megadepredadores.
-%  ?- listar_sauropodos_gigantes.
-%  ?- listar_ancestros_aves.
-%  ?- por_dieta(herbivoro).
-%  ?- por_periodo(jurasico).
-%  ?- por_grupo(terapodo).
-%  ?- mismo_nicho(tyrannosaurus_rex, giganotosaurus).
-%  ?- defensa_activa(ankylosaurus).
-%  ?- todos_los_dinosaurios.
-%
-% ============================================================
