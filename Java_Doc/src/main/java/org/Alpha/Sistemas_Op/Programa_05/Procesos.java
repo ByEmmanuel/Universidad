@@ -1,8 +1,8 @@
-//package org.Alpha.Sistemas_Op.Programa_04;
+package org.Alpha.Sistemas_Op.Programa_05;
 
 import java.util.Random;
 
-public class Procesos implements SoInterface {
+public class Procesos {
 
     private static final Random random = new Random();
 
@@ -11,6 +11,8 @@ public class Procesos implements SoInterface {
     private final String operacion = obtenerOperador();
     private final int[] operadores = new int[]{random.nextInt(100) + 1, random.nextInt(100) + 1};
     private int tiempoLlegada   = 0;
+    // si tiempo de ejecucion % quantum != 0 || != tiempoMaxEjecucion ejecutar proceso
+    private int tiempoEnQuantumm = 1;
     private int tiempoEjecucion = 0;
     private int estadoBloqueado = 8;
     private String estado       = null;
@@ -99,4 +101,12 @@ public class Procesos implements SoInterface {
 
     // Tiempo de servicio = ticks que estuvo dentro del CPU
     public int getTServicio() { return tiempoEjecucion; }
+
+    public int getTiempoEnQuantumm() {
+        return tiempoEnQuantumm;
+    }
+
+    public void setTiempoEnQuantumm(int tiempoEnQuantumm) {
+        this.tiempoEnQuantumm = tiempoEnQuantumm;
+    }
 }

@@ -1,5 +1,4 @@
-//package org.Alpha.Sistemas_Op.Programa_04;
-
+package org.Alpha.Sistemas_Op.Programa_05;
 
 import java.util.ArrayDeque;
 import java.util.Scanner;

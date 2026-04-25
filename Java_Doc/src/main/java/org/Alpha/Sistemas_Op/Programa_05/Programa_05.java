@@ -1,11 +1,12 @@
-//package org.Alpha.Sistemas_Op.Programa_04;
+package org.Alpha.Sistemas_Op.Programa_05;
 
 import java.io.FileInputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class Programa_04 implements SoInterface {
+
+public class Programa_05  implements SoInterface{
 
     // ── Colores ───────────────────────────────────────────────────────────────
     static final String RESET = "\033[0m";
@@ -25,13 +26,21 @@ public class Programa_04 implements SoInterface {
     private static Queue<Procesos> colaListos = new LinkedList<>();
     private static Queue<Procesos> colaBloqueados = new LinkedList<>();
     private static AtomicReference<Procesos> enEjecucion = new AtomicReference<>();
+    // para ordenar es en la linea 293
     private static ArrayList<Procesos> listaTerminados = new ArrayList<>();
+
+    
+    // si la queremos ordenada
+    private static ArrayList<Procesos> listaTerminados_2 = new ArrayList<>();
+
+    
 
     // ── Control ───────────────────────────────────────────────────────────────
     static final AtomicBoolean pausado = new AtomicBoolean(false);
     static final AtomicBoolean teclaB = new AtomicBoolean(false);
     static final AtomicBoolean terminar = new AtomicBoolean(false);
     static volatile char teclaPresionada = 0;
+    private static int quantum = 0;
 
     private static final short ticksTiempoMilis = 350;
     private static int contadorGlobalProcesos = 0;
@@ -80,18 +89,7 @@ public class Programa_04 implements SoInterface {
         }
 
         // Avanzar ejecución
-        if (p != null) {
-            p.setEstado("Ejecucion");
-            p.setTiempoEjecucion(p.getTiempoejecucion() + 1);
 
-            if (p.getTiempoejecucion() >= p.getTiempoMaxEjecucion()) {
-                // Terminó normalmente
-                p.setTFinalizacion(contadorGlobalProcesos + 1);
-                p.setEstado("Terminado");
-                listaTerminados.add(p);
-                enEjecucion.set(null);
-            }
-        }
     }
 
     // ── Tick bloqueados ───────────────────────────────────────────────────────
@@ -178,10 +176,12 @@ public class Programa_04 implements SoInterface {
 
         System.out.println(BOLD + CYAN +
                 "╔══════════════════════════════════════════════════╗\n" +
-                "║         ALGORITMO  -  FCFS  -  5 ESTADOS        ║\n" +
+                "║         ALGORITMO  -  RounD RoBiN  -             ║\n" +
                 "╚══════════════════════════════════════════════════╝" + RESET);
         System.out.printf(BOLD + "  Reloj: %d ticks%s\n", contadorGlobalProcesos, RESET);
+        System.out.printf("  Quantumm : %d \n", quantum);
         System.out.printf(WHITE + "  [E] Bloquear  [W] Error  [P] Pausar  [C] Continuar%s\n\n", RESET);
+
 
         if (pausado.get())
             System.out.println(RED + BOLD + "  ⏸  SISTEMA PAUSADO — presione C para continuar\n" + RESET);
@@ -270,16 +270,21 @@ public class Programa_04 implements SoInterface {
     private static void reporteFinal() {
         clearScreen();
 
+        // ordenar array
+        listaTerminados.sort(Comparator.comparing(Procesos::getPID));
+
         System.out.println(BOLD + CYAN +
                 "╔══════════════════════════════════════════════════════════════════╗\n" +
                 "║                    REPORTE FINAL DE SIMULACIÓN                  ║\n" +
                 "╚══════════════════════════════════════════════════════════════════╝" + RESET);
         System.out.printf("  Tiempo total: %d ticks%n%n", contadorGlobalProcesos);
+        System.out.printf("  Quantumm : %d \n", quantum);
 
         System.out.printf(BOLD + "  %-6s %-16s %-10s %-6s %-6s %-8s %-8s %-8s %-8s %-8s%n" + RESET,
                 "PID", "Operación", "Resultado",
                 "TLleg", "TFin", "TRetorno", "TResp", "TEspera", "TServicio", "Estado");
         System.out.println("  " + "─".repeat(104));
+        
 
         for (Procesos p : listaTerminados) {
             System.out.printf("  %-6d %-16s %-10s %-6d %-6d %-8d %-8d %-8d %-8d %-8s%n",
@@ -307,6 +312,7 @@ public class Programa_04 implements SoInterface {
     private static void reporteTeclaB() {
         clearScreen();
 
+
         // encabezado compartido
         String encabezado = String.format(
                 BOLD + "  %-6s %-16s %-10s %-6s %-6s %-8s %-8s %-8s %-8s %-8s%n" + RESET,
@@ -320,6 +326,8 @@ public class Programa_04 implements SoInterface {
                 "║                    REPORTE PARCIAL (TECLA B)                    ║\n" +
                 "╚══════════════════════════════════════════════════════════════════╝" + RESET);
         System.out.printf("  Tiempo actual: %d ticks%n%n", contadorGlobalProcesos);
+        System.out.printf("  Quantumm : %d \n", quantum);
+
 
         // ── Fila para procesos que AÚN NO terminaron (TFin y TRetorno = 0) ──────
         // TResp sí se muestra si ya fueron atendidos al menos una vez
@@ -447,14 +455,13 @@ public class Programa_04 implements SoInterface {
     public static void main(String[] args) {
 
         int nProcesos = 0;
-        while (true) {
+        quantum = 0;
+        while (nProcesos <= 0 && quantum <= 0){
             System.out.println("Ingrese número de PROCESOS: ");
             try {
                 nProcesos = teclado.nextInt();
-                if (nProcesos == -1) {
-                    llenarProcesos(24);
-                    break;
-                }
+                System.out.println("Ingrese Quantumm");
+                quantum = teclado.nextInt();
                 if (nProcesos > 0) break;
             } catch (InputMismatchException ex) {
                 System.out.println("Introduce un número válido.");
@@ -484,7 +491,7 @@ public class Programa_04 implements SoInterface {
             //imprimirDetallesProcesos();
 
             try {
-                Thread.sleep(ticksTiempoMilis);
+                Thread.sleep(10);
             } catch (InterruptedException ignored) {
             }
 
