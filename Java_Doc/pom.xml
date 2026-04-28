@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
@@ -21,8 +22,11 @@
         <spring-boot.version>2.2.2.RELEASE</spring-boot.version>
         <start-class>org.Alpha.App</start-class>
         <graal.version>19.2.1</graal.version>
-    </properties>
 
+        <!-- JavaFX properties -->
+        <javafx.version>23.4.0</javafx.version>
+        <javafx.platform>mac</javafx.platform> <!-- change to mac-aarch64 for Apple Silicon -->
+    </properties>
 
     <dependencies>
         <dependency>
@@ -30,6 +34,7 @@
             <artifactId>svm</artifactId>
             <version>${graal.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -44,6 +49,29 @@
                     <artifactId>junit</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.Alpha</groupId>
+            <artifactId>src</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- JavaFX dependencies -->
+        <!-- Source: https://mvnrepository.com/artifact/org.openjfx/javafx-controls -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>26</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- Source: https://mvnrepository.com/artifact/org.openjfx/javafx-graphics -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>26</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
@@ -67,10 +95,31 @@
                 <version>1.6.2</version>
             </extension>
         </extensions>
+
         <plugins>
+            <!-- Ensure compilation with Java 17 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <release>17</release>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.0</version>
+            </plugin>
+
+            <!-- JavaFX Maven plugin for running the app (optional, convenient for development) -->
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>${start-class}</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -101,6 +150,7 @@
                 </plugins>
             </build>
         </profile>
+
         <profile>
             <id>graal</id>
             <build>

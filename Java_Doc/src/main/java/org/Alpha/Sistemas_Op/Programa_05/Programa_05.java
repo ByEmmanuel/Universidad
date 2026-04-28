@@ -89,6 +89,30 @@ public class Programa_05  implements SoInterface{
         }
 
         // Avanzar ejecución
+        if (p != null) {
+            p.setEstado("Ejecucion");
+            p.setTiempoEjecucion(p.getTiempoejecucion() + 1);
+
+            // si tiempo de ejecucion % quantum != 0 || != tiempoMaxEjecucion ejecutar proceso
+            // p.getTiempoejecucion() % quantumm != 0 ||
+            if ((p.getTiempoEnQuantumm() < quantum) && p.getTiempoejecucion() < p.getTiempoMaxEjecucion()){
+                p.setTiempoEnQuantumm(p.getTiempoEnQuantumm() + 1);
+
+            }else if (p.getTiempoEnQuantumm() >= quantum){
+                // salir de ejecucion y mandarlo a la cola de listos
+                p.setTiempoEnQuantumm(1);
+                enEjecucion.set(null);
+                colaListos.add(p);
+            }
+            if (p.getTiempoejecucion() >= p.getTiempoMaxEjecucion()) {
+                // Terminó normalmente
+                p.setTFinalizacion(contadorGlobalProcesos + 1);
+                p.setEstado("Terminado");
+                listaTerminados.add(p);
+                enEjecucion.set(null);
+                // tiempo en ejecucion % quantumm = 0
+            }
+        }
 
     }
 
