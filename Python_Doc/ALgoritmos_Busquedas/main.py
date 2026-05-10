@@ -7,7 +7,7 @@ import sys
 # ── Setup ────────────────────────────────────────────────────────────────────
 BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
 nombreMapa  = "2"
-map_path    = os.path.join(BASE_DIR, f"mapa{nombreMapa}.png")
+map_path    = os.path.join(BASE_DIR, f"mapa{nombreMapa}.jpg")
 vertex_path = os.path.join(BASE_DIR, f"verticeMapa{nombreMapa}.npy")
 
 if not os.path.exists(map_path):
