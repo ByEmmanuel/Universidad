@@ -114,6 +114,7 @@ public class Programa_07 implements SoInterface {
     private static void llenarProcesos(int nProcesos) {
         for (int i = 0; i < nProcesos; i++) {
             Procesos p = new Procesos();
+            // aqui debo meter un algoritmo de tal manera que los procesos nuevos tambien tengan registro a memoria
 
 
             p.setEstado("Nuevo");
@@ -609,7 +610,7 @@ public class Programa_07 implements SoInterface {
         }
 
         System.out.println(GREEN + BOLD + "\n  LISTOS" + RESET);
-        System.out.print(encabezado);
+        //System.out.print(encabezado);
         System.out.println(separador);
 
         if (colaListos.isEmpty()) {
@@ -636,7 +637,7 @@ public class Programa_07 implements SoInterface {
         }
 
         System.out.println(CYAN + BOLD + "\n  EN EJECUCIÓN" + RESET);
-        System.out.print(encabezado);
+        //System.out.print(encabezado);
         System.out.println(separador);
 
         Procesos ej = enEjecucion.get();
@@ -653,7 +654,7 @@ public class Programa_07 implements SoInterface {
             }
 
             System.out.printf(formato,
-                    0,
+                    espacioMemoriaAux,
                     ej.getPID(),
                     ej.getTamaño(),
                     resultado.toString()
@@ -661,7 +662,7 @@ public class Programa_07 implements SoInterface {
         }
 
         System.out.println(RED + BOLD + "\n  BLOQUEADOS" + RESET);
-        System.out.print(encabezado);
+        //System.out.print(encabezado);
         System.out.println(separador);
 
 
@@ -690,23 +691,31 @@ public class Programa_07 implements SoInterface {
 
         // ── TERMINADOS ───────────────────────────────────────────────────────────
         System.out.println(PURPLE + BOLD + "\n  TERMINADOS" + RESET);
-        System.out.print(encabezado);
+        //System.out.print(encabezado);
         System.out.println(separador);
         if (listaTerminados.isEmpty()) {
             System.out.println("  (ninguno)");
         } else {
             for (Procesos p : listaTerminados) {
-                System.out.printf("  %-6d %-16s %-10s %-6d %-6d %-8d %-8d %-8d %-8d %-8s%n",
+                int[] mem = p.getDireccionMemoria();
+                StringBuilder resultado = null;
+                
+                if (mem != null) {
+                    resultado = new StringBuilder();
+                    for (int a : mem) {
+                    resultado.append(a).append(" ");
+                    }    
+                }
+                
+
+                System.out.printf(formato,
+                        espacioMemoriaAux,
                         p.getPID(),
-                        p.getOperacionCompleta(),
-                        p.getResultado(),
-                        p.getTiempoLlegada(),
-                        p.getTFinalizacion(),   // sí se muestra
-                        p.getTRetorno(),        // sí se muestra
-                        p.getTRespuesta(),
-                        (p.getTRetorno()-p.getTServicio()),
-                        p.getTServicio(),
-                        p.isTerminadoPorError() ? RED + "ERROR" + RESET : GREEN + "NORMAL" + RESET);
+                        p.getTamaño(),
+                        resultado == null ? "Memoria liberada" : resultado.toString()
+                );
+
+                espacioMemoriaAux++;
             }
         }
 
@@ -759,7 +768,7 @@ public class Programa_07 implements SoInterface {
             //imprimirDetallesProcesos();
 
             try {
-                Thread.sleep(300);
+                Thread.sleep(200);
             } catch (InterruptedException ignored) {
             }
 
