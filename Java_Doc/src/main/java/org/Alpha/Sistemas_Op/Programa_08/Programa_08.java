@@ -1,4 +1,4 @@
-//package org.Alpha.Sistemas_Op.Programa_07;
+package org.Alpha.Sistemas_Op.Programa_08;
 
 import java.io.FileInputStream;
 import java.util.*;
@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 
-public class Programa_07 implements SoInterface {
+public class Programa_08 implements SoInterface {
 
     // 🎨 Colores ───────────────────────────────────────────────────────────────
     static final String RESET  = "\033[0m";
@@ -25,6 +25,8 @@ public class Programa_07 implements SoInterface {
     );
     private static Queue<Procesos> colaListos     = new LinkedList<>();
     private static Queue<Procesos> colaBloqueados = new LinkedList<>();
+    private static Queue<Procesos> colaSuspendidos = new LinkedList<>();
+    
     private static AtomicReference<Procesos> enEjecucion = new AtomicReference<>();
     private static ArrayList<Procesos> listaTerminados = new ArrayList<>();
 
@@ -55,11 +57,16 @@ public class Programa_07 implements SoInterface {
     static final AtomicBoolean pausado   = new AtomicBoolean(false);
     static final AtomicBoolean teclaB    = new AtomicBoolean(false);
     static final AtomicBoolean teclaT    = new AtomicBoolean(false);
+    static final AtomicBoolean teclaS  = new AtomicBoolean(false);
+    static final AtomicBoolean teclaR  = new AtomicBoolean(false);
     static final AtomicBoolean terminar  = new AtomicBoolean(false);
+    
+
     static volatile char teclaPresionada = 0;
     private static int quantum           = 0;
 
     private static final short ticksTiempoMilis       = 350;
+    private static short tickMensajes = 5;
     private static int         contadorGlobalProcesos = 0;
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -134,6 +141,26 @@ public class Programa_07 implements SoInterface {
             p.setEstado("Nuevo");
             colaNuevos.add(p);
         }
+    }
+
+    // Pasar un proceso del estado de bloqueado a suspendido, liberar su memoria 
+    // y si posteriormente se vuelve a necesitar del proceso, se va a la cola de listos
+    private static void moverProcesoBloqueadoToSuspendido(){
+        if(colaBloqueados.isEmpty())return;
+
+        Procesos p = colaBloqueados.poll();
+        vaciarEspacioMemoria(p);
+        colaSuspendidos.add(p);
+
+    }
+
+    private static void moveSuspendidosToListos(){
+        if (colaSuspendidos.isEmpty()) return;
+
+        Procesos p = colaSuspendidos.poll();
+        
+        llenarMemoria(p);
+        colaListos.add(p);
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -333,6 +360,13 @@ public class Programa_07 implements SoInterface {
         left.add("");
         if (pausado.get()) left.add(RED + BOLD + "  ⏸  SISTEMA PAUSADO — presione C para continuar" + RESET);
 
+        // esto puede ser camniado despues por alguna funcionalidad especial de la tecla S
+        if (colaBloqueados.isEmpty() && tickMensajes-- >= 0) {
+            left.add(CYAN + BOLD + "LA COLA ESTA VACIA: NO HAY NADA QUE SUSPENDER" + RESET);
+        }else if(tickMensajes <= 0){
+            tickMensajes = 5;
+        }
+
         // NUEVOS
         left.add(YELLOW + BOLD + separadorIzq + RESET);
         left.add(YELLOW + BOLD + "  COLA DE NUEVOS  (" + colaNuevos.size() + " procesos)" + RESET);
@@ -392,6 +426,21 @@ public class Programa_07 implements SoInterface {
             left.add(String.format("  %-6s %-14s %-10s %-8s %-10s %-8s %-10s %-10s", 
                     "PID", "Operación", "Resultado", "TLleg", "TFin", "TRetorno", "TRespuesta", "TEspera"));
             for (Procesos p : listaTerminados)
+                left.add(String.format("  %-6d %-14s %-10s %-8d %-10d %-8d %-10d %-10d", 
+                        p.getPID(), p.getOperacionCompleta(), p.getResultado(), p.getTiempoLlegada(), p.getTFinalizacion(), p.getTRetorno(), p.getTRespuesta(), p.getTEspera()));
+        }
+        left.add("");
+
+        // SUSPENDIDOS
+        left.add(YELLOW + BOLD + separadorIzq + RESET);
+        left.add(YELLOW + BOLD + "  PROCESOS SUSPENDIDOS  (" + colaSuspendidos.size() + ")" + RESET);
+        left.add(YELLOW + BOLD + separadorIzq + RESET);
+        if (colaSuspendidos.isEmpty()) {
+            left.add("  (ninguno)");
+        }else {
+            left.add(String.format("  %-6s %-14s %-10s %-8s %-10s %-8s %-10s %-10s", 
+                    "PID", "Operación", "Resultado", "TLleg", "TFin", "TRetorno", "TRespuesta", "TEspera"));
+            for (Procesos p : colaSuspendidos)
                 left.add(String.format("  %-6d %-14s %-10s %-8d %-10d %-8d %-10d %-10d", 
                         p.getPID(), p.getOperacionCompleta(), p.getResultado(), p.getTiempoLlegada(), p.getTFinalizacion(), p.getTRetorno(), p.getTRespuesta(), p.getTEspera()));
         }
@@ -531,7 +580,7 @@ public class Programa_07 implements SoInterface {
                 System.out.printf("  %-6d %-16s %-10s %-6d %-6d %-8d %-8d %-8d %-8d %-8s%n",
                         p.getPID(), p.getOperacionCompleta(), "-",
                         p.getTiempoLlegada(), 0, 0,
-                        (p.getTRespuesta() < 0 ? 0 : p.getTRespuesta()),
+                        (Math.max(p.getTRespuesta(), 0)),
                         (contadorGlobalProcesos - p.getTiempoLlegada() - p.getTServicio()),
                         p.getTServicio(),
                         GREEN + "LISTO" + RESET);
@@ -601,6 +650,13 @@ public class Programa_07 implements SoInterface {
     //  VISTA DE PAGINACIÓN (TECLA T)
     //  Muestra el mapa completo de los 46 frames con su estado.
     // ═══════════════════════════════════════════════════════════════════════════
+
+    /**
+     * 
+     * De la cola de bloqueados al presionar la tecla S deberan pasar a lista de suspendidos, 
+     * en suspendidos se liberara la memoria, posterior mente la tecla R le volvera a signar memoria 
+     * y pasara a cola de listos
+     */
     private static void paginacionProcesos() {
         clearScreen();
 
@@ -760,6 +816,14 @@ public class Programa_07 implements SoInterface {
                 case 'T':
                     teclaT.set(true);
                     break;
+                case 'S':
+                    // poner timer de tiempo en el que se mostrara el mensaje por si no hay procesos en 
+                    // ejecucion, y/o no se pueden liberar
+                    teclaS.set(true);
+                    break;
+                case 'R':
+                    teclaR.set(true);
+                    break;
             }
 
             if (!pausado.get()) {
@@ -779,6 +843,17 @@ public class Programa_07 implements SoInterface {
                 clearScreen();
                 paginacionProcesos();
                 pausado.set(true);
+            }
+
+            if(teclaS.get() && !colaBloqueados.isEmpty()){
+                moverProcesoBloqueadoToSuspendido();
+                
+                teclaS.set(false);
+            }
+
+            if (teclaR.get()) {
+                moveSuspendidosToListos();
+                teclaR.set(false);
             }
 
             boolean todo = colaNuevos.isEmpty()
