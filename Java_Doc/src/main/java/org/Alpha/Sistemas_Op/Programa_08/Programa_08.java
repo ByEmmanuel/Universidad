@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class Programa_08 implements SoInterface {
 
-    // 🎨 Colores ───────────────────────────────────────────────────────────────
+    // Colores ───────────────────────────────────────────────────────────────
     static final String RESET  = "\033[0m";
     static final String BOLD   = "\033[1m";
     static final String CYAN   = "\033[36m";
@@ -19,7 +19,7 @@ public class Programa_08 implements SoInterface {
     static final String PURPLE = "\033[35m";
     static final String WHITE  = "\033[37m";
 
-    // 📦 Colas ─────────────────────────────────────────────────────────────────
+    // Colas ─────────────────────────────────────────────────────────────────
     private static PriorityQueue<Procesos> colaNuevos = new PriorityQueue<>(
             Comparator.comparingInt(Procesos::getPID)
     );
@@ -859,7 +859,8 @@ public class Programa_08 implements SoInterface {
             boolean todo = colaNuevos.isEmpty()
                     && colaListos.isEmpty()
                     && enEjecucion.get() == null
-                    && colaBloqueados.isEmpty();
+                    && colaBloqueados.isEmpty()
+                    && colaSuspendidos.isEmpty();
             if (todo) simulacionTerminada = true;
         }
 
