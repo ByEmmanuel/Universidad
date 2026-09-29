@@ -9,7 +9,7 @@ include_directories(${CURSES_INCLUDE_DIR})
 # Enlazar la librería ncurses
 
 add_executable(C_Doc
-        Algoritmos/_1_Add_Two_Numbers.c
+        # Algoritmos/_1_Add_Two_Numbers.c
 
         #[[#Proyecto PE
         ProyectoPE/main.c
@@ -28,7 +28,7 @@ add_executable(C_Doc
         ProyectoPE/SystemLogs.c
         ProyectoPE/reloj.c]]
 
-        ProyectoPE/LogicaNegocio.h
+        # ProyectoPE/LogicaNegocio.h
         #ProyectoPE/UsuarioDTO.h
         #ProyectoPE/Util.h
         #ProyectoPE/UserInterface.h
@@ -37,6 +37,9 @@ add_executable(C_Doc
         #ProyectoPE/reloj.h
 
         #Logica de programacion
+
+        # Bajo nivel aqui !
+        Bajo_lvl/Little_endian.c
 
 )
 
